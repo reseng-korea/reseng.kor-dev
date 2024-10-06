@@ -1,9 +1,7 @@
 package com.resengkor.management.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
@@ -20,4 +18,11 @@ public class Region {
     @Column(nullable = false)
     private String regionType;  // enum인가?
 
+    @Builder
+    public Region(String regionName, String regionType) {
+        this.regionName = regionName;
+        this.regionType = regionType;
+    }
+
 }
+

@@ -1,15 +1,16 @@
 package com.resengkor.management.domain.user.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
+@Builder(toBuilder = true)
 @Getter
 @Entity
 public class UserProfile {
@@ -30,6 +31,7 @@ public class UserProfile {
     @Column
     private Double longitude; //경도
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "region_id")
     private Region region;  // 지역 정보 연결
@@ -45,5 +47,16 @@ public class UserProfile {
     @LastModifiedDate //엔티티가 수정될 때 수정 시간 저장
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+
+    @Builder
+    public UserProfile(String name, String address, Double latitude, Double longitude, Region region, User user) {
+        this.name = name;
+        this.address = address;
+        this.latitude = latitude;
+        this.longitude = longitude;
+        this.region = region;
+        this.user = user;
+    }
 
 }

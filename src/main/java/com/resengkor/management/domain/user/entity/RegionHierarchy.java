@@ -2,6 +2,7 @@ package com.resengkor.management.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -23,4 +24,11 @@ public class RegionHierarchy {
 
     @Column(nullable = false)
     private int depth;  // 관계 깊이
+
+    @Builder
+    public RegionHierarchy(Region ancestorRegion, Region descendantRegion, int depth) {
+        this.ancestorRegion = ancestorRegion;
+        this.descendantRegion = descendantRegion;
+        this.depth = depth;
+    }
 }

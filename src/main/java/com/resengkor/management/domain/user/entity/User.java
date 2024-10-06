@@ -1,10 +1,7 @@
 package com.resengkor.management.domain.user.entity;
 
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
@@ -13,6 +10,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
+@Builder(toBuilder = true)
+@AllArgsConstructor  // 모든 필드를 포함하는 생성자 생성
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -44,7 +43,7 @@ public class User {
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Role role = Role.ROLE_GUEST;  // 기본값으로 Guest 역할
+    private Role role;
 
     /*
     - 로그인 유형
@@ -63,4 +62,14 @@ public class User {
 
     @Version
     private Integer version;  // 비관적 잠금 처리
+
+    @Builder
+    public User(String email, String password, String companyName, String phoneNumber, Role role) {
+        this.email = email;
+        this.password = password;
+        this.companyName = companyName;
+        this.phoneNumber = phoneNumber;
+        this.role = role;
+    }
+
 }

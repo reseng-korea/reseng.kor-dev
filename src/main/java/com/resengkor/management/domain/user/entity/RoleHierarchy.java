@@ -2,6 +2,7 @@ package com.resengkor.management.domain.user.entity;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -27,4 +28,15 @@ public class RoleHierarchy {
 
     @Column(nullable = false)
     private int depth;  // 관계 깊이
+
+    @Builder
+    public RoleHierarchy(User ancestor, User descendant, Role role, int depth) {
+        this.ancestor = ancestor;
+        this.descendant = descendant;
+        this.role = role;
+        this.depth = depth;
+    }
+
+
+
 }
