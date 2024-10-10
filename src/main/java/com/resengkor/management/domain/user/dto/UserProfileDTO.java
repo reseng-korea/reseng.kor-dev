@@ -12,15 +12,13 @@ import lombok.Setter;
 public class UserProfileDTO {
 
     private Long id;
-    private String name;
     private String address;
     private Double latitude;
     private Double longitude;
 
     @Builder
-    public UserProfileDTO(Long id, String name, String address, Double latitude, Double longitude) {
+    public UserProfileDTO(Long id,String address, Double latitude, Double longitude) {
         this.id = id;
-        this.name = name;
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;

@@ -20,9 +20,6 @@ public class UserProfile {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
-
-    @Column(nullable = false)
     private String address;
 
     @Column
@@ -50,8 +47,7 @@ public class UserProfile {
 
 
     @Builder
-    public UserProfile(String name, String address, Double latitude, Double longitude, Region region, User user) {
-        this.name = name;
+    public UserProfile(String address, Double latitude, Double longitude, Region region, User user) {
         this.address = address;
         this.latitude = latitude;
         this.longitude = longitude;
