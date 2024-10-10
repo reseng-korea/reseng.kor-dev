@@ -55,7 +55,6 @@ public class AdminServiceImpl implements UserService {
 
         // UserProfile 생성 및 연결 (latitude, longitude 없이)
         UserProfile userProfile = UserProfile.builder()
-                .name(request.getProfileName())
                 .address(request.getProfileAddress())
                 .region(savedRegion)
                 .user(admin)  // User와 연결
