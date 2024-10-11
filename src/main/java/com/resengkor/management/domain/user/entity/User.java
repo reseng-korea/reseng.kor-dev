@@ -1,10 +1,12 @@
 package com.resengkor.management.domain.user.entity;
 
+import com.resengkor.management.domain.qna.entity.Question;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Table(name = "users")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -23,7 +25,7 @@ public class User {
 
     //이메일 인증 여부
     @Column(name = "email_status", nullable = false)
-    private boolean emailStatus;
+    private int emailStatus;
 
     @Column(name = "password")
     private String password;
@@ -74,11 +76,14 @@ public class User {
     @OneToOne(mappedBy = "user")
     private UserProfile userProfile;  // 1:1 관계로 UserInfo 연결
 
+    @OneToMany(mappedBy = "user")
+    private List<Question> questions;
+
     @Version
     private Integer version;  // 비관적 잠금 처리
 
     @Builder
-    public User(String email, boolean emailStatus, String password, String companyName, String representativeName, String phoneNumber, Role role, LoginType loginType, int status, SocialProvider socialProvider, String socialId) {
+    public User(String email, int emailStatus, String password, String companyName, String representativeName, String phoneNumber, Role role, LoginType loginType, int status, SocialProvider socialProvider, String socialId) {
         this.email = email;
         this.emailStatus = emailStatus;
         this.password = password;

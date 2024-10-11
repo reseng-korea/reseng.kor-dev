@@ -44,6 +44,7 @@ public class UserMapper {
         }
         return User.builder()
                 .email(userDTO.getEmail())
+                .emailStatus(0)
                 .companyName(userDTO.getCompanyName())
                 .phoneNumber(userDTO.getPhoneNumber())
                 .role(userDTO.getRole())

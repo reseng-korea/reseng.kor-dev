@@ -43,7 +43,7 @@ public class UserServiceImpl implements UserService{
         // User 생성 (일반 사용자이므로 ROLE_GUEST 설정)
         User user = User.builder()
                 .email(request.getEmail())
-                .emailStatus(true) //이미 인증한 이후에 생성되는 것이니까
+                .emailStatus(1) //이미 인증한 이후에 생성되는 것이니까
                 .password(passwordEncoder.encode(request.getPassword()))// 비밀번호 암호화
                 .companyName(request.getCompanyName())
                 .representativeName(request.getRepresentativeName())
