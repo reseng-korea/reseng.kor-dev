@@ -1,4 +1,4 @@
-package com.resengkor.management.domain.user.dao;
+package com.resengkor.management.domain.user.repository;
 
 
 import com.resengkor.management.domain.user.entity.Role;
