@@ -22,8 +22,9 @@ public class User {
     private String email;
 
     //이메일 인증 여부
+    //1 : 인증, 0 : 인증x
     @Column(name = "email_status", nullable = false)
-    private boolean emailStatus;
+    private int emailStatus;
 
     @Column(name = "password")
     private String password;
@@ -78,7 +79,7 @@ public class User {
     private Integer version;  // 비관적 잠금 처리
 
     @Builder
-    public User(String email, boolean emailStatus, String password, String companyName, String representativeName, String phoneNumber, Role role, LoginType loginType, int status, SocialProvider socialProvider, String socialId) {
+    public User(String email, int emailStatus, String password, String companyName, String representativeName, String phoneNumber, Role role, LoginType loginType, int status, SocialProvider socialProvider, String socialId) {
         this.email = email;
         this.emailStatus = emailStatus;
         this.password = password;
