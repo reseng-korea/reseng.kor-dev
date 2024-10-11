@@ -1,6 +1,6 @@
-package com.resengkor.management.domain.user.api;
+package com.resengkor.management.domain.user.controller;
 
-import com.resengkor.management.domain.user.application.AdminServiceImpl;
+import com.resengkor.management.domain.user.service.AdminServiceImpl;
 import com.resengkor.management.domain.user.dto.ChangeRoleRequest;
 import com.resengkor.management.domain.user.dto.UserDTO;
 import com.resengkor.management.domain.user.dto.UserRegisterRequest;
@@ -17,16 +17,6 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 public class AdminController {
     private final AdminServiceImpl adminServiceImpl;
-
-
-    // 1. 회원가입 (등록하기)
-    @PostMapping("/register")
-    public ResponseEntity<String> registerAdmin(@RequestBody UserRegisterRequest userRegisterRequest) {
-        // 회원가입 처리 로직 호출
-        adminServiceImpl.registerUser(userRegisterRequest);
-
-        return ResponseEntity.ok("관리자 회원가입 성공");
-    }
 
 
     // 롤(Role) 등급 변경하기 (PUT 방식)

@@ -1,4 +1,4 @@
-package com.resengkor.management.domain.user.dao;
+package com.resengkor.management.domain.user.repository;
 
 
 
@@ -13,6 +13,11 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+    //같은 이메일이 있는지
+    Boolean existsByEmail(String email);
+
+    User findByEmail(String email);
+
     @Query("SELECT u FROM User u WHERE u.role = :role")
     Optional<User> findByRole(@Param("role") Role role);
 }
