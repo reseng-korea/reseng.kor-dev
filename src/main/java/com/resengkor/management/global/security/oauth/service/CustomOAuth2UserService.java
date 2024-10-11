@@ -74,7 +74,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .socialId(response.getSocialId())
                     .name(response.getName())
                     .email(response.getEmail())
-                    .emailStatus(1)
                     .role("ROLE_GUEST")
                     .build();
 
@@ -86,7 +85,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .socialId(response.getSocialId()) // 소셜 ID 업데이트
                     .representativeName(response.getName())
                     .email(response.getEmail()) // 이메일 업데이트
-                    .emailStatus(1) // 이메일 상태 업데이트
                     .build();
             userRepository.save(updatedUser); // 업데이트된 사용자 정보 저장
 
@@ -96,7 +94,6 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .socialId(response.getSocialId())
                     .name(response.getName())
                     .email(response.getEmail())
-                    .emailStatus(1)
                     .role(isExist.getRole().getRole())
                     .build();
             return new CustomOAuth2User(oAuth2UserDto);

@@ -9,16 +9,14 @@ public class OAuth2UserDto {
     private String socialId;
     private String name;//대표 이름
     private String email;
-    private int emailStatus;
     private String role;
 
     @Builder
-    public OAuth2UserDto(String socialProvider, String socialId, String name, String email, int emailStatus, String role) {
+    public OAuth2UserDto(String socialProvider, String socialId, String name, String email, String role) {
         this.socialProvider = socialProvider;
         this.socialId = socialId;
         this.name = name;
         this.email = email;
-        this.emailStatus = emailStatus;
         this.role = role;
     }
 }

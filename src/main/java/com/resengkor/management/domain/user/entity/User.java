@@ -22,7 +22,6 @@ public class User {
     private String email;
 
     //이메일 인증 여부
-    //1 : 인증, 0 : 인증x
     @Column(name = "email_status", nullable = false)
     private int emailStatus;
 
