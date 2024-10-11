@@ -1,10 +1,9 @@
-package com.resengkor.management.domain.user.api;
+package com.resengkor.management.domain.user.controller;
 
 
-import com.resengkor.management.domain.user.application.UserServiceImpl;
+import com.resengkor.management.domain.user.service.UserServiceImpl;
 import com.resengkor.management.domain.user.dto.ChangeRoleRequest;
 import com.resengkor.management.domain.user.dto.UserDTO;
-import com.resengkor.management.domain.user.dto.UserRegisterRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
@@ -18,12 +17,7 @@ import org.springframework.web.bind.annotation.*;
 public class UserController {
     private final UserServiceImpl userServiceImpl;
 
-    // 회원가입 (일반 사용자 등록하기)
-    @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody UserRegisterRequest userRegisterRequest) {
-        userServiceImpl.registerUser(userRegisterRequest);
-        return ResponseEntity.ok("일반 회원가입 성공");
-    }
+
 
     //Roll 등급 바꾸기(수정하기)
     //일단 이렇게 해놓음

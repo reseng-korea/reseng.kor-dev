@@ -21,10 +21,9 @@ public class User {
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
-    /*
-    - 이메일 가입 인증
-    - 이메일 가입 인증 여부
-     */
+    //이메일 인증 여부
+    @Column(name = "email_status", nullable = false)
+    private boolean emailStatus;
 
     @Column(name = "password")
     private String password;
@@ -33,7 +32,7 @@ public class User {
     private String companyName;
 
     @Column(name = "representative_name", unique = true)
-    private String representativeName;
+    private String representativeName; //실제 이름
 
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
@@ -54,6 +53,7 @@ public class User {
     private LoginType loginType;
 
     //회원 상태
+    //0: 비활성화, 1 : 활성화
     @Column(name = "member_status", nullable = false)
     protected int status;
 
@@ -78,8 +78,9 @@ public class User {
     private Integer version;  // 비관적 잠금 처리
 
     @Builder
-    public User (String email, String password, String companyName, String representativeName, String phoneNumber, Role role, LoginType loginType, int status, SocialProvider socialProvider, String socialId) {
+    public User(String email, boolean emailStatus, String password, String companyName, String representativeName, String phoneNumber, Role role, LoginType loginType, int status, SocialProvider socialProvider, String socialId) {
         this.email = email;
+        this.emailStatus = emailStatus;
         this.password = password;
         this.companyName = companyName;
         this.representativeName = representativeName;

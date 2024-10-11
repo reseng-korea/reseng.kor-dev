@@ -1,19 +1,18 @@
-package com.resengkor.management.domain.user.application;
+package com.resengkor.management.domain.user.service;
 
 
-
-import com.resengkor.management.domain.user.dao.RegionRepository;
-import com.resengkor.management.domain.user.dao.RoleHierarchyRepository;
-import com.resengkor.management.domain.user.dao.UserProfileRepository;
-import com.resengkor.management.domain.user.dao.UserRepository;
+import com.resengkor.management.domain.user.repository.RegionRepository;
+import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
+import com.resengkor.management.domain.user.repository.UserProfileRepository;
+import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.domain.user.dto.UserDTO;
 import com.resengkor.management.domain.user.dto.UserMapper;
 import com.resengkor.management.domain.user.dto.UserRegisterRequest;
 import com.resengkor.management.domain.user.entity.*;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -21,66 +20,29 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl implements UserService{
+public class AdminServiceImpl implements UserService {
+
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final RegionRepository regionRepository;
     private final RoleHierarchyRepository roleHierarchyRepository;
-//    private final BCryptPasswordEncoder passwordEncoder;
+//    private final BCryptPasswordEncoder passwordEncoder; //시큐리티
+
     private final UserMapper userMapper; // Mapper를 주입받음
 
+
     @Transactional
-    public void registerUser(UserRegisterRequest request) {
-        // 비밀번호 암호화
-//        String encodedPassword = passwordEncoder.encode(request.getPassword());
+    public UserDTO changeUserRole(Long adminId, Long lowerUserId, Role newRole) {
+        // 관리자 찾기 (관리자는 항상 ROLE_MANAGER)
+        User adminUser = userRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("관리자를 찾을 수 없습니다."));
 
-        // User 생성 (일반 사용자이므로 ROLE_GUEST 설정)
-        User user = User.builder()
-                .email(request.getEmail())
-//                .password(encodedPassword)// 비밀번호 암호화
-                .password(request.getPassword())
-                .companyName(request.getCompanyName())
-                .phoneNumber(request.getPhoneNumber())
-                .role(Role.ROLE_GUEST)  // 일반 사용자의 기본 역할 설정
-                .build();
-
-        // Region 생성
-        Region region = Region.builder()
-                .regionName(request.getRegionName())
-                .regionType(request.getRegionType())
-                .build();
-        Region savedRegion = regionRepository.save(region);
-
-        // UserProfile 생성 및 연결 (latitude, longitude 없이)
-        UserProfile userProfile = UserProfile.builder()
-                .address(request.getProfileAddress())
-                .region(savedRegion)
-                .user(user)  // User와 연결
-                .build();
-        userProfileRepository.save(userProfile);
-
-        // User 저장
-        User savedUser = userRepository.save(user);
-
-        // RoleHierarchy 생성 (상위 관계가 없는 일반 사용자는 자기 자신)
-        RoleHierarchy roleHierarchy = RoleHierarchy.builder()
-                .ancestor(savedUser)  // 상위 관계: 자신
-                .descendant(savedUser)  // 하위 관계: 자신
-                .role(savedUser.getRole())
-                .depth(0)  // 자기 자신과의 관계는 depth 0
-                .build();
-        roleHierarchyRepository.save(roleHierarchy);
-    }
-
-    @Override
-    @Transactional
-    public UserDTO changeUserRole(Long upperUserId, Long lowerUserId, Role newRole) {
-        User upperUser = userRepository.findById(upperUserId)
-                .orElseThrow(() -> new RuntimeException("상위 사용자를 찾을 수 없습니다."));
+        // 하위 사용자 찾기
         User lowerUser = userRepository.findById(lowerUserId)
                 .orElseThrow(() -> new RuntimeException("하위 사용자를 찾을 수 없습니다."));
 
-        if (newRole.getRank() == lowerUser.getRole().getRank()) {
+        // 새로운 역할이 기존 역할보다 같은지 확인
+        if (lowerUser.getRole().getRank() == newRole.getRank()) {
             throw new RuntimeException("새로운 역할이 기존 역할과 같습니다.");
         }
 
@@ -89,10 +51,7 @@ public class UserServiceImpl implements UserService{
         if (lowerUser.getRole() == Role.ROLE_GUEST) {
             // Guest일 경우 상위 경로 복제
             log.info("GUEST유저 ROLE 변경 성공");
-            roleHierarchyRepository.addNewPathsWithoutSelf(lowerUser.getId(), upperUser.getId(), newRole.getRole());
-        }
-        else if(!roleHierarchyRepository.existsByAncestorAndDescendant(upperUser, lowerUser)){
-            throw new RuntimeException("관리하지 않음");
+            roleHierarchyRepository.addNewPathsWithoutSelf(lowerUser.getId(), adminUser.getId(), newRole.getRole());
         }
         else{
             if (isHigherRole) {
@@ -139,6 +98,9 @@ public class UserServiceImpl implements UserService{
 
     private User findNewAncestorForRoleChange(User lowerUser, Role newRole) {
         List<User> ancestors = roleHierarchyRepository.findAncestorsByDescendant(lowerUser);
+        for(User ancestor : ancestors){
+            log.info("조상 id {}, 조상 등급 {}, 조상 랭크 {}",ancestor.getId(),ancestor.getRole(),ancestor.getRole().getRank());
+        }
         for (User ancestor : ancestors) {
             if (ancestor.getRole().getRank() > newRole.getRank()) {
                 return ancestor;
@@ -146,5 +108,4 @@ public class UserServiceImpl implements UserService{
         }
         throw new RuntimeException("적절한 조상을 찾을 수 없습니다.");
     }
-
 }
