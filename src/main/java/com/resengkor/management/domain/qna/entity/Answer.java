@@ -25,7 +25,7 @@ public class Answer {
     private Question question;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User admin;
 
     @CreatedDate //엔티티가 생성될 때 생성 시간 저장
