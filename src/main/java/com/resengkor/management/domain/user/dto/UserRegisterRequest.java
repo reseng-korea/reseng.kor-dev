@@ -7,11 +7,11 @@ public class UserRegisterRequest {
     private String email;
     private String password;
     private String companyName;
+    private String representativeName;
     private String phoneNumber;
 
-    private String profileName;
     private String profileAddress;
-
+    //광역자치구, 지역자치구 처리 어케 할지
     private String regionName;
     private String regionType;
 }
