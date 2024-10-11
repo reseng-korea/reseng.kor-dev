@@ -9,11 +9,16 @@ import lombok.*;
 @Builder(toBuilder = true)
 @AllArgsConstructor  // 모든 필드를 포함하는 생성자 생성
 public class SecretKey {
-    @Column(name = "secret_key", nullable = false)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "secretKey_id", updatable = false)
+    private Long id;
+
+    @Column(name = "secretKey_name", nullable = false)
     private String secretKey;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "admin_id", unique = true, nullable = false)
+    @JoinColumn(name = "user_id", unique = true, nullable = false)
     private User admin;
 }
 
