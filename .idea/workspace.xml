@@ -1,0 +1,603 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2fae3aa3-c36d-46f9-b87e-88ee5b6b591d" name="변경" comment="Feat:Secret key Entity 추가">
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/checksums.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/md5-checksums.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/checksums/sha1-checksums.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/dependencies-accessors/gc.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/executionHistory/executionHistory.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/executionHistory/executionHistory.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileChanges/last-build.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/fileHashes.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/fileHashes/resourceHashesCache.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/8.10.2/gc.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/cache.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/file-system.probe" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.gradle/vcs-1/gc.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.name" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/aws.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/compiler.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/gradle.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/jarRepositories.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/modules/management.main.iml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/uiDesigner.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/vcs.xml" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/HELP.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/ManagementApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/faq/entity/Faq$FaqBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/faq/entity/Faq.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/qna/entity/Answer$AnswerBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/qna/entity/Answer.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/qna/entity/Question$QuestionBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/qna/entity/Question.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/resources/entity/ResourceType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/resources/entity/Resources$ResourcesBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/resources/entity/Resources.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/controller/AdminController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/controller/RegisterController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/controller/UserController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/dto/ChangeRoleRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/dto/UserDTO$UserDTOBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/dto/UserDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/dto/UserMapper.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/dto/UserProfileDTO$UserProfileDTOBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/dto/UserProfileDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/dto/UserRegisterRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/dto/UserRegisterResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/LoginType.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/Region$RegionBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/Region.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/RegionHierarchy$RegionHierarchyBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/RegionHierarchy.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/Role.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/RoleHierarchy$RoleHierarchyBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/RoleHierarchy.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/SecretKey$SecretKeyBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/SecretKey.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/SocialProvider.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/User$UserBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/UserProfile$UserProfileBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/entity/UserProfile.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/repository/RegionRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/repository/RoleHierarchyRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/repository/UserProfileRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/repository/UserRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/service/AdminServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/service/UserService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/domain/user/service/UserServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/config/CorsMvcConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/config/SecurityConfig$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/config/SecurityConfig$2.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/config/SecurityConfig.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/controller/ReissueController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/dto/CustomUserDetails$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/dto/CustomUserDetails.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/dto/LoginDTO$LoginDTOBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/dto/LoginDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/entity/RefreshToken$RefreshTokenBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/entity/RefreshToken.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/filter/CustomLoginFilter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/filter/CustomLogoutFilter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/filter/JWTFilter.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/repository/RefreshRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/service/CustomUserDetailsService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/service/RefreshTokenService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/service/ReissueService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/jwt/util/JWTUtil.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/oauth/controller/OAuth2Controller.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/oauth/customhandler/CustomOAuth2SuccessHandler.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/oauth/dto/CustomOAuth2User$1.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/oauth/dto/CustomOAuth2User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/oauth/dto/GoogleResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/oauth/dto/KakaoResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/oauth/dto/OAuth2Response.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/oauth/dto/OAuth2UserDto$OAuth2UserDtoBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/oauth/dto/OAuth2UserDto.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/oauth/service/CustomOAuth2UserService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/security/oauth/service/OAuth2JwtHeaderService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/classes/java/main/com/resengkor/management/global/util/CookieUtil.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/resources/main/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/tmp/compileJava/previous-compilation-data.bin" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.jar" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradle/wrapper/gradle-wrapper.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/gradlew.bat" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/ManagementApplication.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/api/AdminController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/api/AuthController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/api/UserController.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/application/AdminServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/application/AuthService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/application/AuthServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/application/UserService.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/application/UserServiceImpl.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dao/RegionRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dao/RoleHierarchyRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dao/UserProfileRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dao/UserRepository.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dto/ChangeRoleRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dto/LoginRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dto/UserDTO$UserDTOBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dto/UserDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dto/UserMapper.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dto/UserProfileDTO$UserProfileDTOBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dto/UserProfileDTO.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dto/UserRegisterRequest.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/dto/UserRegisterResponse.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/entity/Region$RegionBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/entity/Region.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/entity/RegionHierarchy$RegionHierarchyBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/entity/RegionHierarchy.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/entity/Role.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/entity/RoleHierarchy$RoleHierarchyBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/entity/RoleHierarchy.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/entity/User$UserBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/entity/User.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/entity/UserProfile$UserProfileBuilder.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/classes/com/resengkor/management/domain/user/entity/UserProfile.class" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/out/production/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/settings.gradle" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/ManagementApplication.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/faq/entity/Faq.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/qna/entity/Answer.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/qna/entity/Question.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/resources/entity/ResourceType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/resources/entity/Resources.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/controller/AdminController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/controller/RegisterController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/controller/UserController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/dto/ChangeRoleRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/dto/UserDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/dto/UserMapper.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/dto/UserProfileDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/dto/UserRegisterRequest.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/dto/UserRegisterResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/entity/LoginType.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/entity/Region.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/entity/RegionHierarchy.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/entity/Role.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/entity/RoleHierarchy.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/entity/SecretKey.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/entity/SocialProvider.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/entity/User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/entity/UserProfile.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/repository/RegionRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/repository/RoleHierarchyRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/repository/UserProfileRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/repository/UserRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/service/AdminServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/service/UserService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/domain/user/service/UserServiceImpl.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/config/CorsMvcConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/config/SecurityConfig.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/controller/ReissueController.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/dto/CustomUserDetails.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/dto/LoginDTO.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/entity/RefreshToken.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/filter/CustomLoginFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/filter/CustomLogoutFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/filter/JWTFilter.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/repository/RefreshRepository.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/service/CustomUserDetailsService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/service/RefreshTokenService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/service/ReissueService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/jwt/util/JWTUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/oauth/controller/OAuth2Controller.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/oauth/customhandler/CustomOAuth2SuccessHandler.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/oauth/dto/CustomOAuth2User.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/oauth/dto/GoogleResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/oauth/dto/KakaoResponse.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/oauth/dto/OAuth2Response.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/oauth/dto/OAuth2UserDto.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/oauth/service/CustomOAuth2UserService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/security/oauth/service/OAuth2JwtHeaderService.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/resengkor/management/global/util/CookieUtil.java" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/resengkor/management/ManagementApplicationTests.java" beforeDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="ExternalProjectsData">
+    <projectState path="$PROJECT_DIR$">
+      <ProjectState />
+    </projectState>
+  </component>
+  <component name="ExternalProjectsManager">
+    <system id="GRADLE">
+      <state>
+        <projects_view>
+          <tree_state>
+            <expand>
+              <path>
+                <item name="" type="6a2764b6:ExternalProjectsStructure$RootNode" />
+                <item name="management" type="f1a62948:ProjectNode" />
+              </path>
+            </expand>
+            <select />
+          </tree_state>
+        </projects_view>
+      </state>
+    </system>
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Enum" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectColorInfo">{
+  &quot;associatedIndex&quot;: 7
+}</component>
+  <component name="ProjectId" id="2mucxWVXYSfNMyuBS8WC713oGU6" />
+  <component name="ProjectViewState">
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;Application.ManagementApplication.executor&quot;: &quot;Run&quot;,
+    &quot;Gradle.reseng.kor-dev [:com.resengkor.management.ManagementApplication.main()].executor&quot;: &quot;Run&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;SONARLINT_PRECOMMIT_ANALYSIS&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;develop&quot;,
+    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/leezi/Downloads/SpringJWT (1)/SpringJWT&quot;,
+    &quot;project.structure.last.edited&quot;: &quot;Modules&quot;,
+    &quot;project.structure.proportion&quot;: &quot;0.15&quot;,
+    &quot;project.structure.side.proportion&quot;: &quot;0.2&quot;,
+    &quot;settings.editor.selected.configurable&quot;: &quot;reference.settingsdialog.project.gradle&quot;
+  }
+}</component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\leezi\OneDrive\바탕 화면\새 폴더\reseng.kor-dev\src\main\java\com\resengkor\management\domain\user\dto" />
+      <recent name="C:\Users\leezi\OneDrive\바탕 화면\새 폴더\reseng.kor-dev\src\main\java\com\resengkor\management\domain\user\dao" />
+      <recent name="C:\Users\leezi\OneDrive\바탕 화면\새 폴더\reseng.kor-dev\src\main\java\com\resengkor\management\domain\user\application" />
+      <recent name="C:\Users\leezi\OneDrive\바탕 화면\새 폴더\reseng.kor-dev\src\main\java\com\resengkor\management\domain\user\api" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="애플리케이션 수준" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="디폴트 작업">
+      <changelist id="2fae3aa3-c36d-46f9-b87e-88ee5b6b591d" name="변경" comment="" />
+      <created>1727930149039</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1727930149039</updated>
+    </task>
+    <task id="LOCAL-00001" summary="Chore:&quot;Add H2&quot;&#10;1. build.gradle에 의존성 추가&#10;2. application.properties에 H2 설정 추가">
+      <option name="closed" value="true" />
+      <created>1727954048558</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1727954048558</updated>
+    </task>
+    <task id="LOCAL-00002" summary="Feat:&quot;Add User Entity&quot;&#10;1. User Entity 클래스 추가&#10;2. UserProfile Entity 클래스 추가&#10;3. Role Enum 클래스 추가&#10;4. RoleHierarchy 클래스 추가">
+      <option name="closed" value="true" />
+      <created>1727960096912</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1727960096912</updated>
+    </task>
+    <task id="LOCAL-00003" summary="Feat:&quot;Add Region Entity&quot;&#10;1. Region Entity 클래스 추가&#10;2. RegionHierarchy 클래스 추가">
+      <option name="closed" value="true" />
+      <created>1727960119430</created>
+      <option name="number" value="00003" />
+      <option name="presentableId" value="LOCAL-00003" />
+      <option name="project" value="LOCAL" />
+      <updated>1727960119430</updated>
+    </task>
+    <task id="LOCAL-00004" summary="Fix: Add @EnableJpaAuditing&#10;메인에 자동업데이트를 위한 어노테이션 추가">
+      <option name="closed" value="true" />
+      <created>1728095012487</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1728095012487</updated>
+    </task>
+    <task id="LOCAL-00005" summary="Fix: fix @Column &#10;1. Region entity 컬럼 이름 수정&#10;2. User entity 컬럼 이름 수정">
+      <option name="closed" value="true" />
+      <created>1728095140233</created>
+      <option name="number" value="00005" />
+      <option name="presentableId" value="LOCAL-00005" />
+      <option name="project" value="LOCAL" />
+      <updated>1728095140233</updated>
+    </task>
+    <task id="LOCAL-00006" summary="Fix: fix Role&#10;1. matchingCount 추가&#10;2. 순서 오류 변경">
+      <option name="closed" value="true" />
+      <created>1728095196053</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1728095196053</updated>
+    </task>
+    <task id="LOCAL-00007" summary="Fix: fix RoleHierarchy&#10;1. Role 추가">
+      <option name="closed" value="true" />
+      <created>1728095216394</created>
+      <option name="number" value="00007" />
+      <option name="presentableId" value="LOCAL-00007" />
+      <option name="project" value="LOCAL" />
+      <updated>1728095216394</updated>
+    </task>
+    <task id="LOCAL-00008" summary="Chore: fix application.properties, build.gradle&#10;1. application.properties 일단 h2랑 연결&#10;2. build.gradle에 security 일단 막음(postman 통신)">
+      <option name="closed" value="true" />
+      <created>1728233372585</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1728233372585</updated>
+    </task>
+    <task id="LOCAL-00009" summary="Refactor: entity fix&#10;1. entity 수정">
+      <option name="closed" value="true" />
+      <created>1728233563250</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1728233563250</updated>
+    </task>
+    <task id="LOCAL-00010" summary="feat: User controller 추가 &#10;1. User(총판, 대리점, 소비자,게스트) controller 추가&#10;2. Admin(관리자) controller 추가">
+      <option name="closed" value="true" />
+      <created>1728233728593</created>
+      <option name="number" value="00010" />
+      <option name="presentableId" value="LOCAL-00010" />
+      <option name="project" value="LOCAL" />
+      <updated>1728233728593</updated>
+    </task>
+    <task id="LOCAL-00011" summary="feat: User Service(roleChange) 추가 &#10;1. User(총판, 대리점, 소비자,게스트) Service 추가&#10;2. Admin(관리자) Service 추가">
+      <option name="closed" value="true" />
+      <created>1728233795486</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1728233795486</updated>
+    </task>
+    <task id="LOCAL-00012" summary="feat: User Repository(roleChange) 추가 &#10;1. UserRepository 추가 - 사용자 통합 관리&#10;2. UserProfileRepository 추가">
+      <option name="closed" value="true" />
+      <created>1728233852863</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1728233852863</updated>
+    </task>
+    <task id="LOCAL-00013" summary="feat: Region Repository 추가">
+      <option name="closed" value="true" />
+      <created>1728233928260</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1728233928260</updated>
+    </task>
+    <task id="LOCAL-00014" summary="feat: RegionHierarchyRepository 추가&#10;1. roleChange에 사용되는 로직 추가">
+      <option name="closed" value="true" />
+      <created>1728233961810</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1728233961810</updated>
+    </task>
+    <task id="LOCAL-00015" summary="feat: UserDTO 추가&#10;1. UserDTO 추가&#10;2. UserProfileDTO 추가&#10;3. UserMapper 추가">
+      <option name="closed" value="true" />
+      <created>1728234030671</created>
+      <option name="number" value="00015" />
+      <option name="presentableId" value="LOCAL-00015" />
+      <option name="project" value="LOCAL" />
+      <updated>1728234030671</updated>
+    </task>
+    <task id="LOCAL-00016" summary="feat: Request,Response DTO 추가&#10;1. ChangeRoleRequest 추가&#10;2. UserRegisterRequest 추가&#10;3. UserRegisterResponse 추가">
+      <option name="closed" value="true" />
+      <created>1728234098281</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1728234098281</updated>
+    </task>
+    <task id="LOCAL-00017" summary="Fix: User, UserProfile, UserProfileDTO수정&#10;1. User 추가&#10;2. UserProfile 추가&#10;3. UserProfileDTO 추가">
+      <option name="closed" value="true" />
+      <created>1728548644314</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1728548644314</updated>
+    </task>
+    <task id="LOCAL-00018" summary="Feat: LoginType, SocialProvider 추가&#10;1. LoginType과 SocialProvider 추가">
+      <option name="closed" value="true" />
+      <created>1728548701903</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1728548701903</updated>
+    </task>
+    <task id="LOCAL-00019" summary="Fix: UserProfile name 삭제&#10;1. UserProfile에서 name 삭제로 인한 Service단 수정">
+      <option name="closed" value="true" />
+      <created>1728548908890</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1728548908890</updated>
+    </task>
+    <task id="LOCAL-00020" summary="Fix: UserProfile name 삭제로 UserMapper 수정&#10;1. UserProfile에서 name 삭제로 인한 UserMapper 수정">
+      <option name="closed" value="true" />
+      <created>1728549119891</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1728549119891</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Fix:User 이메일 column 추가">
+      <option name="closed" value="true" />
+      <created>1728642306043</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1728642306043</updated>
+    </task>
+    <task id="LOCAL-00022" summary="Fix:Security 추가&#10;1. Security Config 추가&#10;2. build.gradle 수정&#10;3. application.properties 수정">
+      <option name="closed" value="true" />
+      <created>1728642443049</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1728642443049</updated>
+    </task>
+    <task id="LOCAL-00023" summary="Fix:CorsMvcConfig 추가">
+      <option name="closed" value="true" />
+      <created>1728642467338</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1728642467338</updated>
+    </task>
+    <task id="LOCAL-00024" summary="Fix:JWT&amp;cookie 구현&#10;1. CookieUtil 구현&#10;2. JWTFiler 구현&#10;3. JWTUtil 구현&#10;4. RefreshRepository 구현&#10;5. RefreshToken 구현&#10;6. RefreshTokenService 구현">
+      <option name="closed" value="true" />
+      <created>1728642573482</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1728642573482</updated>
+    </task>
+    <task id="LOCAL-00025" summary="Fix:회원가입 및 로그인 구현&#10;1. CustomLoginFilter 구현&#10;2. CustomLogoutFilter 구현&#10;3. LoginDTO 구현&#10;4. RegisterController 구현&#10;5. RegisterRequest 구현">
+      <option name="closed" value="true" />
+      <created>1728642717328</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1728642717328</updated>
+    </task>
+    <task id="LOCAL-00026" summary="Fix:OAuth 구현&#10;1. CustomOAuth2SuccessHandler 구현&#10;2. CustomOAuth2User 구현&#10;3. CustomOAuth2UserService 구현&#10;4. GoogleResponse/KakaoResponse 구현&#10;5. OAuth2Controller 구현&#10;6. OAuth2JwtHeaderService 구현&#10;7. OAuth2Response 구현&#10;8. OAuth2UserDto 구현">
+      <option name="closed" value="true" />
+      <created>1728642834338</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1728642834338</updated>
+    </task>
+    <task id="LOCAL-00027" summary="Fix:UserDetail 구현&#10;1. CustomUserDetails 구현&#10;2. CustomUserDetailsService 구현">
+      <option name="closed" value="true" />
+      <created>1728642873588</created>
+      <option name="number" value="00027" />
+      <option name="presentableId" value="LOCAL-00027" />
+      <option name="project" value="LOCAL" />
+      <updated>1728642873588</updated>
+    </task>
+    <task id="LOCAL-00028" summary="Fix:Refresh 토큰 재발행&#10;1. ReissueController 구현&#10;2. ReissueService 구현">
+      <option name="closed" value="true" />
+      <created>1728642902982</created>
+      <option name="number" value="00028" />
+      <option name="presentableId" value="LOCAL-00028" />
+      <option name="project" value="LOCAL" />
+      <updated>1728642902982</updated>
+    </task>
+    <task id="LOCAL-00029" summary="Fix : User 수정&#10;1. AdminController 회원가입 삭제&#10;2. AdminServiceImpl 회원가입 삭제&#10;3. UserController 회원가입 삭제 &#10;4. UserProfileRespository 수정&#10;5. UserRepository 수정&#10;6. UserService 수정&#10;7. UserServiceImpl 수정">
+      <option name="closed" value="true" />
+      <created>1728643247066</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1728643247066</updated>
+    </task>
+    <task id="LOCAL-00030" summary="Rename : package 이름 수정&#10;1. dao -&gt; repository">
+      <option name="closed" value="true" />
+      <created>1728643430091</created>
+      <option name="number" value="00030" />
+      <option name="presentableId" value="LOCAL-00030" />
+      <option name="project" value="LOCAL" />
+      <updated>1728643430091</updated>
+    </task>
+    <task id="LOCAL-00031" summary="Fix : emailStatus null 오류 수정">
+      <option name="closed" value="true" />
+      <created>1728644912476</created>
+      <option name="number" value="00031" />
+      <option name="presentableId" value="LOCAL-00031" />
+      <option name="project" value="LOCAL" />
+      <updated>1728644912476</updated>
+    </task>
+    <task id="LOCAL-00032" summary="Fix : User emailStatus 오류 수정">
+      <option name="closed" value="true" />
+      <created>1728645580865</created>
+      <option name="number" value="00032" />
+      <option name="presentableId" value="LOCAL-00032" />
+      <option name="project" value="LOCAL" />
+      <updated>1728645580865</updated>
+    </task>
+    <task id="LOCAL-00033" summary="Feat:Board 관련 entity 생성&#10;1. Answer entity 생성&#10;2. Faq entity 생성&#10;3. Question entity 생성&#10;4. Resources entity 생성&#10;5. ResourceType entity 생성">
+      <option name="closed" value="true" />
+      <created>1728648014889</created>
+      <option name="number" value="00033" />
+      <option name="presentableId" value="LOCAL-00033" />
+      <option name="project" value="LOCAL" />
+      <updated>1728648014889</updated>
+    </task>
+    <task id="LOCAL-00034" summary="Fix : User 수정&#10;1. question 추가">
+      <option name="closed" value="true" />
+      <created>1728648046575</created>
+      <option name="number" value="00034" />
+      <option name="presentableId" value="LOCAL-00034" />
+      <option name="project" value="LOCAL" />
+      <updated>1728648046575</updated>
+    </task>
+    <option name="localTasksCounter" value="35" />
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="feat: User controller 추가 &#10;1. User(총판, 대리점, 소비자,게스트) controller 추가&#10;2. Admin(관리자) controller 추가" />
+    <MESSAGE value="feat: User Service(roleChange) 추가 &#10;1. User(총판, 대리점, 소비자,게스트) Service 추가&#10;2. Admin(관리자) Service 추가" />
+    <MESSAGE value="feat: User Repository(roleChange) 추가 &#10;1. UserRepository 추가 - 사용자 통합 관리&#10;2. UserProfileRepository 추가" />
+    <MESSAGE value="feat: Region Repository 추가" />
+    <MESSAGE value="feat: RegionHierarchyRepository 추가&#10;1. roleChange에 사용되는 로직 추가" />
+    <MESSAGE value="feat: UserDTO 추가&#10;1. UserDTO 추가&#10;2. UserProfileDTO 추가&#10;3. UserMapper 추가" />
+    <MESSAGE value="feat: Request,Response DTO 추가&#10;1. ChangeRoleRequest 추가&#10;2. UserRegisterRequest 추가&#10;3. UserRegisterResponse 추가" />
+    <MESSAGE value="Fix: User, UserProfile, UserProfileDTO수정&#10;1. User 추가&#10;2. UserProfile 추가&#10;3. UserProfileDTO 추가" />
+    <MESSAGE value="Feat: LoginType, SocialProvider 추가&#10;1. LoginType과 SocialProvider 추가" />
+    <MESSAGE value="Fix: UserProfile name 삭제&#10;1. UserProfile에서 name 삭제로 인한 Service단 수정" />
+    <MESSAGE value="Fix: UserProfile name 삭제로 UserMapper 수정&#10;1. UserProfile에서 name 삭제로 인한 UserMapper 수정" />
+    <MESSAGE value="Fix:User 이메일 column 추가" />
+    <MESSAGE value="Fix:Security 추가&#10;1. Security Config 추가&#10;2. build.gradle 수정&#10;3. application.properties 수정" />
+    <MESSAGE value="Fix:CorsMvcConfig 추가" />
+    <MESSAGE value="Fix:JWT&amp;cookie 구현&#10;1. CookieUtil 구현&#10;2. JWTFiler 구현&#10;3. JWTUtil 구현&#10;4. RefreshRepository 구현&#10;5. RefreshToken 구현&#10;6. RefreshTokenService 구현" />
+    <MESSAGE value="Fix:회원가입 및 로그인 구현&#10;1. CustomLoginFilter 구현&#10;2. CustomLogoutFilter 구현&#10;3. LoginDTO 구현&#10;4. RegisterController 구현&#10;5. RegisterRequest 구현" />
+    <MESSAGE value="Fix:OAuth 구현&#10;1. CustomOAuth2SuccessHandler 구현&#10;2. CustomOAuth2User 구현&#10;3. CustomOAuth2UserService 구현&#10;4. GoogleResponse/KakaoResponse 구현&#10;5. OAuth2Controller 구현&#10;6. OAuth2JwtHeaderService 구현&#10;7. OAuth2Response 구현&#10;8. OAuth2UserDto 구현" />
+    <MESSAGE value="Fix:UserDetail 구현&#10;1. CustomUserDetails 구현&#10;2. CustomUserDetailsService 구현" />
+    <MESSAGE value="Fix:Refresh 토큰 재발행&#10;1. ReissueController 구현&#10;2. ReissueService 구현" />
+    <MESSAGE value="Fix : User 수정&#10;1. AdminController 회원가입 삭제&#10;2. AdminServiceImpl 회원가입 삭제&#10;3. UserController 회원가입 삭제 &#10;4. UserProfileRespository 수정&#10;5. UserRepository 수정&#10;6. UserService 수정&#10;7. UserServiceImpl 수정" />
+    <MESSAGE value="Rename : package 이름 수정&#10;1. dao -&gt; repository" />
+    <MESSAGE value="Fix : emailStatus null 오류 수정" />
+    <MESSAGE value="Fix : User emailStatus 오류 수정" />
+    <MESSAGE value="Feat:Board 관련 entity 생성&#10;1. Answer entity 생성&#10;2. Faq entity 생성&#10;3. Question entity 생성&#10;4. Resources entity 생성&#10;5. ResourceType entity 생성" />
+    <MESSAGE value="Fix : User 수정&#10;1. question 추가" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fix : User 수정&#10;1. question 추가" />
+  </component>
+</project>
