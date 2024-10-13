@@ -40,3 +40,44 @@
 .read-the-docs {
   color: #888;
 }
+
+
+
+/* 애니메이션 */
+/* 효과 : 서서히 나타나게 하는 효과 */
+/* 사용 페이지 : 메인 페이지 글자 서서히 나타나게 함 */
+.fade-in {
+  animation: fadeIn 2.5s ease-in-out; /* 애니메이션 적용 */
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0; /* 시작 시 투명도 0 */
+  }
+  to {
+    opacity: 1; /* 끝날 때 투명도 1 */
+  }
+}
+
+
+
+
+
+
+/* 애니메이션 */
+/* 효과 : 아래에서 위로 나타나는 효과 */
+/* 사용페이지 : 아직 없음 */
+@keyframes slideUp {
+  from {
+    transform: translateY(20px); /* 아래에서 시작 */
+    opacity: 0; /* 투명하게 시작 */
+  }
+  to {
+    transform: translateY(0); /* 제자리로 돌아옴 */
+    opacity: 1; /* 완전히 불투명 */
+  }
+}
+
+.slide-up {
+  animation: slideUp 0.5s ease-out; /* 애니메이션 적용 */
+}
