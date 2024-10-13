@@ -42,10 +42,9 @@
 }
 
 
-
 /* 애니메이션 */
 /* 효과 : 서서히 나타나게 하는 효과 */
-/* 사용 페이지 : 메인 페이지 글자 서서히 나타나게 함 */
+/* 사용 페이지 : 첫번째 메인 페이지 글자 서서히 나타나게 함 */
 .fade-in {
   animation: fadeIn 2.5s ease-in-out; /* 애니메이션 적용 */
 }
@@ -60,13 +59,13 @@
 }
 
 
-
-
-
-
 /* 애니메이션 */
 /* 효과 : 아래에서 위로 나타나는 효과 */
-/* 사용페이지 : 아직 없음 */
+/* 사용페이지 : 세번째 메인 페이지 */
+.slide-up {
+  animation: slideUp 0.5s ease-out; /* 애니메이션 적용 */
+}
+
 @keyframes slideUp {
   from {
     transform: translateY(20px); /* 아래에서 시작 */
@@ -78,6 +77,64 @@
   }
 }
 
-.slide-up {
-  animation: slideUp 0.5s ease-out; /* 애니메이션 적용 */
+
+.slide-in {
+  animation: slideIn 0.5s ease-in-out; /* 애니메이션 적용 */
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(20px); /* 시작 시 Y축으로 20px 아래 */
+    opacity: 0; /* 시작 시 투명도 0 */
+  }
+  to {
+    transform: translateY(0); /* 끝날 때 원래 위치 */
+    opacity: 1; /* 끝날 때 투명도 1 */
+  }
+}
+
+.zoom-in {
+  animation: zoomIn 0.5s ease-in-out; /* 애니메이션 적용 */
+}
+
+@keyframes zoomIn {
+  from {
+    transform: scale(0.8); /* 시작 시 80% 크기 */
+    opacity: 0; /* 시작 시 투명도 0 */
+  }
+  to {
+    transform: scale(1); /* 끝날 때 원래 크기 */
+    opacity: 1; /* 끝날 때 투명도 1 */
+  }
+}
+
+.bounce {
+  animation: bounce 0.6s; /* 애니메이션 적용 */
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0); /* 원래 위치 */
+  }
+  40% {
+    transform: translateY(-30px); /* 위로 30px 튕김 */
+  }
+  60% {
+    transform: translateY(-15px); /* 위로 15px 튕김 */
+  }
+}
+
+.move-right {
+  animation: moveRight 0.5s ease-out forwards; /* 애니메이션 적용 */
+}
+
+@keyframes moveRight {
+  from {
+    transform: translateX(-20px); /* 시작 위치: 왼쪽에서 20px 이동 */
+    opacity: 0; /* 투명도: 시작할 때 투명 */
+  }
+  to {
+    transform: translateX(0); /* 최종 위치: 원래 위치 */
+    opacity: 1; /* 최종 투명도: 완전히 불투명 */
+  }
 }
