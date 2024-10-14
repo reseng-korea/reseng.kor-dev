@@ -18,7 +18,7 @@ public class SecretKey {
     private String secretKey;
 
     @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id", unique = true, nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User admin;
 }
 
