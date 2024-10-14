@@ -75,6 +75,62 @@
   }
 }
 
+/* 애니메이션 */
+/* 효과 : 확대 -> 축소 */
+/* 사용페이지 : 네번째 메인페이지 배경 */
+@keyframes zoom-out {
+  from {
+    transform: scale(1.2); /* 처음 크기: 1.2배 */
+  }
+  to {
+    transform: scale(1); /* 축소된 크기: 1배 */
+  }
+}
+
+.image-zoom {
+  background-size: cover;
+  background-position: center;
+  transform: scale(1.2); /* 초기 크기: 1.2배 확대 */
+  transition: transform 1s ease; /* 1초 동안 크기 전환 */
+}
+
+.zoom-active {
+  transform: scale(1); /* 축소된 크기: 1배 */
+}
+
+/* 애니메이션 */
+/* 효과 : 왼쪽에서 오른쪽으로 */
+/* 사용페이지 : 네번째 메인 페이지 */
+.move-right {
+  animation: moveRight 1.5s ease-out forwards; /* 애니메이션 적용 */
+}
+
+@keyframes moveRight {
+  from {
+    transform: translateX(-20px); /* 시작 위치: 왼쪽에서 20px 이동 */
+    opacity: 0; /* 투명도: 시작할 때 투명 */
+  }
+  to {
+    transform: translateX(0); /* 최종 위치: 원래 위치 */
+    opacity: 1; /* 최종 투명도: 완전히 불투명 */
+  }
+}
+
+@keyframes slide-down {
+  from {
+    transform: translateY(-50px); /* 위에서 50px 떨어져 있음 */
+    opacity: 0; /* 투명도 */
+  }
+  to {
+    transform: translateY(0); /* 원래 위치로 이동 */
+    opacity: 1; /* 완전히 보임 */
+  }
+}
+
+.slide-down {
+  animation: slide-down 0.5s ease-out forwards; /* 애니메이션 설정 */
+}
+
 .slide-in {
   animation: slideIn 0.5s ease-in-out; /* 애니메이션 적용 */
 }
@@ -106,7 +162,7 @@
 }
 
 .bounce {
-  animation: bounce 0.6s; /* 애니메이션 적용 */
+  animation: bounce 0.6s;
 }
 
 @keyframes bounce {
@@ -125,17 +181,22 @@
   }
 }
 
-.move-right {
-  animation: moveRight 0.5s ease-out forwards; /* 애니메이션 적용 */
-}
-
-@keyframes moveRight {
+/* 이미지 확대 애니메이션 정의 */
+@keyframes zoom-in {
   from {
-    transform: translateX(-20px); /* 시작 위치: 왼쪽에서 20px 이동 */
-    opacity: 0; /* 투명도: 시작할 때 투명 */
+    transform: scale(1);
   }
   to {
-    transform: translateX(0); /* 최종 위치: 원래 위치 */
-    opacity: 1; /* 최종 투명도: 완전히 불투명 */
+    transform: scale(1.2);
   }
+}
+
+.image-zoom {
+  width: 100%;
+  height: 100%;
+  transition: transform 1s ease; /* 부드러운 확대 전환 */
+}
+
+.image-zoom.zoom-active {
+  animation: zoom-in 2s forwards; /* 확대 애니메이션 2초 동안 실행 */
 }
