@@ -22,6 +22,14 @@ const FindIdPage = () => {
     navigate('/password');
   };
 
+  const handleFindIdSuccess = () => {
+    navigate('/id_find_success');
+  };
+
+  const handleFindIdFailure = () => {
+    navigate('/id_find_failure');
+  };
+
   return (
     <div className=" flex flex-col items-center justify-center h-screen">
       <div className="w-full max-w-lg p-8 shadow-md rounded-lg">
@@ -74,6 +82,22 @@ const FindIdPage = () => {
           </span>
           <span onClick={handleLogin} className="cursor-pointer text-sm">
             로그인
+          </span>
+        </div>
+
+        {/* 임시 테스트 버튼 - 삭제 예정 */}
+        <div className="flex items-center justify-between px-3 ">
+          <span
+            onClick={handleFindIdSuccess}
+            className="cursor-pointer text-sm"
+          >
+            아이디 찾기 성공(테스트 용 버튼)
+          </span>
+          <span
+            onClick={handleFindIdFailure}
+            className="cursor-pointer text-sm"
+          >
+            아이디 찾기 실패(테스트 용 버튼)
           </span>
         </div>
       </div>

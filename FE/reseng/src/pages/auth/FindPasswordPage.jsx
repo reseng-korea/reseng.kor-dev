@@ -108,7 +108,7 @@ const FindPasswordPage = () => {
             onClick={handleChangePassword}
             className="cursor-pointer text-sm"
           >
-            임시 확인 새로운 비밀번호 확인 페이지(삭제할 버튼)
+            임시 확인 새로운 비밀번호 확인 페이지(테스트용 버튼)
           </span>
         </div>
       </div>
