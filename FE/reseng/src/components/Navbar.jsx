@@ -6,6 +6,7 @@ import {
 import { useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/logo.png';
+import { useNavigate } from 'react-router-dom';
 
 const navigation = [
   { name: '회사소개', href: '#', current: false },
@@ -23,6 +24,16 @@ export default function Example() {
 
   const handleMouseEnter = (menu) => setIsMenuOpen(menu);
   const handleMouseLeave = () => setIsMenuOpen(null);
+
+  const navigate = useNavigate();
+
+  const handleMain = () => {
+    navigate('/');
+  };
+
+  const handleLogin = () => {
+    navigate('/login'); // /login 페이지로 이동
+  };
 
   return (
     <Disclosure as="nav" className="bg-white fixed top-0 left-0 w-full z-50">
@@ -45,7 +56,12 @@ export default function Example() {
 
           <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
             <div className="flex flex-shrink-0 items-center">
-              <img alt="리앤생" src={logo} className="h-8 w-auto" />
+              <img
+                alt="리앤생"
+                src={logo}
+                className="h-8 w-auto"
+                onClick={handleMain}
+              />
             </div>
           </div>
 
@@ -156,7 +172,10 @@ export default function Example() {
               onMouseEnter={() => handleMouseEnter('login')}
               onMouseLeave={handleMouseLeave}
             >
-              <button className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent">
+              <button
+                onClick={handleLogin}
+                className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
+              >
                 <span className="sr-only">Open login menu</span>
                 <p>로그인</p>
               </button>
