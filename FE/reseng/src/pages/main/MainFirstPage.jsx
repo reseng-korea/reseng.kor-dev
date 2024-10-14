@@ -31,20 +31,22 @@ const MainFirstPage = () => {
 
   return (
     <div
-      className="flex justify-between items-center w-full h-full"
+      className="flex justify-between items-center w-full h-full overflow-hidden"
       ref={firstPageRef}
     >
       {showTexts.map((showText, index) => (
-        <div className="relative w-1/4 h-full" key={index}>
+        <div className="relative w-1/4 h-full image-over" key={index}>
           <img
             src={[main1_1, main1_2, main1_3, main1_4][index]}
             alt={`이미지 ${index + 1}`}
             className="w-full h-full object-cover"
           />
           <div
-            className={`absolute inset-0 flex justify-center items-center ${showText ? 'fade-in' : 'opacity-0'}`}
+            className={`absolute inset-0 flex justify-center items-center ${
+              showText ? 'fade-in2' : 'opacity-0'
+            }`}
           >
-            <span className="text-white sm:text-xs md:text-2xl lg:text-2xl font-bold">
+            <span className="text-white text-[12px] sm:text-xs md:text-2xl lg:text-2xl font-bold text-over">
               {
                 [
                   '국내산 폐 PET 병이',

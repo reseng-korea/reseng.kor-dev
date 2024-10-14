@@ -38,7 +38,7 @@ const LoginPage = () => {
     <div className="flex h-screen">
       {/* 왼쪽 : 이미지 */}
       <div
-        className="w-5/12 bg-cover bg-center relative"
+        className="w-5/12 bg-cover bg-center relative fade-in"
         style={{ backgroundImage: `url(${login})` }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
