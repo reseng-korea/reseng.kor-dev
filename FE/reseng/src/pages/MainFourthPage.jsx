@@ -84,23 +84,23 @@ const MainFourthPage = () => {
                 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
               </div>
 
-              <div className="w-full aspect-square bg-transparent border border-white hover:border-[#2EA642] flex justify-start items-end p-6 text-white font-bold text-xl sm:text-xs md:text-lg lg:text-3xl relative">
+              <div className="w-full aspect-square bg-transparent border border-white hover:border-[#2EA642] flex justify-start items-end p-6 text-white font-bold text-sm sm:text-lg md:text-xl lg:text-3xl relative">
                 환경 보호
-                <button className="absolute top-4 right-4 border border-white text-white text-lg py-2 px-4 bg-transparent hover:bg-[#2EA642] hover:text-white hover:border-none transition duration-300">
+                <button className="absolute top-4 right-4 border border-white text-white text-lg hidden md:block md:text-sm lg:text-lg py-2 px-4 bg-transparent hover:bg-[#2EA642] hover:text-white hover:border-none transition duration-300">
                   더보기
                 </button>
               </div>
 
-              <div className="w-full aspect-square bg-transparent border border-white hover:border-[#2EA642] flex justify-start items-end p-6 text-white font-bold text-xl sm:text-xs md:text-lg lg:text-3xl relative">
+              <div className="w-full aspect-square bg-transparent border border-white hover:border-[#2EA642] flex justify-start items-end p-6 text-white font-bold text-sm sm:text-lg md:text-xl lg:text-3xl relative">
                 생분해
-                <button className="absolute top-4 right-4 border border-white text-white text-lg py-2 px-4 bg-transparent hover:bg-[#2EA642] hover:text-white hover:border-none transition duration-300">
+                <button className="absolute top-4 right-4 border border-white text-white text-lg hidden md:block md:text-sm lg:text-lg py-2 px-4 bg-transparent hover:bg-[#2EA642] hover:text-white hover:border-none transition duration-300">
                   더보기
                 </button>
               </div>
 
-              <div className="w-full aspect-square bg-transparent border-b border-r border-white hover:border-[#2EA642] hover:border-2 flex justify-start items-end p-6 text-white font-bold text-xl sm:text-xs md:text-lg lg:text-3xl relative">
+              <div className="w-full aspect-square bg-transparent border-b border-r border-white hover:border-[#2EA642] hover:border-2 flex justify-start items-end p-6 text-white font-bold text-sm sm:text-lg md:text-xl lg:text-3xl relative">
                 지속 가능
-                <button className="absolute top-4 right-4 border border-white text-white text-lg py-2 px-4 bg-transparent hover:bg-[#2EA642] hover:text-white hover:border-none transition duration-300">
+                <button className="absolute top-4 right-4 border border-white text-white text-lg hidden md:block md:text-sm lg:text-lg py-2 px-4 bg-transparent hover:bg-[#2EA642] hover:text-white hover:border-none transition duration-300">
                   더보기
                 </button>
               </div>

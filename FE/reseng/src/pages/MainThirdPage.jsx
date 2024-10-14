@@ -21,12 +21,16 @@ const MainThirdPage = () => {
       thirdElement1Ref.current.getBoundingClientRect().top < window.innerHeight
     ) {
       setShowThirdElement1(true);
+    } else {
+      setShowThirdElement1(false);
     }
     if (
       thirdElement2Ref.current &&
       thirdElement2Ref.current.getBoundingClientRect().top < window.innerHeight
     ) {
       setShowThirdElement2(true);
+    } else {
+      setShowThirdElement2(false);
     }
     if (
       thirdElement3Ref.current &&

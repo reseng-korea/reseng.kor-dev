@@ -6,6 +6,7 @@ import MainFirstPage from './pages/MainFirstPage';
 import MainSecondPage from './pages/MainSecondPage';
 import MainThirdPage from './pages/MainThirdPage';
 import MainFourthPage from './pages/MainFourthPage';
+import Footer from './components/Footer';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <MainSecondPage />
         <MainThirdPage />
         <MainFourthPage />
+        <Footer />
       </div>
     </>
   );
