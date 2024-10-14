@@ -30,10 +30,10 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "company_name", unique = true)
+    @Column(name = "company_name")
     private String companyName;
 
-    @Column(name = "representative_name", unique = true)
+    @Column(name = "representative_name")
     private String representativeName; //실제 이름
 
     @Column(name = "phone_number", unique = true)
@@ -65,7 +65,7 @@ public class User {
     private SocialProvider socialProvider;
 
     //소셜 로그인 id
-    @Column(name = "member_social_id", unique = true)
+    @Column(name = "member_social_id")
     private String socialId;
 
     @CreatedDate //엔티티가 생성될 때 생성 시간 저장

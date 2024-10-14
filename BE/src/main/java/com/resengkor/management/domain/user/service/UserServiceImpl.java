@@ -15,8 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Service
@@ -29,6 +33,18 @@ public class UserServiceImpl implements UserService{
     private final RoleHierarchyRepository roleHierarchyRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserMapper userMapper; // Mapper를 주입받음
+
+    @Transactional(readOnly = true)
+    public Map<String, String> validateHandling(BindingResult bindingResult) {
+        Map<String, String> validatorResult = new HashMap<>();
+
+        for(FieldError error : bindingResult.getFieldErrors()) {
+            String validKeyName = String.format("valid_%s", error.getField());
+            validatorResult.put(validKeyName, error.getDefaultMessage());
+        }
+
+        return validatorResult;
+    }
 
     @Transactional
     public void registerUser(UserRegisterRequest request) {
