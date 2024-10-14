@@ -2,15 +2,21 @@ import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import './App.css';
-import Navbar from './components/Navbar';
 
-import MainFirstPage from './pages/MainFirstPage';
-import MainSecondPage from './pages/MainSecondPage';
-import MainThirdPage from './pages/MainThirdPage';
-import MainFourthPage from './pages/MainFourthPage';
+import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 
-import LoginPage from './pages/LoginPage';
+// main
+import MainFirstPage from './pages/main/MainFirstPage';
+import MainSecondPage from './pages/main/MainSecondPage';
+import MainThirdPage from './pages/main/MainThirdPage';
+import MainFourthPage from './pages/main/MainFourthPage';
+
+// auth
+import LoginPage from './pages/auth/LoginPage';
+import SignupPage from './pages/auth/SignupPage';
+import FindIdPage from './pages/auth/FindIdPage';
+import FindPasswordPage from './pages/auth/FindPasswordPage';
 
 function App() {
   return (
@@ -27,13 +33,19 @@ function App() {
                 <MainSecondPage />
                 <MainThirdPage />
                 <MainFourthPage />
+                <Footer />
               </>
             }
           />
-          {/* 로그인페이지 */}
+          {/* 로그인 페이지 */}
           <Route path="/login" element={<LoginPage />} />
+          {/* 회원가입 페이지 */}
+          <Route path="/signup" element={<SignupPage />} />
+          {/* 로그인 찾기 페이지 */}
+          <Route path="/id" element={<FindIdPage />} />
+          {/* 비밀번호 찾기 페이지 */}
+          <Route path="/password" element={<FindPasswordPage />} />
         </Routes>
-        <Footer />
       </div>
     </Router>
   );

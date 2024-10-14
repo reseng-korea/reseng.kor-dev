@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 
 // 이미지
-import main3_1 from '../assets/main3_1.png';
-import main3_2 from '../assets/main3_2.png';
-import main3_3 from '../assets/main3_3.png';
-import main333 from '../assets/main3_333.png';
+import main3_1 from './../../assets/main3_1.png';
+import main3_2 from './../../assets/main3_2.png';
+import main3_3 from './../../assets/main3_3.png';
+import main333 from './../../assets/main3_333.png';
 
 const MainThirdPage = () => {
   const thirdElement1Ref = useRef(null);

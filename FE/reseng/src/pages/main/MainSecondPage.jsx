@@ -1,9 +1,9 @@
 import React, { useRef, useState, useEffect } from 'react';
 
 // 이미지
-import reseng from '../assets/reandseng.png';
-import cycle from '../assets/cycle.png';
-import Layout from '../components/Layouts';
+import reseng from './../../assets/reandseng.png';
+import cycle from './../../assets/cycle.png';
+import Layout from '../../components/Layouts';
 
 const MainSecondPage = () => {
   const secondPageRef = useRef(null);

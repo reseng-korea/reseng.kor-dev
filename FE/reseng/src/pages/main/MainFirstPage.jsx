@@ -1,10 +1,10 @@
 import React, { useRef, useState, useEffect } from 'react';
 
 // 이미지
-import main1_1 from '../assets/main1_1.png';
-import main1_2 from '../assets/main1_2.png';
-import main1_3 from '../assets/main1_3.png';
-import main1_4 from '../assets/main1_4.png';
+import main1_1 from './../../assets/main1_1.png';
+import main1_2 from './../../assets/main1_2.png';
+import main1_3 from './../../assets/main1_3.png';
+import main1_4 from './../../assets/main1_4.png';
 
 const MainFirstPage = () => {
   const [showTexts, setShowTexts] = useState([false, false, false, false]);
