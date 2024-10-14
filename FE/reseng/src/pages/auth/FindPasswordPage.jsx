@@ -33,6 +33,10 @@ const FindPasswordPage = () => {
     navigate('/id');
   };
 
+  const handleChangePassword = () => {
+    navigate('/change_password');
+  };
+
   return (
     <div className=" flex flex-col items-center justify-center h-screen">
       <div className="w-full max-w-lg p-8 shadow-md rounded-lg">
@@ -95,6 +99,16 @@ const FindPasswordPage = () => {
           </span>
           <span onClick={handleLogin} className="cursor-pointer text-sm">
             로그인
+          </span>
+        </div>
+
+        {/* 임시 - 나중에 지울 부분 */}
+        <div className="flex items-center justify-between px-3 ">
+          <span
+            onClick={handleChangePassword}
+            className="cursor-pointer text-sm"
+          >
+            임시 확인 새로운 비밀번호 확인 페이지(삭제할 버튼)
           </span>
         </div>
       </div>

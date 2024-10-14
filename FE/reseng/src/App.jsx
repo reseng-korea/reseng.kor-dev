@@ -17,6 +17,7 @@ import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
 import FindIdPage from './pages/auth/FindIdPage';
 import FindPasswordPage from './pages/auth/FindPasswordPage';
+import ChangePasswordPage from './pages/auth/ChangePasswordPage';
 
 function App() {
   return (
@@ -45,6 +46,8 @@ function App() {
           <Route path="/id" element={<FindIdPage />} />
           {/* 비밀번호 찾기 페이지 */}
           <Route path="/password" element={<FindPasswordPage />} />
+          {/* 비밀번호 찾기 페이지 */}
+          <Route path="/change_password" element={<ChangePasswordPage />} />
         </Routes>
       </div>
     </Router>
