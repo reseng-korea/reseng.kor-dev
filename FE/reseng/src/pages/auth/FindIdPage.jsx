@@ -57,7 +57,7 @@ const FindIdPage = () => {
           </span>
         </div>
 
-        {/* 로그인 버튼 */}
+        {/* 아이디 찾기 버튼 */}
         <div className="flex flex-col items-center px-3 py-2">
           <button
             type="submit"
