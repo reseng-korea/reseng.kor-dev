@@ -73,3 +73,19 @@ button:focus-visible {
     background-color: #f9f9f9;
   }
 } */
+
+/* 스크롤바의 너비와 색상 지정 */
+::-webkit-scrollbar {
+  width: 5px; /* 스크롤바 너비 */
+}
+
+/* 스크롤바 트랙 (스크롤바의 배경) */
+::-webkit-scrollbar-track {
+  background: #f1f1f1; /* 트랙의 배경색 */
+}
+
+/* 스크롤바 핸들 (스크롤바 자체) */
+::-webkit-scrollbar-thumb {
+  background-color: #999999; /* 스크롤바 색상 */
+  border-radius: 10px; /* 둥근 스크롤 */
+}
