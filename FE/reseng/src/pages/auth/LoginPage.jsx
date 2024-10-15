@@ -17,11 +17,11 @@ const LoginPage = () => {
   const navigate = useNavigate();
 
   const handleFindPassword = () => {
-    navigate('/password');
+    navigate('/pwinquiry');
   };
 
   const handleFindId = () => {
-    navigate('/id');
+    navigate('/idinquiry');
   };
 
   const handleSignUp = () => {
@@ -35,7 +35,7 @@ const LoginPage = () => {
   };
 
   return (
-    <div className="flex h-screen">
+    <div className="flex min-h-screen">
       {/* 왼쪽 : 이미지 */}
       <div
         className="w-5/12 bg-cover bg-center relative move-right"

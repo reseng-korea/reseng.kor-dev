@@ -6,15 +6,15 @@ const FindIdFailurePage = () => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate('/login');
+    navigate('/signin');
   };
 
   const handleFindId = () => {
-    navigate('/id');
+    navigate('/idinquiry');
   };
 
   return (
-    <div className=" flex flex-col items-center justify-center h-screen">
+    <div className=" flex flex-col items-center justify-center min-h-screen pt-16">
       <div className="w-full max-w-3xl p-8 shadow-md rounded-lg flex flex-col items-center">
         <TbXboxXFilled className="text-[#F75252] text-7xl mb-8" />
         <h2 className="text-2xl font-bold">아이디 찾기 실패</h2>

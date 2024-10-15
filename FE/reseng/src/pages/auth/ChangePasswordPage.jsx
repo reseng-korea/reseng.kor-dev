@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 
 const ChangePasswordPage = () => {
   return (
-    <div className=" flex flex-col items-center justify-center h-screen">
+    <div className=" flex flex-col items-center justify-center min-h-screen pt-16">
       <div className="w-full max-w-2xl p-8 shadow-md rounded-lg">
         <h1 className="text-2xl font-bold mb-6">비밀번호 변경</h1>
         <p className="text-xs mb-2">
