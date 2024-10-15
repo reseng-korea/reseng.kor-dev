@@ -31,8 +31,20 @@ export default function Example() {
     navigate('/');
   };
 
+  //company
+  const handleCompany = () => {
+    navigate('/company');
+  };
+  const handleHistory = () => {
+    navigate('/history');
+  };
+  const handleLocation = () => {
+    navigate('/location');
+  };
+
+  //auth
   const handleLogin = () => {
-    navigate('/signin'); // /login 페이지로 이동
+    navigate('/signin');
   };
 
   return (
@@ -77,27 +89,30 @@ export default function Example() {
                 onMouseEnter={() => handleMouseEnter('about')}
                 onMouseLeave={handleMouseLeave}
               >
-                <button className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent">
-                  <span className="sr-only">Open about menu</span>
+                <button
+                  onClick={handleCompany}
+                  className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
+                >
+                  {/* <span className="sr-only">Open about menu</span> */}
                   <p>회사소개</p>
                 </button>
 
                 {isMenuOpen === 'about' && (
                   <div className="absolute left-1/2 transform -translate-x-1/2 z-20 mt-1 w-32 origin-top-center rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <a
-                      href="#"
+                      onClick={handleCompany}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
                     >
                       회사소개
                     </a>
                     <a
-                      href="#"
+                      onClick={handleHistory}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
                     >
                       연혁
                     </a>
                     <a
-                      href="#"
+                      onClick={handleLocation}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
                     >
                       오시는 길

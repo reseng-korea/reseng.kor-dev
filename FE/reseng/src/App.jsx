@@ -22,6 +22,11 @@ import FindIdFailurePage from './pages/auth/FindIdFailurePage';
 import FindPasswordPage from './pages/auth/FindPasswordPage';
 import ChangePasswordPage from './pages/auth/ChangePasswordPage';
 
+//company
+import Company from './pages/company/Company';
+import History from './pages/company/History';
+import Location from './pages/company/Location';
+
 function App() {
   return (
     <Router>
@@ -57,6 +62,12 @@ function App() {
           <Route path="/pwinquiry" element={<FindPasswordPage />} />
           {/* 새로운 비밀번호 변경 페이지 */}
           <Route path="/pwinquiry/new" element={<ChangePasswordPage />} />
+          {/* 회사 소개 페이지 */}
+          <Route path="/company" element={<Company />} />
+          {/* 연혁 페이지 */}
+          <Route path="/history" element={<History />} />
+          {/* 오시는 길 페이지 */}
+          <Route path="/location" element={<Location />} />
         </Routes>
       </div>
     </Router>
