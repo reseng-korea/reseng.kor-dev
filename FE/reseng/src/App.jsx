@@ -15,6 +15,7 @@ import MainFourthPage from './pages/main/MainFourthPage';
 // auth
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
+import AddSignupPage from './pages/auth/AddSignUpPage';
 import FindIdPage from './pages/auth/FindIdPage';
 import FindIdSuccessPage from './pages/auth/FindIdSuccessPage';
 import FindIdFailurePage from './pages/auth/FindIdFailurePage';
@@ -44,6 +45,8 @@ function App() {
           <Route path="/signin" element={<LoginPage />} />
           {/* 회원가입 페이지 */}
           <Route path="/signup" element={<SignupPage />} />
+          {/* 간편 로그인 추가 정보 입력 페이지 */}
+          <Route path="socialinfo" element={<AddSignupPage />} />
           {/* 로그인 찾기 페이지 */}
           <Route path="/idinquiry" element={<FindIdPage />} />
           {/* 로그인 찾기 페이지 - 성공 */}
