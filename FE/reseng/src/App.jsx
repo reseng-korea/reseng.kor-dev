@@ -1,35 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState, useEffect, useRef } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+
+import './App.css';
+
+import Navbar from './components/Navbar';
+import Footer from './components/Footer';
+
+// main
+import MainFirstPage from './pages/main/MainFirstPage';
+import MainSecondPage from './pages/main/MainSecondPage';
+import MainThirdPage from './pages/main/MainThirdPage';
+import MainFourthPage from './pages/main/MainFourthPage';
+
+// auth
+import LoginPage from './pages/auth/LoginPage';
+import SignupPage from './pages/auth/SignupPage';
+import FindIdPage from './pages/auth/FindIdPage';
+import FindIdSuccessPage from './pages/auth/FindIdSuccessPage';
+import FindIdFailurePage from './pages/auth/FindIdFailurePage';
+import FindPasswordPage from './pages/auth/FindPasswordPage';
+import ChangePasswordPage from './pages/auth/ChangePasswordPage';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <Router>
+      <Navbar />
+      <div className="h-screen">
+        <Routes>
+          {/* 메인페이지 */}
+          <Route
+            path="/"
+            element={
+              <>
+                <MainFirstPage />
+                <MainSecondPage />
+                <MainThirdPage />
+                <MainFourthPage />
+                <Footer />
+              </>
+            }
+          />
+          {/* 로그인 페이지 */}
+          <Route path="/login" element={<LoginPage />} />
+          {/* 회원가입 페이지 */}
+          <Route path="/signup" element={<SignupPage />} />
+          {/* 로그인 찾기 페이지 */}
+          <Route path="/id" element={<FindIdPage />} />
+          {/* 로그인 찾기 페이지 - 성공 */}
+          <Route path="/id_find_success" element={<FindIdSuccessPage />} />
+          {/* 로그인 찾기 페이지 - 실패*/}
+          <Route path="/id_find_failure" element={<FindIdFailurePage />} />
+          {/* 비밀번호 찾기 페이지 */}
+          <Route path="/password" element={<FindPasswordPage />} />
+          {/* 비밀번호 찾기 페이지 */}
+          <Route path="/change_password" element={<ChangePasswordPage />} />
+        </Routes>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </Router>
+  );
 }
 
-export default App
+export default App;
