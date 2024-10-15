@@ -26,19 +26,19 @@ const FindPasswordPage = () => {
   const navigate = useNavigate();
 
   const handleLogin = () => {
-    navigate('/login');
+    navigate('/signin');
   };
 
   const handleFindId = () => {
-    navigate('/id');
+    navigate('/idinquiry');
   };
 
   const handleChangePassword = () => {
-    navigate('/change_password');
+    navigate('/pwinquiry/new');
   };
 
   return (
-    <div className=" flex flex-col items-center justify-center h-screen">
+    <div className="flex flex-col min-h-screen items-center justify-center pt-16">
       <div className="w-full max-w-lg p-8 shadow-md rounded-lg">
         <h1 className="text-2xl font-bold mb-6">비밀번호 찾기</h1>
         <hr className="w-full border-t-2 border-[#2EA642] mb-6" />

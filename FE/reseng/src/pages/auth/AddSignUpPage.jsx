@@ -6,7 +6,7 @@ import { regions } from './../data/regions';
 import Layout from '../../components/Layouts';
 import AddressSearch from '../auth/AddressSearch';
 
-const SignupPage = () => {
+const AddSignupPage = () => {
   const [selectedMetropolitan, setSelectedMetropolitan] = useState('');
   const [selectedDistrict, setSelectedDistrict] = useState('');
 
@@ -15,19 +15,14 @@ const SignupPage = () => {
     setSelectedDistrict('');
   };
 
-  const navigate = useNavigate();
-
-  const handleSocialInfo = () => {
-    navigate('/socialinfo');
-  };
-
   return (
     <Layout>
       <div className="flex flex-col items-center justify-start pt-16">
         <div className="w-full max-w-2xl p-8 shadow-md rounded-lg">
-          <h1 className="text-2xl font-bold mb-6">회원가입</h1>
-          <span onClick={handleSocialInfo}>
-            소셜 추가 정보 입력 페이지(테스트용)
+          <h1 className="text-2xl font-bold mb-6">회원 정보 추가 입력</h1>
+          <span className="text-xs sm:text-sm">
+            원활한 사용을 위해 추가 정보가 필요합니다. 필수 항목을 입력해
+            주세요. 감사합니다 :)
           </span>
           <hr className="w-full border-t-2 border-[#2EA642] mb-6" />
 
@@ -47,32 +42,6 @@ const SignupPage = () => {
                 중복 확인
               </button>
             </div>
-          </div>
-
-          {/* 비밀번호 */}
-          <div className="flex flex-col items-center px-3 py-2">
-            <label className="text-lg mb-1 self-start">비밀번호</label>
-            <span className="self-start text-xs text-gray-500 mb-2">
-              영문, 숫자를 포함한 8자 이상의 비밀번호를 입력해주세요.
-            </span>
-            <input
-              type="password"
-              className={`w-full border rounded-lg p-2 mb-1`}
-              placeholder="비밀번호를 입력해주세요"
-            />
-          </div>
-
-          {/* 비밀번호 확인 */}
-          <div className="flex flex-col items-center px-3 py-2">
-            <label className="text-lg mb-2 self-start">비밀번호 확인</label>
-            <input
-              type="password"
-              className={`w-full border rounded-lg p-2 mb-1`}
-              placeholder="비밀번호를 한 번 더 입력해주세요"
-            />
-            <span className="self-start text-xs text-[#F75252]">
-              비밀번호가 일치하지 않습니다.
-            </span>
           </div>
 
           {/* 업체명 */}
@@ -171,4 +140,4 @@ const SignupPage = () => {
     </Layout>
   );
 };
-export default SignupPage;
+export default AddSignupPage;

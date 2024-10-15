@@ -15,6 +15,7 @@ import MainFourthPage from './pages/main/MainFourthPage';
 // auth
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
+import AddSignupPage from './pages/auth/AddSignUpPage';
 import FindIdPage from './pages/auth/FindIdPage';
 import FindIdSuccessPage from './pages/auth/FindIdSuccessPage';
 import FindIdFailurePage from './pages/auth/FindIdFailurePage';
@@ -41,19 +42,21 @@ function App() {
             }
           />
           {/* 로그인 페이지 */}
-          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signin" element={<LoginPage />} />
           {/* 회원가입 페이지 */}
           <Route path="/signup" element={<SignupPage />} />
+          {/* 간편 로그인 추가 정보 입력 페이지 */}
+          <Route path="socialinfo" element={<AddSignupPage />} />
           {/* 로그인 찾기 페이지 */}
-          <Route path="/id" element={<FindIdPage />} />
+          <Route path="/idinquiry" element={<FindIdPage />} />
           {/* 로그인 찾기 페이지 - 성공 */}
-          <Route path="/id_find_success" element={<FindIdSuccessPage />} />
+          <Route path="/idinquiry/success" element={<FindIdSuccessPage />} />
           {/* 로그인 찾기 페이지 - 실패*/}
-          <Route path="/id_find_failure" element={<FindIdFailurePage />} />
+          <Route path="/idinquiry/failure" element={<FindIdFailurePage />} />
           {/* 비밀번호 찾기 페이지 */}
-          <Route path="/password" element={<FindPasswordPage />} />
-          {/* 비밀번호 찾기 페이지 */}
-          <Route path="/change_password" element={<ChangePasswordPage />} />
+          <Route path="/pwinquiry" element={<FindPasswordPage />} />
+          {/* 새로운 비밀번호 변경 페이지 */}
+          <Route path="/pwinquiry/new" element={<ChangePasswordPage />} />
         </Routes>
       </div>
     </Router>
