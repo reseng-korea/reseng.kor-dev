@@ -22,7 +22,7 @@ const Location = () => {
     <Layout>
       <div className="flex justify-center px-3 py-2">
         <div className="w-full flex flex-col mb-1 space-x-2">
-          <div className="text-3xl font-bold mb-6">회사 소개</div>
+          <div className="text-3xl font-bold mt-16 mb-6">회사 소개</div>
           <div className="flex justify-center space-x-4">
             <button
               onClick={handleCompany}
@@ -48,7 +48,7 @@ const Location = () => {
           {/* A 구역: 리스트 */}
           <div
             className="flex gap-x-6"
-            style={{ height: 'calc(100vh - 150px)' }}
+            style={{ height: 'calc(100vh - 230px)' }}
           >
             <div
               className="w-1/3 bg-transition border border-[#999999] p-4 rounded-2xl"

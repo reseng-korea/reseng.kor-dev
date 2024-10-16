@@ -13,10 +13,25 @@ const KakaoMap = () => {
         window.kakao.maps.load(() => {
           const container = document.getElementById('map');
           const options = {
-            center: new window.kakao.maps.LatLng(33.450701, 126.570667),
+            center: new window.kakao.maps.LatLng(
+              35.8703223603616,
+              128.584274193938
+            ),
             level: 3,
           };
           const map = new window.kakao.maps.Map(container, options);
+
+          // 마커 추가 코드
+          const markerPosition = new window.kakao.maps.LatLng(
+            35.8703223603616,
+            128.584274193938
+          );
+
+          const marker = new window.kakao.maps.Marker({
+            position: markerPosition,
+          });
+
+          marker.setMap(map); // 마커를 지도에 추가
           setIsMapLoaded(true); // 지도 로딩 완료 후 상태 업데이트
         });
       };
@@ -25,10 +40,28 @@ const KakaoMap = () => {
       // API가 이미 로드된 경우
       const container = document.getElementById('map');
       const options = {
-        center: new window.kakao.maps.LatLng(33.450701, 126.570667),
+        center: new window.kakao.maps.LatLng(
+          35.8703223603616,
+          128.584274193938
+        ),
         level: 3,
       };
-      new window.kakao.maps.Map(container, options);
+
+      const map = new window.kakao.maps.Map(container, options);
+
+      // 마커 추가 코드
+      const markerPosition = new window.kakao.maps.LatLng(
+        35.8703223603616,
+        128.584274193938
+      );
+
+      const marker = new window.kakao.maps.Marker({
+        position: markerPosition,
+      });
+
+      marker.setMap(map); // 마커를 지도에 추가
+
+      // new window.kakao.maps.Map(container, options);
       setIsMapLoaded(true); // 이미 로드된 경우에도 상태 업데이트
     }
 
