@@ -6,13 +6,15 @@ import {
 import { useState } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/logo.png';
-import { useNavigate } from 'react-router-dom';
+
+import { useNavigateTo } from '../hooks/useNavigateTo';
 
 const navigation = [
-  { name: '회사소개', href: '#', current: false },
-  { name: '고객센터', href: '#', current: false },
-  { name: '자료실', href: '#', current: false },
-  { name: '로그인', href: '#', current: false },
+  { name: '회사소개', current: false },
+  { name: '고객센터', current: false },
+  { name: '자료실', current: false },
+  { name: '로그인', current: false },
+  { name: '임시', current: false },
 ];
 
 function classNames(...classes) {
@@ -20,20 +22,13 @@ function classNames(...classes) {
 }
 
 export default function Example() {
+  // 페이지 이동
+  const { navigateTo, routes } = useNavigateTo();
+
   const [isMenuOpen, setIsMenuOpen] = useState(null);
 
   const handleMouseEnter = (menu) => setIsMenuOpen(menu);
   const handleMouseLeave = () => setIsMenuOpen(null);
-
-  const navigate = useNavigate();
-
-  const handleMain = () => {
-    navigate('/');
-  };
-
-  const handleLogin = () => {
-    navigate('/signin'); // /login 페이지로 이동
-  };
 
   return (
     <header>
@@ -64,7 +59,7 @@ export default function Example() {
                   alt="리앤생"
                   src={logo}
                   className="h-8 w-auto"
-                  onClick={handleMain}
+                  onClick={() => navigateTo(routes.home)}
                 />
               </div>
             </div>
@@ -77,27 +72,30 @@ export default function Example() {
                 onMouseEnter={() => handleMouseEnter('about')}
                 onMouseLeave={handleMouseLeave}
               >
-                <button className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent">
-                  <span className="sr-only">Open about menu</span>
+                <button
+                  onClick={() => navigateTo(routes.company)}
+                  className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
+                >
+                  {/* <span className="sr-only">Open about menu</span> */}
                   <p>회사소개</p>
                 </button>
 
                 {isMenuOpen === 'about' && (
                   <div className="absolute left-1/2 transform -translate-x-1/2 z-20 mt-1 w-32 origin-top-center rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <a
-                      href="#"
+                      onClick={() => navigateTo(routes.company)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
                     >
                       회사소개
                     </a>
                     <a
-                      href="#"
+                      onClick={() => navigateTo(routes.history)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
                     >
                       연혁
                     </a>
                     <a
-                      href="#"
+                      onClick={() => navigateTo(routes.location)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
                     >
                       오시는 길
@@ -112,7 +110,10 @@ export default function Example() {
                 onMouseEnter={() => handleMouseEnter('support')}
                 onMouseLeave={handleMouseLeave}
               >
-                <button className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent">
+                <button
+                  onClick={() => navigateTo(routes.faq)}
+                  className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
+                >
                   <span className="sr-only">Open support menu</span>
                   <p>고객센터</p>
                 </button>
@@ -120,13 +121,13 @@ export default function Example() {
                 {isMenuOpen === 'support' && (
                   <div className="absolute left-1/2 transform -translate-x-1/2 z-20 mt-1 w-40 origin-top-center rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <a
-                      href="#"
+                      onClick={() => navigateTo(routes.faq)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
                     >
                       자주 묻는 질문
                     </a>
                     <a
-                      href="#"
+                      onClick={() => navigateTo(routes.qna)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
                     >
                       1:1 문의
@@ -141,7 +142,10 @@ export default function Example() {
                 onMouseEnter={() => handleMouseEnter('resources')}
                 onMouseLeave={handleMouseLeave}
               >
-                <button className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent">
+                <button
+                  onClick={() => navigateTo(routes.certificate)}
+                  className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
+                >
                   <span className="sr-only">Open resources menu</span>
                   <p>자료실</p>
                 </button>
@@ -149,19 +153,19 @@ export default function Example() {
                 {isMenuOpen === 'resources' && (
                   <div className="absolute left-1/2 transform -translate-x-1/2 z-20 mt-1 w-32 origin-top-center rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
                     <a
-                      href="#"
+                      onClick={() => navigateTo(routes.certificate)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
                     >
                       인증서
                     </a>
                     <a
-                      href="#"
+                      onClick={() => navigateTo(routes.coa)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
                     >
                       성적서
                     </a>
                     <a
-                      href="#"
+                      onClick={() => navigateTo(routes.press)}
                       className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
                     >
                       보도자료
@@ -177,11 +181,25 @@ export default function Example() {
                 onMouseLeave={handleMouseLeave}
               >
                 <button
-                  onClick={handleLogin}
+                  onClick={() => navigateTo(routes.signin)}
                   className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
                 >
                   <span className="sr-only">Open login menu</span>
                   <p>로그인</p>
+                </button>
+              </div>
+
+              {/* 임시페이지(삭제 예정) */}
+              <div
+                className="relative ml-3"
+                onMouseEnter={() => handleMouseEnter('login')}
+                onMouseLeave={handleMouseLeave}
+              >
+                <button
+                  onClick={() => navigateTo(routes.tmp)}
+                  className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
+                >
+                  <p>임시</p>
                 </button>
               </div>
             </div>
@@ -195,7 +213,6 @@ export default function Example() {
               <DisclosureButton
                 key={item.name}
                 as="a"
-                href={item.href}
                 aria-current={item.current ? 'page' : undefined}
                 className={classNames(
                   item.current

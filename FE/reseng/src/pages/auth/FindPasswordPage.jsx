@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+
+import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const FindPasswordPage = () => {
+  // 페이지 이동
+  const { navigateTo, routes } = useNavigateTo();
+
   const [phone, setPhone] = useState('');
   const [email, setEmail] = useState('');
   const [isValid, setIsValid] = useState(true);
@@ -20,21 +24,6 @@ const FindPasswordPage = () => {
     // 숫자만 입력 가능하도록 필터링
     const filteredValue = value.replace(/[^0-9]/g, '');
     setPhone(filteredValue);
-  };
-
-  // 페이지 이동
-  const navigate = useNavigate();
-
-  const handleLogin = () => {
-    navigate('/signin');
-  };
-
-  const handleFindId = () => {
-    navigate('/idinquiry');
-  };
-
-  const handleChangePassword = () => {
-    navigate('/pwinquiry/new');
   };
 
   return (
@@ -94,10 +83,16 @@ const FindPasswordPage = () => {
 
         {/* 아이디 찾기, 로그인 버튼 */}
         <div className="flex items-center justify-between px-3 ">
-          <span onClick={handleFindId} className="cursor-pointer text-sm">
+          <span
+            onClick={() => navigateTo(routes.idinquiry)}
+            className="cursor-pointer text-sm"
+          >
             아이디 찾기
           </span>
-          <span onClick={handleLogin} className="cursor-pointer text-sm">
+          <span
+            onClick={() => navigateTo(routes.signin)}
+            className="cursor-pointer text-sm"
+          >
             로그인
           </span>
         </div>
@@ -105,7 +100,7 @@ const FindPasswordPage = () => {
         {/* 임시 - 나중에 지울 부분 */}
         <div className="flex items-center justify-between px-3 ">
           <span
-            onClick={handleChangePassword}
+            onClick={() => navigateTo(routes.pwinquiryNew)}
             className="cursor-pointer text-sm"
           >
             임시 확인 새로운 비밀번호 확인 페이지(테스트용 버튼)
