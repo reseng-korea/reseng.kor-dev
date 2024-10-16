@@ -37,7 +37,7 @@ const Qr = () => {
               <span className="text-[#2EA642] font-bold">QR 발생기</span>
             </button>
             <button
-              onClick={() => navigateTo(routes.mypageUserEdit)}
+              onClick={() => navigateTo(routes.mypageUser)}
               className="w-30 h-10 bg-transition flex items-center justify-center hover:text-lg border-none outline-none focus:outline-none"
             >
               <span className="text-black">회원 정보 수정</span>

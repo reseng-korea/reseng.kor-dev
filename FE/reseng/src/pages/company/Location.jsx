@@ -1,6 +1,7 @@
 import Layout from '../../components/Layouts';
 import { useNavigate } from 'react-router-dom';
 import { tmplocationdata } from '../data/tmplocationdata';
+import KakaoMap from '../../components/Map/KakaoMap';
 
 const Location = () => {
   const navigate = useNavigate();
@@ -19,7 +20,7 @@ const Location = () => {
 
   return (
     <Layout>
-      <div className="flex justify-center px-3 py-2 min-h-screen mt-16">
+      <div className="flex justify-center px-3 py-2">
         <div className="w-full flex flex-col mb-1 space-x-2">
           <div className="text-3xl font-bold mb-6">회사 소개</div>
           <div className="flex justify-center space-x-4">
@@ -45,16 +46,20 @@ const Location = () => {
           <hr className="w-full border-t border-[#99999] mb-6" />
 
           {/* A 구역: 리스트 */}
-          <div className="flex min-h-screen gap-x-6">
+          <div
+            className="flex gap-x-6"
+            style={{ height: 'calc(100vh - 150px)' }}
+          >
             <div
               className="w-1/3 bg-transition border border-[#999999] p-4 rounded-2xl"
-              style={{ maxHeight: '73vh' }}
+              style={{ height: '100%' }} // A 구역 내 요소가 전체 높이의 100%를 차지하도록 설정
             >
-              <div className="h-full">
-                <h1 className="text-2xl font-bold mt-2 mb-4">업체 목록</h1>
+              <div className="h-full flex flex-col">
+                <h1 className="text-sm sm:text-lg lg:text-2xl font-bold mt-2 mb-4">
+                  업체 목록
+                </h1>
                 <div
-                  className="h-full overflow-y-auto px-2"
-                  style={{ maxHeight: '60vh' }}
+                  className="flex-grow overflow-y-auto px-2" // flex-grow로 남은 공간을 차지하게 하고, 스크롤을 처리
                 >
                   {tmplocationdata.map((item, index) => (
                     <div
@@ -91,10 +96,8 @@ const Location = () => {
             </div>
 
             {/* B 구역: 지도 */}
-            <div className="w-2/3 bg-green-100 p-4">
-              <h1 className="text-2xl font-bold">오시는 길</h1>
-              {/* 여기에는 실제 지도 또는 관련 콘텐츠를 넣으면 됩니다 */}
-              <p>이곳에 지도가 들어갑니다.</p>
+            <div className="w-2/3">
+              <KakaoMap />
             </div>
           </div>
         </div>

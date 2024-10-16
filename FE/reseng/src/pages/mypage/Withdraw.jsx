@@ -14,10 +14,10 @@ const Withdraw = () => {
           alt="탈퇴 아이콘"
           className="w-16 h-16 mb-12"
         ></img>
-        <span className="text-2xl font-bold mb-6">
+        <span className="text-xl lg:text-2xl font-bold mb-6">
           회원 탈퇴가 완료되었습니다.
         </span>
-        <span className="text-lg mb-16">
+        <span className="text-sm lg:text-lg mb-16">
           그동안 Re&生을 이용해 주셔서 감사합니다.
           <br />
           항상 끊임없이 성장하고 발전하는 Re&生이 되겠습니다.

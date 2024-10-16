@@ -21,7 +21,7 @@ const History = () => {
     <Layout>
       <div className="flex justify-center px-3 py-2 min-h-screen mt-16">
         <div className="w-full flex flex-col mb-1 space-x-2">
-          {/* 회사 소개, 연혁, 오시는 길 버튼 */}
+          {/* 하위 카테고리 */}
           <div className="text-3xl font-bold mb-6">회사 소개</div>
           <div className="flex justify-center space-x-4">
             <button
@@ -43,11 +43,9 @@ const History = () => {
               <span className="text-black">오시는 길</span>
             </button>
           </div>
-
-          {/* 상단 경계선 */}
           <hr className="w-full border-t border-[#999999] mb-12" />
 
-          {/* 슬로건 */}
+          {/* 메인 */}
           <span className="text-[#2EA642] text-lg sm:text-lg md:text-xl lg:text-3xl font-bold fade-in mb-12">
             지속 가능한 세상을 위한 작은 발걸음,
             <br />
