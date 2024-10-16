@@ -1,32 +1,20 @@
 import React, { useState } from 'react';
 
-import { useNavigate } from 'react-router-dom';
-
 import login from './../../assets/login.png';
 import kakao from './../../assets/kakao_logo.png';
 import google from './../../assets/google_logo.png';
 
+import { useNavigateTo } from '../../hooks/useNavigateTo';
+
 import { IoIosMail, IoIosLock } from 'react-icons/io';
 
 const LoginPage = () => {
+  // 페이지 이동
+  const { navigateTo, routes } = useNavigateTo();
+
   // 사용자 입력 상태 관리
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-
-  // 페이지 이동
-  const navigate = useNavigate();
-
-  const handleFindPassword = () => {
-    navigate('/pwinquiry');
-  };
-
-  const handleFindId = () => {
-    navigate('/idinquiry');
-  };
-
-  const handleSignUp = () => {
-    navigate('/signup');
-  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -98,7 +86,7 @@ const LoginPage = () => {
             {/* 비번, 아이디 찾기, 회원가입 */}
             <div className="mb-4 flex items-center justify-between px-3 py-2">
               <span
-                onClick={handleFindPassword}
+                onClick={() => navigateTo(routes.pwinquiry)}
                 className="text-[8px] sm:text-xs md:text-sm lg:text-sm cursor-pointer"
               >
                 비밀번호 찾기
@@ -107,7 +95,7 @@ const LoginPage = () => {
                 |
               </span>
               <span
-                onClick={handleFindId}
+                onClick={() => navigateTo(routes.idinquiry)}
                 className="text-[8px] sm:text-xs md:text-sm lg:text-sm cursor-pointer"
               >
                 아이디 찾기
@@ -116,7 +104,7 @@ const LoginPage = () => {
                 |
               </span>
               <span
-                onClick={handleSignUp}
+                onClick={() => navigateTo(routes.signup)}
                 className="text-[8px] sm:text-xs md:text-sm lg:text-sm cursor-pointer"
               >
                 회원가입

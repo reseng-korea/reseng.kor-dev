@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const FindIdPage = () => {
+  // 페이지 이동
+  const { navigateTo, routes } = useNavigateTo();
+
   const [phone, setPhone] = useState('');
 
   const handlePhoneChange = (e) => {
@@ -9,25 +12,6 @@ const FindIdPage = () => {
     // 숫자만 입력 가능하도록 필터링
     const filteredValue = value.replace(/[^0-9]/g, '');
     setPhone(filteredValue);
-  };
-
-  // 페이지 이동
-  const navigate = useNavigate();
-
-  const handleLogin = () => {
-    navigate('/signin');
-  };
-
-  const handleFindPassword = () => {
-    navigate('/pwinquiry');
-  };
-
-  const handleFindIdSuccess = () => {
-    navigate('/idinquiry/success');
-  };
-
-  const handleFindIdFailure = () => {
-    navigate('/idinquiry/failure');
   };
 
   return (
@@ -77,10 +61,16 @@ const FindIdPage = () => {
 
         {/* 아이디, 비번 찾기 */}
         <div className="flex items-center justify-between px-3 ">
-          <span onClick={handleFindPassword} className="cursor-pointer text-sm">
+          <span
+            onClick={() => navigateTo(routes.pwinquiry)}
+            className="cursor-pointer text-sm"
+          >
             비밀번호 찾기
           </span>
-          <span onClick={handleLogin} className="cursor-pointer text-sm">
+          <span
+            onClick={() => navigateTo(routes.signin)}
+            className="cursor-pointer text-sm"
+          >
             로그인
           </span>
         </div>
@@ -88,13 +78,13 @@ const FindIdPage = () => {
         {/* 임시 테스트 버튼 - 삭제 예정 */}
         <div className="flex items-center justify-between px-3 ">
           <span
-            onClick={handleFindIdSuccess}
+            onClick={() => navigateTo(routes.idinquirySuccess)}
             className="cursor-pointer text-sm"
           >
             아이디 찾기 성공(테스트 용 버튼)
           </span>
           <span
-            onClick={handleFindIdFailure}
+            onClick={() => navigateTo(routes.idinquiryFailure)}
             className="cursor-pointer text-sm"
           >
             아이디 찾기 실패(테스트 용 버튼)
