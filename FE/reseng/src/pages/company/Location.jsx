@@ -3,20 +3,11 @@ import { useNavigate } from 'react-router-dom';
 import { tmplocationdata } from '../data/tmplocationdata';
 import KakaoMap from '../../components/Map/KakaoMap';
 
+import { useNavigateTo } from '../../hooks/useNavigateTo';
+
 const Location = () => {
-  const navigate = useNavigate();
-
-  const handleCompany = () => {
-    navigate('/company');
-  };
-
-  const handleHistory = () => {
-    navigate('/history');
-  };
-
-  const handleLocation = () => {
-    navigate('/location');
-  };
+  // 페이지 이동
+  const { navigateTo, routes } = useNavigateTo();
 
   return (
     <Layout>
@@ -25,19 +16,19 @@ const Location = () => {
           <div className="text-3xl font-bold mt-16 mb-6">회사 소개</div>
           <div className="flex justify-center space-x-4">
             <button
-              onClick={handleCompany}
+              onClick={() => navigateTo(routes.company)}
               className="w-30 h-10 bg-transition flex items-center justify-center hover:text-lg border-none outline-none focus:outline-none"
             >
               <span className="text-black">회사 소개</span>
             </button>
             <button
-              onClick={handleHistory}
+              onClick={() => navigateTo(routes.history)}
               className="w-30 h-10 bg-transition flex items-center justify-center hover:text-lg border-none outline-none focus:outline-none"
             >
               <span className="text-black">연혁</span>
             </button>
             <button
-              onClick={handleLocation}
+              onClick={() => navigateTo(routes.location)}
               className="w-30 h-10 bg-transition flex items-center justify-center border-0 border-b-2 border-[#2EA642] rounded-none focus:outline-none"
             >
               <span className="text-[#2EA642] font-bold">오시는 길</span>
