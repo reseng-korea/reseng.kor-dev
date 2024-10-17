@@ -1,5 +1,4 @@
 import Layout from '../../components/Layouts';
-
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const UserConfirm = () => {
@@ -8,23 +7,23 @@ const UserConfirm = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col min-h-screen items-center justify-center pt-16">
-        <div className="w-full max-w-2xl justify-center items-center flex flex-col mb-1 space-x-2">
-          <span className="text-3xl font-bold mb-6">회원 정보 확인</span>
-          <span className="text-sm lg:text-lg mb-2">
+      <div className="flex flex-col items-center justify-center min-h-screen">
+        <div className="flex flex-col items-center justify-center w-full max-w-2xl mb-1 space-x-2">
+          <span className="pt-16 mb-6 text-3xl font-bold">회원 정보 확인</span>
+          <span className="mb-2 text-sm lg:text-lg">
             고객님의 소중한 정보 보호를 위해 비밀번호를 다시 한 번 확인해
             주세요.
           </span>
-          <span className="text-sm text-[#999999] mb-8">
+          <span className="mb-8 text-sm text-gray3">
             고객님의 비밀번호가 타인에게 노출되지 않도록 조심해 주세요.
           </span>
-          <hr className="w-full border-t border-black mb-12" />
+          <hr className="w-full mb-12 border-t border-gray4" />
 
           <div className="flex flex-col w-full max-w-lg mb-12">
-            <label className="text-lg mb-1 self-start">비밀번호</label>
+            <label className="self-start mb-1 text-lg">비밀번호</label>
             <input
               type="password"
-              className="w-full border rounded-lg p-2 mb-1 mx-auto"
+              className="w-full p-2 mb-1 border rounded-lg mx-auto"
               placeholder="비밀번호를 입력해주세요"
             />
           </div>
@@ -32,7 +31,7 @@ const UserConfirm = () => {
           <button
             onClick={() => navigateTo(routes.mypageUserEdit)}
             type="submit"
-            className="w-[30%] mb-2 bg-[#2EA642] text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600"
+            className="w-[30%] py-2 px-4 mb-2 font-bold text-white bg-primary rounded-lg hover:bg-white hover:text-primary"
           >
             확인
           </button>

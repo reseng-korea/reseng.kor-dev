@@ -26,11 +26,11 @@ const LoginPage = () => {
     <div className="flex min-h-screen">
       {/* 왼쪽 : 이미지 */}
       <div
-        className="w-5/12 bg-cover bg-center relative move-right"
+        className="relative w-5/12 bg-cover bg-center move-right"
         style={{ backgroundImage: `url(${login})` }}
       >
         <div className="absolute inset-0 flex items-center justify-center">
-          <h1 className="text-white text-xs sm:text-sm md:text-xl lg:text-3xl font-bold text-left">
+          <h1 className="text-xs font-bold text-left text-white sm:text-sm md:text-xl lg:text-3xl">
             안녕하세요 :) <br />
             지구를 위한 한 걸음, 우리 함께해요!
           </h1>
@@ -38,38 +38,40 @@ const LoginPage = () => {
       </div>
 
       {/* 오른쪽 : 로그인 폼 */}
-      <div className="w-7/12 flex flex-col items-center justify-center bg-white">
+      <div className="flex flex-col items-center justify-center w-7/12 bg-white">
         <div className="w-full max-w-md p-8">
-          <div className="text-2xl font-bold text-center mb-6">로그인</div>
+          <div className="mb-6 text-2xl font-bold text-center">로그인</div>
           <form>
             {/* 이메일 */}
             <div className="flex items-center px-3 py-2">
-              <IoIosMail className="text-[#2EA642] text-3xl mr-3" />
-              <div className="flex w-full items-center border rounded-lg px-3 py-2">
+              <IoIosMail className="mr-3 text-3xl text-primary" />
+              <div className="flex items-center w-full px-3 py-2 border rounded-lg">
                 <input
                   type="email"
-                  className="w-full outline-none text-xs sm:text-sm md:text-sm lg:text-base"
+                  className="w-full text-xs outline-none sm:text-sm md:text-sm lg:text-base"
                   placeholder="이메일을 입력해주세요"
                 />
               </div>
             </div>
+
             {/* 비밀번호 */}
             <div className="flex items-center px-3 py-2">
-              <IoIosLock className="text-[#2EA642] text-3xl mr-3" />
-              <div className="flex w-full items-center border rounded-lg px-3 py-2">
+              <IoIosLock className="mr-3 text-3xl text-primary" />
+              <div className="flex items-center w-full px-3 py-2 border rounded-lg">
                 <input
                   type="password"
-                  className="w-full outline-none text-[11px] sm:text-sm md:text-sm lg:text-base"
+                  className="w-full text-[11px] outline-none sm:text-sm md:text-sm lg:text-base"
                   placeholder="비밀번호를 입력해주세요"
                 />
               </div>
             </div>
+
             {/* 로그인 상태 유지 */}
-            <div className="flex items-center mb-2 px-3 py-2">
+            <div className="flex items-center px-3 py-2 mb-2">
               <input type="checkbox" id="rememberMe" className="mr-2" />
               <label
                 htmlFor="rememberMe"
-                className="text-gray-700 text-xs sm:text-sm md:text-sm lg:text-base"
+                className="text-xs text-gray-700 sm:text-sm md:text-sm lg:text-base"
               >
                 로그인 상태 유지
               </label>
@@ -78,16 +80,16 @@ const LoginPage = () => {
             {/* 로그인 버튼 */}
             <button
               type="submit"
-              className="w-full mb-2 bg-[#2EA642] text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600"
+              className="w-full px-4 py-2 font-bold text-white bg-primary rounded-lg hover:bg-white hover:text-primary"
             >
               로그인
             </button>
 
             {/* 비번, 아이디 찾기, 회원가입 */}
-            <div className="mb-4 flex items-center justify-between px-3 py-2">
+            <div className="flex items-center justify-between px-3 py-2 mt-2 mb-4">
               <span
                 onClick={() => navigateTo(routes.pwinquiry)}
-                className="text-[8px] sm:text-xs md:text-sm lg:text-sm cursor-pointer"
+                className="text-[8px] cursor-pointer sm:text-xs md:text-sm lg:text-sm"
               >
                 비밀번호 찾기
               </span>
@@ -96,7 +98,7 @@ const LoginPage = () => {
               </span>
               <span
                 onClick={() => navigateTo(routes.idinquiry)}
-                className="text-[8px] sm:text-xs md:text-sm lg:text-sm cursor-pointer"
+                className="text-[8px] cursor-pointer sm:text-xs md:text-sm lg:text-sm"
               >
                 아이디 찾기
               </span>
@@ -105,7 +107,7 @@ const LoginPage = () => {
               </span>
               <span
                 onClick={() => navigateTo(routes.signup)}
-                className="text-[8px] sm:text-xs md:text-sm lg:text-sm cursor-pointer"
+                className="text-[8px] cursor-pointer sm:text-xs md:text-sm lg:text-sm"
               >
                 회원가입
               </span>
@@ -113,14 +115,14 @@ const LoginPage = () => {
 
             {/* 간편 로그인 */}
             <div className="flex items-center px-3 py-2">
-              <hr className="w-full border-t border-black my-4" />
-              <span className="w-full text-[8px] sm:text-xs md:text-sm lg:text-sm">
+              <hr className="w-full my-4 border-t border-gray3" />
+              <span className="w-full text-[8px] text-gray3 sm:text-xs md:text-sm lg:text-sm">
                 간편 로그인
               </span>
-              <hr className="w-full border-t border-black my-4" />
+              <hr className="w-full my-4 border-t border-gray3" />
             </div>
 
-            <div className="mb-4 flex items-center justify-center">
+            <div className="flex items-center justify-center mb-4">
               <img
                 src={kakao}
                 alt="카카오"

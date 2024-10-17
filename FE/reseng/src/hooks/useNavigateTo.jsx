@@ -43,8 +43,6 @@ export const useNavigateTo = () => {
     mypageUser: '/mypage/user',
     mypageWithdraw: '/mypage/withdraw',
     tmp: '/tmp',
-
-    // 추가적인 경로들
   };
 
   return { navigateTo, routes };

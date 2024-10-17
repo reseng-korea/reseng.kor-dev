@@ -11,7 +11,7 @@
   /* color-scheme: light dark; */
   /* color: rgba(255, 255, 255, 0.87);
   background-color: #242424; */
-  color: #213547;
+  color: #000000;
   background-color: #ffffff;
 
   font-synthesis: none;
@@ -58,7 +58,7 @@ button:hover {
 }
 button:focus,
 button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+  outline: none;
 }
 
 /* @media (prefers-color-scheme: light) {

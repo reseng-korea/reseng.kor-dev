@@ -3,8 +3,10 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 
 import './App.css';
 
+// components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 
 // main
 import MainFirstPage from './pages/main/MainFirstPage';
@@ -15,7 +17,7 @@ import MainFourthPage from './pages/main/MainFourthPage';
 // auth
 import LoginPage from './pages/auth/LoginPage';
 import SignupPage from './pages/auth/SignupPage';
-import AddSignupPage from './pages/auth/AddSignUpPage';
+import SocialInfoPage from './pages/auth/SocialInfoPage';
 import FindIdPage from './pages/auth/FindIdPage';
 import FindIdSuccessPage from './pages/auth/FindIdSuccessPage';
 import FindIdFailurePage from './pages/auth/FindIdFailurePage';
@@ -56,6 +58,7 @@ import Tmp from './pages/Tmp';
 function App() {
   return (
     <Router>
+      <ScrollToTop />
       <Navbar />
       <div className="h-screen">
         <Routes>
@@ -77,7 +80,7 @@ function App() {
           {/* 회원가입 페이지 */}
           <Route path="/signup" element={<SignupPage />} />
           {/* 간편 로그인 추가 정보 입력 페이지 */}
-          <Route path="socialinfo" element={<AddSignupPage />} />
+          <Route path="socialinfo" element={<SocialInfoPage />} />
           {/* 로그인 찾기 페이지 */}
           <Route path="/idinquiry" element={<FindIdPage />} />
           {/* 로그인 찾기 페이지 - 성공 */}
