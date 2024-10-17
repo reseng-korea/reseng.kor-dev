@@ -58,7 +58,7 @@ export default function Example() {
                 <img
                   alt="리앤생"
                   src={logo}
-                  className="h-8 w-auto"
+                  className="h-8 w-auto pl-4"
                   onClick={() => navigateTo(routes.home)}
                 />
               </div>

@@ -30,6 +30,7 @@ import Location from './pages/company/Location';
 //cs
 import Faq from './pages/cs/Faq';
 import Qna from './pages/cs/Qna';
+import QnaRegister from './pages/cs/QnaRegister';
 
 //reference Room
 import Certificate from './pages/referenceRoom/certificate';
@@ -97,6 +98,8 @@ function App() {
           <Route path="/faq" element={<Faq />} />
           {/* 1:1 문의 페이지 */}
           <Route path="/qna" element={<Qna />} />
+          {/* 1:1 문의 글 등록 페이지 */}
+          <Route path="/qna/register" element={<QnaRegister />} />
           {/* 인증서 페이지 */}
           <Route path="/certificate" element={<Certificate />} />
           {/* 성적서 페이지 */}
