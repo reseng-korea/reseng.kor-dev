@@ -1,5 +1,4 @@
 import withdraw_icon from './../../assets/withdraw_icon.png';
-
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const Withdraw = () => {
@@ -8,16 +7,16 @@ const Withdraw = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen pt-16">
-      <div className="flex flex-col w-full max-w-2xl items-center p-8 text-center mx-auto">
+      <div className="flex flex-col items-center w-full max-w-2xl p-8 mx-auto text-center">
         <img
           src={withdraw_icon}
           alt="탈퇴 아이콘"
           className="w-16 h-16 mb-12"
-        ></img>
-        <span className="text-xl lg:text-2xl font-bold mb-6">
+        />
+        <span className="mb-6 text-xl font-bold lg:text-2xl">
           회원 탈퇴가 완료되었습니다.
         </span>
-        <span className="text-sm lg:text-lg mb-16">
+        <span className="mb-16 text-sm lg:text-lg">
           그동안 Re&生을 이용해 주셔서 감사합니다.
           <br />
           항상 끊임없이 성장하고 발전하는 Re&生이 되겠습니다.
@@ -26,7 +25,7 @@ const Withdraw = () => {
         <button
           onClick={() => navigateTo(routes.home)}
           type="submit"
-          className="w-[25%] mb-20 bg-[#2EA642] text-white font-bold py-2 px-4 rounded-lg hover:bg-green-600"
+          className="w-[25%] py-2 px-4 mb-20 font-bold text-white bg-primary rounded-lg hover:bg-white hover:text-primary"
         >
           확인
         </button>

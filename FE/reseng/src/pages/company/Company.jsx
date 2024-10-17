@@ -1,5 +1,4 @@
 import Layout from '../../components/Layouts';
-
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const Company = () => {
@@ -8,30 +7,35 @@ const Company = () => {
 
   return (
     <Layout>
-      <div className="flex justify-center px-3 py-2 mt-16 min-h-screen">
-        <div className="flex flex-col w-full mb-1 space-x-2">
-          <div className="mb-6 text-3xl font-bold">회사 소개</div>
-          <div className="flex justify-center space-x-4">
+      <div className="flex justify-center min-h-screen px-3 py-2">
+        <div className="flex flex-col w-full">
+          {/* 하위 카테고리 */}
+          <div className="mt-16 mb-6 text-3xl font-bold">회사 소개</div>
+          <div className="flex justify-center">
             <button
               onClick={() => navigateTo(routes.company)}
-              className="flex items-center justify-center w-30 h-10 border-0 border-b-2 border-[#2EA642] rounded-none focus:outline-none bg-transition"
+              className="flex items-center justify-center w-32 h-10 border-0 border-b-2 border-primary rounded-none bg-transition"
             >
-              <span className="font-bold text-[#2EA642]">회사 소개</span>
+              <span className="font-bold text-primary">회사 소개</span>
             </button>
             <button
               onClick={() => navigateTo(routes.history)}
-              className="flex items-center justify-center w-30 h-10 hover:text-lg border-none outline-none focus:outline-none bg-transition"
+              className="flex items-center justify-center w-32 h-10 border-0 hover:text-lg bg-transition"
             >
               <span className="text-black">연혁</span>
             </button>
             <button
               onClick={() => navigateTo(routes.location)}
-              className="flex items-center justify-center w-30 h-10 hover:text-lg border-none outline-none focus:outline-none bg-transition"
+              className="flex items-center justify-center w-32 h-10 border-0 hover:text-lg bg-transition"
             >
               <span className="text-black">오시는 길</span>
             </button>
           </div>
-          <hr className="w-full mb-6 border-t border-[#99999]" />
+          <div className="flex justify-center">
+            <hr className="w-full mb-6 border-t border-gray1" />
+          </div>
+          {/* 메인 */}
+          {/* 회사 소개 내용 여기에 코드 작성하면 됨 */}
         </div>
       </div>
     </Layout>

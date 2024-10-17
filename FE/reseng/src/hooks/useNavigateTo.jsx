@@ -25,6 +25,7 @@ export const useNavigateTo = () => {
     faq: '/faq',
     qna: '/qna',
     qnaRegist: '/qna/register',
+    qnaDetail: '/qna/1',
     certificate: '/certificate',
     coa: '/coa',
     coaRegister: 'coa/register',
@@ -43,8 +44,6 @@ export const useNavigateTo = () => {
     mypageUser: '/mypage/user',
     mypageWithdraw: '/mypage/withdraw',
     tmp: '/tmp',
-
-    // 추가적인 경로들
   };
 
   return { navigateTo, routes };

@@ -34,69 +34,68 @@ export default function Example() {
     <header>
       <Disclosure
         as="nav"
-        className="bg-white fixed top-0 left-0 w-full z-50 h-16"
+        className="fixed top-0 left-0 z-50 w-full h-16 bg-white"
       >
-        <div className="mx-auto max-w-7xl px-2 sm:px-6 lg:px-8">
-          <div className="relative flex h-16 items-center justify-between">
+        <div className="px-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
+          <div className="relative flex items-center justify-between h-16">
             {/* Mobile menu button */}
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
-              <DisclosureButton className="group relative inline-flex items-center justify-center rounded-md p-2 text-gray-400 bg-white hover:bg-white hover:text-black focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white">
+              <DisclosureButton className="relative inline-flex items-center justify-center p-2 text-gray-400 bg-white rounded-md group hover:bg-white hover:text-black focus:ring-2 focus:ring-inset focus:ring-white">
                 <span className="sr-only">Open main menu</span>
                 <Bars3Icon
                   aria-hidden="true"
-                  className="block h-6 w-6 group-data-[open]:hidden"
+                  className="block w-6 h-6 group-data-[open]:hidden"
                 />
                 <XMarkIcon
                   aria-hidden="true"
-                  className="hidden h-6 w-6 group-data-[open]:block"
+                  className="hidden w-6 h-6 group-data-[open]:block"
                 />
               </DisclosureButton>
             </div>
 
-            <div className="flex flex-1 items-center justify-center sm:items-stretch sm:justify-start">
-              <div className="flex flex-shrink-0 items-center">
+            <div className="flex items-center justify-center flex-1 sm:items-stretch sm:justify-start">
+              <div className="flex items-center flex-shrink-0 p-4">
                 <img
                   alt="리앤생"
                   src={logo}
-                  className="h-8 w-auto"
+                  className="w-auto h-8"
                   onClick={() => navigateTo(routes.home)}
                 />
               </div>
             </div>
 
             {/* Menu with hover effect */}
-            <div className="relative right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0 sm:flex hidden">
+            <div className="relative flex items-center pr-2 right-0 sm:static sm:inset-auto sm:ml-6 sm:pr-0 sm:flex hidden">
               {/* 회사소개 */}
               <div
-                className="relative ml-3 py-3"
+                className="relative py-3 ml-3"
                 onMouseEnter={() => handleMouseEnter('about')}
                 onMouseLeave={handleMouseLeave}
               >
                 <button
                   onClick={() => navigateTo(routes.company)}
-                  className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
+                  className="relative flex text-sm bg-transparent hover:border-2"
                 >
-                  {/* <span className="sr-only">Open about menu</span> */}
                   <p>회사소개</p>
                 </button>
 
                 {isMenuOpen === 'about' && (
-                  <div className="absolute left-1/2 transform -translate-x-1/2 z-20 mt-1 w-32 origin-top-center rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="absolute z-20 w-32 py-1 mt-1 origin-top-center bg-white rounded-md shadow-lg left-1/2 transform -translate-x-1/2 ring-1 ring-black ring-opacity-5">
                     <a
                       onClick={() => navigateTo(routes.company)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
                     >
                       회사소개
                     </a>
                     <a
                       onClick={() => navigateTo(routes.history)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
                     >
                       연혁
                     </a>
                     <a
                       onClick={() => navigateTo(routes.location)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
                     >
                       오시는 길
                     </a>
@@ -106,29 +105,29 @@ export default function Example() {
 
               {/* 고객센터 */}
               <div
-                className="relative ml-3 py-3"
+                className="relative py-3 ml-3"
                 onMouseEnter={() => handleMouseEnter('support')}
                 onMouseLeave={handleMouseLeave}
               >
                 <button
                   onClick={() => navigateTo(routes.faq)}
-                  className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
+                  className="relative flex text-sm bg-transparent hover:border-2"
                 >
                   <span className="sr-only">Open support menu</span>
                   <p>고객센터</p>
                 </button>
 
                 {isMenuOpen === 'support' && (
-                  <div className="absolute left-1/2 transform -translate-x-1/2 z-20 mt-1 w-40 origin-top-center rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="absolute z-20 w-40 py-1 mt-1 origin-top-center bg-white rounded-md shadow-lg left-1/2 transform -translate-x-1/2 ring-1 ring-black ring-opacity-5">
                     <a
                       onClick={() => navigateTo(routes.faq)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
                     >
                       자주 묻는 질문
                     </a>
                     <a
                       onClick={() => navigateTo(routes.qna)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
                     >
                       1:1 문의
                     </a>
@@ -138,35 +137,35 @@ export default function Example() {
 
               {/* 자료실 */}
               <div
-                className="relative ml-3 py-3"
+                className="relative py-3 ml-3"
                 onMouseEnter={() => handleMouseEnter('resources')}
                 onMouseLeave={handleMouseLeave}
               >
                 <button
                   onClick={() => navigateTo(routes.certificate)}
-                  className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
+                  className="relative flex text-sm bg-transparent hover:border-2"
                 >
                   <span className="sr-only">Open resources menu</span>
                   <p>자료실</p>
                 </button>
 
                 {isMenuOpen === 'resources' && (
-                  <div className="absolute left-1/2 transform -translate-x-1/2 z-20 mt-1 w-32 origin-top-center rounded-md bg-white py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none">
+                  <div className="absolute z-20 w-32 py-1 mt-1 origin-top-center bg-white rounded-md shadow-lg left-1/2 transform -translate-x-1/2 ring-1 ring-black ring-opacity-5">
                     <a
                       onClick={() => navigateTo(routes.certificate)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
                     >
                       인증서
                     </a>
                     <a
                       onClick={() => navigateTo(routes.coa)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
                     >
                       성적서
                     </a>
                     <a
                       onClick={() => navigateTo(routes.press)}
-                      className="block px-4 py-2 text-sm text-gray-700 hover:text-[#2EA642] hover:bg-gray-100"
+                      className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
                     >
                       보도자료
                     </a>
@@ -182,7 +181,7 @@ export default function Example() {
               >
                 <button
                   onClick={() => navigateTo(routes.signin)}
-                  className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
+                  className="relative flex text-sm bg-transparent hover:border-2"
                 >
                   <span className="sr-only">Open login menu</span>
                   <p>로그인</p>
@@ -197,7 +196,7 @@ export default function Example() {
               >
                 <button
                   onClick={() => navigateTo(routes.tmp)}
-                  className="relative flex text-sm focus:outline-none hover:border-2 bg-transparent"
+                  className="relative flex text-sm bg-transparent hover:border-2"
                 >
                   <p>임시</p>
                 </button>
@@ -208,7 +207,7 @@ export default function Example() {
 
         {/* Mobile Navigation */}
         <DisclosurePanel className="sm:hidden">
-          <div className="space-y-1 px-2 pb-3 pt-2">
+          <div className="pt-2 pb-3 space-y-1 px-2">
             {navigation.map((item) => (
               <DisclosureButton
                 key={item.name}
@@ -217,8 +216,8 @@ export default function Example() {
                 className={classNames(
                   item.current
                     ? 'bg-white text-black'
-                    : 'text-black hover:bg-gray-100 hover:text-[#2EA642]',
-                  'block rounded-md px-3 py-2 text-base font-medium'
+                    : 'text-black hover:bg-gray4 hover:text-primary',
+                  'block px-3 py-2 text-base font-medium rounded-md'
                 )}
               >
                 {item.name}

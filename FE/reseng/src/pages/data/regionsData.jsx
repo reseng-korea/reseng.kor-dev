@@ -1,4 +1,4 @@
-export const regions = {
+export const regionsData = {
   서울특별시: [
     '강남구',
     '강동구',
