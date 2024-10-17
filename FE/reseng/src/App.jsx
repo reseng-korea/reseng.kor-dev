@@ -33,13 +33,14 @@ import Location from './pages/company/Location';
 import Faq from './pages/cs/Faq';
 import Qna from './pages/cs/Qna';
 import QnaRegister from './pages/cs/QnaRegister';
+import QnaDetail from './pages/cs/QnaDetail';
 
 //reference Room
 import Certificate from './pages/referenceRoom/certificate';
 import Coa from './pages/referenceRoom/coa';
 import Press from './pages/referenceRoom/press';
 
-//item
+//items
 import Banner from './pages/items/Banner';
 import Biodegradable from './pages/items/Biodegradable';
 import Recycle from './pages/items/Recycle';
@@ -75,6 +76,7 @@ function App() {
               </>
             }
           />
+          {/* auth */}
           {/* 로그인 페이지 */}
           <Route path="/signin" element={<LoginPage />} />
           {/* 회원가입 페이지 */}
@@ -91,30 +93,42 @@ function App() {
           <Route path="/pwinquiry" element={<FindPasswordPage />} />
           {/* 새로운 비밀번호 변경 페이지 */}
           <Route path="/pwinquiry/new" element={<ChangePasswordPage />} />
+
+          {/* company */}
           {/* 회사 소개 페이지 */}
           <Route path="/company" element={<Company />} />
           {/* 연혁 페이지 */}
           <Route path="/history" element={<History />} />
           {/* 오시는 길 페이지 */}
           <Route path="/location" element={<Location />} />
+
+          {/* cs */}
           {/* 자주 묻는 질문 페이지 */}
           <Route path="/faq" element={<Faq />} />
           {/* 1:1 문의 페이지 */}
           <Route path="/qna" element={<Qna />} />
           {/* 1:1 문의 글 등록 페이지 */}
           <Route path="/qna/register" element={<QnaRegister />} />
+          {/* 1:1 문의 글 상세 페이지 */}
+          <Route path="/qna/1" element={<QnaDetail />} />
+
+          {/* reference Room */}
           {/* 인증서 페이지 */}
           <Route path="/certificate" element={<Certificate />} />
           {/* 성적서 페이지 */}
           <Route path="/coa" element={<Coa />} />
           {/* 보도 자료 페이지 */}
           <Route path="/press" element={<Press />} />
+
+          {/* items */}
           {/* (아이템) 친환경 현수막 페이지 */}
           <Route path="/items/banner" element={<Banner />} />
           {/* (아이템) 생분해 제품 페이지 */}
           <Route path="/items/biodegradable" element={<Biodegradable />} />
           {/* (아이템) 재활용 제품 페이지 */}
           <Route path="/items/recycle" element={<Recycle />} />
+
+          {/* mymage */}
           {/* 업체 관리 페이지 */}
           <Route path="/mypage/member" element={<Member />} />
           {/* 현수막 관리 페이지 */}
@@ -129,6 +143,7 @@ function App() {
           <Route path="/mypage/user/edit" element={<UserEdit />} />
           {/* 탈퇴 페이지 */}
           <Route path="/mypage/withdraw" element={<Withdraw />} />
+
           {/* 임시  페이지(삭제 예정) */}
           <Route path="/tmp" element={<Tmp />} />
         </Routes>

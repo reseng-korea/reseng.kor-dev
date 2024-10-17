@@ -75,49 +75,48 @@ const QnaRegister = () => {
               value={content}
               onChange={handleContent}
             />
-            <span className="self-end text-sm">
+          </div>
+
+          <div className="w-full flex justify-between items-center px-3">
+            {/* 비밀글 체크박스 */}
+            <div className="flex items-center">
+              <input
+                type="checkbox"
+                id="secret"
+                checked={isSecret}
+                onChange={handleCheckboxChange}
+                className="mr-2"
+              />
+              <label htmlFor="secret" className="text-base">
+                비밀글
+              </label>
+            </div>
+
+            {/* 1500자 카운터 */}
+            <span className="text-sm">
               {content.length}/{maxLength}자
             </span>
           </div>
 
-          <div className="flex flex-col px-3 py-2">
-            {/* 비밀글 체크박스 */}
-            <div className="flex flex-col items-start mb-4">
-              <div className="flex">
-                <input
-                  type="checkbox"
-                  id="secret"
-                  checked={isSecret}
-                  onChange={handleCheckboxChange}
-                  className="mr-2"
-                />
-                <label htmlFor="secret" className="text-sm">
-                  비밀글
-                </label>
-              </div>
-
-              {/* 비밀글 체크 시 비밀번호 입력 필드 */}
-              {isSecret && (
-                <div className="flex items-center justify-center mt-2 space-x-2">
-                  <label htmlFor="password" className="text-sm">
-                    비밀번호 입력
-                  </label>
-                  <input
-                    type="password"
-                    id="password"
-                    value={password}
-                    onChange={handlePasswordChange}
-                    className="w-24 h-8 p-2 border rounded-lg"
-                    placeholder="숫자 4자리"
-                    maxLength="4"
-                    inputMode="numeric"
-                  />
-                </div>
-              )}
+          {isSecret && (
+            <div className="flex items-center justify-start space-x-2 px-3">
+              <label htmlFor="password" className="text-sm">
+                비밀번호 입력
+              </label>
+              <input
+                type="text"
+                id="password"
+                value={password}
+                onChange={handlePasswordChange}
+                className="w-24 h-8 p-2 text-sm border rounded-lg"
+                placeholder="숫자 4자리"
+                maxLength="4"
+                inputMode="numeric"
+              />
             </div>
-          </div>
+          )}
 
-          <div className="flex items-center justify-center w-full px-3 py-2 mb-4 space-x-4">
+          <div className="flex items-center justify-center w-full px-3 py-2 mt-4 space-x-4">
             <button
               type="submit"
               className="px-4 py-2 font-bold text-white transition-colors duration-300 bg-[#2EA642] rounded-lg w-1/6 hover:bg-white hover:text-[#2EA642]"

@@ -60,7 +60,7 @@ const Faq = () => {
                     <img src={leaf} className="w-8 h-8" />
                   </div>
 
-                  {/* 답변 박스 (애니메이션 추가) */}
+                  {/* 답변 */}
                   <div
                     className={`overflow-hidden transition-all duration-500 ease-in-out ${
                       activeIndex === index

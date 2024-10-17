@@ -25,6 +25,7 @@ export const useNavigateTo = () => {
     faq: '/faq',
     qna: '/qna',
     qnaRegist: '/qna/register',
+    qnaDetail: '/qna/1',
     certificate: '/certificate',
     coa: '/coa',
     coaRegister: 'coa/register',
