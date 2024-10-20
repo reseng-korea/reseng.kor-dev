@@ -10,6 +10,9 @@ import com.resengkor.management.domain.user.dto.UserDTO;
 import com.resengkor.management.domain.user.dto.UserMapper;
 import com.resengkor.management.domain.user.dto.UserRegisterRequest;
 import com.resengkor.management.domain.user.entity.*;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
+import com.resengkor.management.global.response.DataResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -47,13 +50,10 @@ public class UserServiceImpl implements UserService{
     }
 
     @Transactional
-    public void registerUser(UserRegisterRequest request) {
-        // register logic...
-        Boolean isExist = userRepository.existsByEmail(request.getEmail());
-        if (isExist) {
-            //이미 존재하는 user
-            System.out.println("already exist user");
-            return;
+    public DataResponse<?> registerUser(UserRegisterRequest request) {
+        // 이미 존재하는지 확인하고 예외 던지기
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new CustomException(ExceptionStatus.MEMBER_ALREADY_EXIST);
         }
 
         // User 생성 (일반 사용자이므로 ROLE_GUEST 설정)
@@ -95,6 +95,7 @@ public class UserServiceImpl implements UserService{
                 .depth(0)  // 자기 자신과의 관계는 depth 0
                 .build();
         roleHierarchyRepository.save(roleHierarchy);
+        return new DataResponse<>(200, "일반 회원가입 성공");
     }
 
     @Override
