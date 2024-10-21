@@ -2,17 +2,16 @@ package com.resengkor.management.domain.user.service;
 
 
 
+import com.resengkor.management.domain.user.dto.*;
 import com.resengkor.management.domain.user.repository.RegionRepository;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserProfileRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
-import com.resengkor.management.domain.user.dto.UserDTO;
-import com.resengkor.management.domain.user.dto.UserMapper;
-import com.resengkor.management.domain.user.dto.UserRegisterRequest;
 import com.resengkor.management.domain.user.entity.*;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.DataResponse;
+import com.resengkor.management.global.response.ResponseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -73,8 +72,8 @@ public class UserServiceImpl implements UserService{
         log.info("유저 생성");
 
         // Region 생성
-        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY").orElseThrow(() -> new RuntimeException("상위 사용자를 찾을 수 없습니다."));; // 서울시 찾기
-        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT").orElseThrow(() -> new RuntimeException("상위 사용자를 찾을 수 없습니다."));; // 강남구 찾기
+        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY").orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다."));; // 서울시 찾기
+        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT").orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));; // 강남구 찾기
         log.info("region 조회 성공");
 
         // UserProfile 생성 및 연결 (latitude, longitude 없이)
@@ -99,8 +98,20 @@ public class UserServiceImpl implements UserService{
                 .build();
         roleHierarchyRepository.save(roleHierarchy);
         log.info("role 생성 성공");
-        return new DataResponse<>(200, "일반 회원가입 성공");
+        return new DataResponse<>(ResponseStatus.CREATED_SUCCESS.getCode(),
+                ResponseStatus.CREATED_SUCCESS.getMessage(),"일반 회원가입 성공");
     }
+
+    //이메일 찾기
+    public DataResponse<?> findEmail(FindEmailRequest request) {
+        //없으면 에러 터뜨림
+        User User = userRepository.findByCompanyNameAndPhoneNumber(request.getCompanyName(), request.getPhoneNumber())
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        log.info("맞는 회사명&핸드폰 번호 있음");
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage(), User.getEmail());
+    }
+
 
     @Override
     @Transactional

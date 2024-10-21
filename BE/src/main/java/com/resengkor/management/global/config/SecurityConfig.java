@@ -104,9 +104,11 @@ public class SecurityConfig {
 
         http
                 .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/v1/login","/api/v1/logout",
-                                "/api/v1/register","/api/v1/oauth","/api/v1/reissue",
-                                "/api/v1/oauth2-jwt-header",
+                        .requestMatchers("/api/v1/register",
+                                "/api/v1/find-email","/api/v1/find-password",
+                                "/api/v1/login","/api/v1/logout",
+                                "/api/v1/oauth", "/api/v1/oauth2-jwt-header",
+                                "/api/v1/reissue",
                                 "/api/v1/mail/**").permitAll()
                         //hasRole() : 특정 Roll을 가져야함
                         //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
