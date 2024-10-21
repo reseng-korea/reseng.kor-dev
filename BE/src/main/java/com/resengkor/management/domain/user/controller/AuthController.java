@@ -32,6 +32,7 @@ public class AuthController {
             return new DataResponse<>(400, "Validation Error", validatorResult);
         }
         log.info("회원가입 서비스로 넘어감");
+
         return userServiceImpl.registerUser(userRegisterRequest);
     }
 }
