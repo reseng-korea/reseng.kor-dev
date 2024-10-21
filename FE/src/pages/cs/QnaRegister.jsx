@@ -119,13 +119,13 @@ const QnaRegister = () => {
           <div className="flex items-center justify-center w-full px-3 py-2 mt-4 space-x-4">
             <button
               type="submit"
-              className="px-4 py-2 font-bold text-white transition-colors duration-300 bg-[#2EA642] rounded-lg w-1/6 hover:bg-white hover:text-[#2EA642]"
+              className="px-4 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg w-1/6 hover:bg-white hover:text-primary"
             >
               등록
             </button>
             <button
               type="submit"
-              className="px-4 py-2 font-bold text-[#2EA642] transition-colors duration-300 bg-white border-[#2EA642] rounded-lg w-1/6 hover:bg-[#2EA642] hover:text-white"
+              className="px-4 py-2 font-bold text-primary transition-colors duration-300 bg-white border-primary rounded-lg w-1/6 hover:bg-primary hover:text-white"
             >
               취소
             </button>
