@@ -29,7 +29,6 @@ dependencies {
 	compileOnly 'org.projectlombok:lombok'
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	runtimeOnly 'com.mysql:mysql-connector-j'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 
 	//security
@@ -43,6 +42,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt-jackson:0.12.5'
 
 	//DB
+	runtimeOnly 'com.mysql:mysql-connector-j'
 
 	//유효성
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
