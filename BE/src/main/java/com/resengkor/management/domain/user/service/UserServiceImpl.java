@@ -53,36 +53,39 @@ public class UserServiceImpl implements UserService{
     public DataResponse<?> registerUser(UserRegisterRequest request) {
         // 이미 존재하는지 확인하고 예외 던지기
         if (userRepository.existsByEmail(request.getEmail())) {
+            log.info("이미 존재함");
             throw new CustomException(ExceptionStatus.MEMBER_ALREADY_EXIST);
         }
 
         // User 생성 (일반 사용자이므로 ROLE_GUEST 설정)
         User user = User.builder()
                 .email(request.getEmail())
-                .emailStatus(1) //이미 인증한 이후에 생성되는 것이니까
+                .emailStatus(true) //이미 인증한 이후에 생성되는 것이니까
                 .password(passwordEncoder.encode(request.getPassword()))// 비밀번호 암호화
                 .companyName(request.getCompanyName())
                 .representativeName(request.getRepresentativeName())
                 .phoneNumber(request.getPhoneNumber())
+                .phoneNumberStatus(true) //이미 인증한 이후 생성
                 .role(Role.ROLE_GUEST)  // 일반 사용자의 기본 역할 설정
                 .loginType(LoginType.LOCAL)
-                .status(1)
+                .status(true)
                 .build();
+        log.info("유저 생성");
 
         // Region 생성
-        Region region = Region.builder()
-                .regionName(request.getRegionName())
-                .regionType(request.getRegionType())
-                .build();
-        Region savedRegion = regionRepository.save(region);
+        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY").orElseThrow(() -> new RuntimeException("상위 사용자를 찾을 수 없습니다."));; // 서울시 찾기
+        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT").orElseThrow(() -> new RuntimeException("상위 사용자를 찾을 수 없습니다."));; // 강남구 찾기
+        log.info("region 조회 성공");
 
         // UserProfile 생성 및 연결 (latitude, longitude 없이)
         UserProfile userProfile = UserProfile.builder()
-                .address(request.getProfileAddress())
-                .region(savedRegion)
+                .fullAddress(request.getFullAddress())
+                .city(city)
+                .district(district)
                 .user(user)  // User와 연결
                 .build();
         userProfileRepository.save(userProfile);
+        log.info("프로파일 생성 성공");
 
         // User 저장
         User savedUser = userRepository.save(user);
@@ -95,6 +98,7 @@ public class UserServiceImpl implements UserService{
                 .depth(0)  // 자기 자신과의 관계는 depth 0
                 .build();
         roleHierarchyRepository.save(roleHierarchy);
+        log.info("role 생성 성공");
         return new DataResponse<>(200, "일반 회원가입 성공");
     }
 

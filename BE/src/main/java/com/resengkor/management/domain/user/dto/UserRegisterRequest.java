@@ -21,8 +21,7 @@ public class UserRegisterRequest {
     @NotBlank(message = "핸드폰 번호는 필수 입력 값입니다.")
     private String phoneNumber;
 
-    private String profileAddress;
-    //광역자치구, 지역자치구 처리 어케 할지
-    private String regionName;
-    private String regionType;
+    private String cityName;
+    private String districtName;
+    private String fullAddress;
 }
