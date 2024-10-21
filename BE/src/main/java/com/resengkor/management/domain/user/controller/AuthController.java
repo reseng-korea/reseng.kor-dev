@@ -6,7 +6,6 @@ import com.resengkor.management.global.response.DataResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 //일반 회원가입
-public class RegisterController {
+public class AuthController {
     private final UserServiceImpl userServiceImpl;
 
     // 회원가입 (일반 사용자 등록하기)
