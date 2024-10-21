@@ -63,7 +63,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .socialProvider(soialProvider)
                     .socialId(response.getSocialId())
                     .email(response.getEmail())
-                    .emailStatus(1)
+                    .emailStatus(true)
                     .role(Role.ROLE_GUEST)
                     .build();
             userRepository.save(oAuth2UserEntity);

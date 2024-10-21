@@ -16,7 +16,7 @@ public class Region {
     private String regionName;  // 지역명
 
     @Column(nullable = false)
-    private String regionType;  // enum인가?
+    private String regionType;
 
     @Builder
     public Region(String regionName, String regionType) {

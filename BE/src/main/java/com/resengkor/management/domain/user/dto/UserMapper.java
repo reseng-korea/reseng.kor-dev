@@ -31,35 +31,9 @@ public class UserMapper {
         }
         return UserProfileDTO.builder()
                 .id(userProfile.getId())
-                .address(userProfile.getAddress())
+                .address(userProfile.getFullAddress())
                 .latitude(userProfile.getLatitude())
                 .longitude(userProfile.getLongitude())
-                .build();
-    }
-
-    // UserDTO -> User 엔티티 변환 메서드
-    public User toUserEntity(UserDTO userDTO) {
-        if (userDTO == null) {
-            return null;
-        }
-        return User.builder()
-                .email(userDTO.getEmail())
-                .emailStatus(0)
-                .companyName(userDTO.getCompanyName())
-                .phoneNumber(userDTO.getPhoneNumber())
-                .role(userDTO.getRole())
-                .build();
-    }
-
-    // UserProfileDTO -> UserProfile 엔티티 변환 메서드
-    public UserProfile toUserProfileEntity(UserProfileDTO userProfileDTO) {
-        if (userProfileDTO == null) {
-            return null;
-        }
-        return UserProfile.builder()
-                .address(userProfileDTO.getAddress())
-                .latitude(userProfileDTO.getLatitude())
-                .longitude(userProfileDTO.getLongitude())
                 .build();
     }
 }
