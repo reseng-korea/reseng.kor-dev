@@ -29,9 +29,6 @@ const Tmp = () => {
         <button onClick={() => navigateTo(routes.mypageWithdraw)}>
           탈퇴페이지
         </button>
-        <button onClick={() => navigateTo(routes.qnaRegist)}>
-          문의 글 등록
-        </button>
         <button onClick={() => navigateTo(routes.qnaDetail)}>
           1:1 문의 상세 페이지
         </button>
