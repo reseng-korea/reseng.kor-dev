@@ -12,6 +12,7 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -23,6 +24,7 @@ import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class MailService {
     @Value("${spring.mail.address}") //"인증코드를 발송하는 이메일 주소"
     private String address;
@@ -105,8 +107,9 @@ public class MailService {
     @Transactional
     public CommonResponse emailAuthentication(MailAuthDTO dto) {
         // 이메일로 인증 정보를 조회
-        MailVerification emailVerification = emailVerificationRepository.findByEmail(dto.getEmail())
-                .orElseThrow(() -> new CustomException(ExceptionStatus.EMAIL_NOT_FOUND)); // 이메일이 등록되지 않은 경우 예외 발생
+//        MailVerification emailVerification = emailVerificationRepository.findByEmail(dto.getEmail())
+        MailVerification emailVerification = emailVerificationRepository.findLatestByEmail(dto.getEmail())
+                .orElseThrow(() -> new CustomException(ExceptionStatus.EMAIL_NOT_FOUND));// 이메일이 등록되지 않은 경우 예외 발생
 
         // 만료 여부 확인
         if (emailVerification.isExpired()) {

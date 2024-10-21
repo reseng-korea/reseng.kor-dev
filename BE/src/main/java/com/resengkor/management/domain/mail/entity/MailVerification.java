@@ -28,7 +28,7 @@ public class MailVerification {
     @Column(name = "is_verified", nullable = false)
     private boolean isVerified;
 
-    private static final int EXPIRATION_TIME_MINUTES = 15; // 인증 코드 유효 기간 (분)
+    private static final int EXPIRATION_TIME_MINUTES = 3; // 인증 코드 유효 기간 (분)
 
     // 인증 완료 메서드
     public MailVerification verify() {

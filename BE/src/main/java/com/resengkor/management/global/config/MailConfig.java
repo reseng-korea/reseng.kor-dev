@@ -42,9 +42,9 @@ public class MailConfig {
 
     private Properties getMailproperties() {
         Properties properties = new Properties();
-        properties.put("spring.mail.smtp.auth", smtpAuth);
-        properties.put("spring.mail.smtp.starttls.enable", starttlsEnable);
-        properties.put("spring.mail.smtp.starttls.required", starttlsRequired);
+        properties.put("mail.smtp.auth", smtpAuth);
+        properties.put("mail.smtp.starttls.enable", starttlsEnable);
+        properties.put("mail.smtp.starttls.required", starttlsRequired);
         return properties;
     }
 }
