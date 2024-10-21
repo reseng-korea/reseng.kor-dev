@@ -15,13 +15,13 @@ public class UserBanners {
     @EmbeddedId
     private UserBannerId userBannerId;
 
-    @ManyToOne
     @MapsId("userId")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
     @MapsId("bannerTypeId")
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "banner_type_id")
     private BannerType bannerType;
 
