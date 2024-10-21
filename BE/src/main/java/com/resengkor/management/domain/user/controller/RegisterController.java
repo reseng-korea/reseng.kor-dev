@@ -2,6 +2,7 @@ package com.resengkor.management.domain.user.controller;
 
 import com.resengkor.management.domain.user.service.UserServiceImpl;
 import com.resengkor.management.domain.user.dto.UserRegisterRequest;
+import com.resengkor.management.global.response.DataResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,14 +25,12 @@ public class RegisterController {
 
     // 회원가입 (일반 사용자 등록하기)
     @PostMapping("/register")
-    public ResponseEntity<?> registerUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest, BindingResult bindingResult) {
+    public DataResponse<?> registerUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest, BindingResult bindingResult) {
         if(bindingResult.hasErrors()) {
             Map<String, String> validatorResult = userServiceImpl.validateHandling(bindingResult);
 
-            return ResponseEntity.badRequest().body(validatorResult);
+            return new DataResponse<>(400, "Validation Error", validatorResult);
         }
-
-        userServiceImpl.registerUser(userRegisterRequest);
-        return ResponseEntity.ok("일반 회원가입 성공");
+        return userServiceImpl.registerUser(userRegisterRequest);
     }
 }
