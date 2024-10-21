@@ -13,18 +13,18 @@ import java.util.Objects;
 public class UserBannerId implements Serializable {
 
     private Long userId;
-    private Long bannerId;
+    private Long bannerTypeId;
 
     @Override
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
         UserBannerId that = (UserBannerId) object;
-        return Objects.equals(userId, that.userId) && Objects.equals(bannerId, that.bannerId);
+        return Objects.equals(userId, that.userId) && Objects.equals(bannerTypeId, that.bannerTypeId);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(userId, bannerId);
+        return Objects.hash(userId, bannerTypeId);
     }
 }
