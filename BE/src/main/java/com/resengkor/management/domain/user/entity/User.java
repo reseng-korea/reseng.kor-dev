@@ -83,4 +83,9 @@ public class User {
 
     @Version
     private Integer version;  // 비관적 잠금 처리
+
+    //사용자 비밀번호 수정
+    public void editPassword(String password){
+        this.password = password;
+    }
 }
