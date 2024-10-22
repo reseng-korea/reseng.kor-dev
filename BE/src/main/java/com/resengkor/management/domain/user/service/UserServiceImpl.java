@@ -2,17 +2,16 @@ package com.resengkor.management.domain.user.service;
 
 
 
+import com.resengkor.management.domain.user.dto.*;
 import com.resengkor.management.domain.user.repository.RegionRepository;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserProfileRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
-import com.resengkor.management.domain.user.dto.UserDTO;
-import com.resengkor.management.domain.user.dto.UserMapper;
-import com.resengkor.management.domain.user.dto.UserRegisterRequest;
 import com.resengkor.management.domain.user.entity.*;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.DataResponse;
+import com.resengkor.management.global.response.ResponseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -53,36 +52,39 @@ public class UserServiceImpl implements UserService{
     public DataResponse<?> registerUser(UserRegisterRequest request) {
         // 이미 존재하는지 확인하고 예외 던지기
         if (userRepository.existsByEmail(request.getEmail())) {
+            log.info("이미 존재함");
             throw new CustomException(ExceptionStatus.MEMBER_ALREADY_EXIST);
         }
 
         // User 생성 (일반 사용자이므로 ROLE_GUEST 설정)
         User user = User.builder()
                 .email(request.getEmail())
-                .emailStatus(1) //이미 인증한 이후에 생성되는 것이니까
+                .emailStatus(true) //이미 인증한 이후에 생성되는 것이니까
                 .password(passwordEncoder.encode(request.getPassword()))// 비밀번호 암호화
                 .companyName(request.getCompanyName())
                 .representativeName(request.getRepresentativeName())
                 .phoneNumber(request.getPhoneNumber())
+                .phoneNumberStatus(true) //이미 인증한 이후 생성
                 .role(Role.ROLE_GUEST)  // 일반 사용자의 기본 역할 설정
                 .loginType(LoginType.LOCAL)
-                .status(1)
+                .status(true)
                 .build();
+        log.info("유저 생성");
 
         // Region 생성
-        Region region = Region.builder()
-                .regionName(request.getRegionName())
-                .regionType(request.getRegionType())
-                .build();
-        Region savedRegion = regionRepository.save(region);
+        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY").orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다."));; // 서울시 찾기
+        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT").orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));; // 강남구 찾기
+        log.info("region 조회 성공");
 
         // UserProfile 생성 및 연결 (latitude, longitude 없이)
         UserProfile userProfile = UserProfile.builder()
-                .address(request.getProfileAddress())
-                .region(savedRegion)
+                .fullAddress(request.getFullAddress())
+                .city(city)
+                .district(district)
                 .user(user)  // User와 연결
                 .build();
         userProfileRepository.save(userProfile);
+        log.info("프로파일 생성 성공");
 
         // User 저장
         User savedUser = userRepository.save(user);
@@ -95,8 +97,21 @@ public class UserServiceImpl implements UserService{
                 .depth(0)  // 자기 자신과의 관계는 depth 0
                 .build();
         roleHierarchyRepository.save(roleHierarchy);
-        return new DataResponse<>(200, "일반 회원가입 성공");
+        log.info("role 생성 성공");
+        return new DataResponse<>(ResponseStatus.CREATED_SUCCESS.getCode(),
+                ResponseStatus.CREATED_SUCCESS.getMessage(),"일반 회원가입 성공");
     }
+
+    //이메일 찾기
+    public DataResponse<?> findEmail(FindEmailRequest request) {
+        //없으면 에러 터뜨림
+        User User = userRepository.findByCompanyNameAndPhoneNumber(request.getCompanyName(), request.getPhoneNumber())
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        log.info("맞는 회사명&핸드폰 번호 있음");
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage(), User.getEmail());
+    }
+
 
     @Override
     @Transactional
