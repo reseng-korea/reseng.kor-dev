@@ -25,6 +25,7 @@ public enum ExceptionStatus {
     FORBIDDEN_FAILED(4003, "콘텐츠에 접근할 수 없어, 정보를 조회할 수 없습니다."),
     MEMBER_NOT_FOUND(5001, "존재하지 않는 사용자입니다."),
     MEMBER_ALREADY_EXIST(4009, "이미 존재하는 사용자입니다."),
+    MEMBER_INACTIVE(4010,"비활성화된 사용자입니다."),
 
     /* 이메일 */
     EMAIL_NOT_FOUND(4004, "등록되지 않은 이메일입니다."),
