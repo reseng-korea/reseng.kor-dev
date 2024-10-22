@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { regionsData } from '../data/regionsData';
+import { regionsData } from '../../data/regionsData';
 import Layout from '../../components/Layouts';
 import AddressSearch from '../../components/AddressSearch';
 

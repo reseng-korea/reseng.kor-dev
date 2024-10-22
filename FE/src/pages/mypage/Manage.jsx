@@ -1,6 +1,9 @@
 import Layout from '../../components/Layouts';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
+import { bannerLengthData } from '../../data/bannerLengthData';
+import { tableData } from '../../data/bannerLengthData';
+
 const Manage = () => {
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
@@ -9,6 +12,7 @@ const Manage = () => {
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
         <div className="flex flex-col w-full">
+          {/* 하위 카테고리 */}
           <div className="mt-16 mb-6 text-3xl font-bold">마이페이지</div>
           <div className="flex justify-center space-x-4">
             <button
@@ -43,6 +47,39 @@ const Manage = () => {
             </button>
           </div>
           <hr className="w-full mb-6 border-t border-gray1" />
+
+          {/* 메인 */}
+          <div className="flex flex-col">
+            <span className="text-lg text-left font-bold mb-4">
+              현재 재고 수량
+            </span>
+            <table className="min-w-full border border-gray4 border-collapse">
+              <thead>
+                <tr className="border border-gray4">
+                  <th className="py-3 border border-gray4">폭</th>
+                  <th className="py-3 border border-gray4">정단(120yd) 개수</th>
+                  <th className="py-3 border border-gray4">
+                    비정단(120yd 외) 길이별 개수
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                {bannerLengthData.map((bannerLength, index) => (
+                  <tr key={index} className="border border-gray4">
+                    <td className="px-2 py-2 border border-gray4 text-left">
+                      {bannerLength}
+                    </td>
+                    <td className="px-2 py-2 border border-gray4 text-left">
+                      {tableData[index].number}
+                    </td>
+                    <td className="px-2 py-2 border border-gray4 text-left">
+                      {tableData[index].value.join(' ')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
     </Layout>

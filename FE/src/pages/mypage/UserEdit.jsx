@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Layout from '../../components/Layouts';
 import AddressSearch from '../../components/AddressSearch';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { regionsData } from './../data/regionsData';
+import { regionsData } from '../../data/regionsData';
 
 const UserEdit = () => {
   // 페이지 이동

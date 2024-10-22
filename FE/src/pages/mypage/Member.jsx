@@ -1,10 +1,10 @@
 import Layout from '../../components/Layouts';
 import React, { useState } from 'react';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { regionsData } from './../data/regionsData';
+import { regionsData } from '../../data/regionsData';
 
 import reset from '../../assets/member_reset.png';
-import { memberData } from '../data/memberData';
+import { memberData } from '../../data/memberData';
 
 const Member = () => {
   // 페이지 이동
