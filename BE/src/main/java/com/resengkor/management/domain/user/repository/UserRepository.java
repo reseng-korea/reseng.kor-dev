@@ -13,16 +13,14 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    //같은 이메일이 있는지
-    Boolean existsByEmail(String email);
-
-    User findByEmail(String email);
+    Optional<User> findByEmail(String email);
 
     @Query("SELECT u FROM User u WHERE u.role = :role")
     Optional<User> findByRole(@Param("role") Role role);
 
     // 업체명과 휴대폰 번호로 User를 찾는 메서드
     Optional<User> findByCompanyNameAndPhoneNumber(String companyName, String phoneNumber);
+
 
 
 
