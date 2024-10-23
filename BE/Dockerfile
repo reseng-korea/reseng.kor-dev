@@ -1,3 +1,11 @@
+FROM gradle:8.10.2-jdk21 AS builder
+
+WORKDIR /app
+COPY . /app
+
+# Gradle 빌드 실행
+RUN gradle clean build
+
 # 베이스 이미지로 반드시 최상단에 위치해야 한다.
 FROM openjdk:21-jdk
 
