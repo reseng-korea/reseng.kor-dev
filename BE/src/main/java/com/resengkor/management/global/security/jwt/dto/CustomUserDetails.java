@@ -39,21 +39,25 @@ public class CustomUserDetails implements UserDetails {
         return user.getEmail();
     }
 
+    //계정 만료 여부
     @Override
     public boolean isAccountNonExpired() {
         return true;
     }
 
+    //계정 잠김 여부
     @Override
     public boolean isAccountNonLocked() {
         return true;
     }
 
+    //비밀번호 만료 여부
     @Override
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
+    //사용자 활성화 여부
     @Override
     public boolean isEnabled() {
         return true;

@@ -1,6 +1,6 @@
 import Layout from '../../components/Layouts';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { tmplocationdata } from '../data/tmplocationdata';
+import { tmplocationdata } from '../../data/tmplocationdata';
 import KakaoMap from '../../components/Map/KakaoMap';
 
 const Location = () => {

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Layout from '../../components/Layouts';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { inquiryData } from '../data/inquiryData';
+import { inquiryData } from '../../data/inquiryData';
 import qnaIsSecret from '../../assets/qna_isSecret.png';
 import Pagination from 'react-js-pagination';
 

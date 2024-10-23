@@ -37,6 +37,8 @@ export const useNavigateTo = () => {
     mypageMember: '/mypage/member',
     mypageManage: '/mypage/manage',
     mypageOrder: '/mypage/order',
+
+    mypageOrderList: '/mypage/orderlist',
     mypageQr: '/mypage/qr',
     mypageQrSuccess: '/mypage/qr/success',
     mypageQrFailure: '/mypage/qr/failure',

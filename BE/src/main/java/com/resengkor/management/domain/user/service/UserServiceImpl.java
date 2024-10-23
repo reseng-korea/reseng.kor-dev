@@ -23,6 +23,7 @@ import org.springframework.validation.FieldError;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @Service
@@ -51,9 +52,17 @@ public class UserServiceImpl implements UserService{
     @Transactional
     public DataResponse<?> registerUser(UserRegisterRequest request) {
         // 이미 존재하는지 확인하고 예외 던지기
-        if (userRepository.existsByEmail(request.getEmail())) {
+        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
+        if (existingUser.isPresent()) {
+            User user = existingUser.get();
+
+            if (!user.isStatus()) { // 비활성 상태 확인
+                log.info("비활성 사용자입니다");
+                throw new CustomException(ExceptionStatus.MEMBER_INACTIVE); // 비활성 사용자 예외
+            }
+
             log.info("이미 존재함");
-            throw new CustomException(ExceptionStatus.MEMBER_ALREADY_EXIST);
+            throw new CustomException(ExceptionStatus.MEMBER_ALREADY_EXIST); // 이미 존재하는 멤버 예외
         }
 
         // User 생성 (일반 사용자이므로 ROLE_GUEST 설정)

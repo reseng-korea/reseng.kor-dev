@@ -1,6 +1,7 @@
 import Layout from '../../components/Layouts';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { timelineData } from '../data/timelineData';
+
+import { timelineData } from '../../data/timelinedata';
 
 const History = () => {
   // 페이지 이동

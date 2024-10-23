@@ -3,7 +3,7 @@ import { useNavigateTo } from '../../hooks/useNavigateTo';
 import React, { useState } from 'react';
 
 import leaf from '../../assets/faq_icon.png';
-import faqData from '../data/faqData.json';
+import faqData from '../../data/faqData.json';
 
 const Faq = () => {
   // 페이지 이동
