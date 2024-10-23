@@ -3,14 +3,16 @@ package com.resengkor.management.domain.banner.entity;
 import com.resengkor.management.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.Period;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class BannerRequest {
@@ -23,13 +25,13 @@ public class BannerRequest {
     private Integer requestedLength;
 
     @Column(name = "requested_date", nullable = false)
-    private LocalDateTime requestedDate;
+    private LocalDate requestedDate;
 
     @Column(name = "client_name", nullable = false)
     private String clientName;
 
     @Column(name = "posted_date", nullable = false)
-    private LocalDateTime postedDate;
+    private LocalDate postedDate;
 
     @Column(name = "posted_duration", nullable = false)
     private Period postedDuration;

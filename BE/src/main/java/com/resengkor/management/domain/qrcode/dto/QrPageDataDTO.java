@@ -1,14 +1,13 @@
 package com.resengkor.management.domain.qrcode.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDate;
 
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
+@Builder
 public class QrPageDataDTO {
 
     private String company; // 업체명
