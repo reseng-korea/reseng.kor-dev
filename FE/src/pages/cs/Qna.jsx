@@ -27,9 +27,14 @@ const Qna = () => {
 
   const handlePageChange = (pageNumber) => {
     console.log(`active page is ${pageNumber}`);
-    navigateTo(`${routes.qna.replace(':pageNumber', pageNumber)}`);
+    navigateTo(`/qna?page=${pageNumber}`);
 
     setActivePage(pageNumber);
+  };
+
+  const handleRowClick = (id) => {
+    // URL을 qna/{id}로 변경
+    navigateTo(`/qna/${id}`);
   };
 
   return (
@@ -71,6 +76,7 @@ const Qna = () => {
                   <tr
                     key={inquiry.id}
                     className="border-b hover:bg-placeHolder"
+                    onClick={() => handleRowClick(inquiry.id)}
                   >
                     <td className="py-3 px-4 border-b">{inquiry.id}</td>
                     <td className="py-2 px-4 border-b text-left">

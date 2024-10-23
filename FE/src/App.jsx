@@ -43,7 +43,9 @@ import QnaDetail from './pages/cs/QnaDetail';
 //reference Room
 import Certificate from './pages/referenceRoom/Certificate';
 import Coa from './pages/referenceRoom/Coa';
+import CoaDetail from './pages/referenceRoom/CoaDetail';
 import Press from './pages/referenceRoom/Press';
+import PressDetail from './pages/referenceRoom/PressDetail';
 
 //items
 import Banner from './pages/items/Banner';
@@ -113,21 +115,28 @@ function App() {
           {/* 자주 묻는 질문 페이지 */}
           <Route path="/faq" element={<Faq />} />
           {/* 사용자가 "/qna"로 들어왔을 때 자동으로 "/qna/1"로 리다이렉트 */}
-          <Route path="/qna" element={<Navigate to="/qna/1" />} />
+          {/* <Route
+            path="//qna/?page={:pageNumber}"
+            element={<Navigate to="/qna/?page={1}" />}
+          /> */}
           {/* 1:1 문의 페이지 */}
-          <Route path="/qna/:pageNumber" element={<Qna />} />
+          <Route path="/qna" element={<Qna />} />
           {/* 1:1 문의 글 등록 페이지 */}
           <Route path="/qna/register" element={<QnaRegister />} />
           {/* 1:1 문의 글 상세 페이지 */}
-          <Route path="/qna/12" element={<QnaDetail />} />
+          <Route path="/qna/:pageNumber" element={<QnaDetail />} />
 
           {/* reference Room */}
           {/* 인증서 페이지 */}
           <Route path="/certificate" element={<Certificate />} />
           {/* 성적서 페이지 */}
           <Route path="/coa" element={<Coa />} />
+          {/* 성적서 상세 페이지 */}
+          <Route path="/coa/1" element={<CoaDetail />} />
           {/* 보도 자료 페이지 */}
           <Route path="/press" element={<Press />} />
+          {/* 보도 자료 상세 페이지 */}
+          <Route path="/press/1" element={<PressDetail />} />
 
           {/* items */}
           {/* (아이템) 친환경 현수막 페이지 */}
