@@ -20,6 +20,8 @@ public enum ExceptionStatus {
     TOKEN_EXPIRED(-1000, "토큰이 만료되었습니다."),
     REFRESH_TOKEN_EXPIRED(-1001, "리프레쉬토큰이 만료되었습니다."),
     TOKEN_NOT_FOUND_IN_COOKIE(-1002, "토큰이 쿠키에 없습니다."),
+    TOKEN_NOT_FOUND_IN_HEADER(-1003, "토큰이 헤더에 없습니다."),
+    TOKEN_NOT_FOUND(-1004, "토큰이 DB에 존재하지 않습니다."),
     TOKEN_PARSE_ERROR(4002, "JWT 토큰 파싱에 실패하였습니다."),
     AUTHENTICATION_FAILED(4003, "유저 인증에 실패하였습니다."),
     FORBIDDEN_FAILED(4003, "콘텐츠에 접근할 수 없어, 정보를 조회할 수 없습니다."),

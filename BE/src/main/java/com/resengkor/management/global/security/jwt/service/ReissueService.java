@@ -1,5 +1,9 @@
 package com.resengkor.management.global.security.jwt.service;
 
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
+import com.resengkor.management.global.response.CommonResponse;
+import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.jwt.entity.RefreshToken;
 import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
@@ -26,27 +30,27 @@ public class ReissueService {
     private final RefreshTokenService refreshTokenService;
     private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L;
 
-    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+    public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
         // 헤더에서 refresh키에 담긴 토큰을 꺼냄
         String refresh = null;
         refresh = request.getHeader("Refresh");
 
         // 헤더에 refresh 토큰 x
         if (refresh == null) {
-            return new ResponseEntity<>("Refresh token is null", HttpStatus.BAD_REQUEST);
+            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER);
         }
 
         // 만료된 토큰은 payload 읽을 수 없음 -> ExpiredJwtException 발생
         try {
             jwtUtil.isExpired(refresh);
         } catch(ExpiredJwtException e){
-            return new ResponseEntity<>("Refresh token expired", HttpStatus.BAD_REQUEST);
+            throw new CustomException(ExceptionStatus.REFRESH_TOKEN_EXPIRED);
         }
 
         // refresh 토큰이 아님
         String category = jwtUtil.getCategory(refresh);
         if(!category.equals("Refresh")) {
-            return new ResponseEntity<>("invalid Refresh token", HttpStatus.BAD_REQUEST);
+            throw new CustomException(ExceptionStatus.EXCEPTION);
         }
 
         String email = jwtUtil.getEmail(refresh);
@@ -59,7 +63,7 @@ public class ReissueService {
 
         // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
         if(!isExist) {
-            return new ResponseEntity<>("invalid Refresh token", HttpStatus.BAD_REQUEST);
+            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND);
         }
 
         long refreshTokenExpiration;
@@ -67,6 +71,7 @@ public class ReissueService {
             // 로그인 유지 기능
             // isAuto가 true인 경우에만 남은 기간을 계산하여 새로 발급
             try {
+                //함수가 시간을 넘겨야해서 다시 이전 refresh 유효기간을 그대로 넘기지x
                 Date now = new Date();
                 SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // 날짜 형식
                 Date tokenExpiration = sdf.parse(refreshToken.getExpiration()); // ParseException 발생 가능
@@ -74,19 +79,18 @@ public class ReissueService {
 
                 // 만료 시간이 지났다면 재발급 불가 (로그인 유지 한 달이 만료됨)
                 if (remainingTimeMs <= 0) {
-                    return new ResponseEntity<>("Refresh token expired, please log in again", HttpStatus.UNAUTHORIZED);
+                    throw new CustomException(ExceptionStatus.REFRESH_TOKEN_EXPIRED);
                 }
-
                 // 남은 기간만큼 새 Refresh Token 발급
                 refreshTokenExpiration = remainingTimeMs;
 
             } catch (ParseException e) {
                 // parse에 실패한 경우 처리
-                return new ResponseEntity<>("Invalid date format for refresh token expiration", HttpStatus.BAD_REQUEST);
+                throw new CustomException(ExceptionStatus.TOKEN_PARSE_ERROR);
             }
         }
         else{
-            refreshTokenExpiration = 60L * 60L * 24L * 1000L;
+            refreshTokenExpiration = 60 * 60 * 24 * 1000L;
         }
 
         // new tokens
@@ -95,12 +99,13 @@ public class ReissueService {
 
         // 기존 refresh DB 삭제, 새로운 refresh 저장
         refreshRepository.deleteByRefresh(refresh);
-        refreshTokenService.saveRefresh(email, (int) (refreshTokenExpiration / 1000), newRefresh);
+        refreshTokenService.saveRefresh(email, (int) (refreshTokenExpiration / 1000L), newRefresh);
 
         //헤더로 전해줌
-        response.setHeader("access", newAccess);
+        response.setHeader("Authorization", "Bearer " + newAccess);
         response.setHeader("Refresh", newRefresh);
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS .getCode(),
+                ResponseStatus.RESPONSE_SUCCESS .getMessage());
     }
 }
