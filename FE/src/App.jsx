@@ -55,6 +55,7 @@ import Member from './pages/mypage/Member';
 import Manage from './pages/mypage/Manage';
 import Order from './pages/mypage/Order';
 import OrderList from './pages/mypage/OrderList';
+import OfferList from './pages/mypage/OfferList';
 import Qr from './pages/mypage/Qr';
 import UserConfirm from './pages/mypage/UserConfirm';
 import UserEdit from './pages/mypage/UserEdit';
@@ -145,6 +146,8 @@ function App() {
           <Route path="/mypage/order" element={<Order />} />
           {/* 현수막 발주 페이지 - 발주 내역 */}
           <Route path="/mypage/orderlist" element={<OrderList />} />
+          {/* 현수막 발주 페이지 - 발주 받은 내역 */}
+          <Route path="/mypage/offerlist" element={<OfferList />} />
           {/* QR 발생기 페이지 */}
           <Route path="/mypage/qr" element={<Qr />} />
           {/* 회원 정보 확인 페이지 */}
