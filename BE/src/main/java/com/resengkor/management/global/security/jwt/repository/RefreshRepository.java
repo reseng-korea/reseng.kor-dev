@@ -18,5 +18,9 @@ public interface RefreshRepository extends JpaRepository<RefreshToken, Long> {
     @Transactional
     void deleteByRefresh(String refresh);
 
+    // email로 해당하는 refresh 토큰 삭제
+    @Transactional
+    void deleteByEmail(String email); // 추가된 메서드
+
     Optional<RefreshToken> findByRefresh(String refresh);
 }

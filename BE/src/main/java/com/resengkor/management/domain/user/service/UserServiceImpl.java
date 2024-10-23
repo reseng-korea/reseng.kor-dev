@@ -10,8 +10,11 @@ import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.domain.user.entity.*;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
+import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.DataResponse;
 import com.resengkor.management.global.response.ResponseStatus;
+import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
+import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -36,6 +39,8 @@ public class UserServiceImpl implements UserService{
     private final RoleHierarchyRepository roleHierarchyRepository;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserMapper userMapper; // Mapper를 주입받음
+    private final JWTUtil jwtUtil;
+    private final RefreshRepository refreshRepository;
 
     @Transactional(readOnly = true)
     public Map<String, String> validateHandling(BindingResult bindingResult) {
@@ -197,4 +202,49 @@ public class UserServiceImpl implements UserService{
         throw new RuntimeException("적절한 조상을 찾을 수 없습니다.");
     }
 
+    //회원 탈퇴 로직
+    @Transactional
+    public CommonResponse withdrawUser(String token) {
+        log.info("------------------------------------------------");
+        log.info("회원탈퇴 로직 시작");
+        log.info("------------------------------------------------");
+        //1.JWT에서 사용자 이메일 추출
+        String userEmail = jwtUtil.getEmail(token);
+        //2.사용자 찾기
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        log.info("------------------------------------------------");
+        log.info("회원탈퇴:사용자 찾음");
+        log.info("------------------------------------------------");
+
+        //3.만약에 로그인을 social로 했다면 따로 api 처리
+        if(user.getLoginType().equals(LoginType.SOCIAL)){
+            if(user.getSocialProvider().equals(SocialProvider.GOOGLE)){
+                //만약에 구글
+
+            }
+            else if(user.getSocialProvider().equals(SocialProvider.KAKAO)){
+                //만약에 카카오
+
+            }
+            else{
+
+            }
+        }
+        //4.사용자 상태를 비활성으로 변경
+        user.editStatus(false);
+        userRepository.save(user);
+        log.info("------------------------------------------------");
+        log.info("회원탈퇴:사용자 비활성화");
+        log.info("------------------------------------------------");
+
+        //5.해당 유저의 refresh토큰 전부 삭제
+        refreshRepository.deleteByEmail(userEmail);
+        log.info("------------------------------------------------");
+        log.info("회원탈퇴:refresh 토큰 삭제");
+        log.info("------------------------------------------------");
+
+        return new CommonResponse(ResponseStatus.UPDATED_SUCCESS .getCode(),
+                ResponseStatus.UPDATED_SUCCESS .getMessage());
+    }
 }

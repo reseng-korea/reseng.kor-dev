@@ -4,6 +4,7 @@ import com.resengkor.management.domain.user.dto.FindEmailRequest;
 import com.resengkor.management.domain.user.dto.FindPasswordRequest;
 import com.resengkor.management.domain.user.service.UserServiceImpl;
 import com.resengkor.management.domain.user.dto.UserRegisterRequest;
+import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.DataResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -50,4 +51,11 @@ public class AuthController {
         // 이메일 찾기 서비스 호출
         return userServiceImpl.findEmail(findEmailRequest);
     }
+
+    //일반 회원탈퇴
+    @PutMapping("/withdrawal")
+    public CommonResponse withdrawUser(@RequestHeader("Authorization") String token) {
+        return userServiceImpl.withdrawUser(token);
+    }
+
 }
