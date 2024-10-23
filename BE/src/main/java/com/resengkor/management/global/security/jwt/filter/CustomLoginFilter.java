@@ -35,7 +35,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
-    private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L;
+    private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L; //10분
 
     public CustomLoginFilter(String defaultFilterUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
         setFilterProcessesUrl(defaultFilterUrl);
@@ -100,7 +100,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //2. 토큰 생성
         //"access"를 통해 카테고리값을 넣어준다.
-        long refreshTokenExpiration = isAuto ? 2592000000L : 86400000L; //로그인 유지 30일, 일반 24시간
+        long refreshTokenExpiration = isAuto ? 30 * 24 * 60 * 60 * 1000L : 24 * 60 * 60 * 1000L; //로그인 유지 30일, 일반 24시간
         String access = jwtUtil.createJwt("access", email, role, ACCESS_TOKEN_EXPIRATION,isAuto);
         String refresh = jwtUtil.createJwt("refresh", email, role, refreshTokenExpiration,isAuto);
 
@@ -111,7 +111,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         log.info("------------------------------------------------");
 
         //3. 응답 설정
-        response.setHeader("Authorization", access);
+        response.setHeader("Authorization", "Bearer " + access);
         response.setHeader("Refresh", refresh);
         response.setStatus(HttpStatus.OK.value());
     }
