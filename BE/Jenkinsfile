@@ -30,7 +30,7 @@ pipeline {
             }
         }
 
-        백엔드 프로젝트 빌드
+        // 백엔드 프로젝트 빌드
         stage("Build") {
             steps {
                 script {
