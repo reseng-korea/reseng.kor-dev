@@ -47,6 +47,8 @@ export const useNavigateTo = () => {
     mypageUserEdit: '/mypage/user/edit',
     mypageUser: '/mypage/user',
     mypageWithdraw: '/mypage/withdraw',
+    qrSuccess: '/mypage/qr/success',
+    qrFailure: '/mypage/qr/failure',
     tmp: '/tmp',
   };
 
