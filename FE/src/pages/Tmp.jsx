@@ -32,6 +32,8 @@ const Tmp = () => {
         <button onClick={() => navigateTo(routes.qnaDetail)}>
           1:1 문의 상세 페이지
         </button>
+        <button onClick={() => navigateTo(routes.qrSuccess)}>qr 성공</button>
+        <button onClick={() => navigateTo(routes.qrFailure)}>qr 실패</button>
       </div>
     </div>
   );
