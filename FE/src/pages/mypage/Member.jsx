@@ -1,10 +1,10 @@
 import Layout from '../../components/Layouts';
 import React, { useState } from 'react';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { regionsData } from './../data/regionsData';
+import { regionsData } from '../../data/regionsData';
 
 import reset from '../../assets/member_reset.png';
-import { memberData } from '../data/memberData';
+import { memberData } from '../../data/memberData';
 
 const Member = () => {
   // 페이지 이동
@@ -78,7 +78,7 @@ const Member = () => {
               {/* 설정하는 곳 */}
               <div className="flex mb-2 text-left">
                 {/* 지역 설정 */}
-                <div className="flex flex-col px-3 py-2 w-2/5">
+                <div className="flex flex-col w-2/5 px-3 py-2">
                   <span className="text-lg font-bold">지역 설정</span>
                   <div className="flex items-center py-2 space-x-2">
                     <select
