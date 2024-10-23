@@ -10,6 +10,8 @@ RUN npm cache clean --force
 
 RUN npm install
 
+RUN npm install vite --save-dev
+
 COPY . .
 
 RUN npm run build
