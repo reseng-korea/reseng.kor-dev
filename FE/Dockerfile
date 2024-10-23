@@ -1,8 +1,8 @@
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 
 ENV NODE_ENV production
 
-CMD [ "cd", "/front" ]
+CMD [ "cd", "/FE" ]
 
 COPY package.json .
 
@@ -10,7 +10,7 @@ RUN npm cache clean --force
 
 RUN npm install
 
-RUN npm install -g vite --save-dev
+# RUN npm install vite --save-dev
 
 COPY . .
 
