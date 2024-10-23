@@ -59,7 +59,7 @@ const Order = () => {
               <span className="text-black">발주 내역</span>
             </button>
             <button
-              onClick={() => navigateTo(routes.order)}
+              onClick={() => navigateTo(routes.mypageOfferList)}
               className="flex items-center justify-center h-10 rounded-none bg-gray1 hover:text-lg hover:border-none"
             >
               <span className="text-black">발주 받은 내역</span>

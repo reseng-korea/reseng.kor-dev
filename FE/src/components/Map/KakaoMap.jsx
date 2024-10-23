@@ -5,6 +5,7 @@ const KakaoMap = () => {
 
   useEffect(() => {
     const kakaoApiKey = import.meta.env.VITE_KAKAO_API_KEY;
+    // console.log(kakaoApiKey);
 
     if (!window.kakao || !window.kakao.maps) {
       const script = document.createElement('script');
