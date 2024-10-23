@@ -36,6 +36,7 @@ public class JWTFilter extends OncePerRequestFilter {
         // 헤더에서 access키에 담긴 토큰을 꺼냄
         String access = null;
         access = request.getHeader("Authorization");
+        log.info("Access = "+access);
 
         // 토큰이 없다면 다음 필터로 넘김
         if (access == null) {
@@ -94,6 +95,9 @@ public class JWTFilter extends OncePerRequestFilter {
         CustomUserDetails customUserDetails = new CustomUserDetails(userPrincipal);
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
+        log.info("------------------------------------------------");
+        log.info("jwt필터 넘어감");
+        log.info("------------------------------------------------");
 
         filterChain.doFilter(request, response);
     }

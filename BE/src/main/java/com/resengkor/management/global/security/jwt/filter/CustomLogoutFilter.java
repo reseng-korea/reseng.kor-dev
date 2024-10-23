@@ -43,7 +43,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //해당요청이 logout요청인지 판단
 //        String requestURI = request.getRequestURI();
         // uri check
-        if (!defaultFilterUrl.matches("^\\/logout$")) {
+        if (!defaultFilterUrl.matches("^\\/api/v1/logout$")) {
             //로그아웃이 아니면 다음 필터로 넘어감
             chain.doFilter(request, response);
             return;

@@ -88,4 +88,9 @@ public class User {
     public void editPassword(String password){
         this.password = password;
     }
+
+    //사용자 회원탈퇴 처리
+    public void editStatus(boolean status){
+        this.status = status;
+    }
 }

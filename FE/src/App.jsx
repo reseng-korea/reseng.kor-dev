@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from 'react-router-dom';
 
 import './App.css';
@@ -63,13 +64,26 @@ import UserConfirm from './pages/mypage/UserConfirm';
 import UserEdit from './pages/mypage/UserEdit';
 import Withdraw from './pages/mypage/Withdraw';
 
+// qr
+import QrSuccess from './pages/qr/QrSuccess';
+import QrFailure from './pages/qr/QrFailure';
+
 import Tmp from './pages/Tmp';
 
 function App() {
+  // 현재 경로를 가져옴
+  const location = useLocation();
+
+  // 특정 경로에 따라 Navbar를 숨김 (예: /signin, /signup, /pwinquiry 등)
+  const hideNavbarPaths = ['/mypage/qr/success', '/mypage/qr/failure'];
+
+  // Navbar를 숨길지 여부를 결정하는 변수
+  const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
+
   return (
-    <Router>
+    <>
       <ScrollToTop />
-      <Navbar />
+      {!shouldHideNavbar && <Navbar />}
       <div className="h-screen">
         <Routes>
           {/* 메인페이지 */}
@@ -166,11 +180,15 @@ function App() {
           {/* 탈퇴 페이지 */}
           <Route path="/mypage/withdraw" element={<Withdraw />} />
 
+          {/* QR 발생기 확인 성공 페이지 */}
+          <Route path="/mypage/qr/success" element={<QrSuccess />} />
+          {/* QR 발생기 확인 실패 페이지 */}
+          <Route path="/mypage/qr/failure" element={<QrFailure />} />
           {/* 임시  페이지(삭제 예정) */}
           <Route path="/tmp" element={<Tmp />} />
         </Routes>
       </div>
-    </Router>
+    </>
   );
 }
 
