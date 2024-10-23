@@ -113,13 +113,16 @@ function App() {
           {/* 자주 묻는 질문 페이지 */}
           <Route path="/faq" element={<Faq />} />
           {/* 사용자가 "/qna"로 들어왔을 때 자동으로 "/qna/1"로 리다이렉트 */}
-          <Route path="/qna" element={<Navigate to="/qna/1" />} />
+          {/* <Route
+            path="//qna/?page={:pageNumber}"
+            element={<Navigate to="/qna/?page={1}" />}
+          /> */}
           {/* 1:1 문의 페이지 */}
-          <Route path="/qna/:pageNumber" element={<Qna />} />
+          <Route path="/qna" element={<Qna />} />
           {/* 1:1 문의 글 등록 페이지 */}
           <Route path="/qna/register" element={<QnaRegister />} />
           {/* 1:1 문의 글 상세 페이지 */}
-          <Route path="/qna/12" element={<QnaDetail />} />
+          <Route path="/qna/:pageNumber" element={<QnaDetail />} />
 
           {/* reference Room */}
           {/* 인증서 페이지 */}
