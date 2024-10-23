@@ -1,14 +1,12 @@
 FROM node:20-alpine AS build
 
-CMD [ "cd", "/FE" ]
+WORKDIR /FE
 
 COPY package.json .
 
 RUN npm cache clean --force
 
 RUN npm install
-
-# RUN npm install vite --save-dev
 
 COPY . .
 
@@ -20,7 +18,9 @@ ENV NODE_ENV production
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
-COPY --from=build /build /usr/share/nginx/html
+# Vite의 경우 빌드의 결과물이 dist에 생성됨
+COPY --from=build /FE/dist /usr/share/nginx/html
+# COPY --from=build /build /usr/share/nginx/html
 
 EXPOSE 5173
 
