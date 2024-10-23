@@ -26,19 +26,20 @@ public class QrPageDataService {
         this.userRepository = userRepository;
     }
 
-    // 여러 엔티티에서 데이터를 조회해서 DTO로 변환
-    public QrPageDataDTO getQrPageDate(Long userId, Long bannerRequestId) {
+    // BannerRequest 엔티티에서 데이터를 조회해서 DTO로 변환
+    public QrPageDataDTO getQrPageDate(Long bannerRequestId) {
 
         // JWT token 사용해서 본인정보 가져오는 로직으로 User 가져오기.
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+//        User user = userRepository.findById(userId)
+//                .orElseThrow(() -> new RuntimeException("User not found"));
+
         BannerRequest bannerRequest = bannerRequestRepository.findById(bannerRequestId)
                 .orElseThrow(() -> new RuntimeException("Banner request not found"));
         BannerType bannerType = bannerRequest.getBannerType();
 
         return QrPageDataDTO.builder()
-                .company(user.getCompanyName())
+//                .company(user.getCompanyName())
                 .requestedLength(bannerRequest.getRequestedLength())
                 .typeWidth(bannerType.getTypeWidth())
                 .clientName(bannerRequest.getClientName())
@@ -48,7 +49,7 @@ public class QrPageDataService {
                 .build();
     }
 
-    // 여러 엔티티에서 데이터를 저장하는 로직
+    // BannerRequest 에 데이터를 저장하는 로직
     public void saveQrPageData(QrPageDataDTO qrPageDataDTO) {
 
         // 각 엔티티에 대한 데이터 저장 로직
