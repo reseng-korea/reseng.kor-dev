@@ -3,9 +3,8 @@ import Layout from '../../components/Layouts';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 import tmp3 from '../../assets/tmp_3.png';
-import tmp4 from '../../assets/tmp_4.png';
 
-const Coa = () => {
+const CoaDetail = () => {
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
@@ -38,43 +37,38 @@ const Coa = () => {
           <hr className="w-full border-t border-gray1 mb-6" />
           {/* 메인 */}
           <div className="flex flex-col">
-            <div
-              className="flex flex-wrap w-full justify-center"
-              onClick={() => navigateTo(routes.coaDetail)}
-            >
-              {/* 이미지 영역 */}
-              <div className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-1/3 justify-center items-center mx-8">
-                <div className="flex justify-center items-center border border-gray3 rounded-lg px-8 py-8 mt-4">
-                  <img className="" src={tmp3} alt="인증서 1" />
-                </div>
-
-                {/* 텍스트 영역 */}
-                <div className="w-full mt-4 text-center">
-                  <span className="text-xl font-bold">
-                    [HUVIS] 2023 OEKO-TEX CERTIFICATE
-                  </span>
-                </div>
-              </div>
-              {/* 이미지 영역 */}
-              <div className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-1/3 justify-center items-center mx-8">
-                <div className="flex justify-center items-center border border-gray3 rounded-lg px-8 py-8 mt-4">
-                  <img className="" src={tmp4} alt="인증서 1" />
-                </div>
-
-                {/* 텍스트 영역 */}
-                <div className="w-full mt-4 text-center">
-                  <span className="text-xl font-bold">
-                    [KATRI] ecocen 미세플라스틱 분석 결과
-                  </span>
-                </div>
+            <div>
+              <span className="text-2xl font-bold">
+                [HUVIS] 2023 OEKO-TEX CERTIFICATE
+              </span>
+              <hr className="w-full mt-6 mb-6 border border-gray3" />
+              <div className="flex flex-col items-center">
+                <img className="w-1/3" src={tmp3} alt="인증서 1" />
+                <span>[HUVIS] 2023 OEKO-TEX CERTIFICATE</span>
               </div>
             </div>
-            <div className="flex justify-end mt-12">
+            {/* 목차 */}
+            <div className="flex flex-col mt-24">
+              <hr className="w-full mt-6 mb-6 border border-gray2" />
+              <div className="flex space-x-12 px-4">
+                <span>이전 글</span>
+                <span>[KATRI] ecocen 미세플라스틱 분석 결과</span>
+              </div>
+              <hr className="w-full mt-6 mb-6 border border-gray2" />
+              <div className="flex space-x-12 px-4">
+                <span>다음 글</span>
+                <span>다음 글이 없습니다.</span>
+              </div>
+              <hr className="w-full mt-6 mb-6 border border-gray2" />
+            </div>
+            {/* 목록 */}
+            <div className="flex items-center justify-center mt-4 mb-12">
               <button
+                onClick={() => navigateTo(routes.coa)}
                 type="submit"
-                className="px-8 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-white hover:text-primary"
+                className="px-8 py-2 font-bold border border-gray3 transition-colors duration-300 rounded-3xl hover:bg-white hover:text-primary"
               >
-                글쓰기
+                목록
               </button>
             </div>
           </div>
@@ -84,4 +78,4 @@ const Coa = () => {
   );
 };
 
-export default Coa;
+export default CoaDetail;

@@ -1,11 +1,14 @@
 import Layout from '../../components/Layouts';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import { useParams } from 'react-router-dom';
 
 import { IoPersonSharp } from 'react-icons/io5';
 
 const QnaDetail = () => {
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
+
+  const { id } = useParams();
 
   return (
     <Layout>
@@ -72,7 +75,10 @@ const QnaDetail = () => {
                 <button className="px-4 py-2 font-bold text-gray4 transition-colors duration-300 bg-white border border-gray4 text-xs sm:text-sm md:text-md rounded-lg hover:bg-white hover:text-primary">
                   삭제
                 </button>
-                <button className="px-4 py-2 font-bold text-gray4 transition-colors duration-300 bg-white border border-gray4 text-xs sm:text-sm md:text-md rounded-lg hover:bg-white hover:text-primary">
+                <button
+                  onClick={() => navigateTo(routes.qnaRegist)}
+                  className="px-4 py-2 font-bold text-gray4 transition-colors duration-300 bg-white border border-gray4 text-xs sm:text-sm md:text-md rounded-lg hover:bg-white hover:text-primary"
+                >
                   수정
                 </button>
               </div>

@@ -1,5 +1,6 @@
 package com.resengkor.management.global.security.jwt.controller;
 
+import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.security.jwt.service.ReissueService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReissueController {
     private final ReissueService reissueService;
     @PostMapping("/reissue")
-    public ResponseEntity<?> reissue(HttpServletRequest request, HttpServletResponse response) {
+    public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
         return reissueService.reissue(request, response);
     }
 }

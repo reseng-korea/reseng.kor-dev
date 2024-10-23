@@ -24,34 +24,37 @@ import java.io.IOException;
  */
 
 @RequiredArgsConstructor
+@Slf4j
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        System.out.println("JWT token filter in");
-
+        log.info("------------------------------------------------");
+        log.info("JWT token filter in");
+        log.info("------------------------------------------------");
         // 헤더에서 access키에 담긴 토큰을 꺼냄
         String access = null;
         access = request.getHeader("Authorization");
 
         // 토큰이 없다면 다음 필터로 넘김
-        // access token null
         if (access == null) {
             //권한이 필요없는 api일 수도 있으니 일단 넘김
             filterChain.doFilter(request, response);
-            System.out.println("go to the next filter");
+            log.info("------------------------------------------------");
+            log.info("Access토큰 없음");
+            log.info("권한이 필요없는 api일 수도 있으니 일단 넘김");
+            log.info("------------------------------------------------");
             return;
         }
         // 토큰이 있다면
         // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
-        // access token expired
         try{
             jwtUtil.isExpired(access);
         } catch (ExpiredJwtException e){
-            //만료되면 에러가 던져짐
-
-            //response body
+            log.info("------------------------------------------------");
+            log.info("Access토큰 만료");
+            log.info("------------------------------------------------");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -61,6 +64,9 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // not access token
         if(!category.equals("access")){
+            log.info("------------------------------------------------");
+            log.info("Access토큰이 아님");
+            log.info("------------------------------------------------");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
