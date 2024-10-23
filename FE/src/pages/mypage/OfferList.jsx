@@ -1,7 +1,7 @@
 import Layout from '../../components/Layouts';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
-const OrderList = () => {
+const OfferList = () => {
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
@@ -54,15 +54,15 @@ const OrderList = () => {
             </button>
             <button
               onClick={() => navigateTo(routes.mypageOrderList)}
-              className="flex items-center justify-center h-10 rounded-none bg-primary hover:text-lg"
+              className="flex items-center justify-center h-10 rounded-none bg-gray1 hover:text-lg"
             >
-              <span className="text-white">발주 내역</span>
+              <span className="text-black">발주 내역</span>
             </button>
             <button
               onClick={() => navigateTo(routes.mypageOfferList)}
-              className="flex items-center justify-center h-10 rounded-none bg-gray1 hover:text-lg hover:border-none"
+              className="flex items-center justify-center h-10 rounded-none bg-primary hover:text-lg"
             >
-              <span className="text-black">발주 받은 내역</span>
+              <span className="text-white">발주 받은 내역</span>
             </button>
           </div>
           {/* 메인 */}
@@ -74,7 +74,7 @@ const OrderList = () => {
                 <div className="flex w-full md:w-1/2 justify-end items-center space-x-4">
                   <span className="w-1/5 text-right font-bold">업체명</span>
                   <div className="w-3/5 px-4 py-2 border border-gray4 rounded-lg text-left">
-                    내 대리점 명
+                    내 자식 명
                   </div>
                 </div>
                 <div className="flex w-full md:w-1/2 justify-start items-center space-x-4">
@@ -116,10 +116,20 @@ const OrderList = () => {
               </div>
             </div>
             <div className="flex flex-col w-1/5 justify-center items-center px-4 py-8 rounded-lg border border-gray4">
-              <span className="text-lg font-bold mb-6">상태 확인</span>
-              <div className="px-6 py-3 border border-primary rounded-lg">
-                <span className="text-lg">확인 완료</span>
-              </div>
+              <span className="w-full text-lg font-bold mb-6">
+                상태 업데이트
+              </span>
+              <select className="w-2/3 p-2 rounded-lg border border-gray3">
+                <option value="">미확인</option>
+                <option value="800m">확인 완료</option>
+                <option value="900m">출고 완료(택배)</option>
+                <option value="1300m">출고 완료(화물)</option>
+              </select>
+              {/* <div className="w-2/3 py-2 mt-3"> */}
+              <button className="w-2/3 items-center justify-center border border-gray3 mt-3">
+                <span>저장</span>
+              </button>
+              {/* </div> */}
             </div>
           </div>
         </div>
@@ -128,4 +138,4 @@ const OrderList = () => {
   );
 };
 
-export default OrderList;
+export default OfferList;
