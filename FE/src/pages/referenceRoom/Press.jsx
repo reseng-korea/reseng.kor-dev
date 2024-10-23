@@ -60,6 +60,7 @@ const Press = () => {
                 },
               ].map((item, index) => (
                 <div
+                  onClick={() => navigateTo(routes.pressDetail)}
                   key={index}
                   className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-1/4 justify-center items-center mx-8"
                 >
