@@ -41,9 +41,9 @@ import QnaRegister from './pages/cs/QnaRegister';
 import QnaDetail from './pages/cs/QnaDetail';
 
 //reference Room
-import Certificate from './pages/referenceRoom/certificate';
-import Coa from './pages/referenceRoom/coa';
-import Press from './pages/referenceRoom/press';
+import Certificate from './pages/referenceRoom/Certificate';
+import Coa from './pages/referenceRoom/Coa';
+import Press from './pages/referenceRoom/Press';
 
 //items
 import Banner from './pages/items/Banner';
