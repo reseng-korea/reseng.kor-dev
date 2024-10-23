@@ -1,7 +1,5 @@
 FROM node:20-alpine AS build
 
-ENV NODE_ENV production
-
 CMD [ "cd", "/FE" ]
 
 COPY package.json .
@@ -17,6 +15,8 @@ COPY . .
 RUN npm run build
 
 FROM nginx:1.21.3-alpine
+
+ENV NODE_ENV production
 
 COPY nginx.conf /etc/nginx/nginx.conf
 
