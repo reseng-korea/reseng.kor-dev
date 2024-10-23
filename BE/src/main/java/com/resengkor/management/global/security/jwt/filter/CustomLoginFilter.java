@@ -1,6 +1,8 @@
 package com.resengkor.management.global.security.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.dto.LoginDTO;
 import com.resengkor.management.global.security.jwt.entity.RefreshToken;
 import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
@@ -10,6 +12,7 @@ import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -26,13 +29,13 @@ import java.util.Date;
 import java.util.Iterator;
 
 //@Component -> 금지. authenticationManager must be specified 오류 남.
-//@RequiredArgsConstructor
+@Slf4j
 public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
-    private final long ACCESS_TOKEN_EXPIRATION=600000L;
+    private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L;
 
     public CustomLoginFilter(String defaultFilterUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
         setFilterProcessesUrl(defaultFilterUrl);
@@ -41,9 +44,13 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         this.refreshRepository = refreshRepository;
     }
 
+    //실제 로그인 진행 메소드
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        System.out.println("authentication in");
+        log.info("------------------------------------------------");
+        log.info("로그인 시작");
+        log.info("------------------------------------------------");
+        // DTO 클래스로 역직렬화
         LoginDTO loginDTO;
         try {
             ObjectMapper objectMapper = new ObjectMapper();
@@ -53,57 +60,63 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
            loginDTO = LoginDTO.builder()
                     .email(objectMapper.readTree(messageBody).get("email").asText())
                     .password(objectMapper.readTree(messageBody).get("password").asText())
+                    .isAuto(objectMapper.readTree(messageBody).get("isAuto").asBoolean())
                     .build();
-
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            log.info("------------------------------------------------");
+            log.info("LoginDTO 직렬화 오류");
+            log.info("------------------------------------------------");
+            throw new CustomException(ExceptionStatus.EXCEPTION);
         }
 
-        String email = loginDTO.getEmail();
-        String password = loginDTO.getPassword();
+        // 사용자 인증을 시도하기 위한 토큰 생성(아직 인증이 되지 않은 상태)
+        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
 
-        System.out.println(email);
-
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(email, password);
-
+        //여기서 authenticationManager가 인증을 대신 처리
+        authToken.setDetails(loginDTO);
         return authenticationManager.authenticate(authToken);
     }
 
     @Override
-    //로그인 성공 핸들러
+    //로그인 성공 핸들러 -> 여기서 jwt발급
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
-        System.out.println("if login sucess, handler move");
+        log.info("------------------------------------------------");
+        log.info("로그인 성공해서 로그인 성공 핸들러 동작");
+        log.info("------------------------------------------------");
 
-        //로그인 성공하면 동작함. => 2개의 토큰을 발급하자!
-        //2개의 토큰 발급
         //1. authentication에서 유저 정보를 가져오자.
         String email = authentication.getName();
+        LoginDTO loginDTO = (LoginDTO) authentication.getDetails();
+        boolean isAuto = loginDTO.isAuto();
 
         //user의 role값을 가져온다.
         Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
+        log.info("------------------------------------------------");
+        log.info("isAuto = {}, role = {}",isAuto,role);
+        log.info("------------------------------------------------");
 
         //2. 토큰 생성
         //"access"를 통해 카테고리값을 넣어준다.
-        boolean isAuto = false;
         long refreshTokenExpiration = isAuto ? 2592000000L : 86400000L; //로그인 유지 30일, 일반 24시간
-        String access = jwtUtil.createJwt("access", email, role, ACCESS_TOKEN_EXPIRATION);
-        String refresh = jwtUtil.createJwt("refresh", email, role, refreshTokenExpiration);
+        String access = jwtUtil.createJwt("access", email, role, ACCESS_TOKEN_EXPIRATION,isAuto);
+        String refresh = jwtUtil.createJwt("refresh", email, role, refreshTokenExpiration,isAuto);
 
         //2-1. Refresh 토큰 DB에 저장 메소드
         addRefreshEntity(email, refresh, refreshTokenExpiration);
+        log.info("------------------------------------------------");
+        log.info("Refresh토큰 DB에 저장 성공");
+        log.info("------------------------------------------------");
 
         //3. 응답 설정
-        //access는 응답헤더에
-        //refresh는 쿠키에
         response.setHeader("Authorization", access);
         response.setHeader("Refresh", refresh);
-//        response.addCookie(createCookie("refresh", refresh));
         response.setStatus(HttpStatus.OK.value());
     }
 
+    //Refresh 토큰 DB에 저장 메소드
     private void addRefreshEntity(String email, String refresh, Long expiredMs) {
         Date date = new Date(System.currentTimeMillis() + expiredMs);
         RefreshToken refreshToken = RefreshToken.builder()
@@ -117,7 +130,9 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     //로그인 실패시 실행
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
-        System.out.println("login fail move");
+        log.info("------------------------------------------------");
+        log.info("로그인 실패");
+        log.info("------------------------------------------------");
         response.setStatus(401);
     }
 }

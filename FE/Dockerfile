@@ -1,8 +1,6 @@
-FROM node:18-alpine AS build
+FROM node:20-alpine AS build
 
-ENV NODE_ENV production
-
-CMD [ "cd", "/front" ]
+WORKDIR /FE
 
 COPY package.json .
 
@@ -16,9 +14,13 @@ RUN npm run build
 
 FROM nginx:1.21.3-alpine
 
+ENV NODE_ENV production
+
 COPY nginx.conf /etc/nginx/nginx.conf
 
-COPY --from=build /build /usr/share/nginx/html
+# Vite의 경우 빌드의 결과물이 dist에 생성됨
+COPY --from=build /FE/dist /usr/share/nginx/html
+# COPY --from=build /build /usr/share/nginx/html
 
 EXPOSE 5173
 

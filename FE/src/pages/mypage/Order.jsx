@@ -47,13 +47,13 @@ const Order = () => {
           {/* 더 하위 카테고리 */}
           <div className="flex justify-center space-x-2 mb-4">
             <button
-              onClick={() => navigateTo(routes.order)}
+              onClick={() => navigateTo(routes.mypageOrder)}
               className="flex items-center justify-center h-10 rounded-none bg-primary hover:text-lg"
             >
               <span className="text-white">발주</span>
             </button>
             <button
-              onClick={() => navigateTo(routes.order)}
+              onClick={() => navigateTo(routes.mypageOrderList)}
               className="flex items-center justify-center h-10 rounded-none bg-gray1 hover:text-lg"
             >
               <span className="text-black">발주 내역</span>

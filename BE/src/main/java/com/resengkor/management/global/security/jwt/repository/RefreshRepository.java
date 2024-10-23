@@ -5,6 +5,7 @@ import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface RefreshRepository extends JpaRepository<RefreshToken, Long> {
     //pk인 email로 찾기
@@ -16,4 +17,6 @@ public interface RefreshRepository extends JpaRepository<RefreshToken, Long> {
     //refresh토큰 지우기
     @Transactional
     void deleteByRefresh(String refresh);
+
+    Optional<RefreshToken> findByRefresh(String refresh);
 }

@@ -1,17 +1,16 @@
 pipeline {
     agent any
-    stages {
-        stage("Set Variable") {
-            steps {
-                script {
-                    IMAGE_NAME_BE = "reseng_back_image"
-                    CONTAINER_NAME_BE = "Reseng_Back_Dev"
-                    APPLICATION_YML_PATH = "/usr/spring/resources"
-                    PROJECT_DIR_BE = "BE"
-                }
-            }
-        }
 
+    environment {
+        IMAGE_NAME_BE = "reseng_back_image"
+        CONTAINER_NAME_BE = "Reseng_Back_Dev"
+        APPLICATION_YML_PATH = "/usr/spring/resources"
+        PROJECT_DIR_BE = "BE"
+        JAVA_HOME = "/opt/jdk-21"  // Java 21 설치 경로를 지정
+        PATH = "${JAVA_HOME}/bin:${PATH}"
+    }
+
+    stages {
         // 설정파일 참조
         stage("Copy Setting File") {
             steps {

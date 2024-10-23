@@ -23,6 +23,7 @@ import java.net.URLEncoder;
 public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JWTUtil jwtUtil;
     private final RefreshTokenService refreshTokenService;
+    private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -35,8 +36,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String role = authentication.getAuthorities().iterator().next().getAuthority();
 
         Integer expireS = 24 * 60 * 60;
-        String access = jwtUtil.createJwt("access", username, role, 60 * 10 * 1000L);
-        String refresh = jwtUtil.createJwt("refresh", username, role, expireS * 1000L);
+        String access = jwtUtil.createOuathJwt("access", username, role, ACCESS_TOKEN_EXPIRATION);
+        String refresh = jwtUtil.createOuathJwt("refresh", username, role, expireS * 1000L);
 
         // refresh 토큰 DB 저장
         refreshTokenService.saveRefresh(username, expireS, refresh);
