@@ -93,23 +93,6 @@ const Cerificate = () => {
                   <span className="mt-2 block">친환경 부문 10년 연속 1위</span>
                 </div>
               </div>
-              <div className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-2/7 items-center px-12 py-8 border border-gray3 rounded-lg mx-4 my-2">
-                {/* 이미지 영역 */}
-                <div className="flex justify-center items-center h-36">
-                  <img
-                    className="max-w-full max-h-full object-contain"
-                    src={tmp1}
-                    alt="인증서 3"
-                  />
-                </div>
-                {/* 텍스트 영역 */}
-                <div className="w-full mt-4 text-center">
-                  <span className="text-lg font-bold">
-                    한국 산업의 고객만족도
-                  </span>
-                  <span className="mt-2 block">친환경 부문 10년 연속 1위</span>
-                </div>
-              </div>
             </div>
             <div className="flex justify-end mt-12">
               <button
