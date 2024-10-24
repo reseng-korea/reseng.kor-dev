@@ -16,6 +16,9 @@ public class QrPageDataController {
         this.qrPageDataService = qrPageDataService;
     }
 
+    // JWT 유효성 검증 메서드
+    // JWT 토큰에서 사용자 ID 추출 메서드
+
     // QR 코드를 통해 접근한 페이지에서 데이터 조회
     @GetMapping("/data")
     public ResponseEntity<QrPageDataDTO> getQrPageData(@RequestParam Long bannerRequestId) {

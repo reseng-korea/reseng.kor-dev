@@ -8,6 +8,8 @@ import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -28,10 +30,13 @@ public class QrPageDataService {
 
     // BannerRequest 엔티티에서 데이터를 조회해서 DTO로 변환
     public QrPageDataDTO getQrPageDate(Long bannerRequestId) {
-
         // JWT token 사용해서 본인정보 가져오는 로직으로 User 가져오기.
+        // 현재 인증된 사용자 정보를 가져옴
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        // JWT 토큰에서 사용자명을 가져오기
+        String username = authentication.getName();
 
-//        User user = userRepository.findById(userId)
+//        User user = userRepository.findByUsername(username)
 //                .orElseThrow(() -> new RuntimeException("User not found"));
 
         BannerRequest bannerRequest = bannerRequestRepository.findById(bannerRequestId)
