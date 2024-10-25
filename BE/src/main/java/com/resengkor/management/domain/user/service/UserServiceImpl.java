@@ -17,16 +17,15 @@ import com.resengkor.management.global.security.jwt.repository.RefreshRepository
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 
 @Service
@@ -69,6 +68,7 @@ public class UserServiceImpl implements UserService{
             log.info("이미 존재함");
             throw new CustomException(ExceptionStatus.MEMBER_ALREADY_EXIST); // 이미 존재하는 멤버 예외
         }
+        //unique한 것 중복되면 error 던지기
 
         // User 생성 (일반 사용자이므로 ROLE_GUEST 설정)
         User user = User.builder()
@@ -124,6 +124,126 @@ public class UserServiceImpl implements UserService{
         log.info("맞는 회사명&핸드폰 번호 있음");
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), User.getEmail());
+    }
+
+    //회원 탈퇴 로직
+    @Transactional
+    @PreAuthorize("#userId == principal.id")
+    public CommonResponse withdrawUser(String token) {
+        log.info("------------------------------------------------");
+        log.info("회원탈퇴 로직 시작");
+        log.info("------------------------------------------------");
+        //1.JWT에서 사용자 이메일 추출
+        String userEmail = jwtUtil.getEmail(token);
+        //2.사용자 찾기
+        User user = userRepository.findByEmail(userEmail)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        log.info("------------------------------------------------");
+        log.info("회원탈퇴:사용자 찾음");
+        log.info("------------------------------------------------");
+
+        //3.만약에 로그인을 social로 했다면 따로 api 처리
+        if(user.getLoginType().equals(LoginType.SOCIAL)){
+            if(user.getSocialProvider().equals(SocialProvider.GOOGLE)){
+                //만약에 구글
+
+            }
+            else if(user.getSocialProvider().equals(SocialProvider.KAKAO)){
+                //만약에 카카오
+
+            }
+            else{
+
+            }
+        }
+        //4.사용자 상태를 비활성으로 변경
+        user.editStatus(false);
+        userRepository.save(user);
+        log.info("------------------------------------------------");
+        log.info("회원탈퇴:사용자 비활성화");
+        log.info("------------------------------------------------");
+
+        //5.해당 유저의 refresh토큰 전부 삭제
+        refreshRepository.deleteByEmail(userEmail);
+        log.info("------------------------------------------------");
+        log.info("회원탈퇴:refresh 토큰 삭제");
+        log.info("------------------------------------------------");
+
+        return new CommonResponse(ResponseStatus.UPDATED_SUCCESS .getCode(),
+                ResponseStatus.UPDATED_SUCCESS .getMessage());
+    }
+
+
+    //회원정보 추가
+    @Transactional
+    @PreAuthorize("#userId == principal.id")
+    public DataResponse<?> oauthUpdateUser(Long userId, OauthUserUpdateRequest request) {
+        //1.사용자 조회 (존재하지 않으면 예외 던지기)
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        // 이메일 및 전화번호 중복 검사
+        validateUniqueEmailAndPhoneNumber(userId, request.getEmail(), request.getPhoneNumber());
+
+        //2.사용자 정보 추가
+        user.updateUser(request.getEmail(), request.getCompanyName(),
+                request.getRepresentativeName(), request.getPhoneNumber());
+        // 3. UserProfile 조회 및 정보 업데이트
+        UserProfile userProfile = user.getUserProfile();
+
+        // 지역 조회 (지역 변경 시 사용)
+        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
+                .orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다."));
+        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
+                .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));
+
+        // UserProfile 정보 업데이트
+        userProfile.updateProfileInfo(request.getFullAddress(), city, district);
+
+        // 4. 저장
+        userRepository.save(user); // User 저장 시 UserProfile도 함께 저장
+
+        log.info("회원 정보 수정 성공");
+
+        return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
+                ResponseStatus.UPDATED_SUCCESS.getMessage(), "회원 정보 수정 성공");
+    }
+
+    @PreAuthorize("#userId == principal.id")
+    @Transactional
+    public DataResponse<?> updateUser(Long userId, UserUpdateRequest request) {
+        //1.사용자 조회 (존재하지 않으면 예외 던지기)
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        //2. 비밀번호 확인 후 설정
+        String encodedPassword = passwordEncoder.encode(request.getPassword());
+        user.editPassword(encodedPassword); // 비밀번호 수정
+
+        // 이메일 및 전화번호 중복 검사
+        validateUniqueEmailAndPhoneNumber(userId, request.getEmail(), request.getPhoneNumber());
+
+        //3.사용자 정보 추가
+        //중복되면 안 됌
+        user.updateUser(request.getEmail(), request.getCompanyName(),
+                request.getRepresentativeName(), request.getPhoneNumber());
+
+        // 4. 지역 정보 조회
+        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
+                .orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다."));
+        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
+                .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));
+
+        // 5. UserProfile 정보 수정
+        UserProfile userProfile = user.getUserProfile();
+        userProfile.updateProfileInfo(request.getFullAddress(), city, district);
+
+        // 6. 저장
+        userRepository.save(user);
+
+        log.info("회원 정보 수정 성공");
+
+        return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
+                ResponseStatus.UPDATED_SUCCESS.getMessage(), "회원 정보 수정 성공");
     }
 
 
@@ -202,49 +322,27 @@ public class UserServiceImpl implements UserService{
         throw new RuntimeException("적절한 조상을 찾을 수 없습니다.");
     }
 
-    //회원 탈퇴 로직
-    @Transactional
-    public CommonResponse withdrawUser(String token) {
-        log.info("------------------------------------------------");
-        log.info("회원탈퇴 로직 시작");
-        log.info("------------------------------------------------");
-        //1.JWT에서 사용자 이메일 추출
-        String userEmail = jwtUtil.getEmail(token);
-        //2.사용자 찾기
-        User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
-        log.info("------------------------------------------------");
-        log.info("회원탈퇴:사용자 찾음");
-        log.info("------------------------------------------------");
 
-        //3.만약에 로그인을 social로 했다면 따로 api 처리
-        if(user.getLoginType().equals(LoginType.SOCIAL)){
-            if(user.getSocialProvider().equals(SocialProvider.GOOGLE)){
-                //만약에 구글
 
-            }
-            else if(user.getSocialProvider().equals(SocialProvider.KAKAO)){
-                //만약에 카카오
-
-            }
-            else{
-
-            }
+    //로그인한 사람인지
+    private static void authorizeUser(User user){
+        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
+        if(!user.getEmail().equals(userEmail)){
+            throw new CustomException(ExceptionStatus.AUTHENTICATION_FAILED);
         }
-        //4.사용자 상태를 비활성으로 변경
-        user.editStatus(false);
-        userRepository.save(user);
-        log.info("------------------------------------------------");
-        log.info("회원탈퇴:사용자 비활성화");
-        log.info("------------------------------------------------");
+    }
 
-        //5.해당 유저의 refresh토큰 전부 삭제
-        refreshRepository.deleteByEmail(userEmail);
-        log.info("------------------------------------------------");
-        log.info("회원탈퇴:refresh 토큰 삭제");
-        log.info("------------------------------------------------");
+    private void validateUniqueEmailAndPhoneNumber(Long userId, String email, String phoneNumber) {
+        // 이메일 중복 검사
+        Optional<User> existingUserByEmail = userRepository.findByEmail(email);
+        if (existingUserByEmail.isPresent() && !Objects.equals(existingUserByEmail.get().getId(), userId)) {
+            throw new CustomException(ExceptionStatus.MEMBER_EMAIL_ALREADY_EXIST);  // 이미 존재하는 이메일 예외
+        }
 
-        return new CommonResponse(ResponseStatus.UPDATED_SUCCESS .getCode(),
-                ResponseStatus.UPDATED_SUCCESS .getMessage());
+        // 전화번호 중복 검사
+        Optional<User> existingUserByPhoneNumber = userRepository.findByPhoneNumber(phoneNumber);
+        if (existingUserByPhoneNumber.isPresent() && !Objects.equals(existingUserByPhoneNumber.get().getId(), userId)) {
+            throw new CustomException(ExceptionStatus.MEMBER_PHONE_NUMBER_ALREADY_EXIST);  // 이미 존재하는 전화번호 예외
+        }
     }
 }
