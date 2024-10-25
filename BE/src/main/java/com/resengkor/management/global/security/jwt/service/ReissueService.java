@@ -1,5 +1,7 @@
 package com.resengkor.management.global.security.jwt.service;
 
+import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
@@ -29,11 +31,13 @@ public class ReissueService {
     private final RefreshRepository refreshRepository;
     private final RefreshTokenService refreshTokenService;
     private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L;
+    private final UserRepository userRepository;
 
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
         // 헤더에서 refresh키에 담긴 토큰을 꺼냄
         String refresh = null;
         refresh = request.getHeader("Refresh");
+
 
         // 헤더에 refresh 토큰 x
         if (refresh == null) {
@@ -54,6 +58,9 @@ public class ReissueService {
         }
 
         String email = jwtUtil.getEmail(refresh);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        long userId = user.getId();
         String role = jwtUtil.getRole(refresh);
         boolean isAuto = jwtUtil.getIsAuto(refresh);
 
@@ -94,8 +101,8 @@ public class ReissueService {
         }
 
         // new tokens
-        String newAccess = jwtUtil.createJwt("access", email, role, ACCESS_TOKEN_EXPIRATION,isAuto);
-        String newRefresh = jwtUtil.createJwt("Refresh", email, role, refreshTokenExpiration,isAuto);
+        String newAccess = jwtUtil.createJwt_v2("access", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto);
+        String newRefresh = jwtUtil.createJwt_v2("Refresh", email, userId, role, refreshTokenExpiration,isAuto);
 
         // 기존 refresh DB 삭제, 새로운 refresh 저장
         refreshRepository.deleteByRefresh(refresh);

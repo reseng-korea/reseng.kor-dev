@@ -1,6 +1,8 @@
 package com.resengkor.management.global.security.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.dto.LoginDTO;
@@ -14,8 +16,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
@@ -35,13 +36,15 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final RefreshRepository refreshRepository;
+    private final UserRepository userRepository;
     private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L; //10분
 
-    public CustomLoginFilter(String defaultFilterUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
+    public CustomLoginFilter(String defaultFilterUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository,  UserRepository userRepository) {
         setFilterProcessesUrl(defaultFilterUrl);
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.refreshRepository = refreshRepository;
+        this.userRepository = userRepository;
     }
 
     //실제 로그인 진행 메소드
@@ -86,6 +89,10 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //1. authentication에서 유저 정보를 가져오자.
         String email = authentication.getName();
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        long userId = user.getId();
+
         LoginDTO loginDTO = (LoginDTO) authentication.getDetails();
         boolean isAuto = loginDTO.isAuto();
 
@@ -101,8 +108,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         //2. 토큰 생성
         //"access"를 통해 카테고리값을 넣어준다.
         long refreshTokenExpiration = isAuto ? 30 * 24 * 60 * 60 * 1000L : 24 * 60 * 60 * 1000L; //로그인 유지 30일, 일반 24시간
-        String access = jwtUtil.createJwt("access", email, role, ACCESS_TOKEN_EXPIRATION,isAuto);
-        String refresh = jwtUtil.createJwt("refresh", email, role, refreshTokenExpiration,isAuto);
+        String access = jwtUtil.createJwt_v2("access", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto);
+        String refresh = jwtUtil.createJwt_v2("refresh", email, userId, role, refreshTokenExpiration,isAuto);
 
         //2-1. Refresh 토큰 DB에 저장 메소드
         addRefreshEntity(email, refresh, refreshTokenExpiration);
@@ -129,10 +136,36 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     //로그인 실패시 실행
     @Override
-    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) {
+    protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
+        //unsuccessfulAuthentication에서 발생한 예외는 별도로 AuthenticationEntryPoint로 전달되지 않음
+        //이 메서드는 로그인 실패 자체를 처리하기 때문에,
+        // 만약 여기서 예외가 발생해도 다른 예외 처리 메커니즘(AuthenticationEntryPoint 등)이 호출되지 않는다.
         log.info("------------------------------------------------");
         log.info("로그인 실패");
         log.info("------------------------------------------------");
-        response.setStatus(401);
+        // HTTP 상태 코드와 Content-Type 설정
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+        response.setContentType("application/json; charset=UTF-8");
+
+        String errorMessage;
+
+        // 예외 종류에 따른 오류 메시지 설정
+        if (failed instanceof BadCredentialsException) {
+            errorMessage = "아이디 또는 비밀번호가 잘못되었습니다.";
+        } else if (failed instanceof DisabledException) {
+            errorMessage = "계정이 비활성화되었습니다. 관리자에게 문의하세요.";
+        } else if (failed instanceof LockedException) {
+            errorMessage = "계정이 잠겼습니다. 관리자에게 문의하세요.";
+        } else if (failed instanceof AccountExpiredException) {
+            errorMessage = "계정이 만료되었습니다. 관리자에게 문의하세요.";
+        } else if (failed instanceof CredentialsExpiredException) {
+            errorMessage = "비밀번호가 만료되었습니다. 비밀번호를 재설정하세요.";
+        } else {
+            errorMessage = "로그인에 실패했습니다. 자격 증명을 확인하세요.";
+        }
+
+        // JSON 형식으로 오류 메시지 반환
+        response.getWriter().write("{\"error\": \"" + errorMessage + "\"}");
+        response.getWriter().flush();
     }
 }

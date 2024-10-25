@@ -27,6 +27,11 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("email", String.class);
     }
 
+    public Long getUserId(String token) {
+
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("userId", Long.class);
+    }
+
     public String getRole(String token) {
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("role", String.class);
@@ -49,6 +54,19 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().getExpiration().before(new Date());
     }
 
+    //일반 jwt
+    public String createJwt_v2(String category, String email, long userId, String role, Long expiredMs,boolean isAuto) {
+        return Jwts.builder()
+                .claim("category", category) //access인지, refresh인지 판단
+                .claim("email", email)
+                .claim("userId", userId)
+                .claim("role", role)
+                .claim("isAuto",isAuto) //로그인 유지인지 아닌지
+                .issuedAt(new Date(System.currentTimeMillis()))
+                .expiration(new Date(System.currentTimeMillis() + expiredMs)) //유효기간
+                .signWith(secretKey)
+                .compact();
+    }
 
     //일반 jwt
     public String createJwt(String category, String email, String role, Long expiredMs,boolean isAuto) {
