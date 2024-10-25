@@ -52,8 +52,8 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 	// QR코드 생성, Zxing 라이브러리
+	implementation group: 'net.glxn.qrgen', name: 'javase', version: '2.0'
 	implementation group: 'com.google.zxing', name: 'core', version: '3.5.1'
-	implementation group: 'com.google.zxing', name: 'javase', version: '3.5.1'
 
 }
 

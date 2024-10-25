@@ -1,32 +1,64 @@
 package com.resengkor.management.domain.qrcode.controller;
 
-import com.resengkor.management.domain.qrcode.service.QrCodeGenerator;
+import com.resengkor.management.domain.banner.entity.BannerRequest;
+import com.resengkor.management.domain.banner.repository.BannerRequestRepository;
+import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
+import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.domain.user.repository.UserRepository;
+import com.resengkor.management.global.security.jwt.util.JWTUtil;
+import net.glxn.qrgen.javase.QRCode;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.io.ByteArrayOutputStream;
+import java.util.UUID;
 
 @RestController
 public class QrCodeController {
 
-    private final QrCodeGenerator qrCodeGenerator;
+    private final BannerRequestRepository bannerRequestRepository;
+    private final UserRepository userRepository;
+    private final JWTUtil jwtUtil;
 
     @Autowired
-    public QrCodeController(QrCodeGenerator qrCodeGenerator) {
-        this.qrCodeGenerator = qrCodeGenerator;
+    public QrCodeController(BannerRequestRepository bannerRequestRepository, UserRepository userRepository, JWTUtil jwtUtil) {
+        this.bannerRequestRepository = bannerRequestRepository;
+        this.userRepository = userRepository;
+        this.jwtUtil = jwtUtil;
     }
 
-    // QR 코드 생성 요청 처리
-    @GetMapping("/generate")
-    public ResponseEntity<byte[]> generateQrCode(@RequestParam String text) throws Exception {
-        byte[] qrCode = qrCodeGenerator.generateQrCode(text);
+    @PostMapping(value = "/generateQR", produces = MediaType.IMAGE_PNG_VALUE)
+    public ResponseEntity<byte[]> generateQRCode(@RequestHeader("Authorization") String token, @RequestBody QrPageDataDTO qrPageDataDTO) {
+        // 현재 인증된 사용자의 이메일 가져오기
+        String email = jwtUtil.getEmail(token);
+        User user = userRepository.findByEmail(email);
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.IMAGE_PNG);
-        return new ResponseEntity<>(qrCode, headers, HttpStatus.OK);  // PNG 이미지로 응답
+        // 고유한 UUID 생성
+        String uuid = UUID.randomUUID().toString();
+
+        // DTO -> Entity 변환
+        BannerRequest bannerRequest = new BannerRequest().builder()
+                .uuid(uuid)
+                .requestedLength(qrPageDataDTO.getRequestedLength())
+                .requestedDate(qrPageDataDTO.getRequestedDate())
+                .clientName(qrPageDataDTO.getClientName())
+                .postedDate(qrPageDataDTO.getPostedDate())
+                .postedLocation(qrPageDataDTO.getPostedLocation())
+                .user(user)
+                .bannerType(qrPageDataDTO.getBannerType())
+                .build();
+
+
+        // 데이터베이스에 QR 코드 데이터 저장
+        bannerRequestRepository.save(bannerRequest);
+
+        // QR 코드 URL 생성
+        String qrUrl = "https://reseng.co.kr/validateQR?uuid=" + uuid;
+        ByteArrayOutputStream stream = QRCode.from(qrUrl).withSize(250, 250).stream();
+
+        // QR 코드 이미지 반환
+        return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(stream.toByteArray());
     }
 }
