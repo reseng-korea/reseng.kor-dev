@@ -1,8 +1,7 @@
 package com.resengkor.management.global.config;
 
-import com.resengkor.management.global.security.jwt.filter.CustomLogoutFilter;
-import com.resengkor.management.global.security.jwt.filter.JWTFilter;
-import com.resengkor.management.global.security.jwt.filter.CustomLoginFilter;
+import com.resengkor.management.domain.user.repository.UserRepository;
+import com.resengkor.management.global.security.jwt.filter.*;
 import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.service.RefreshTokenService;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
@@ -44,6 +43,9 @@ public class SecurityConfig {
     private final CustomOAuth2UserService customOAuth2UserService;
     private final RefreshTokenService refreshTokenService;
     private final RefreshRepository refreshRepository;
+    private final UserRepository userRepository;
+    private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
+    private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
 
 
@@ -121,7 +123,7 @@ public class SecurityConfig {
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), CustomLoginFilter.class); //JWTFilter가 CustomLoginFilter 전에 실행
         http
-                .addFilterAt(new CustomLoginFilter("/api/v1/login", authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new CustomLoginFilter("/api/v1/login", authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository, userRepository), UsernamePasswordAuthenticationFilter.class);
         http
                 .addFilterBefore(new CustomLogoutFilter("/api/v1/logout", jwtUtil, refreshRepository), LogoutFilter.class);
 
@@ -143,12 +145,11 @@ public class SecurityConfig {
 
         // 인가되지 않은 사용자에 대한 exception -> 프론트엔드로 코드 응답
         //이거 하니까 로그인도 안 됌
-//        http.
-//                exceptionHandling((exception) ->
-//                exception
-//                        .authenticationEntryPoint((request, response, authException) -> {
-//                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-//                        }));
+        http
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                        .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 실패 시 처리
+                        .accessDeniedHandler(customAccessDeniedHandler) // 권한 부족 시 처리
+                );
 
         return http.build();
     }

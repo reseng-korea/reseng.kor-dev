@@ -93,4 +93,12 @@ public class User {
     public void editStatus(boolean status){
         this.status = status;
     }
+
+    //사용자 정보 수정
+    public void updateUser(String email, String companyName, String representativeName, String phoneNumber){
+        this.email = email;
+        this.companyName = companyName;
+        this.representativeName = representativeName;
+        this.phoneNumber = phoneNumber;
+    }
 }
