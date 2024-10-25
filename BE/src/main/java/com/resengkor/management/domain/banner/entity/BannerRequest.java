@@ -39,6 +39,9 @@ public class BannerRequest {
     @Column(name = "posted_location", nullable = false)
     private String postedLocation;
 
+    @Column(name = "uuid", nullable = false)
+    private String uuid;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
