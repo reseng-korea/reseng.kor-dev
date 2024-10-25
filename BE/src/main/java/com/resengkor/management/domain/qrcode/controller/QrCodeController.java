@@ -1,7 +1,9 @@
 package com.resengkor.management.domain.qrcode.controller;
 
 import com.resengkor.management.domain.banner.entity.BannerRequest;
+import com.resengkor.management.domain.banner.entity.BannerType;
 import com.resengkor.management.domain.banner.repository.BannerRequestRepository;
+import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.UserRepository;
@@ -19,12 +21,14 @@ import java.util.UUID;
 public class QrCodeController {
 
     private final BannerRequestRepository bannerRequestRepository;
+    private final BannerTypeRepository bannerTypeRepository;
     private final UserRepository userRepository;
     private final JWTUtil jwtUtil;
 
     @Autowired
-    public QrCodeController(BannerRequestRepository bannerRequestRepository, UserRepository userRepository, JWTUtil jwtUtil) {
+    public QrCodeController(BannerRequestRepository bannerRequestRepository, BannerTypeRepository bannerTypeRepository, UserRepository userRepository, JWTUtil jwtUtil) {
         this.bannerRequestRepository = bannerRequestRepository;
+        this.bannerTypeRepository = bannerTypeRepository;
         this.userRepository = userRepository;
         this.jwtUtil = jwtUtil;
     }
@@ -38,18 +42,22 @@ public class QrCodeController {
         // 고유한 UUID 생성
         String uuid = UUID.randomUUID().toString();
 
+        // BannerType 가져오기
+        BannerType bannerType = bannerTypeRepository.findBannerTypeBy(qrPageDataDTO.getTypeWidth())
+                .orElseThrow(() -> new RuntimeException("Not found banner type"));
+
         // DTO -> Entity 변환
-        BannerRequest bannerRequest = new BannerRequest().builder()
+        BannerRequest bannerRequest = BannerRequest.builder()
                 .uuid(uuid)
                 .requestedLength(qrPageDataDTO.getRequestedLength())
                 .requestedDate(qrPageDataDTO.getRequestedDate())
                 .clientName(qrPageDataDTO.getClientName())
                 .postedDate(qrPageDataDTO.getPostedDate())
+                .postedDuration(null)
                 .postedLocation(qrPageDataDTO.getPostedLocation())
+                .bannerType(bannerType)
                 .user(user)
-                .bannerType(qrPageDataDTO.getBannerType())
                 .build();
-
 
         // 데이터베이스에 QR 코드 데이터 저장
         bannerRequestRepository.save(bannerRequest);
