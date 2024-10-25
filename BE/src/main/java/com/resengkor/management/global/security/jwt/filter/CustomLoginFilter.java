@@ -25,9 +25,7 @@ import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Iterator;
+import java.util.*;
 
 //@Component -> 금지. authenticationManager must be specified 오류 남.
 @Slf4j
@@ -82,7 +80,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     @Override
     //로그인 성공 핸들러 -> 여기서 jwt발급
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         log.info("------------------------------------------------");
         log.info("로그인 성공해서 로그인 성공 핸들러 동작");
         log.info("------------------------------------------------");
@@ -117,10 +115,22 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         log.info("Refresh토큰 DB에 저장 성공");
         log.info("------------------------------------------------");
 
-        //3. 응답 설정
+        // 3. JSON 응답 설정
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(HttpStatus.OK.value());
+
         response.setHeader("Authorization", "Bearer " + access);
         response.setHeader("Refresh", refresh);
-        response.setStatus(HttpStatus.OK.value());
+
+        // 응답 JSON 생성
+        Map<String, Object> responseBody = new HashMap<>();
+        responseBody.put("userId", userId);
+
+        // 응답 출력
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+        response.getWriter().flush();
     }
 
     //Refresh 토큰 DB에 저장 메소드
