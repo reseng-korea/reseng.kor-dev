@@ -19,15 +19,4 @@ public class QrPageDataDTO {
     private Integer typeWidth; // 현수막 폭
     private Integer requestedLength;  // 현수막 길이
 
-    public QrPageDataDTO toQRPageDataDTO(BannerRequest bannerRequest) {
-        return QrPageDataDTO.builder()
-                .company(bannerRequest.getUser().getCompanyName())
-                .clientName(bannerRequest.getClientName())
-                .postedLocation(bannerRequest.getPostedLocation())
-                .requestedDate(bannerRequest.getRequestedDate())
-                .postedDate(bannerRequest.getPostedDate())
-                .typeWidth(bannerRequest.getBannerType().getTypeWidth())
-                .requestedLength(bannerRequest.getRequestedLength())
-                .build();
-    }
 }

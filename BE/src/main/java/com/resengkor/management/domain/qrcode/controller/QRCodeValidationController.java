@@ -19,14 +19,14 @@ public class QRCodeValidationController {
         this.bannerRequestRepository = bannerRequestRepository;
     }
 
-    @GetMapping("/validateQR")
-    public ResponseEntity<QrPageDataDTO> validateQR(@RequestParam String uuid) {
-        return bannerRequestRepository.findByUuid(uuid)
-                .map(bannerRequest -> {
-                    // BannerRequest를 QrPageDTO로 변환
-                    QrPageDataDTO qrPageDataDTO = new QrPageDataDTO().toQRPageDataDTO(bannerRequest);
-                    return ResponseEntity.ok(qrPageDataDTO);
-                })
-                .orElseGet(() -> ResponseEntity.status(404).body(null));
-    }
+//    @GetMapping("/validateQR")
+//    public ResponseEntity<QrPageDataDTO> validateQR(@RequestParam String uuid) {
+//        return bannerRequestRepository.findByUuid(uuid)
+//                .map(bannerRequest -> {
+//                    // BannerRequest를 QrPageDTO로 변환
+////                    QrPageDataDTO qrPageDataDTO = new QrPageDataDTO().toQRPageDataDTO(bannerRequest);
+////                    return ResponseEntity.ok(qrPageDataDTO);
+//                })
+//                .orElseGet(() -> ResponseEntity.status(404).body(null));
+//    }
 }

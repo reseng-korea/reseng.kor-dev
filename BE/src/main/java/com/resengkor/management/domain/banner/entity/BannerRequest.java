@@ -12,7 +12,7 @@ import java.time.Period;
 
 @Entity
 @Getter
-@Builder
+@Builder (toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class BannerRequest {
