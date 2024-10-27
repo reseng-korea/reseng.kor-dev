@@ -13,12 +13,12 @@ public interface BannerRequestMapper {
     BannerRequestMapper INSTANCE = Mappers.getMapper(BannerRequestMapper.class);
 
     // Entity -> DTO 변환 메서드
-    @Mapping(source = "user.companyName", target = "companyName")
-    @Mapping(source = "bannerType.typeWidth", target = "width")
+    @Mapping(source = "user.companyName", target = "company")
+    @Mapping(source = "bannerType.typeWidth", target = "typeWidth")
     QrPageDataDTO toBannerRequestDTO(BannerRequest bannerRequest);
 
     // DTO -> Entity 변환 메서드
-    @Mapping(target = "user.companyName", source = "companyName")
-    @Mapping(target = "bannerType.typeWidth", source = "width")
+    @Mapping(target = "user.companyName", source = "company")
+    @Mapping(target = "bannerType.typeWidth", source = "typeWidth")
     BannerRequest toBannerRequest(QrPageDataDTO bannerRequestDTO);
 }

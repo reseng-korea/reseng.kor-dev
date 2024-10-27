@@ -1,6 +1,5 @@
 package com.resengkor.management.domain.qrcode.dto;
 
-import com.resengkor.management.domain.banner.entity.BannerRequest;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -18,5 +17,4 @@ public class QrPageDataDTO {
     private LocalDate postedDate; // 게시날짜
     private Integer typeWidth; // 현수막 폭
     private Integer requestedLength;  // 현수막 길이
-
 }
