@@ -19,6 +19,7 @@ public class BannerRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "banner_request_id", updatable = false)
     private Long id;
 
     @Column(name = "uuid", nullable = false)
