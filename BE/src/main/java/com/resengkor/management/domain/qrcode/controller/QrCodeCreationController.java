@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/qr-code")
+@RequestMapping("api/v1")
 public class QrCodeCreationController {
 
     private final QrCodeCreationService qrCodeCreationService;
@@ -21,7 +21,7 @@ public class QrCodeCreationController {
         this.qrCodeCreationService = qrCodeCreationService;
     }
 
-    @PostMapping(value = "/generate", produces = MediaType.IMAGE_PNG_VALUE)
+    @PostMapping(value = "/qr-code", produces = MediaType.IMAGE_PNG_VALUE)
     public ResponseEntity<byte[]> generateQRCode(@RequestBody QrPageDataDTO qrPageDataDTO) {
         byte[] qrCodeImage = qrCodeCreationService.generateQRCode(qrPageDataDTO);
         return ResponseEntity.ok().contentType(MediaType.IMAGE_PNG).body(qrCodeImage);

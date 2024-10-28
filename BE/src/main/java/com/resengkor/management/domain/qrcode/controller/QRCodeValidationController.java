@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/qr-code")
+@RequestMapping("/api/v1")
 public class QRCodeValidationController {
 
     private final QRCodeValidationService qrCodeValidationService;
@@ -27,7 +27,7 @@ public class QRCodeValidationController {
      * @param uuid QR 코드의 고유 식별자
      * @return QR 코드에 연결된 BannerRequestDTO 데이터 또는 404 상태
      */
-    @GetMapping("/validateQR")
+    @GetMapping("/qr-code")
     public ResponseEntity<QrPageDataDTO> validateQRCode(@RequestParam String uuid) {
         QrPageDataDTO qrPageDataDTO = qrCodeValidationService.validateQRCode(uuid);
         if (qrPageDataDTO != null) {
