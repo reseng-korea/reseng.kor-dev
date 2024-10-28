@@ -19,9 +19,12 @@ public class BannerRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bannerRequestId;
+    private Long id;
 
-    @Column(name = "requestted_length", nullable = false)
+    @Column(name = "uuid", nullable = false)
+    private String uuid;
+
+    @Column(name = "requested_length", nullable = false)
     private Integer requestedLength;
 
     @Column(name = "requested_date", nullable = false)
@@ -38,9 +41,6 @@ public class BannerRequest {
 
     @Column(name = "posted_location", nullable = false)
     private String postedLocation;
-
-    @Column(name = "uuid", nullable = false)
-    private String uuid;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

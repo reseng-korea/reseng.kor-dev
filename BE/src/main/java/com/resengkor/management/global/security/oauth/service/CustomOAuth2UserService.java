@@ -14,6 +14,7 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -45,7 +46,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 //        String username = response.getProvider() + " " + response.getProviderId();
         CustomOAuth2User customOAuth2User = null;
 
-        User isExist = userRepository.findByEmail(response.getEmail());
+        Optional<User> isExist = userRepository.findByEmail(response.getEmail());
         if (isExist  == null) {
             //존재하지 않는다면
             //새로 만듦
@@ -63,7 +64,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .socialProvider(soialProvider)
                     .socialId(response.getSocialId())
                     .email(response.getEmail())
-                    .emailStatus(1)
+                    .emailStatus(true)
                     .role(Role.ROLE_GUEST)
                     .build();
             userRepository.save(oAuth2UserEntity);
@@ -81,7 +82,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
         else {
             //존재하면 업데이트
-            User updatedUser = isExist.toBuilder()
+            User updatedUser = isExist.get().toBuilder()
                     .socialId(response.getSocialId()) // 소셜 ID 업데이트
                     .representativeName(response.getName())
                     .email(response.getEmail()) // 이메일 업데이트
@@ -94,7 +95,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .socialId(response.getSocialId())
                     .name(response.getName())
                     .email(response.getEmail())
-                    .role(isExist.getRole().getRole())
+                    .role(isExist.get().getRole().getRole())
                     .build();
             return new CustomOAuth2User(oAuth2UserDto);
         }

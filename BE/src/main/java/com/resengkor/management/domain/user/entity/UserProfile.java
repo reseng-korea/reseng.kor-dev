@@ -20,7 +20,7 @@ public class UserProfile {
     private Long id;
 
     @Column(nullable = false)
-    private String address;
+    private String fullAddress;//전체주소
 
     @Column
     private Double latitude; //위도
@@ -28,10 +28,13 @@ public class UserProfile {
     @Column
     private Double longitude; //경도
 
-    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "region_id")
-    private Region region;  // 지역 정보 연결
+    @JoinColumn(name = "city_id") // 외래 키 정의
+    private Region city;  // 도시 정보
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "district_id") // 외래 키 정의
+    private Region district;  // 구 정보
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
@@ -45,14 +48,10 @@ public class UserProfile {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-
-    @Builder
-    public UserProfile(String address, Double latitude, Double longitude, Region region, User user) {
-        this.address = address;
-        this.latitude = latitude;
-        this.longitude = longitude;
-        this.region = region;
-        this.user = user;
+    public void updateProfileInfo(String fullAddress, Region city, Region district) {
+        this.fullAddress = fullAddress;
+        this.city = city;
+        this.district = district;
     }
 
 }

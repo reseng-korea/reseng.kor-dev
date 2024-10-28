@@ -39,11 +39,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
     }
 
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
-        //path and method verify
         //해당요청이 logout요청인지 판단
-//        String requestURI = request.getRequestURI();
         // uri check
-        if (!defaultFilterUrl.matches("^\\/logout$")) {
+        if (!request.getRequestURI().equals(defaultFilterUrl)) {
             //로그아웃이 아니면 다음 필터로 넘어감
             chain.doFilter(request, response);
             return;
@@ -56,19 +54,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        // refresh token validation
-        // refresh 토큰인지
-        //get refresh token
-
         String refresh = null;
         refresh = request.getHeader("Refresh");
-
-
-//        String refresh = null;
-//        Cookie[] cookies = request.getCookies();
-//
-//        refresh = Arrays.stream(cookies).filter(cookie -> cookie.getName().equals("refresh"))
-//                .findFirst().get().getValue();
 
         System.out.println("refresh = " + refresh);
 

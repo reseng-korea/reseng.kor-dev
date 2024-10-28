@@ -12,10 +12,12 @@ import lombok.Setter;
 public class LoginDTO {
     private String email;
     private String password;
+    private boolean isAuto;
 
     @Builder
-    public LoginDTO(String email, String password) {
+    public LoginDTO(String email, String password,boolean isAuto) {
         this.email = email;
         this.password = password;
+        this.isAuto = isAuto;
     }
 }

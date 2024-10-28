@@ -25,7 +25,7 @@ public class User {
 
     //이메일 인증 여부
     @Column(name = "email_status", nullable = false)
-    private int emailStatus;
+    private boolean emailStatus;
 
     @Column(name = "password")
     private String password;
@@ -39,11 +39,13 @@ public class User {
     @Column(name = "phone_number", unique = true)
     private String phoneNumber;
 
+    //핸드폰 번호 인증 여부
+    @Column(name = "phone_number_status", nullable = false)
+    private boolean phoneNumberStatus;
+
     /*
-    - 핸드폰 번호 인증코드
     - 핸드폰 번호 인증 코드
     - 핸드폰 인증코드 생성시간
-    - 휴대폰 인증상태
      */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -57,7 +59,7 @@ public class User {
     //회원 상태
     //0: 비활성화, 1 : 활성화
     @Column(name = "member_status", nullable = false)
-    protected int status;
+    protected boolean status;
 
     //소셜 로그인 제공자
     @Enumerated(EnumType.STRING)
@@ -82,18 +84,21 @@ public class User {
     @Version
     private Integer version;  // 비관적 잠금 처리
 
-    @Builder
-    public User(String email, int emailStatus, String password, String companyName, String representativeName, String phoneNumber, Role role, LoginType loginType, int status, SocialProvider socialProvider, String socialId) {
-        this.email = email;
-        this.emailStatus = emailStatus;
+    //사용자 비밀번호 수정
+    public void editPassword(String password){
         this.password = password;
+    }
+
+    //사용자 회원탈퇴 처리
+    public void editStatus(boolean status){
+        this.status = status;
+    }
+
+    //사용자 정보 수정
+    public void updateUser(String email, String companyName, String representativeName, String phoneNumber){
+        this.email = email;
         this.companyName = companyName;
         this.representativeName = representativeName;
         this.phoneNumber = phoneNumber;
-        this.role = role;
-        this.loginType = loginType;
-        this.status = status;
-        this.socialProvider = socialProvider;
-        this.socialId = socialId;
     }
 }
