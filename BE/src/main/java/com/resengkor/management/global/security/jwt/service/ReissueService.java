@@ -87,6 +87,8 @@ public class ReissueService {
         String newRefresh = jwtUtil.createJwt_v2("Refresh", email, userId, role, refreshTokenExpiration,isAuto);
 
         // 기존 refresh DB 삭제, 새로운 refresh 저장
+        // 기존 refresh 키 삭제
+        redisUtil.deleteData("refresh:token:" + refresh);
         // Redis에 새로운 Refresh Token 저장
         redisUtil.setData("refresh:token:" + newRefresh, newRefresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
 
