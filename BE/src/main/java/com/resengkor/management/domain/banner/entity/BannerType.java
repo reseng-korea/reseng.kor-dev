@@ -34,5 +34,5 @@ public class BannerType {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_history_id", nullable = false)
-//    private OrderHistory orderHistory;
+    private OrderHistory orderHistory;
 }

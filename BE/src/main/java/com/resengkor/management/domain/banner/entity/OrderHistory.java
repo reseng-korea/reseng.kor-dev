@@ -7,6 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,20 +15,14 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Immutable
-public class Transaction {
+public class OrderHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long transactionId;
+    private Long id;
 
-    @Column(name = "transcation_date", nullable = false)
-    private LocalDateTime transactionDate;
-
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
-
-    @Column(name = "length_per_bundle", nullable = false)
-    private Integer lengthPerBundle;
+    @Column(name = "order_date", nullable = false)
+    private LocalDate orderDate;
 
     @Column(name = "seller", nullable = false)
     private String seller;
@@ -35,11 +30,10 @@ public class Transaction {
     @Column(name = "buyer", nullable = false)
     private String buyer;
 
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "banner_type", nullable = false)
-    private BannerType bannerType;
 }
