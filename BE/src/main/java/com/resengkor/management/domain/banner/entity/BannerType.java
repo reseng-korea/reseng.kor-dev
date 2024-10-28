@@ -14,6 +14,7 @@ public class BannerType {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "banner_type_id", updatable = false)
     private Long id;
 
     @Column(name = "type_width", nullable = false)

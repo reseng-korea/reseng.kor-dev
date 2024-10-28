@@ -19,6 +19,7 @@ public class OrderHistory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "order_history_id", updatable = false)
     private Long id;
 
     @Column(name = "order_date", nullable = false)
