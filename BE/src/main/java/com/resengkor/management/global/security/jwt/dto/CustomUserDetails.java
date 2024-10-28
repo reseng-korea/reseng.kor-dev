@@ -1,6 +1,7 @@
 package com.resengkor.management.global.security.jwt.dto;
 
 import com.resengkor.management.domain.user.entity.User;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.core.GrantedAuthority;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -59,6 +60,11 @@ public class CustomUserDetails implements UserDetails {
     //사용자 활성화 여부
     @Override
     public boolean isEnabled() {
-        return true;
+        return user.isStatus();
     }
+
+    public Long getUserId() {
+        return user.getId();
+    }
+
 }

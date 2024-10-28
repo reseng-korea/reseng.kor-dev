@@ -11,28 +11,33 @@ const Location = () => {
     <Layout>
       <div className="flex justify-center px-3 py-2">
         <div className="flex flex-col w-full">
-          <div className="mt-16 mb-6 text-3xl font-bold">회사 소개</div>
-          <div className="flex justify-center space-x-4">
+          <div className="mt-16 mb-6 text-3xl font-bold slide-up">
+            회사 소개
+          </div>
+          <hr className="w-full border-t border-gray1 slide-up" />
+          <div className="flex justify-center space-x-4 mt-2 slide-up">
             <button
               onClick={() => navigateTo(routes.company)}
-              className="flex items-center justify-center w-30 h-10 border-none outline-none bg-transition hover:text-lg"
+              className="flex items-center justify-center w-32 h-10 border-none outline-none bg-transition"
             >
-              <span className="text-black">회사 소개</span>
+              <span className="text-black hover:text-primary mb-2">
+                회사 소개
+              </span>
             </button>
             <button
               onClick={() => navigateTo(routes.history)}
-              className="flex items-center justify-center w-30 h-10 border-none outline-none bg-transition hover:text-lg"
+              className="flex items-center justify-center w-32 h-10 border-none outline-none bg-transition"
             >
-              <span className="text-black">연혁</span>
+              <span className="text-black hover:text-primary mb-2">연혁</span>
             </button>
             <button
               onClick={() => navigateTo(routes.location)}
-              className="flex items-center justify-center w-30 h-10 border-0 border-b-2 border-primary rounded-none bg-transition"
+              className="flex items-center justify-center w-32 h-10 border-0 border-b-2 border-primary rounded-none bg-transition"
             >
-              <span className="font-bold text-primary">오시는 길</span>
+              <span className="font-bold text-primary mb-2">오시는 길</span>
             </button>
           </div>
-          <hr className="w-full mb-6 border-t border-gray1" />
+          <hr className="w-full mb-6 border-t border-gray1 slide-up" />
 
           {/* A 구역: 업체 목록 */}
           {/* api 연결하면 데이터 가져와서 바로 넣어주면 될듯(지금은 더미데이터) */}
@@ -42,7 +47,7 @@ const Location = () => {
             style={{ height: 'calc(100vh - 230px)' }}
           >
             <div
-              className="w-1/3 p-4 border border-gray3 rounded-2xl bg-transition"
+              className="w-1/3 p-4 rounded-2xl bg-[#f1f0ea] shadow-xl"
               style={{ height: '100%' }}
             >
               <div className="flex flex-col h-full">
@@ -53,7 +58,7 @@ const Location = () => {
                   {tmplocationdata.map((item, index) => (
                     <div
                       key={index}
-                      className="p-4 mb-4 text-left border border-gray3 rounded-2xl hover:bg-placeHolder hover:shadow-lg transition-all duration-300"
+                      className="p-4 mb-6 text-left bg-white rounded-2xl hover:bg-placeHolder hover:shadow-lg transition-all duration-300"
                     >
                       <p className="mb-2 text-[10px] font-bold sm:text-sm md:text-lg lg:text-xl">
                         {item.type}
@@ -63,17 +68,17 @@ const Location = () => {
                         {item.name}
                       </p>
                       <div className="flex justify-center">
-                        <p className="mr-1 mb-1 text-[10px] flex-shrink-0 sm:text-sm">
+                        {/* <p className="mr-1 mb-1 text-[10px] flex-shrink-0 sm:text-sm">
                           주소 :
-                        </p>
+                        </p> */}
                         <p className="mb-1 text-[10px] flex-grow sm:text-sm">
                           {item.address}
                         </p>
                       </div>
                       <div className="flex justify-center">
-                        <p className="mr-1 mb-1 text-[10px] flex-shrink-0 sm:text-sm">
+                        {/* <p className="mr-1 mb-1 text-[10px] flex-shrink-0 sm:text-sm">
                           전화 :
-                        </p>
+                        </p> */}
                         <p className="mb-1 text-[10px] flex-grow sm:text-sm">
                           {item.phone}
                         </p>

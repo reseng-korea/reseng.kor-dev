@@ -105,19 +105,30 @@ select {
   animation: fadeIn 2s ease-in-out;
 }
 
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .fade-in-delay {
   opacity: 0;
-  animation: fadeIn 1s forwards;
-  animation-delay: 1s; /* 첫 번째 요소가 끝나고 난 후 시작 */
+  animation: fadeInDelay 1s forwards;
+  animation-delay: 2s; /* 첫 번째 요소가 끝나고 난 후 시작 */
 }
 
 .fade-in-delay2 {
   opacity: 0;
-  animation: fadeIn 1s forwards;
-  animation-delay: 2s; /* 첫 번째 요소가 끝나고 난 후 시작 */
+  animation: fadeInDelay 1s forwards;
+  animation-delay: 3s; /* 첫 번째 요소가 끝나고 난 후 시작 */
 }
 
-@keyframes fadeIn {
+@keyframes fadeInDelay {
   from {
     opacity: 0;
     transform: translateY(-20px);
@@ -132,7 +143,7 @@ select {
 /* 효과 : 아래에서 위로 나타나는 효과 */
 /* 사용페이지 : 세번째 메인 페이지 */
 .slide-up {
-  animation: slideUp 0.5s ease-out; /* 애니메이션 적용 */
+  animation: slideUp 1s ease-out; /* 애니메이션 적용 */
 }
 
 @keyframes slideUp {
@@ -232,24 +243,17 @@ select {
   }
 }
 
-.bounce {
-  animation: bounce 0.6s;
+@keyframes zoom-in {
+  0% {
+    transform: scale(1); /* 기본 크기 */
+  }
+  100% {
+    transform: scale(1.1); /* 110% 크기로 확대 */
+  }
 }
 
-@keyframes bounce {
-  0%,
-  20%,
-  50%,
-  80%,
-  100% {
-    transform: translateY(0); /* 원래 위치 */
-  }
-  40% {
-    transform: translateY(-30px); /* 위로 30px 튕김 */
-  }
-  60% {
-    transform: translateY(-15px); /* 위로 15px 튕김 */
-  }
+.animate-zoom-in {
+  animation: zoom-in 2s ease-in-out forwards;
 }
 
 /* 이미지 확대 애니메이션 정의 */
