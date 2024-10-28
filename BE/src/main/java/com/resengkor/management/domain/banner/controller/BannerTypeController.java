@@ -1,5 +1,6 @@
 package com.resengkor.management.domain.banner.controller;
 
+import com.resengkor.management.domain.banner.dto.BannerInventoryDTO;
 import com.resengkor.management.domain.banner.dto.BannerTypeDto;
 import com.resengkor.management.domain.banner.service.BannerTypeService;
 import lombok.RequiredArgsConstructor;
@@ -18,9 +19,10 @@ public class BannerTypeController {
 
     private final BannerTypeService bannerTypeService;
 
-    @GetMapping("/banner")
-    public ResponseEntity<List<BannerTypeDto>> getManagedBanners(@RequestParam Long userId) {
-        List<BannerTypeDto> banners = bannerTypeService.getManagedBanners(userId);
-        return ResponseEntity.ok(banners);
+    // 보유 현수막 재고 조회 API
+    @GetMapping("/inventory")
+    public ResponseEntity<List<BannerInventoryDTO>> getBannerInventory(@RequestParam Long userId) {
+        List<BannerInventoryDTO> inventoryList = bannerTypeService.getBannerInventory(userId);
+        return ResponseEntity.ok(inventoryList);
     }
 }
