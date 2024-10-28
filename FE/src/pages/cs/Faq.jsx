@@ -44,27 +44,17 @@ const Faq = () => {
               {faqData.map((faq, index) => (
                 <div key={index} className="mb-6">
                   {/* 질문 + 답변 카드 */}
-                  <div
-                    className={`bg-placeHolder rounded-lg transition-all duration-500`}
-                  >
+                  <div className="bg-placeHolder rounded-lg transition-all duration-500 hover:text-primary">
                     {/* 질문 */}
                     <div
                       onClick={() => toggleAnswer(index)}
-                      className={`flex items-center justify-between rounded-lg gap-x-4 px-8 py-5 cursor-pointer hover:text-primary ${
-                        activeIndex === index
-                          ? 'bg-placeHolder'
-                          : 'bg-placeHolder'
-                      }`}
-                      // style={{
-                      //   borderLeftWidth: '14px',
-                      //   borderLeftColor: '#2EA642',
-                      // }}
+                      className="flex items-center justify-between rounded-lg gap-x-4 px-8 py-5 cursor-pointer hover:text-primary group"
                     >
-                      <div className="flex items-center gap-x-8">
+                      <div className="flex items-center gap-x-8 ">
                         <div className="text-4xl font-extrabold text-primary">
                           Q
                         </div>
-                        <div className="text-lg text-gray4 font-semibold">
+                        <div className="text-lg text-gray4 font-semibold group-hover:text-primary">
                           {faq.question}
                         </div>
                       </div>
