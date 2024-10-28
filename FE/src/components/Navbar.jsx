@@ -76,7 +76,7 @@ export default function Example() {
                   onClick={() => navigateTo(routes.company)}
                   className="relative flex text-sm bg-transparent hover:border-2"
                 >
-                  <p>회사소개</p>
+                  <p className="text-gray4 font-bold">회사소개</p>
                 </button>
 
                 {isMenuOpen === 'about' && (
@@ -114,7 +114,7 @@ export default function Example() {
                   className="relative flex text-sm bg-transparent hover:border-2"
                 >
                   <span className="sr-only">Open support menu</span>
-                  <p>고객센터</p>
+                  <p className="text-gray4 font-bold">고객센터</p>
                 </button>
 
                 {isMenuOpen === 'support' && (
@@ -146,7 +146,7 @@ export default function Example() {
                   className="relative flex text-sm bg-transparent hover:border-2"
                 >
                   <span className="sr-only">Open resources menu</span>
-                  <p>자료실</p>
+                  <p className="text-gray4 font-bold">자료실</p>
                 </button>
 
                 {isMenuOpen === 'resources' && (
@@ -184,7 +184,7 @@ export default function Example() {
                   className="relative flex text-sm bg-transparent hover:border-2"
                 >
                   <span className="sr-only">Open login menu</span>
-                  <p>로그인</p>
+                  <p className="text-gray4 font-bold">로그인</p>
                 </button>
               </div>
 
@@ -198,7 +198,7 @@ export default function Example() {
                   onClick={() => navigateTo(routes.tmp)}
                   className="relative flex text-sm bg-transparent hover:border-2"
                 >
-                  <p>임시</p>
+                  <p className="text-gray4 font-bold">임시</p>
                 </button>
               </div>
             </div>

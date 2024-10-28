@@ -7,11 +7,17 @@ export default {
         primary: '#2EA642',
         warning: '#F75252',
         placeHolder: '#F3F3F3',
+        re: '#245A98',
         // 선
         gray1: '#E2E2E2',
         gray2: '#D1D1D1',
         gray3: '#9C9C9C',
         gray4: '#373737',
+      },
+      rotate: {
+        0: '0deg',
+        180: '180deg',
+        181: '-180deg',
       },
     },
   },
