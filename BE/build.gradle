@@ -23,6 +23,10 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	mapstructVersion = "1.6.0"
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -54,6 +58,15 @@ dependencies {
 
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	// Map Struct
+	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
+	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+	// If you are using mapstruct in test code
+	testAnnotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
+
+	// uuid
+	implementation group: 'net.glxn.qrgen', name: 'javase', version: '2.0'
 
 }
 
