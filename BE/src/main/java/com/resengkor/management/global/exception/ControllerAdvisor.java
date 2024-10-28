@@ -2,6 +2,7 @@ package com.resengkor.management.global.exception;
 
 
 import com.resengkor.management.global.response.CommonResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.AuthenticationException;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @ControllerAdvice
 @RestController
+@Slf4j
 public class ControllerAdvisor {
 
     @ExceptionHandler(CustomException.class)
@@ -42,6 +44,7 @@ public class ControllerAdvisor {
     /* 어디에서도 잡지 못한 예외 핸들링 */
     @ExceptionHandler(Exception.class)
     public CommonResponse exceptionHandler(Exception e) {
+        log.error("Unhandled Exception: ", e); // 예외 로그
         CommonResponse response = new CommonResponse();
 
         response.setCode(ExceptionStatus.EXCEPTION.getCode());
