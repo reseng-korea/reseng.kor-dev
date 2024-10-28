@@ -41,23 +41,27 @@ const Qna = () => {
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
         <div className="flex flex-col w-full">
-          {/* 하위 카테고리 */}
-          <div className="mt-16 mb-6 text-3xl font-bold">고객 센터</div>
-          <div className="flex justify-center space-x-4">
-            <button
-              onClick={() => navigateTo(routes.faq)}
-              className="flex items-center justify-center h-10 border-none outline-none bg-transition hover:text-lg"
-            >
-              <span className="text-black">자주 묻는 질문</span>
-            </button>
-            <button
-              onClick={() => navigateTo(routes.qna)}
-              className="flex items-center justify-center h-10 border-0 border-b-2 border-primary bg-transition rounded-none"
-            >
-              <span className="font-bold text-primary">1:1 문의</span>
-            </button>
+          <div className="slide-up">
+            {/* 하위 카테고리 */}
+            <div className="mt-16 mb-6 text-3xl font-bold">고객 센터</div>
+            <div className="flex justify-center space-x-4">
+              <button
+                onClick={() => navigateTo(routes.faq)}
+                className="flex items-center justify-center w-40 h-10 border-none outline-none bg-transition"
+              >
+                <span className="text-black hover:text-primary">
+                  자주 묻는 질문
+                </span>
+              </button>
+              <button
+                onClick={() => navigateTo(routes.qna)}
+                className="flex items-center justify-center w-40 h-10 border-0 border-b-2 border-primary bg-transition rounded-none"
+              >
+                <span className="font-bold text-primary">1:1 문의</span>
+              </button>
+            </div>
+            <hr className="w-full mb-6 border-t border-gray1" />
           </div>
-          <hr className="w-full mb-6 border-t border-gray1" />
 
           {/* 메인 */}
           <div className="flex flex-col w-full">

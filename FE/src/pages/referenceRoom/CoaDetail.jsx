@@ -17,21 +17,21 @@ const CoaDetail = () => {
           <div className="flex justify-center space-x-4">
             <button
               onClick={() => navigateTo(routes.certificate)}
-              className="h-10 bg-transition flex items-center justify-center hover:text-lg border-none outline-none"
+              className="w-32 h-10 bg-transition flex items-center justify-center border-none outline-none"
             >
-              <span className="text-black">인증서</span>
+              <span className="text-black hover:text-primary">인증서</span>
             </button>
             <button
               onClick={() => navigateTo(routes.coa)}
-              className="h-10 bg-transition flex items-center justify-center border-0 border-b-2 border-primary rounded-none"
+              className="w-32 h-10 bg-transition flex items-center justify-center border-0 border-b-2 border-primary rounded-none"
             >
               <span className="text-primary font-bold">성적서</span>
             </button>
             <button
               onClick={() => navigateTo(routes.press)}
-              className="h-10 bg-transition flex items-center justify-center hover:text-lg border-none outline-none"
+              className="w-32 h-10 bg-transition flex items-center justify-center border-none outline-none"
             >
-              <span className="text-black">보도 자료</span>
+              <span className="text-black hover:text-primary">보도 자료</span>
             </button>
           </div>
           <hr className="w-full border-t border-gray1 mb-6" />

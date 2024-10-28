@@ -44,13 +44,15 @@ const QnaRegister = () => {
           <div className="flex justify-center space-x-4">
             <button
               onClick={() => navigateTo(routes.faq)}
-              className="flex items-center justify-center h-10 border-none outline-none bg-transition hover:text-lg"
+              className="flex items-center justify-center w-40 h-10 border-none outline-none bg-transition"
             >
-              <span className="text-black">자주 묻는 질문</span>
+              <span className="text-black hover:text-primary">
+                자주 묻는 질문
+              </span>
             </button>
             <button
               onClick={() => navigateTo(routes.qna)}
-              className="flex items-center justify-center h-10 border-0 border-b-2 border-primary bg-transition rounded-none"
+              className="flex items-center justify-center w-40 h-10 border-0 border-b-2 border-primary bg-transition rounded-none"
             >
               <span className="font-bold text-primary">1:1 문의</span>
             </button>

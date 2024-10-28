@@ -5,7 +5,7 @@ import logo from '../assets/logo.png';
 
 const Footer = () => {
   return (
-    <footer className="py-8 bg-gray1 text-white">
+    <footer className="py-8 bg-w-white">
       <div className="container flex flex-col items-start justify-start mx-auto md:flex-row">
         {/* 왼쪽: 이미지 */}
         <div className="justify-center mb-4 md:mb-0">
