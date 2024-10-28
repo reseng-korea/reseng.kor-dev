@@ -30,4 +30,9 @@ public class RedisUtil {
     public boolean existData(String key) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
+    // 키의 남은 TTL(만료 시간) 가져오기
+    public Long getRemainingTTL(String key) {
+        return redisTemplate.getExpire(key); // 초 단위로 반환
+    }
+
 }
