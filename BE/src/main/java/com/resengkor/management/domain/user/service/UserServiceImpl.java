@@ -13,6 +13,7 @@ import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.DataResponse;
 import com.resengkor.management.global.response.ResponseStatus;
+import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import lombok.RequiredArgsConstructor;
@@ -344,5 +345,15 @@ public class UserServiceImpl implements UserService{
         if (existingUserByPhoneNumber.isPresent() && !Objects.equals(existingUserByPhoneNumber.get().getId(), userId)) {
             throw new CustomException(ExceptionStatus.MEMBER_PHONE_NUMBER_ALREADY_EXIST);  // 이미 존재하는 전화번호 예외
         }
+    }
+
+
+    public DataResponse<?> tmp() {
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        return new DataResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage(), user);
     }
 }

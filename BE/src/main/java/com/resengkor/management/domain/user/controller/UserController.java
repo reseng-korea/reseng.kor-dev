@@ -72,4 +72,11 @@ public class UserController {
         return userServiceImpl.updateUser(userId, request);
     }
 
+
+    @GetMapping("/")
+    public DataResponse<?> updateUser(){
+        return userServiceImpl.tmp();
+    }
+
+
 }
