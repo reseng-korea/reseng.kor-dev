@@ -6,7 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.Period;
 
 @Entity
@@ -17,21 +17,24 @@ public class BannerRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long bannerRequestId;
+    private Long id;
 
-    @Column(name = "requestted_length", nullable = false)
+    @Column(name = "uuid", nullable = false)
+    private String uuid;
+
+    @Column(name = "requested_length", nullable = false)
     private Integer requestedLength;
 
     @Column(name = "requested_date", nullable = false)
-    private LocalDateTime requestedDate;
+    private LocalDate requestedDate;
 
     @Column(name = "client_name", nullable = false)
     private String clientName;
 
     @Column(name = "posted_date", nullable = false)
-    private LocalDateTime postedDate;
+    private LocalDate postedDate;
 
-    @Column(name = "posted_duration", nullable = false)
+    @Column(name = "posted_duration")
     private Period postedDuration;
 
     @Column(name = "posted_location", nullable = false)
