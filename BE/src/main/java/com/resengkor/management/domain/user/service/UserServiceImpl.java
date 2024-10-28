@@ -16,6 +16,7 @@ import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
+import com.resengkor.management.global.util.RedisUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -40,7 +41,8 @@ public class UserServiceImpl {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserMapper userMapper; // Mapper를 주입받음
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RedisUtil redisUtil; // RedisUtil 추가
+//    private final RefreshRepository refreshRepository;
 
     @Transactional(readOnly = true)
     public Map<String, String> validateHandling(BindingResult bindingResult) {
@@ -164,7 +166,8 @@ public class UserServiceImpl {
         log.info("------------------------------------------------");
 
         //5.해당 유저의 refresh토큰 전부 삭제
-        refreshRepository.deleteByEmail(userEmail);
+//        refreshRepository.deleteByEmail(userEmail);
+        redisUtil.deleteData("refresh:token:" + userEmail);
         log.info("------------------------------------------------");
         log.info("회원탈퇴:refresh 토큰 삭제");
         log.info("------------------------------------------------");
