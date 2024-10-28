@@ -51,9 +51,9 @@ public class UserController {
     }
 
 
-    @GetMapping("/")
+    @GetMapping("/test-login-id")
     public DataResponse<?> tmp(){
-        System.out.println("tmp");
+        log.info("enter test-login-id controller");
         return userServiceImpl.tmp();
     }
 

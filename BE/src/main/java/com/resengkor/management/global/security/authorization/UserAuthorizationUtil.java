@@ -21,6 +21,7 @@ public class UserAuthorizationUtil {
 
             if (principal instanceof CustomUserDetails) {
                 CustomUserDetails userDetails = (CustomUserDetails) principal;
+                log.info("userDetails.getUsername() = {}", userDetails.getUsername());
                 log.info("userDetails.getUserId() = {}",userDetails.getUserId());
                 return userDetails.getUserId();
             } else if (principal instanceof CustomOAuth2User) {
