@@ -54,6 +54,9 @@ dependencies {
 	//이메일 인증
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+	//redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
 	// Map Struct
 	implementation "org.mapstruct:mapstruct:${mapstructVersion}"
 	annotationProcessor "org.mapstruct:mapstruct-processor:${mapstructVersion}"
