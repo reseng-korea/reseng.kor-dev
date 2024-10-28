@@ -77,6 +77,7 @@ public class JWTFilter extends OncePerRequestFilter {
         //로그인 진행시킴
         String email = jwtUtil.getEmail(access);
         String roleString = jwtUtil.getRole(access);
+        Long userId = jwtUtil.getUserId(access);
         // 문자열을 enum으로 변환
         Role role;
         try {
@@ -87,6 +88,7 @@ public class JWTFilter extends OncePerRequestFilter {
             return;
         }
         User userPrincipal = User.builder()
+                .id(userId)
                 .email(email)
                 .role(role)
                 .password("temp_pw")
