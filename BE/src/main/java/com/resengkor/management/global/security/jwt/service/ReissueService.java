@@ -9,26 +9,24 @@ import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.jwt.entity.RefreshToken;
 import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
-import com.resengkor.management.global.util.CookieUtil;
+import com.resengkor.management.global.util.RedisUtil;
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
 public class ReissueService {
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RedisUtil redisUtil;
+//    private final RefreshRepository refreshRepository;
     private final RefreshTokenService refreshTokenService;
     private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L;
     private final UserRepository userRepository;
@@ -65,39 +63,23 @@ public class ReissueService {
         boolean isAuto = jwtUtil.getIsAuto(refresh);
 
         // refresh DB 조회
-        Boolean isExist = refreshRepository.existsByRefresh(refresh);
-        RefreshToken refreshToken = refreshRepository.findByRefresh(refresh).orElseThrow();
+//        Boolean isExist = refreshRepository.existsByRefresh(refresh);
+//        RefreshToken refreshToken = refreshRepository.findByRefresh(refresh).orElseThrow();
+        // Redis에서 refresh 토큰 존재 여부 확인
+        Boolean isExist = redisUtil.existData("refresh:token:" + refresh);
+        Long remainingTTL = redisUtil.getRemainingTTL("refresh:token:" + refresh);
 
         // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
-        if(!isExist) {
+        if(!isExist || remainingTTL == null || remainingTTL <= 0) {
             throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND);
         }
 
         long refreshTokenExpiration;
-        if(isAuto){
-            // 로그인 유지 기능
-            // isAuto가 true인 경우에만 남은 기간을 계산하여 새로 발급
-            try {
-                //함수가 시간을 넘겨야해서 다시 이전 refresh 유효기간을 그대로 넘기지x
-                Date now = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss"); // 날짜 형식
-                Date tokenExpiration = sdf.parse(refreshToken.getExpiration()); // ParseException 발생 가능
-                long remainingTimeMs = tokenExpiration.getTime() - now.getTime();
-
-                // 만료 시간이 지났다면 재발급 불가 (로그인 유지 한 달이 만료됨)
-                if (remainingTimeMs <= 0) {
-                    throw new CustomException(ExceptionStatus.REFRESH_TOKEN_EXPIRED);
-                }
-                // 남은 기간만큼 새 Refresh Token 발급
-                refreshTokenExpiration = remainingTimeMs;
-
-            } catch (ParseException e) {
-                // parse에 실패한 경우 처리
-                throw new CustomException(ExceptionStatus.TOKEN_PARSE_ERROR);
-            }
-        }
-        else{
-            refreshTokenExpiration = 60 * 60 * 24 * 1000L;
+        if(isAuto) {
+            // 남은 기간만큼 새 Refresh Token 발급
+            refreshTokenExpiration = remainingTTL; // Redis에서 가져온 남은 TTL을 사용
+        } else {
+            refreshTokenExpiration = 60 * 60 * 24 * 1000L; // 24시간
         }
 
         // new tokens
@@ -105,8 +87,10 @@ public class ReissueService {
         String newRefresh = jwtUtil.createJwt_v2("Refresh", email, userId, role, refreshTokenExpiration,isAuto);
 
         // 기존 refresh DB 삭제, 새로운 refresh 저장
-        refreshRepository.deleteByRefresh(refresh);
-        refreshTokenService.saveRefresh(email, (int) (refreshTokenExpiration / 1000L), newRefresh);
+        // 기존 refresh 키 삭제
+        redisUtil.deleteData("refresh:token:" + refresh);
+        // Redis에 새로운 Refresh Token 저장
+        redisUtil.setData("refresh:token:" + newRefresh, newRefresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
 
         //헤더로 전해줌
         response.setHeader("Authorization", "Bearer " + newAccess);

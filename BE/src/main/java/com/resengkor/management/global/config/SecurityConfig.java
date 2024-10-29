@@ -2,11 +2,12 @@ package com.resengkor.management.global.config;
 
 import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.security.jwt.filter.*;
-import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
+//import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.service.RefreshTokenService;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.customhandler.CustomOAuth2SuccessHandler;
 import com.resengkor.management.global.security.oauth.service.CustomOAuth2UserService;
+import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -39,10 +40,11 @@ import java.util.Collections;
 @RequiredArgsConstructor
 public class SecurityConfig {
     private final JWTUtil jwtUtil;
+    private final RedisUtil redisUtil;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final RefreshTokenService refreshTokenService;
-    private final RefreshRepository refreshRepository;
+//    private final RefreshRepository refreshRepository;
     private final UserRepository userRepository;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
@@ -117,15 +119,15 @@ public class SecurityConfig {
                         //아래 roleHierarchy() 메소드 덕분
                         //hasRole(), hasAnyRole 자동으로 ROLE_접두사 추가해줌
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
-                        .requestMatchers("/api/v1/user/**").hasAnyRole("GUEST")
+                        .requestMatchers("/api/v1/users/**").hasAnyRole("GUEST")
                         .anyRequest().authenticated());// 위에서 설정하지 못한 나머지 url을 여기서 다 처리
 
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), CustomLoginFilter.class); //JWTFilter가 CustomLoginFilter 전에 실행
         http
-                .addFilterAt(new CustomLoginFilter("/api/v1/login", authenticationManager(authenticationConfiguration), jwtUtil, refreshRepository, userRepository), UsernamePasswordAuthenticationFilter.class);
+                .addFilterAt(new CustomLoginFilter("/api/v1/login", authenticationManager(authenticationConfiguration), jwtUtil, redisUtil, userRepository), UsernamePasswordAuthenticationFilter.class);
         http
-                .addFilterBefore(new CustomLogoutFilter("/api/v1/logout", jwtUtil, refreshRepository), LogoutFilter.class);
+                .addFilterBefore(new CustomLogoutFilter("/api/v1/logout", jwtUtil, redisUtil), LogoutFilter.class);
 
 
         //세션 설정
