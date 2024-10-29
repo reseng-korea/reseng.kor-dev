@@ -11,4 +11,7 @@ public interface BannerTypeRepository extends JpaRepository<BannerType, Long> {
 
     @Query("SELECT bt FROM BannerType bt WHERE bt.user.id = :userId")
     List<BannerType> findByUserId(@Param("userId") Long userId);
+
+    List<BannerType> findByUserIdAndTypeWidth(Long userId, Integer typeWidth);
+
 }

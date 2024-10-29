@@ -3,8 +3,10 @@ package com.resengkor.management.domain.banner.service;
 import com.resengkor.management.domain.banner.dto.BannerInventoryDTO;
 import com.resengkor.management.domain.banner.entity.BannerType;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
+import com.resengkor.management.global.security.jwt.dto.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -29,25 +31,70 @@ public class BannerTypeService {
         List<BannerInventoryDTO> inventoryList = new ArrayList<>();
         bannersByTypeWidth.forEach((typeWidth, bannerList) -> {
             int standardCount = 0;
+            List<Integer> allLengths = new ArrayList<>();
             List<Integer> nonStandardLengths = new ArrayList<>();
 
             for (BannerType banner : bannerList) {
+                for (int i = 0; i < banner.getQuantity(); i++) {
+                    allLengths.add(banner.getHorizontalLength());
+                }
+                // 정단 현수막인 경우 standardCount 증가
                 if (banner.getHorizontalLength() == 120) {
                     standardCount += banner.getQuantity();
-                } else {
-                    nonStandardLengths.add(banner.getHorizontalLength());
                 }
             }
 
-            nonStandardLengths = nonStandardLengths.stream().distinct().collect(Collectors.toList());
-            inventoryList.add(new BannerInventoryDTO(typeWidth, standardCount, nonStandardLengths));
+            // 중복 제거 후 horizontalLength 기준으로 오름차순 정렬
+            allLengths = allLengths.stream().sorted().collect(Collectors.toList());
+            inventoryList.add(new BannerInventoryDTO(typeWidth, standardCount, allLengths));
         });
 
         return inventoryList;
     }
 
+    // 특정 typeWidth에 대한 배너 인벤토리를 horizontalLength 기준 오름차순으로 정렬하여 반환
+    public BannerInventoryDTO getBannerInventoryBySpecificWidth(Authentication authentication, Integer typeWidth) {
+        Long userId = getUserIdFromAuthentication(authentication);
+        List<BannerType> banners = bannerTypeRepository.findByUserIdAndTypeWidth(userId, typeWidth);
+
+        List<Integer> allLengths = new ArrayList<>();
+
+        for (BannerType banner : banners) {
+            // 모든 현수막의 horizontalLength를 추가 (정단/비정단 포함)
+            for (int i = 0; i < banner.getQuantity(); i++) {
+                allLengths.add(banner.getHorizontalLength());
+            }
+        }
+
+        // 중복 제거 후 horizontalLength 기준으로 오름차순 정렬
+        allLengths = allLengths.stream().sorted().collect(Collectors.toList());
+
+        // 정단 개수를 allLengths 리스트에서 계산
+        int standardCount = (int) allLengths.stream().filter(length -> length == 120).count();
+        return new BannerInventoryDTO(typeWidth, standardCount, allLengths);
+    }
+
+    // 새로운 현수막 추가 메서드 (정단/비정단 추가에 따른 로직)
+//    public void addNewBanner(Authentication authentication, Integer typeWidth, int horizontalLength, int quantity) {
+//        Long userId = getUserIdFromAuthentication(authentication);
+//        BannerType newBanner = new BannerType();
+//        newBanner.setUserId(userId);
+//        newBanner.setTypeWidth(typeWidth);
+//        newBanner.setHorizontalLength(horizontalLength);
+//        newBanner.setQuantity(quantity);
+//
+//        // 기존의 standardCount 계산 로직과 일관성을 유지하기 위해 저장 전에 추가 로직 처리
+//        if (horizontalLength == 120) {
+//            // 정단 현수막인 경우 quantity만큼 standardCount 증가
+//            newBanner.setQuantity(newBanner.getQuantity() + quantity);
+//        }
+//
+//        bannerTypeRepository.save(newBanner);
+//    }
+
     private Long getUserIdFromAuthentication(Authentication authentication) {
-        // authentication 객체에서 userId를 추출하는 로직
-        return (Long) authentication.getPrincipal(); // 사용자 정의 방식에 따라 수정 필요
+        // CustomUserDetails 객체에서 사용자 ID(Long)를 올바르게 가져오는 방법
+        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
+        return userDetails.getUserId();
     }
 }
