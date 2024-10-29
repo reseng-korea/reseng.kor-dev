@@ -3,20 +3,16 @@ package com.resengkor.management.domain.qrcode.service;
 import com.resengkor.management.domain.banner.mapper.BannerRequestMapper;
 import com.resengkor.management.domain.banner.repository.BannerRequestRepository;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class QRCodeValidationService {
 
     private final BannerRequestRepository bannerRequestRepository;
     private final BannerRequestMapper bannerRequestMapper;
-
-    @Autowired
-    public QRCodeValidationService(BannerRequestRepository bannerRequestRepository, BannerRequestMapper bannerRequestMapper) {
-        this.bannerRequestRepository = bannerRequestRepository;
-        this.bannerRequestMapper = bannerRequestMapper;
-    }
 
     /**
      * 주어진 uuid에 해당하는 BannerRequest가 존재하는지 확인하고,

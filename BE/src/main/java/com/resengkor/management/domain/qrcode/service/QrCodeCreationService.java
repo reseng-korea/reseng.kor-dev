@@ -4,6 +4,7 @@ import com.resengkor.management.domain.banner.entity.BannerRequest;
 import com.resengkor.management.domain.banner.mapper.BannerRequestMapper;
 import com.resengkor.management.domain.banner.repository.BannerRequestRepository;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
+import lombok.RequiredArgsConstructor;
 import net.glxn.qrgen.javase.QRCode;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,17 +13,11 @@ import java.io.ByteArrayOutputStream;
 import java.util.UUID;
 
 @Service
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class QrCodeCreationService {
 
-    private BannerRequestRepository bannerRequestRepository;
-    private BannerRequestMapper bannerRequestMapper;
-
-
-    @Autowired
-    public QrCodeCreationService(BannerRequestRepository bannerRequestRepository, BannerRequestMapper bannerRequestMapper) {
-        this.bannerRequestRepository = bannerRequestRepository;
-        this.bannerRequestMapper = bannerRequestMapper;
-    }
+    private final BannerRequestRepository bannerRequestRepository;
+    private final BannerRequestMapper bannerRequestMapper;
 
     public byte[] generateQRCode(QrPageDataDTO qrPageDataDTO) {
         String uuid = UUID.randomUUID().toString();
