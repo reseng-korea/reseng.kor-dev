@@ -1,6 +1,5 @@
 package com.resengkor.management.domain.qrcode.controller;
 
-
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
 import com.resengkor.management.domain.qrcode.service.QRCodeValidationService;
 import org.springframework.beans.factory.annotation.Autowired;
