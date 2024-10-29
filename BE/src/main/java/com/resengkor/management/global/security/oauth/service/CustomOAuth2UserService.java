@@ -28,7 +28,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         log.info("------------------------------------------------");
-        System.out.println("CustomOAuth2UserService start");
+        log.info("Enter CustomOAuth2UserService");
         log.info("------------------------------------------------");
 
         // userRequest -> registration 정보
@@ -56,8 +56,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
         Optional<User> isExist = userRepository.findByEmail(response.getEmail());
         log.info("------------------------------------------------");
-        log.info("response.getEmail()? {}",response.getEmail());
-        log.info("Email이 isExist? {}",isExist);
+        log.info("response.getEmail() = {}",response.getEmail());
+        log.info("Email이 isExist = {}",isExist);
         log.info("------------------------------------------------");
         if (isExist.isEmpty()) {
             log.info("------------------------------------------------");

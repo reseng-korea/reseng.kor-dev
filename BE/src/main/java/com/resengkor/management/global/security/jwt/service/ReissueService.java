@@ -14,6 +14,7 @@ import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
@@ -23,6 +24,7 @@ import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ReissueService {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
@@ -83,8 +85,8 @@ public class ReissueService {
         }
 
         // new tokens
-        String newAccess = jwtUtil.createJwt_v2("access", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto);
-        String newRefresh = jwtUtil.createJwt_v2("Refresh", email, userId, role, refreshTokenExpiration,isAuto);
+        String newAccess = jwtUtil.createJwt("access", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto);
+        String newRefresh = jwtUtil.createJwt("Refresh", email, userId, role, refreshTokenExpiration,isAuto);
 
         // 기존 refresh DB 삭제, 새로운 refresh 저장
         // 기존 refresh 키 삭제
@@ -95,6 +97,10 @@ public class ReissueService {
         //헤더로 전해줌
         response.setHeader("Authorization", "Bearer " + newAccess);
         response.setHeader("Refresh", newRefresh);
+
+        log.info("------------------------------------------------");
+        log.info("ReissueService 성공");
+        log.info("------------------------------------------------");
 
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS .getCode(),
                 ResponseStatus.RESPONSE_SUCCESS .getMessage());

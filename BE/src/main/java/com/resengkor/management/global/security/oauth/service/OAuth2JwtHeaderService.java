@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class OAuth2JwtHeaderService {
     public String oauth2JwtHeaderSet(HttpServletRequest request, HttpServletResponse response) {
-        log.info("OAuth2USer header");
+        log.info("Enter OAuth2USer header");
 
         Cookie[] cookies = request.getCookies();
         String access = null;

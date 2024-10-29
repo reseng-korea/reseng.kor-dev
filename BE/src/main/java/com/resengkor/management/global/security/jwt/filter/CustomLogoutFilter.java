@@ -9,6 +9,7 @@ import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
@@ -19,6 +20,7 @@ import java.io.IOException;
  * refresh 토큰 만료
  */
 //@RequiredArgsConstructor
+@Slf4j
 public class CustomLogoutFilter extends GenericFilterBean {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
@@ -55,7 +57,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String refresh = null;
         refresh = request.getHeader("Refresh");
 
-        System.out.println("refresh = " + refresh);
+        log.info("refresh = " + refresh);
 
         // refresh token null
         if(refresh == null){

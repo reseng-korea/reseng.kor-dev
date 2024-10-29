@@ -1,5 +1,8 @@
 package com.resengkor.management.global.security.oauth.customhandler;
 
+import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.service.RefreshTokenService;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.dto.CustomOAuth2User;
@@ -32,19 +35,25 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
         log.info("------------------------------------------------");
-        System.out.println("OAuth login success handler");
+        log.info("Enter OAuth login success handler");
         log.info("------------------------------------------------");
         // create JWT
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-
-        String name = customOAuth2User.getName(); // 실제 이름
-        String username = customOAuth2User.getUsername(); // DB 저장용 식별자
+        String email = customOAuth2User.getEmail();
         String role = authentication.getAuthorities().iterator().next().getAuthority();
+        long userId = customOAuth2User.getUserId();
+        log.info("------------------------------------------------");
+        log.info("email = {}",email);
+        log.info("role = {}",role);
+        log.info("userId = {}",userId);
+        log.info("------------------------------------------------");
+
 
         Integer expireS = 24 * 60 * 60;
-        String access = jwtUtil.createOuathJwt("access", username, role, ACCESS_TOKEN_EXPIRATION);
-        String refresh = jwtUtil.createOuathJwt("refresh", username, role, expireS * 1000L);
+        String access = jwtUtil.createOuathJwt("access", email, userId, role, ACCESS_TOKEN_EXPIRATION);
+        String refresh = jwtUtil.createOuathJwt("refresh", email, userId, role, expireS * 1000L);
 
         // refresh 토큰 DB 저장
 //        refreshTokenService.saveRefresh(username, expireS, refresh);
