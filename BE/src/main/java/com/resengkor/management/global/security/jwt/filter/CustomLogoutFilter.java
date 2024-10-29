@@ -55,7 +55,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         String refresh = null;
-        refresh = request.getHeader("Refresh").trim();
+        refresh = request.getHeader("Refresh");
 
         log.info("refresh = " + refresh);
 
