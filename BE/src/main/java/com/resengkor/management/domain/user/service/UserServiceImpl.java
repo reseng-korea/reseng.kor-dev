@@ -276,7 +276,7 @@ public class UserServiceImpl {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
-        System.out.println("user 조회 성공");
+        log.info("user 조회 성공");
         Long id = user.getId();
         return new DataResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), id);

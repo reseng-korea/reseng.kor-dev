@@ -35,15 +35,13 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
 //    private final RefreshRepository refreshRepository;
-    private final UserRepository userRepository;
     private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L; //10분
 
-    public CustomLoginFilter(String defaultFilterUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, RedisUtil redisUtil,  UserRepository userRepository) {
+    public CustomLoginFilter(String defaultFilterUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, RedisUtil redisUtil) {
         setFilterProcessesUrl(defaultFilterUrl);
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
         this.redisUtil = redisUtil;
-        this.userRepository = userRepository;
     }
 
     //실제 로그인 진행 메소드
