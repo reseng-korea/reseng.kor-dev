@@ -83,7 +83,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .loginType(LoginType.SOCIAL)
                     .status(true)
                     .build();
-            userRepository.save(user);
+            user = userRepository.save(user);
 
             // Entity 목적 순수하게 유지하기 위해서 dto 로 전달..
             OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
@@ -91,6 +91,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .socialId(response.getSocialId())
                     .name(response.getName())
                     .email(response.getEmail())
+                    .userId(user.getId())
                     .role("ROLE_GUEST")
                     .build();
 
@@ -114,6 +115,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .socialId(response.getSocialId())
                     .name(response.getName())
                     .email(response.getEmail())
+                    .userId(isExist.get().getId())
                     .role(isExist.get().getRole().getRole())
                     .build();
             return new CustomOAuth2User(oAuth2UserDto);
