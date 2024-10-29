@@ -48,6 +48,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // 토큰이 없다면 다음 필터로 넘김
         // 1. PERMIT URL 확인 후 다음 필터로 이동
+        log.info("isPermitUrl(request) = {}",isPermitUrl(request));
         if (isPermitUrl(request)) {
             log.info("------------------------------------------------");
             log.info("Permit URL, 필터 통과");
