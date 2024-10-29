@@ -4,9 +4,9 @@ import com.resengkor.management.domain.banner.dto.BannerInventoryDTO;
 import com.resengkor.management.domain.banner.service.BannerTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
@@ -20,8 +20,8 @@ public class BannerTypeController {
 
     // 보유 현수막 재고 조회 API
     @GetMapping("/inventory")
-    public ResponseEntity<List<BannerInventoryDTO>> getBannerInventory(@RequestParam Long userId) {
-        List<BannerInventoryDTO> inventoryList = bannerTypeService.getBannerInventory(userId);
+    public ResponseEntity<List<BannerInventoryDTO>> getBannerInventory(Authentication authentication) {
+        List<BannerInventoryDTO> inventoryList = bannerTypeService.getBannerInventory(authentication);
         return ResponseEntity.ok(inventoryList);
     }
 }
