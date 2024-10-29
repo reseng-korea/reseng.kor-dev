@@ -12,6 +12,7 @@ import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.util.RedisUtil;
+import com.resengkor.management.global.util.TmpCodeUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,6 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -44,7 +44,7 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class SmsServiceWithRedis {
     //휴대폰 인증 번호
-    private final String smsConfirmNum = createSmsKey();
+    private final String smsConfirmNum = TmpCodeUtil.generateNumericCode();
     private final RedisUtil redisUtil;
 
     @Value("${spring.naver-cloud-sms.accessKey}")
@@ -87,20 +87,14 @@ public class SmsServiceWithRedis {
         return encodeBase64String;
     }
 
-    // 인증코드 만들기
-    public static String createSmsKey() {
-        StringBuffer key = new StringBuffer();
-        Random rnd = new Random();
-
-        for (int i = 0; i < 5; i++) { // 인증코드 5자리
-            key.append((rnd.nextInt(10)));
-        }
-        return key.toString();
-    }
-
     //메세지 발송
     @Transactional
-    public SmsResponse sendSms(MessageDto messageDto) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+    public SmsResponse sendSms(MessageDto messageDto, String type) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        return sendDetailSms(messageDto,type,smsConfirmNum);
+    }
+
+    @Transactional
+    public SmsResponse sendDetailSms(MessageDto messageDto, String type, String tmpCode) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
         log.info("------------------------------------------------");
         log.info("service sendSms enter");
         log.info("------------------------------------------------");
@@ -115,12 +109,22 @@ public class SmsServiceWithRedis {
         List<MessageDto> messages = new ArrayList<>();
         messages.add(messageDto);
 
+        String contentMessage;
+        if(type.equals("findPassword")){
+            //임시 비밀번호 발급해주는 문자내용
+            contentMessage = "[서비스명 테스트닷] 임시 비밀번호: " + tmpCode + ". 로그인 후 비밀번호를 변경해 주세요.";
+        }
+        else{
+            //핸드폰 인증해주는 문자내용
+            contentMessage = "[서비스명 테스트닷] 인증번호 [" + tmpCode + "]를 입력해주세요";
+        }
+
         SmsRequest request = SmsRequest.builder()
                 .type("SMS")
                 .contentType("COMM")
                 .countryCode("82")
                 .from(phone)
-                .content("[서비스명 테스트닷] 인증번호 [" + smsConfirmNum + "]를 입력해주세요")
+                .content(contentMessage)
                 .messages(messages)
                 .build();
 
@@ -134,10 +138,13 @@ public class SmsServiceWithRedis {
         restTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory());
         //restTemplate로 post 요청 보내고 오류가 없으면 202코드 반환
         SmsResponse smsResponseDto = restTemplate.postForObject(new URI("https://sens.apigw.ntruss.com/sms/v2/services/"+ serviceId +"/messages"), httpBody, SmsResponse.class);
-        smsResponseDto.builder().smsConfirmNum(smsConfirmNum).build();
-        redisUtil.setData("sms:verification:" + messageDto.getTo(), smsConfirmNum, 3, TimeUnit.MINUTES); // 유효시간 3분
+        smsResponseDto.builder().smsConfirmNum(tmpCode).build();
+        redisUtil.setData("sms:verification:" + messageDto.getTo(), tmpCode, 3, TimeUnit.MINUTES); // 유효시간 3분
         return smsResponseDto;
     }
+
+
+
 
     @Transactional
     public CommonResponse smsAuthentication(MessageAuthDTO dto) {

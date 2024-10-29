@@ -29,7 +29,7 @@ public class SmsController {
         log.info("------------------------------------------------");
         log.info("enter sendSms");
         log.info("------------------------------------------------");
-        return smsService.sendSms(messageDto);
+        return smsService.sendSms(messageDto,"verifyPhoneNumber");
     }
 
     @GetMapping("/verify")
