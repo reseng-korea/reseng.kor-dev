@@ -1,7 +1,6 @@
 package com.resengkor.management.domain.banner.controller;
 
 import com.resengkor.management.domain.banner.dto.BannerInventoryDTO;
-import com.resengkor.management.domain.banner.dto.BannerTypeDto;
 import com.resengkor.management.domain.banner.service.BannerTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

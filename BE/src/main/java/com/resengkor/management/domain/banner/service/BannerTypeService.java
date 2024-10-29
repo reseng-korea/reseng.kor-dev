@@ -1,7 +1,6 @@
 package com.resengkor.management.domain.banner.service;
 
 import com.resengkor.management.domain.banner.dto.BannerInventoryDTO;
-import com.resengkor.management.domain.banner.dto.BannerTypeDto;
 import com.resengkor.management.domain.banner.entity.BannerType;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import lombok.RequiredArgsConstructor;
