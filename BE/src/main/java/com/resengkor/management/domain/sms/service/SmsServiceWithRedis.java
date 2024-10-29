@@ -101,6 +101,9 @@ public class SmsServiceWithRedis {
     //메세지 발송
     @Transactional
     public SmsResponse sendSms(MessageDto messageDto) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        log.info("------------------------------------------------");
+        log.info("service sendSms enter");
+        log.info("------------------------------------------------");
         String time = Long.toString(System.currentTimeMillis());
 
         HttpHeaders headers = new HttpHeaders();
@@ -138,11 +141,18 @@ public class SmsServiceWithRedis {
 
     @Transactional
     public CommonResponse smsAuthentication(MessageAuthDTO dto) {
+        log.info("------------------------------------------------");
+        log.info("service smsAuthentication enter");
+        log.info("------------------------------------------------");
         // Redis에서 인증 코드 조회
         String storedCode = redisUtil.getData("sms:verification:" + dto.getPhoneNumber());
         if (storedCode == null) {
             throw new CustomException(ExceptionStatus.EMAIL_NOT_FOUND); // 인증 코드가 존재하지 않는 경우
         }
+
+        log.info("------------------------------------------------");
+        log.info("storedCode = {}, dto.getCode() = {}",storedCode,dto.getCode());
+        log.info("------------------------------------------------");
 
         // 인증 코드 확인
         if (!storedCode.equals(dto.getCode())) {

@@ -9,6 +9,7 @@ import com.resengkor.management.domain.sms.service.SmsServiceWithRedis;
 import com.resengkor.management.global.response.CommonResponse;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
@@ -19,16 +20,23 @@ import java.security.NoSuchAlgorithmException;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping("/api/v1/sms")
+@Slf4j
 public class SmsController {
     private final SmsServiceWithRedis smsService;
 
     @PostMapping("/send-verification")
     public SmsResponse sendSms(@RequestBody MessageDto messageDto) throws UnsupportedEncodingException, URISyntaxException, NoSuchAlgorithmException, InvalidKeyException, JsonProcessingException {
+        log.info("------------------------------------------------");
+        log.info("enter sendSms");
+        log.info("------------------------------------------------");
         return smsService.sendSms(messageDto);
     }
 
     @GetMapping("/verify")
     public CommonResponse checkSms(@RequestBody MessageAuthDTO messageAuthDTO) {
+        log.info("------------------------------------------------");
+        log.info("enter checkSms");
+        log.info("------------------------------------------------");
         return smsService.smsAuthentication(messageAuthDTO); // Response body에 값을 반환
     }
 }
