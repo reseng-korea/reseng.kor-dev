@@ -52,6 +52,22 @@ public class AuthController {
         return userServiceImpl.findEmail(findEmailRequest);
     }
 
+    //비밀번호 찾기
+    @GetMapping("/find-password")
+    public DataResponse<?> findEmail(@Valid @RequestBody FindPasswordRequest findPasswordRequest, BindingResult bindingResult) {
+        log.info("비밀번호 찾기 요청이 들어옴: {}", findPasswordRequest);
+
+        // 바인딩 에러가 있는지 확인
+        if (bindingResult.hasErrors()) {
+            Map<String, String> validatorResult = userServiceImpl.validateHandling(bindingResult);
+            log.warn("바인딩 에러 발생: {}", validatorResult);
+            return new DataResponse<>(400, "Validation Error", validatorResult);
+        }
+
+        // 이메일 찾기 서비스 호출
+        return userServiceImpl.findPassword(findPasswordRequest);
+    }
+
     //일반 회원탈퇴
     @PutMapping("/withdrawal")
     public CommonResponse withdrawUser(@RequestHeader("Authorization") String token) {

@@ -2,6 +2,8 @@ package com.resengkor.management.domain.user.service;
 
 
 
+import com.resengkor.management.domain.sms.dto.MessageDto;
+import com.resengkor.management.domain.sms.service.SmsServiceWithRedis;
 import com.resengkor.management.domain.user.dto.*;
 import com.resengkor.management.domain.user.repository.RegionRepository;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
@@ -17,6 +19,8 @@ import com.resengkor.management.global.security.authorization.UserAuthorizationU
 import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
+import com.resengkor.management.global.util.TmpCodeUtil;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,6 +46,7 @@ public class UserServiceImpl {
     private final UserMapper userMapper; // Mapper를 주입받음
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil; // RedisUtil 추가
+    private final SmsServiceWithRedis smsService;
 //    private final RefreshRepository refreshRepository;
 
     @Transactional(readOnly = true)
@@ -126,6 +131,31 @@ public class UserServiceImpl {
         log.info("맞는 회사명&핸드폰 번호 있음");
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), User.getEmail());
+    }
+
+    public DataResponse<?> findPassword(FindPasswordRequest request) {
+        User user = userRepository.findByEmailAndPhoneNumber(request.getEmail(), request.getPhoneNumber())
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        log.info("맞는 이메일&핸드폰 번호 있음");
+
+        // 2. 임시 비밀번호 생성
+        String temporaryPassword = TmpCodeUtil.generateAlphanumericPassword();
+        log.info("임시 비밀번호 생성: {}", temporaryPassword);
+
+        // 3. SMS 전송
+        MessageDto messageDto = new MessageDto(user.getPhoneNumber());
+        try {
+            smsService.sendDetailSms(messageDto,"findPassword",temporaryPassword);
+        } catch (Exception e) {
+            throw new CustomException(ExceptionStatus.SMS_SEND_FAIL);
+        }
+
+        // 4. 비밀번호 업데이트
+        user.editPassword(passwordEncoder.encode(temporaryPassword));
+        userRepository.save(user);
+
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage());
     }
 
     //회원 탈퇴 로직
@@ -276,9 +306,11 @@ public class UserServiceImpl {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
-        System.out.println("user 조회 성공");
+        log.info("user 조회 성공");
         Long id = user.getId();
         return new DataResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), id);
     }
+
+
 }
