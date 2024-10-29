@@ -36,7 +36,7 @@ public class ReissueService {
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
         // 헤더에서 refresh키에 담긴 토큰을 꺼냄
         String refresh = null;
-        refresh = request.getHeader("Refresh");
+        refresh = request.getHeader("Refresh").trim();
 
 
         // 헤더에 refresh 토큰 x
