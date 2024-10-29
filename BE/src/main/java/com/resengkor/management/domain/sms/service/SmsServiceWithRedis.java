@@ -50,13 +50,13 @@ public class SmsServiceWithRedis {
     @Value("${spring.naver-cloud-sms.accessKey}")
     private String accessKey;
 
-    @Value("${naver-cloud-sms.secretKey}")
+    @Value("${spring.naver-cloud-sms.secretKey}")
     private String secretKey;
 
-    @Value("${naver-cloud-sms.serviceId}")
+    @Value("${spring.naver-cloud-sms.serviceId}")
     private String serviceId;
 
-    @Value("${naver-cloud-sms.senderPhone}")
+    @Value("${spring.naver-cloud-sms.senderPhone}")
     private String phone;
 
     public String getSignature(String time) throws NoSuchAlgorithmException, UnsupportedEncodingException, InvalidKeyException {
