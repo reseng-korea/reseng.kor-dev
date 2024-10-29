@@ -21,6 +21,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
     // phoneNumber로 사용자 조회
     Optional<User> findByPhoneNumber(String phoneNumber);
 
+    // 이메일과 전화번호가 모두 일치하는 사용자 찾기
+    Optional<User> findByEmailAndPhoneNumber(String email, String phoneNumber);
+
 
 
 

@@ -40,7 +40,8 @@ public enum ExceptionStatus {
     CODE_EXPIRED(4023, "인증 코드가 만료되었습니다."),
     EMAIL_FAILED(5001,"메일 발송 중 오류가 발생했습니다."),
 
-
+    /* SMS */
+    SMS_SEND_FAIL(5002,"sms 발송 중 오류가 발생했습니다."),
 
     DATA_NOT_FOUND(5000, "데이터가 존재하지 않습니다.");
 
