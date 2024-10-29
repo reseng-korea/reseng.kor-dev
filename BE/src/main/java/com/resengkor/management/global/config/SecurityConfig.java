@@ -43,7 +43,7 @@ public class SecurityConfig {
     private final RedisUtil redisUtil;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomOAuth2UserService customOAuth2UserService;
-    private final RefreshTokenService refreshTokenService;
+//    private final RefreshTokenService refreshTokenService;
 //    private final RefreshRepository refreshRepository;
     private final UserRepository userRepository;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -111,7 +111,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/register",
                                 "/api/v1/find-email","/api/v1/find-password",
                                 "/api/v1/login","/api/v1/logout",
-                                "/api/v1/oauth", "/api/v1/oauth2-jwt-header",
+                                "/api/v1/oauth/**", "/api/v1/oauth2-jwt-header",
                                 "/api/v1/reissue","/api/v1/withdrawal",
                                 "/api/v1/mail/**").permitAll()
                         //hasRole() : 특정 Roll을 가져야함
@@ -140,7 +140,7 @@ public class SecurityConfig {
                 .oauth2Login((oauth2) -> oauth2
                         .userInfoEndpoint((userinfo) -> userinfo
                                 .userService(customOAuth2UserService))
-                        .successHandler(new CustomOAuth2SuccessHandler(jwtUtil, refreshTokenService))
+                        .successHandler(new CustomOAuth2SuccessHandler(jwtUtil, redisUtil))
                         .failureHandler(authenticationFailureHandler())
                         .permitAll());
 
