@@ -36,7 +36,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
         response.setContentType("application/json; charset=UTF-8");
 
         // 인증 실패 메시지를 JSON 형식으로 전송
-        response.getWriter().write("{\"error\": \"인증이 필요합니다. 로그인이 필요합니다.\", " +
+        response.getWriter().write("{\"error\": \"잘못된 요청 형식입니다. 올바른 URL과 메서드로 접근하거나, 로그인하여 인증을 완료해 주세요.\", " +
                 "\"message\": \"" + authException.getMessage() + "\"}");
         response.getWriter().flush();
     }

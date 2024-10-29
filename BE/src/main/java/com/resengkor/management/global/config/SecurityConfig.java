@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
@@ -35,6 +36,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 
 @EnableWebSecurity
 @Configuration
@@ -50,6 +52,21 @@ public class SecurityConfig {
     private final UserRepository userRepository;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
+
+    // POST로 허용할 엔드포인트 목록
+    private static final List<String> POST_LIST = List.of(
+            "/api/v1/register",
+            "/api/v1/oauth2-jwt-header",
+            "/api/v1/reissue"
+    );
+
+    // GET으로 허용할 엔드포인트 목록
+    private static final List<String> GET_LIST = List.of(
+            "/api/v1/find-email",
+            "/api/v1/find-password",
+            "/api/v1/withdrawal"
+
+    );
 
 
 
@@ -109,12 +126,16 @@ public class SecurityConfig {
         // 경로별 인가 작업
 
         http
-                .authorizeHttpRequests((auth) -> auth
-                        .requestMatchers("/api/v1/register",
-                                "/api/v1/find-email","/api/v1/find-password",
+                .authorizeHttpRequests(auth -> {
+                        // POST 메서드에 대한 URL 허용
+                        POST_LIST.forEach(url -> auth.requestMatchers(HttpMethod.POST, url).permitAll());
+
+                        // GET 메서드에 대한 URL 허용
+                        GET_LIST.forEach(url -> auth.requestMatchers(HttpMethod.GET, url).permitAll());
+
+                        auth
+                        .requestMatchers(
                                 "/api/v1/login","/api/v1/logout",
-                                "/api/v1/oauth/**", "/api/v1/oauth2-jwt-header",
-                                "/api/v1/reissue","/api/v1/withdrawal",
                                 "/api/v1/mail/**","/api/v1/sms/**").permitAll()
                         //hasRole() : 특정 Roll을 가져야함
                         //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
@@ -122,7 +143,8 @@ public class SecurityConfig {
                         //hasRole(), hasAnyRole 자동으로 ROLE_접두사 추가해줌
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/users/**").hasAnyRole("GUEST")
-                        .anyRequest().authenticated());// 위에서 설정하지 못한 나머지 url을 여기서 다 처리
+                        .anyRequest().authenticated();
+                });// 위에서 설정하지 못한 나머지 url을 여기서 다 처리
 
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), CustomLoginFilter.class); //JWTFilter가 CustomLoginFilter 전에 실행
