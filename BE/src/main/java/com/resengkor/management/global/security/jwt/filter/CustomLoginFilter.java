@@ -1,12 +1,11 @@
 package com.resengkor.management.global.security.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
+import com.resengkor.management.global.security.jwt.dto.CustomUserDetails;
 import com.resengkor.management.global.security.jwt.dto.LoginDTO;
-import com.resengkor.management.global.security.jwt.entity.RefreshToken;
 //import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
@@ -88,10 +87,12 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         log.info("------------------------------------------------");
 
         //1. authentication에서 유저 정보를 가져오자.
-        String email = authentication.getName();
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
-        long userId = user.getId();
+        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        String email = customUserDetails.getUsername();
+        long userId = customUserDetails.getUserId();
+        log.info("------------------------------------------------");
+        log.info("email = {}, userId = {}",email,userId);
+        log.info("------------------------------------------------");
 
         LoginDTO loginDTO = (LoginDTO) authentication.getDetails();
         boolean isAuto = loginDTO.isAuto();
@@ -108,8 +109,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         //2. 토큰 생성
         //"access"를 통해 카테고리값을 넣어준다.
         long refreshTokenExpiration = isAuto ? 30 * 24 * 60 * 60 * 1000L : 24 * 60 * 60 * 1000L; //로그인 유지 30일, 일반 24시간
-        String access = jwtUtil.createJwt_v2("access", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto);
-        String refresh = jwtUtil.createJwt_v2("refresh", email, userId, role, refreshTokenExpiration,isAuto);
+        String access = jwtUtil.createJwt("access", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto);
+        String refresh = jwtUtil.createJwt("refresh", email, userId, role, refreshTokenExpiration,isAuto);
 
         //2-1. Refresh 토큰 DB에 저장 메소드
 //        addRefreshEntity(email, refresh, refreshTokenExpiration);

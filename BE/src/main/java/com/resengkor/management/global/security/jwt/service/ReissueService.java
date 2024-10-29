@@ -83,8 +83,8 @@ public class ReissueService {
         }
 
         // new tokens
-        String newAccess = jwtUtil.createJwt_v2("access", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto);
-        String newRefresh = jwtUtil.createJwt_v2("Refresh", email, userId, role, refreshTokenExpiration,isAuto);
+        String newAccess = jwtUtil.createJwt("access", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto);
+        String newRefresh = jwtUtil.createJwt("Refresh", email, userId, role, refreshTokenExpiration,isAuto);
 
         // 기존 refresh DB 삭제, 새로운 refresh 저장
         // 기존 refresh 키 삭제
