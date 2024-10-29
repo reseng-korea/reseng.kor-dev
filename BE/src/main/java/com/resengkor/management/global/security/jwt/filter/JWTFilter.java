@@ -17,6 +17,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * 이미 액세스 토큰이 있는 경우,
@@ -27,6 +29,12 @@ import java.io.IOException;
 @Slf4j
 public class JWTFilter extends OncePerRequestFilter {
     private final JWTUtil jwtUtil;
+    private static final List<String> PERMIT_URLS = Arrays.asList(
+            "/api/v1/register", "/api/v1/find-email", "/api/v1/find-password",
+            "/api/v1/login", "/api/v1/logout", "/api/v1/oauth/**",
+            "/api/v1/oauth2-jwt-header", "/api/v1/reissue", "/api/v1/withdrawal",
+            "/api/v1/mail/**", "/api/v1/sms/**"
+    );
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -39,12 +47,26 @@ public class JWTFilter extends OncePerRequestFilter {
         log.info("Access = "+access);
 
         // 토큰이 없다면 다음 필터로 넘김
+        // 1. PERMIT URL 확인 후 다음 필터로 이동
+        if (isPermitUrl(request)) {
+            log.info("------------------------------------------------");
+            log.info("Permit URL, 필터 통과");
+            log.info("------------------------------------------------");
+            filterChain.doFilter(request, response);
+            return;
+        }
+
         if (access == null) {
             //권한이 필요없는 api일 수도 있으니 일단 넘김
-            filterChain.doFilter(request, response);
+//            filterChain.doFilter(request, response);
+//            log.info("------------------------------------------------");
+//            log.info("Access토큰 없음");
+//            log.info("권한이 필요없는 api일 수도 있으니 일단 넘김");
+//            log.info("------------------------------------------------");
+//            return;
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             log.info("------------------------------------------------");
             log.info("Access토큰 없음");
-            log.info("권한이 필요없는 api일 수도 있으니 일단 넘김");
             log.info("------------------------------------------------");
             return;
         }
@@ -102,5 +124,9 @@ public class JWTFilter extends OncePerRequestFilter {
         log.info("------------------------------------------------");
 
         filterChain.doFilter(request, response);
+    }
+
+    private boolean isPermitUrl(HttpServletRequest request) {
+        return PERMIT_URLS.stream().anyMatch(url -> request.getRequestURI().startsWith(url));
     }
 }
