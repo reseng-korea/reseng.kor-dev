@@ -57,7 +57,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 	//핸드폰 인증
-	implementation group: 'org.apache.httpcomponents', name: 'httpclient', version: '4.5.13'
+	implementation 'org.apache.httpcomponents.client5:httpclient5:5.2.1'
 
 	//redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
