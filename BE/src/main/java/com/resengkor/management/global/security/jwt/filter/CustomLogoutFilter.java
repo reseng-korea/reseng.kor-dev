@@ -2,20 +2,17 @@ package com.resengkor.management.global.security.jwt.filter;
 
 import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
-import com.resengkor.management.global.util.CookieUtil;
+import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-import java.util.Arrays;
+
 
 /**
  * 로그아웃 필터
@@ -24,13 +21,14 @@ import java.util.Arrays;
 //@RequiredArgsConstructor
 public class CustomLogoutFilter extends GenericFilterBean {
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RedisUtil redisUtil;
+//    private final RefreshRepository refreshRepository;
     private final String defaultFilterUrl;
 
-    public CustomLogoutFilter(String defaultFilterUrl, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
+    public CustomLogoutFilter(String defaultFilterUrl, JWTUtil jwtUtil, RedisUtil redisUtil) {
         this.defaultFilterUrl = defaultFilterUrl;
         this.jwtUtil = jwtUtil;
-        this.refreshRepository = refreshRepository;
+        this.redisUtil = redisUtil;
     }
 
     @Override
@@ -74,7 +72,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         //DB에 저장되어 있는지 확인
-        Boolean isExist = refreshRepository.existsByRefresh(refresh);
+//        Boolean isExist = refreshRepository.existsByRefresh(refresh);
+        // Redis에서 refresh 토큰 존재 여부 확인
+        Boolean isExist = redisUtil.existData("refresh:token:" + refresh);
 
         // not exist in DB
         if(!isExist){
@@ -86,6 +86,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // logout
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거
-        refreshRepository.deleteByRefresh(refresh);
+//        refreshRepository.deleteByRefresh(refresh);
+        redisUtil.deleteData("refresh:token:" + refresh);
     }
 }
