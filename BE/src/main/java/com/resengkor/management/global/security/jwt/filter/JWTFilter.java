@@ -128,6 +128,14 @@ public class JWTFilter extends OncePerRequestFilter {
     }
 
     private boolean isPermitUrl(HttpServletRequest request) {
-        return PERMIT_URLS.stream().anyMatch(url -> request.getRequestURI().startsWith(url));
+//        return PERMIT_URLS.stream().anyMatch(url -> request.getRequestURI().startsWith(url));
+        String requestUri = request.getRequestURI();
+        log.info("Requested URI: " + requestUri);
+        log.info("Permit URLs: " + PERMIT_URLS);
+
+        boolean isPermitted = PERMIT_URLS.stream().anyMatch(url -> requestUri.startsWith(url));
+        log.info("isPermitted: " + isPermitted);
+
+        return isPermitted;
     }
 }
