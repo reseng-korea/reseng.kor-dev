@@ -7,13 +7,13 @@ import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.dto.LoginDTO;
 import com.resengkor.management.global.security.jwt.entity.RefreshToken;
-import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
+//import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
+import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
@@ -26,6 +26,7 @@ import org.springframework.util.StreamUtils;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 //@Component -> 금지. authenticationManager must be specified 오류 남.
 @Slf4j
@@ -33,15 +34,16 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RedisUtil redisUtil;
+//    private final RefreshRepository refreshRepository;
     private final UserRepository userRepository;
     private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L; //10분
 
-    public CustomLoginFilter(String defaultFilterUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, RefreshRepository refreshRepository,  UserRepository userRepository) {
+    public CustomLoginFilter(String defaultFilterUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, RedisUtil redisUtil,  UserRepository userRepository) {
         setFilterProcessesUrl(defaultFilterUrl);
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        this.refreshRepository = refreshRepository;
+        this.redisUtil = redisUtil;
         this.userRepository = userRepository;
     }
 
@@ -110,7 +112,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.createJwt_v2("refresh", email, userId, role, refreshTokenExpiration,isAuto);
 
         //2-1. Refresh 토큰 DB에 저장 메소드
-        addRefreshEntity(email, refresh, refreshTokenExpiration);
+//        addRefreshEntity(email, refresh, refreshTokenExpiration);
+        redisUtil.setData("refresh:token:" + email, refresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
         log.info("------------------------------------------------");
         log.info("Refresh토큰 DB에 저장 성공");
         log.info("------------------------------------------------");
@@ -134,15 +137,15 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     }
 
     //Refresh 토큰 DB에 저장 메소드
-    private void addRefreshEntity(String email, String refresh, Long expiredMs) {
-        Date date = new Date(System.currentTimeMillis() + expiredMs);
-        RefreshToken refreshToken = RefreshToken.builder()
-                .email(email)
-                .refresh(refresh)
-                .expiration(date.toString())
-                .build();
-        refreshRepository.save(refreshToken);
-    }
+//    private void addRefreshEntity(String email, String refresh, Long expiredMs) {
+//        Date date = new Date(System.currentTimeMillis() + expiredMs);
+//        RefreshToken refreshToken = RefreshToken.builder()
+//                .email(email)
+//                .refresh(refresh)
+//                .expiration(date.toString())
+//                .build();
+//        refreshRepository.save(refreshToken);
+//    }
 
     //로그인 실패시 실행
     @Override

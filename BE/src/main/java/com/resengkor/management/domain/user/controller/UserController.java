@@ -24,28 +24,6 @@ import java.util.Map;
 public class UserController {
     private final UserServiceImpl userServiceImpl;
 
-
-
-    //Roll 등급 바꾸기(수정하기)
-    //일단 이렇게 해놓음
-    //upperId의 경우 jwt에서 가져오면 된다.
-    @PutMapping("/{upperId}/{lowerId}")
-    public ResponseEntity<UserDTO> changeUserRole(
-            @PathVariable Long upperId,
-            @PathVariable Long lowerId,
-            @RequestBody ChangeRoleRequest changeRoleRequest
-    ) {
-        // 서비스 로직 호출하여 역할 변경
-        UserDTO updatedUser = userServiceImpl.changeUserRole(upperId, lowerId, changeRoleRequest.getNewRole());
-
-        // 변경된 사용자 정보 반환
-        return ResponseEntity.ok(updatedUser);
-    }
-
-    //조회하기(region&role)
-
-    //삭제하기
-
     //회원정보 추가하기(oauth용)
     @PutMapping("/oauth/{userId}")
     public DataResponse<?> oauthUpdateUser(@PathVariable Long userId, @Valid @RequestBody OauthUserUpdateRequest request, BindingResult bindingResult){
@@ -71,5 +49,13 @@ public class UserController {
         log.info("회원 정보 수정 서비스로 넘어감");
         return userServiceImpl.updateUser(userId, request);
     }
+
+
+    @GetMapping("/test-login-id")
+    public DataResponse<?> tmp(){
+        log.info("enter test-login-id controller");
+        return userServiceImpl.tmp();
+    }
+
 
 }

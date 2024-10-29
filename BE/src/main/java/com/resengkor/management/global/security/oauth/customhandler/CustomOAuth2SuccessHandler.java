@@ -4,15 +4,18 @@ import com.resengkor.management.global.security.jwt.service.RefreshTokenService;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.dto.CustomOAuth2User;
 import com.resengkor.management.global.util.CookieUtil;
+import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.concurrent.TimeUnit;
 
 /**
  * OAuth2 로그인 성공 후 JWT 발급
@@ -20,14 +23,18 @@ import java.net.URLEncoder;
  * 리다이렉트 되기 때문에 헤더로 전달 불가능
  */
 @RequiredArgsConstructor
+@Slf4j
 public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JWTUtil jwtUtil;
-    private final RefreshTokenService refreshTokenService;
+//    private final RefreshTokenService refreshTokenService;
+    private final RedisUtil redisUtil;
     private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+        log.info("------------------------------------------------");
         System.out.println("OAuth login success handler");
+        log.info("------------------------------------------------");
         // create JWT
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
 
@@ -40,7 +47,9 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String refresh = jwtUtil.createOuathJwt("refresh", username, role, expireS * 1000L);
 
         // refresh 토큰 DB 저장
-        refreshTokenService.saveRefresh(username, expireS, refresh);
+//        refreshTokenService.saveRefresh(username, expireS, refresh);
+        // Redis에 새로운 Refresh Token 저장
+        redisUtil.setData("refresh:token:" + refresh, refresh, expireS * 1000L, TimeUnit.MILLISECONDS);
 
         response.addCookie(CookieUtil.createCookie("access", access, 60 * 10));
         response.addCookie(CookieUtil.createCookie("refresh", refresh, expireS));

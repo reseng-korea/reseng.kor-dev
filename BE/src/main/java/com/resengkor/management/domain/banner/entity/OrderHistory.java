@@ -33,6 +33,10 @@ public class OrderHistory {
     @Column(name = "quantity", nullable = false)
     private Integer quantity;
 
+    @Column(name = "order_status", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private OrderStatus orderStatus;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
