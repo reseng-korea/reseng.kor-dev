@@ -149,11 +149,11 @@ public class SecurityConfig {
 
         // 인가되지 않은 사용자에 대한 exception -> 프론트엔드로 코드 응답
         //이거 하니까 로그인도 안 됌
-        http
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 실패 시 처리
-                        .accessDeniedHandler(customAccessDeniedHandler) // 권한 부족 시 처리
-                );
+//        http
+//                .exceptionHandling(exceptionHandling -> exceptionHandling
+//                        .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 실패 시 처리
+//                        .accessDeniedHandler(customAccessDeniedHandler) // 권한 부족 시 처리
+//                );
 
         return http.build();
     }
