@@ -19,8 +19,10 @@ public class ControllerAdvisor {
     @ExceptionHandler(CustomException.class)
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public CommonResponse customExceptionHandler(CustomException e){
+        log.info("------------------------------------------------");
+        log.info("customExceptionHandler: ",e);
+        log.info("------------------------------------------------");
         CommonResponse response = new CommonResponse();
-
         response.setCode(e.getExceptionStatus().getCode());
         response.setMessage(e.getExceptionStatus().getMessage());
 
@@ -29,13 +31,19 @@ public class ControllerAdvisor {
 
     @ExceptionHandler(AuthenticationException.class)
     @ResponseStatus(HttpStatus.UNAUTHORIZED)
-    public CommonResponse handleAuthenticationException(AuthenticationException ex) {
+    public CommonResponse handleAuthenticationException(AuthenticationException e) {
+        log.info("------------------------------------------------");
+        log.info("handleAuthenticationException: ",e);
+        log.info("------------------------------------------------");
         return new CommonResponse(HttpStatus.UNAUTHORIZED.value(), "인증이 필요합니다.");
     }
 
     @ExceptionHandler(AccessDeniedException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public CommonResponse handleAccessDeniedException(AccessDeniedException ex) {
+    public CommonResponse handleAccessDeniedException(AccessDeniedException e) {
+        log.info("------------------------------------------------");
+        log.info("handleAccessDeniedException: ",e);
+        log.info("------------------------------------------------");
         return new CommonResponse(HttpStatus.FORBIDDEN.value(), "접근 권한이 없습니다.");
     }
 
@@ -44,7 +52,9 @@ public class ControllerAdvisor {
     /* 어디에서도 잡지 못한 예외 핸들링 */
     @ExceptionHandler(Exception.class)
     public CommonResponse exceptionHandler(Exception e) {
+        log.info("------------------------------------------------");
         log.error("Unhandled Exception: ", e); // 예외 로그
+        log.info("------------------------------------------------");
         CommonResponse response = new CommonResponse();
 
         response.setCode(ExceptionStatus.EXCEPTION.getCode());
