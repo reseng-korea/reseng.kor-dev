@@ -54,4 +54,8 @@ public class UserProfile {
         this.district = district;
     }
 
+    public void updateUser(User user) {
+        this.user = user;
+    }
+
 }

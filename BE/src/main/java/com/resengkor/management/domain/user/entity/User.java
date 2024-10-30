@@ -101,4 +101,10 @@ public class User {
         this.representativeName = representativeName;
         this.phoneNumber = phoneNumber;
     }
+
+    //양방향 연관관계 메소드
+    public void changeUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
+        userProfile.updateUser(this);
+    }
 }
