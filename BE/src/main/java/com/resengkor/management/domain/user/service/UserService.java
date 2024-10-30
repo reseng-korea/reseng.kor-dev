@@ -5,6 +5,8 @@ package com.resengkor.management.domain.user.service;
 import com.resengkor.management.domain.sms.dto.MessageDto;
 import com.resengkor.management.domain.sms.service.SmsServiceWithRedis;
 import com.resengkor.management.domain.user.dto.*;
+import com.resengkor.management.domain.user.dto.request.*;
+import com.resengkor.management.domain.user.dto.response.FindEmailResponse;
 import com.resengkor.management.domain.user.repository.RegionRepository;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserProfileRepository;
@@ -16,15 +18,13 @@ import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.DataResponse;
 import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
-import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
+import com.resengkor.management.global.security.oauth.service.KakaoUserWithdrawService;
 import com.resengkor.management.global.util.RedisUtil;
 import com.resengkor.management.global.util.TmpCodeUtil;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +37,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl {
+public class UserService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final RegionRepository regionRepository;
@@ -48,6 +48,7 @@ public class UserServiceImpl {
     private final RedisUtil redisUtil; // RedisUtil 추가
     private final SmsServiceWithRedis smsService;
 //    private final RefreshRepository refreshRepository;
+    private final KakaoUserWithdrawService kakaoUserWithdrawService;
 
     @Transactional(readOnly = true)
     public Map<String, String> validateHandling(BindingResult bindingResult) {
@@ -62,7 +63,7 @@ public class UserServiceImpl {
     }
 
     @Transactional
-    public DataResponse<?> registerUser(UserRegisterRequest request) {
+    public DataResponse<UserDTO> registerUser(UserRegisterRequest request) {
         // 이미 존재하는지 확인하고 예외 던지기
         Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
         if (existingUser.isPresent()) {
@@ -81,12 +82,12 @@ public class UserServiceImpl {
         // User 생성 (일반 사용자이므로 ROLE_GUEST 설정)
         User user = User.builder()
                 .email(request.getEmail())
-                .emailStatus(true) //이미 인증한 이후에 생성되는 것이니까
-                .password(passwordEncoder.encode(request.getPassword()))// 비밀번호 암호화
+                .emailStatus(true) // 이미 인증한 이후에 생성되는 것이니까
+                .password(passwordEncoder.encode(request.getPassword())) // 비밀번호 암호화
                 .companyName(request.getCompanyName())
                 .representativeName(request.getRepresentativeName())
                 .phoneNumber(request.getPhoneNumber())
-                .phoneNumberStatus(true) //이미 인증한 이후 생성
+                .phoneNumberStatus(true) // 이미 인증한 이후 생성
                 .role(Role.ROLE_GUEST)  // 일반 사용자의 기본 역할 설정
                 .loginType(LoginType.LOCAL)
                 .status(true)
@@ -94,8 +95,10 @@ public class UserServiceImpl {
         log.info("유저 생성");
 
         // Region 생성
-        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY").orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다."));; // 서울시 찾기
-        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT").orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));; // 강남구 찾기
+        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
+                .orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다.")); // 서울시 찾기
+        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
+                .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다.")); // 강남구 찾기
         log.info("region 조회 성공");
 
         // UserProfile 생성 및 연결 (latitude, longitude 없이)
@@ -103,9 +106,12 @@ public class UserServiceImpl {
                 .fullAddress(request.getFullAddress())
                 .city(city)
                 .district(district)
-                .user(user)  // User와 연결
                 .build();
-        userProfileRepository.save(userProfile);
+
+        // 양방향 관계 설정
+        user.updateUserUserProfile(userProfile); // User의 userProfile 설정
+
+        userProfileRepository.save(userProfile); // UserProfile 먼저 저장
         log.info("프로파일 생성 성공");
 
         // User 저장
@@ -119,21 +125,30 @@ public class UserServiceImpl {
                 .build();
         roleHierarchyRepository.save(roleHierarchy);
         log.info("role 생성 성공");
+
+        // UserMapper를 사용하여 User를 UserDTO로 변환
+        UserDTO userDTO = userMapper.toUserDTO(savedUser);
+
         return new DataResponse<>(ResponseStatus.CREATED_SUCCESS.getCode(),
-                ResponseStatus.CREATED_SUCCESS.getMessage(),"일반 회원가입 성공");
+                ResponseStatus.CREATED_SUCCESS.getMessage(), userDTO);
     }
 
     //이메일 찾기
-    public DataResponse<?> findEmail(FindEmailRequest request) {
+    public DataResponse<FindEmailResponse> findEmail(FindEmailRequest request) {
         //없으면 에러 터뜨림
-        User User = userRepository.findByCompanyNameAndPhoneNumber(request.getCompanyName(), request.getPhoneNumber())
+        User user = userRepository.findByCompanyNameAndPhoneNumber(request.getCompanyName(), request.getPhoneNumber())
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
         log.info("맞는 회사명&핸드폰 번호 있음");
+        // FindEmailResponse 객체 생성
+        FindEmailResponse findEmailResponse = new FindEmailResponse();
+        findEmailResponse.setEmail(user.getEmail()); // 이메일 설정
+
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
-                ResponseStatus.RESPONSE_SUCCESS.getMessage(), User.getEmail());
+                ResponseStatus.RESPONSE_SUCCESS.getMessage(), findEmailResponse);
     }
 
-    public DataResponse<?> findPassword(FindPasswordRequest request) {
+    @Transactional
+    public DataResponse<String> findPassword(FindPasswordRequest request) {
         User user = userRepository.findByEmailAndPhoneNumber(request.getEmail(), request.getPhoneNumber())
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
         log.info("맞는 이메일&핸드폰 번호 있음");
@@ -155,7 +170,7 @@ public class UserServiceImpl {
         userRepository.save(user);
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
-                ResponseStatus.RESPONSE_SUCCESS.getMessage());
+                ResponseStatus.RESPONSE_SUCCESS.getMessage(),"비밀번호 찾기 요청 성공");
     }
 
     //회원 탈퇴 로직
@@ -181,8 +196,9 @@ public class UserServiceImpl {
 
             }
             else if(user.getSocialProvider().equals(SocialProvider.KAKAO)){
+                String userId = user.getSocialId();
                 //만약에 카카오
-
+                kakaoUserWithdrawService.unlinkKakaoUser(userId);
             }
             else{
 
@@ -210,41 +226,57 @@ public class UserServiceImpl {
     //회원정보 추가
     @Transactional
     @PreAuthorize("#userId == principal.id")
-    public DataResponse<?> oauthUpdateUser(Long userId, OauthUserUpdateRequest request) {
-        //1.사용자 조회 (존재하지 않으면 예외 던지기)
+    public DataResponse<UserDTO> oauthUpdateUser(Long userId, OauthUserUpdateRequest request) {
+        // 1. 사용자 조회 (존재하지 않으면 예외 던지기)
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
 
         // 이메일 및 전화번호 중복 검사
         validateUniqueEmailAndPhoneNumber(userId, request.getEmail(), request.getPhoneNumber());
 
-        //2.사용자 정보 추가
+        // 2. 사용자 정보 추가
         user.updateUser(request.getEmail(), request.getCompanyName(),
                 request.getRepresentativeName(), request.getPhoneNumber());
-        // 3. UserProfile 조회 및 정보 업데이트
-        UserProfile userProfile = user.getUserProfile();
 
-        // 지역 조회 (지역 변경 시 사용)
+        // phoneStatus를 업데이트하고 Role을 PENDING에서 ROLE_GUEST로 승격
+        user.updatePhoneStatusAndRole(true, Role.ROLE_GUEST);
+
+        // 3. 지역 조회 (UserProfile이 null일 경우나 업데이트 시 모두 사용됨)
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
                 .orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다."));
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
                 .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));
 
-        // UserProfile 정보 업데이트
-        userProfile.updateProfileInfo(request.getFullAddress(), city, district);
+        // 4. UserProfile 조회 및 초기화
+        UserProfile userProfile = user.getUserProfile();
+        if (userProfile == null) {
+            userProfile = UserProfile.builder()
+                    .fullAddress(request.getFullAddress())
+                    .city(city)
+                    .district(district)
+                    .build();
+            user.updateUserUserProfile(userProfile); // 양방향 관계 설정
+            userProfileRepository.save(userProfile);
+        } else {
+            // UserProfile이 이미 존재하면 정보 업데이트
+            userProfile.updateUserProfile(request.getFullAddress(), city, district);
+        }
 
-        // 4. 저장
+        // 5. 저장
         userRepository.save(user); // User 저장 시 UserProfile도 함께 저장
 
         log.info("회원 정보 수정 성공");
 
+        // UserMapper를 사용하여 User를 UserDTO로 변환
+        UserDTO userDTO = userMapper.toUserDTO(user);
+
         return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
-                ResponseStatus.UPDATED_SUCCESS.getMessage(), "회원 정보 수정 성공");
+                ResponseStatus.UPDATED_SUCCESS.getMessage(), userDTO);
     }
 
     @PreAuthorize("#userId == principal.id")
     @Transactional
-    public DataResponse<?> updateUser(Long userId, UserUpdateRequest request) {
+    public DataResponse<UserDTO> updateUser(Long userId, UserUpdateRequest request) {
         //1.사용자 조회 (존재하지 않으면 예외 던지기)
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
@@ -268,23 +300,19 @@ public class UserServiceImpl {
 
         // 5. UserProfile 정보 수정
         UserProfile userProfile = user.getUserProfile();
-        userProfile.updateProfileInfo(request.getFullAddress(), city, district);
+        userProfile.updateUserProfile(request.getFullAddress(), city, district);
+        user.updateUserUserProfile(userProfile); // 양방향 관계 설정
 
         // 6. 저장
         userRepository.save(user);
 
         log.info("회원 정보 수정 성공");
 
-        return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
-                ResponseStatus.UPDATED_SUCCESS.getMessage(), "회원 정보 수정 성공");
-    }
 
-    //로그인한 사람인지
-    private static void authorizeUser(User user){
-        String userEmail = SecurityContextHolder.getContext().getAuthentication().getName();
-        if(!user.getEmail().equals(userEmail)){
-            throw new CustomException(ExceptionStatus.AUTHENTICATION_FAILED);
-        }
+        UserDTO userDTO = userMapper.toUserDTO(user);
+
+        return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
+                ResponseStatus.UPDATED_SUCCESS.getMessage(), userDTO);
     }
 
     private void validateUniqueEmailAndPhoneNumber(Long userId, String email, String phoneNumber) {
@@ -302,13 +330,13 @@ public class UserServiceImpl {
     }
 
 
-    public DataResponse<?> tmp() {
+    public DataResponse<Long> tmp() {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
         log.info("user 조회 성공");
         Long id = user.getId();
-        return new DataResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), id);
     }
 
