@@ -102,9 +102,16 @@ public class User {
         this.phoneNumber = phoneNumber;
     }
 
+    public void updatePhoneStatusAndRole(boolean phoneNumberStatus, Role role){
+        this.phoneNumberStatus = phoneNumberStatus;
+        this.role = role;
+    }
+
     //양방향 연관관계 메소드
-    public void updateUserProfile(UserProfile userProfile) {
+    public void updateUserUserProfile(UserProfile userProfile) {
         this.userProfile = userProfile;
-        userProfile.updateUser(this);
+        if (userProfile != null) {
+            userProfile.updateUser(this);  // UserProfile에 User 설정
+        }
     }
 }

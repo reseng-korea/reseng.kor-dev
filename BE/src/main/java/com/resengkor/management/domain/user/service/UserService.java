@@ -107,7 +107,7 @@ public class UserService {
                 .build();
 
         // 양방향 관계 설정
-        user.updateUserProfile(userProfile); // User의 userProfile 설정
+        user.updateUserUserProfile(userProfile); // User의 userProfile 설정
 
         userProfileRepository.save(userProfile); // UserProfile 먼저 저장
         log.info("프로파일 생성 성공");
@@ -224,30 +224,42 @@ public class UserService {
     @Transactional
     @PreAuthorize("#userId == principal.id")
     public DataResponse<UserDTO> oauthUpdateUser(Long userId, OauthUserUpdateRequest request) {
-        //1.사용자 조회 (존재하지 않으면 예외 던지기)
+        // 1. 사용자 조회 (존재하지 않으면 예외 던지기)
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
 
         // 이메일 및 전화번호 중복 검사
         validateUniqueEmailAndPhoneNumber(userId, request.getEmail(), request.getPhoneNumber());
 
-        //2.사용자 정보 추가
+        // 2. 사용자 정보 추가
         user.updateUser(request.getEmail(), request.getCompanyName(),
                 request.getRepresentativeName(), request.getPhoneNumber());
-        // 3. UserProfile 조회 및 정보 업데이트
-        UserProfile userProfile = user.getUserProfile();
 
-        // 지역 조회 (지역 변경 시 사용)
+        // phoneStatus를 업데이트하고 Role을 PENDING에서 ROLE_GUEST로 승격
+        user.updatePhoneStatusAndRole(true, Role.ROLE_GUEST);
+
+        // 3. 지역 조회 (UserProfile이 null일 경우나 업데이트 시 모두 사용됨)
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
                 .orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다."));
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
                 .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));
 
-        // UserProfile 정보 업데이트
-        userProfile.updateUserProfile(request.getFullAddress(), city, district);
-        user.updateUserProfile(userProfile); // 양방향 관계 설정
+        // 4. UserProfile 조회 및 초기화
+        UserProfile userProfile = user.getUserProfile();
+        if (userProfile == null) {
+            userProfile = UserProfile.builder()
+                    .fullAddress(request.getFullAddress())
+                    .city(city)
+                    .district(district)
+                    .build();
+            user.updateUserUserProfile(userProfile); // 양방향 관계 설정
+            userProfileRepository.save(userProfile);
+        } else {
+            // UserProfile이 이미 존재하면 정보 업데이트
+            userProfile.updateUserProfile(request.getFullAddress(), city, district);
+        }
 
-        // 4. 저장
+        // 5. 저장
         userRepository.save(user); // User 저장 시 UserProfile도 함께 저장
 
         log.info("회원 정보 수정 성공");
@@ -286,7 +298,7 @@ public class UserService {
         // 5. UserProfile 정보 수정
         UserProfile userProfile = user.getUserProfile();
         userProfile.updateUserProfile(request.getFullAddress(), city, district);
-        user.updateUserProfile(userProfile); // 양방향 관계 설정
+        user.updateUserUserProfile(userProfile); // 양방향 관계 설정
 
         // 6. 저장
         userRepository.save(user);
