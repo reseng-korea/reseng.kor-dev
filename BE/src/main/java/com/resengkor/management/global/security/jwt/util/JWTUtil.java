@@ -42,6 +42,11 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
+    public String getLoginType(String token) {
+
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("loginType", String.class);
+    }
+
     public Boolean getIsAuto(String token) {
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("isAuto", Boolean.class);
@@ -55,9 +60,10 @@ public class JWTUtil {
     }
 
     //일반 jwt
-    public String createJwt(String category, String email, long userId, String role, Long expiredMs,boolean isAuto) {
+    public String createJwt(String category, String loginType, String email, long userId, String role, Long expiredMs,boolean isAuto) {
         return Jwts.builder()
                 .claim("category", category) //access인지, refresh인지 판단
+                .claim("loginType",loginType)
                 .claim("email", email)
                 .claim("userId", userId)
                 .claim("role", role)
@@ -69,10 +75,11 @@ public class JWTUtil {
     }
 
     //oauth jwt
-    public String createOuathJwt(String category, String email, long userId, String role, Long expiredMs) {
+    public String createOuathJwt(String category, String loginType, String email, long userId, String role, Long expiredMs) {
 
         return Jwts.builder()
                 .claim("category", category) //access인지, refresh인지 판단
+                .claim("loginType",loginType)
                 .claim("email", email)
                 .claim("userId", userId)
                 .claim("role", role)

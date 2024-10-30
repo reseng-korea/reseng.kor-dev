@@ -198,7 +198,7 @@ public class UserService {
             else if(user.getSocialProvider().equals(SocialProvider.KAKAO)){
                 String userId = user.getSocialId();
                 //만약에 카카오
-//                kakaoUserWithdrawService.unlinkKakaoUser(userId);
+                kakaoUserWithdrawService.unlinkKakaoUser(userId);
             }
             else{
 
