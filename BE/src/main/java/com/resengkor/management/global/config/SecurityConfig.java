@@ -35,6 +35,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -112,7 +113,7 @@ public class SecurityConfig {
                         configuration.setMaxAge(3600L);
 
                         configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                        configuration.setExposedHeaders(Collections.singletonList("access"));
+                        configuration.setExposedHeaders(Arrays.asList("Authorization", "Refresh"));
 
                         return configuration;
                     }
