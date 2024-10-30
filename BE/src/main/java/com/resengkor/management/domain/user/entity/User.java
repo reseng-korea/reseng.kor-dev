@@ -103,7 +103,7 @@ public class User {
     }
 
     //양방향 연관관계 메소드
-    public void changeUserProfile(UserProfile userProfile) {
+    public void updateUserProfile(UserProfile userProfile) {
         this.userProfile = userProfile;
         userProfile.updateUser(this);
     }

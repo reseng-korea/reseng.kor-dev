@@ -48,7 +48,7 @@ public class UserProfile {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public void updateProfileInfo(String fullAddress, Region city, Region district) {
+    public void updateUserProfile(String fullAddress, Region city, Region district) {
         this.fullAddress = fullAddress;
         this.city = city;
         this.district = district;
