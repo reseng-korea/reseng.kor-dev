@@ -1,9 +1,9 @@
 package com.resengkor.management.domain.user.controller;
 
 
-import com.resengkor.management.domain.user.dto.OauthUserUpdateRequest;
+import com.resengkor.management.domain.user.dto.request.OauthUserUpdateRequest;
 import com.resengkor.management.domain.user.dto.UserDTO;
-import com.resengkor.management.domain.user.dto.UserUpdateRequest;
+import com.resengkor.management.domain.user.dto.request.UserUpdateRequest;
 import com.resengkor.management.domain.user.service.UserService;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;

@@ -1,4 +1,4 @@
-package com.resengkor.management.domain.user.dto;
+package com.resengkor.management.domain.user.dto.response;
 
 import lombok.Data;
 
