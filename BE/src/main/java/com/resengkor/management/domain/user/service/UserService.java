@@ -341,4 +341,14 @@ public class UserService {
     }
 
 
+    @PreAuthorize("#userId == principal.id")
+    public DataResponse<UserDTO> getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        UserDTO userDTO = userMapper.toUserDTO(user);
+
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage(), userDTO);
+    }
 }
