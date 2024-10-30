@@ -79,7 +79,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .socialId(response.getSocialId())
                     .email(response.getEmail())
                     .emailStatus(true)
-                    .role(Role.ROLE_GUEST)
+                    .role(Role.ROLE_PENDING)
                     .loginType(LoginType.SOCIAL)
                     .status(true)
                     .build();
@@ -92,7 +92,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .name(response.getName())
                     .email(response.getEmail())
                     .userId(user.getId())
-                    .role("ROLE_GUEST")
+                    .role("ROLE_PENDING")
                     .build();
 
             return new CustomOAuth2User(oAuth2UserDto);

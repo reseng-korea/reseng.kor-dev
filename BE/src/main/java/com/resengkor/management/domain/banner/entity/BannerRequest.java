@@ -22,9 +22,6 @@ public class BannerRequest {
     @Column(name = "banner_request_id", updatable = false)
     private Long id;
 
-    @Column(name = "uuid", nullable = false)
-    private String uuid;
-
     @Column(name = "requested_length", nullable = false)
     private Integer requestedLength;
 

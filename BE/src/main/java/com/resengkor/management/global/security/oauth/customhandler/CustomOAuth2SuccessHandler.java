@@ -31,7 +31,7 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private final JWTUtil jwtUtil;
 //    private final RefreshTokenService refreshTokenService;
     private final RedisUtil redisUtil;
-    private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L;
+    private final Integer ACCESS_TOKEN_EXPIRATION= 60 * 30;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -51,16 +51,16 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         log.info("------------------------------------------------");
 
 
-        Integer expireS = 24 * 60 * 60;
-        String access = jwtUtil.createOuathJwt("access", email, userId, role, ACCESS_TOKEN_EXPIRATION);
+        Integer expireS = 24 * 60 * 60; //24시간
+        String access = jwtUtil.createOuathJwt("access", email, userId, role, ACCESS_TOKEN_EXPIRATION * 1000L);
         String refresh = jwtUtil.createOuathJwt("refresh", email, userId, role, expireS * 1000L);
 
         // refresh 토큰 DB 저장
 //        refreshTokenService.saveRefresh(username, expireS, refresh);
         // Redis에 새로운 Refresh Token 저장
-        redisUtil.setData("refresh:token:" + refresh, refresh, expireS * 1000L, TimeUnit.MILLISECONDS);
+//        redisUtil.setData("refresh:token:" + refresh, refresh, expireS * 1000L, TimeUnit.MILLISECONDS);
 
-        response.addCookie(CookieUtil.createCookie("access", access, 60 * 10));
+        response.addCookie(CookieUtil.createCookie("access", access, ACCESS_TOKEN_EXPIRATION));
         response.addCookie(CookieUtil.createCookie("refresh", refresh, expireS));
 
         // redirect query param 인코딩 후 전달

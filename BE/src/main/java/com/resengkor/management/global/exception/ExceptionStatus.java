@@ -33,6 +33,7 @@ public enum ExceptionStatus {
     MEMBER_INACTIVE(4013,"비활성화된 사용자입니다."),
     MEMBER_NOT_FOUND(4012, "존재하지 않는 사용자입니다."),
     MEMBER_PROFILE_NOT_FOUND(4013, "사용자의 상세정보가 존재하지 않습니다."),
+    VALIDATION_ERROR(4014, "Validation Error"),
 
     /* 이메일 */
     EMAIL_NOT_FOUND(4021, "존재하지 않는 이메일입니다."),
