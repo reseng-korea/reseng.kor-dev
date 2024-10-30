@@ -30,7 +30,7 @@ public class ReissueService {
     private final RedisUtil redisUtil;
 //    private final RefreshRepository refreshRepository;
     private final RefreshTokenService refreshTokenService;
-    private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L;
+    private final long ACCESS_TOKEN_EXPIRATION= 60 * 30 * 1000L;
     private final UserRepository userRepository;
 
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
