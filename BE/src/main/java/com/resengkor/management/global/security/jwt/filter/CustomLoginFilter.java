@@ -35,7 +35,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
 //    private final RefreshRepository refreshRepository;
-    private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L; //10분
+    private final long ACCESS_TOKEN_EXPIRATION= 60 * 30 * 1000L; //30분
 
     public CustomLoginFilter(String defaultFilterUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, RedisUtil redisUtil) {
         setFilterProcessesUrl(defaultFilterUrl);
