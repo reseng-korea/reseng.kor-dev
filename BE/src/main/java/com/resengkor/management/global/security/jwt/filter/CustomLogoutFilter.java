@@ -50,12 +50,17 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String requestMethod = request.getMethod();
         if (!requestMethod.equals("POST")) {
             //로그아웃이더라도 post가 아니면 넘어감
-            chain.doFilter(request, response);
+//            chain.doFilter(request, response);
+//            return;
+            // POST가 아닌 요청인 경우 405 에러 반환
+            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+            response.getWriter().write("{\"error\": \"POST method only allowed for logout\"}");
+            response.getWriter().flush();
             return;
         }
 
         String refresh = null;
-        refresh = request.getHeader("Refresh").trim();
+        refresh = request.getHeader("Refresh");
 
         log.info("refresh = " + refresh);
 

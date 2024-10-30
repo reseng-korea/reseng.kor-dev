@@ -71,7 +71,8 @@ dependencies {
 	// uuid
 	implementation group: 'net.glxn.qrgen', name: 'javase', version: '2.0'
 
-
+	// Swagger (Springdoc OpenAPI)
+	implementation 'org.springdoc:springdoc-openapi-ui:1.6.9'
 }
 
 tasks.named('test') {
