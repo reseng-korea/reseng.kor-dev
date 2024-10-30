@@ -86,7 +86,7 @@ public class MailService {
 
     //이메일 인증
     @Transactional
-    public CommonResponse emailAuthentication(MailAuthDTO dto) {
+    public CommonResponse checkEmail(MailAuthDTO dto) {
         // 이메일로 인증 정보를 조회
 //        MailVerification emailVerification = emailVerificationRepository.findByEmail(dto.getEmail())
         MailVerification emailVerification = emailVerificationRepository.findLatestByEmail(dto.getEmail())
