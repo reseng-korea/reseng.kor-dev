@@ -5,6 +5,8 @@ import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.domain.user.entity.Role;
 import com.resengkor.management.domain.user.entity.SocialProvider;
 import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.oauth.dto.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
@@ -93,6 +96,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .email(response.getEmail())
                     .userId(user.getId())
                     .role("ROLE_PENDING")
+                    .status(true)
                     .build();
 
             return new CustomOAuth2User(oAuth2UserDto);
@@ -117,7 +121,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .email(response.getEmail())
                     .userId(isExist.get().getId())
                     .role(isExist.get().getRole().getRole())
+                    .status(isExist.get().isStatus())
                     .build();
+            if (!oAuth2UserDto.isStatus()) {
+                throw new OAuth2AuthenticationException(new OAuth2Error("member_inactive", "사용자가 비활성화되었습니다. 관리자에게 문의하세요", null));
+            }
+
             return new CustomOAuth2User(oAuth2UserDto);
         }
     }
