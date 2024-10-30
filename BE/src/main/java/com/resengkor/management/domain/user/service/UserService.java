@@ -16,11 +16,9 @@ import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.DataResponse;
 import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
-import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import com.resengkor.management.global.util.TmpCodeUtil;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -37,7 +35,7 @@ import java.util.*;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class UserServiceImpl {
+public class UserService {
     private final UserRepository userRepository;
     private final UserProfileRepository userProfileRepository;
     private final RegionRepository regionRepository;

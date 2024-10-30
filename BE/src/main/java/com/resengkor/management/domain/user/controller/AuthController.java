@@ -2,7 +2,7 @@ package com.resengkor.management.domain.user.controller;
 
 import com.resengkor.management.domain.user.dto.FindEmailRequest;
 import com.resengkor.management.domain.user.dto.FindPasswordRequest;
-import com.resengkor.management.domain.user.service.UserServiceImpl;
+import com.resengkor.management.domain.user.service.UserService;
 import com.resengkor.management.domain.user.dto.UserRegisterRequest;
 import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.DataResponse;
@@ -20,7 +20,7 @@ import java.util.Map;
 @Slf4j
 //일반 회원가입
 public class AuthController {
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userServiceImpl;
 
     // 회원가입 (일반 사용자 등록하기)
     @PostMapping("/register")

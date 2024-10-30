@@ -3,14 +3,11 @@ package com.resengkor.management.domain.user.controller;
 
 import com.resengkor.management.domain.user.dto.OauthUserUpdateRequest;
 import com.resengkor.management.domain.user.dto.UserUpdateRequest;
-import com.resengkor.management.domain.user.service.UserServiceImpl;
-import com.resengkor.management.domain.user.dto.ChangeRoleRequest;
-import com.resengkor.management.domain.user.dto.UserDTO;
+import com.resengkor.management.domain.user.service.UserService;
 import com.resengkor.management.global.response.DataResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -22,7 +19,7 @@ import java.util.Map;
 @RequiredArgsConstructor
 @Slf4j
 public class UserController {
-    private final UserServiceImpl userServiceImpl;
+    private final UserService userServiceImpl;
 
     //회원정보 추가하기(oauth용)
     @PutMapping("/oauth/{userId}")
