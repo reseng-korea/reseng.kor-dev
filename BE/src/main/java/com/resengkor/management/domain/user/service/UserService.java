@@ -19,6 +19,7 @@ import com.resengkor.management.global.response.DataResponse;
 import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
+import com.resengkor.management.global.security.oauth.service.KakaoUserWithdrawService;
 import com.resengkor.management.global.util.RedisUtil;
 import com.resengkor.management.global.util.TmpCodeUtil;
 import lombok.RequiredArgsConstructor;
@@ -47,6 +48,7 @@ public class UserService {
     private final RedisUtil redisUtil; // RedisUtil 추가
     private final SmsServiceWithRedis smsService;
 //    private final RefreshRepository refreshRepository;
+    private final KakaoUserWithdrawService kakaoUserWithdrawService;
 
     @Transactional(readOnly = true)
     public Map<String, String> validateHandling(BindingResult bindingResult) {
@@ -194,8 +196,9 @@ public class UserService {
 
             }
             else if(user.getSocialProvider().equals(SocialProvider.KAKAO)){
+                String userId = user.getSocialId();
                 //만약에 카카오
-
+                kakaoUserWithdrawService.unlinkKakaoUser(userId);
             }
             else{
 
