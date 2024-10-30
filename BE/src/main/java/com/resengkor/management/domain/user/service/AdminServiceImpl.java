@@ -31,13 +31,11 @@ public class AdminServiceImpl {
     public DataResponse<List<User>> getAllUserByManager() {
 
         Long userId = UserAuthorizationUtil.getLoginMemberId();
-
         User loginUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
 
-        if (loginUser.getRole() != Role.ROLE_MANAGER) {
-            // 예외 처리
-        }
+        if (loginUser.getRole() != Role.ROLE_MANAGER)
+            throw new CustomException(ExceptionStatus.FORBIDDEN_FAILED);
 
         List<User> userList = userRepository.findAll();
 
