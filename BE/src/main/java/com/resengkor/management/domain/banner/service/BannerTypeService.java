@@ -4,6 +4,7 @@ import com.resengkor.management.domain.banner.dto.BannerInventoryDTO;
 import com.resengkor.management.domain.banner.entity.BannerType;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.global.security.jwt.dto.CustomUserDetails;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -72,6 +73,37 @@ public class BannerTypeService {
         // 정단 개수를 allLengths 리스트에서 계산
         int standardCount = (int) allLengths.stream().filter(length -> length == 120).count();
         return new BannerInventoryDTO(typeWidth, standardCount, allLengths);
+    }
+
+    // 현수막 사용 요청을 처리하여 재고 업데이트
+    @Transactional
+    public void useBannerYards(Authentication authentication, Integer typeWidth, int horizontalLength, int yardToUse) {
+        Long userId = getUserIdFromAuthentication(authentication);
+
+        // 해당 조건의 배너 조회
+        BannerType banner = bannerTypeRepository.findByUserIdAndTypeWidthAndHorizontalLength(
+                userId, typeWidth, horizontalLength);
+
+        if (banner != null) {
+            int remainingYards = banner.getQuantity() - yardToUse;
+            if (remainingYards >= 0) {
+                // 기존 객체의 quantity 값만 변경
+                banner = BannerType.builder()
+                        .id(banner.getId())
+                        .typeWidth(banner.getTypeWidth())
+                        .horizontalLength(banner.getHorizontalLength())
+                        .isStandard(banner.getIsStandard())
+                        .quantity(remainingYards) // 업데이트된 quantity 값 설정
+                        .user(banner.getUser())
+                        .build();
+
+                bannerTypeRepository.save(banner);
+            } else {
+                throw new IllegalArgumentException("사용할 수 있는 갈아가 부족합니다.");
+            }
+        } else {
+            throw new IllegalArgumentException("해당 조건에 맞는 정단 현수막을 찾을 수 없습니다.");
+        }
     }
 
     // 새로운 현수막 추가 메서드 (정단/비정단 추가에 따른 로직)

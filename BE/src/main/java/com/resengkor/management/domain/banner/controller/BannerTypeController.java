@@ -5,10 +5,7 @@ import com.resengkor.management.domain.banner.service.BannerTypeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -30,5 +27,21 @@ public class BannerTypeController {
     @GetMapping("/{typeWidth}")
     public BannerInventoryDTO getBannerInventoryBySpecificWidth(Authentication authentication, @PathVariable Integer typeWidth) {
         return bannerTypeService.getBannerInventoryBySpecificWidth(authentication, typeWidth);
+    }
+
+    // 특정 배너의 야드를 사용하는 API
+    @PatchMapping("/use-yards")
+    public ResponseEntity<String> useBannerYards(
+            Authentication authentication,
+            @RequestParam Integer typeWidth,
+            @RequestParam int horizontalLength,
+            @RequestParam int yardToUse) {
+
+        try {
+            bannerTypeService.useBannerYards(authentication, typeWidth, horizontalLength, yardToUse);
+            return ResponseEntity.ok("Banner yards updated successfully.");
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 }
