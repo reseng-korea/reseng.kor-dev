@@ -3,6 +3,7 @@ package com.resengkor.management.domain.qrcode.entity;
 import com.resengkor.management.domain.banner.entity.BannerRequest;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Getter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class QR {
