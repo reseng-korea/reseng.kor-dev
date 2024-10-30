@@ -5,6 +5,8 @@ package com.resengkor.management.domain.user.service;
 import com.resengkor.management.domain.sms.dto.MessageDto;
 import com.resengkor.management.domain.sms.service.SmsServiceWithRedis;
 import com.resengkor.management.domain.user.dto.*;
+import com.resengkor.management.domain.user.dto.request.*;
+import com.resengkor.management.domain.user.dto.response.FindEmailResponse;
 import com.resengkor.management.domain.user.repository.RegionRepository;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserProfileRepository;
@@ -22,7 +24,6 @@ import com.resengkor.management.global.util.TmpCodeUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -106,7 +107,7 @@ public class UserService {
                 .build();
 
         // 양방향 관계 설정
-        user.changeUserProfile(userProfile); // User의 userProfile 설정
+        user.updateUserProfile(userProfile); // User의 userProfile 설정
 
         userProfileRepository.save(userProfile); // UserProfile 먼저 저장
         log.info("프로파일 생성 성공");
@@ -243,8 +244,8 @@ public class UserService {
                 .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));
 
         // UserProfile 정보 업데이트
-        userProfile.updateProfileInfo(request.getFullAddress(), city, district);
-        user.changeUserProfile(userProfile); // 양방향 관계 설정
+        userProfile.updateUserProfile(request.getFullAddress(), city, district);
+        user.updateUserProfile(userProfile); // 양방향 관계 설정
 
         // 4. 저장
         userRepository.save(user); // User 저장 시 UserProfile도 함께 저장
@@ -284,8 +285,8 @@ public class UserService {
 
         // 5. UserProfile 정보 수정
         UserProfile userProfile = user.getUserProfile();
-        userProfile.updateProfileInfo(request.getFullAddress(), city, district);
-        user.changeUserProfile(userProfile); // 양방향 관계 설정
+        userProfile.updateUserProfile(request.getFullAddress(), city, district);
+        user.updateUserProfile(userProfile); // 양방향 관계 설정
 
         // 6. 저장
         userRepository.save(user);
