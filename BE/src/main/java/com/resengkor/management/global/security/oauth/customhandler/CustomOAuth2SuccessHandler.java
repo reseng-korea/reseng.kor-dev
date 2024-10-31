@@ -51,17 +51,17 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         log.info("------------------------------------------------");
 
 
-        Integer expireS = 24 * 60 * 60; //24시간
-        String access = jwtUtil.createOuathJwt("access", email, userId, role, ACCESS_TOKEN_EXPIRATION * 1000L);
-        String refresh = jwtUtil.createOuathJwt("refresh", email, userId, role, expireS * 1000L);
+        Integer expireS = 30 * 24 * 60 * 60; //기본 30일
+        String access = jwtUtil.createOuathJwt("Authorization", "social", email, userId, role, ACCESS_TOKEN_EXPIRATION * 1000L);
+        String refresh = jwtUtil.createOuathJwt("Refresh", "social", email, userId, role, expireS * 1000L);
 
         // refresh 토큰 DB 저장
 //        refreshTokenService.saveRefresh(username, expireS, refresh);
         // Redis에 새로운 Refresh Token 저장
-//        redisUtil.setData("refresh:token:" + refresh, refresh, expireS * 1000L, TimeUnit.MILLISECONDS);
+        redisUtil.setData("refresh:token:" + refresh, refresh, expireS * 1000L, TimeUnit.MILLISECONDS);
 
-        response.addCookie(CookieUtil.createCookie("access", access, ACCESS_TOKEN_EXPIRATION));
-        response.addCookie(CookieUtil.createCookie("refresh", refresh, expireS));
+        response.addCookie(CookieUtil.createCookie("Authorization", access, ACCESS_TOKEN_EXPIRATION));
+        response.addCookie(CookieUtil.createCookie("Refresh", refresh, expireS));
 
         // redirect query param 인코딩 후 전달
         // 이후에 JWT 를 읽어서 데이터를 가져올 수도 있지만, JWT 파싱 비용이 많이 들기 때문에

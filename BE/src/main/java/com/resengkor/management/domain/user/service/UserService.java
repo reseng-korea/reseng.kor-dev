@@ -198,7 +198,7 @@ public class UserService {
             else if(user.getSocialProvider().equals(SocialProvider.KAKAO)){
                 String userId = user.getSocialId();
                 //만약에 카카오
-//                kakaoUserWithdrawService.unlinkKakaoUser(userId);
+                kakaoUserWithdrawService.unlinkKakaoUser(userId);
             }
             else{
 
@@ -341,4 +341,14 @@ public class UserService {
     }
 
 
+    @PreAuthorize("#userId == principal.id")
+    public DataResponse<UserDTO> getUserInfo(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        UserDTO userDTO = userMapper.toUserDTO(user);
+
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage(), userDTO);
+    }
 }

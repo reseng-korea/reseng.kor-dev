@@ -35,11 +35,7 @@ public class ReissueService {
 
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
         // 헤더에서 refresh키에 담긴 토큰을 꺼냄
-        String refresh = null;
-        refresh = request.getHeader("Refresh");
-
-
-        // 헤더에 refresh 토큰 x
+        String refresh = request.getHeader("Refresh");
         if (refresh == null) {
             throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER);
         }
@@ -62,37 +58,54 @@ public class ReissueService {
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
         long userId = user.getId();
         String role = jwtUtil.getRole(refresh);
-        boolean isAuto = jwtUtil.getIsAuto(refresh);
+        String loginType = jwtUtil.getLoginType(refresh);
 
-        // refresh DB 조회
-//        Boolean isExist = refreshRepository.existsByRefresh(refresh);
-//        RefreshToken refreshToken = refreshRepository.findByRefresh(refresh).orElseThrow();
-        // Redis에서 refresh 토큰 존재 여부 확인
-        Boolean isExist = redisUtil.existData("refresh:token:" + refresh);
-        Long remainingTTL = redisUtil.getRemainingTTL("refresh:token:" + refresh);
-
-        // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
-        if(!isExist || remainingTTL == null || remainingTTL <= 0) {
-            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND);
-        }
 
         long refreshTokenExpiration;
-        if(isAuto) {
-            // 남은 기간만큼 새 Refresh Token 발급
-            refreshTokenExpiration = remainingTTL; // Redis에서 가져온 남은 TTL을 사용
-        } else {
-            refreshTokenExpiration = 60 * 60 * 24 * 1000L; // 24시간
-        }
+        String newAccess;
+        String newRefresh;
 
-        // new tokens
-        String newAccess = jwtUtil.createJwt("access", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto);
-        String newRefresh = jwtUtil.createJwt("Refresh", email, userId, role, refreshTokenExpiration,isAuto);
+        // Redis에서 refresh 토큰 유효성 검사
+        Boolean isExist = redisUtil.existData("refresh:token:" + refresh);
+
+        if(loginType.equals("local")){
+            boolean isAuto = jwtUtil.getIsAuto(refresh);
+            Long remainingTTL = redisUtil.getRemainingTTL("refresh:token:" + refresh);
+
+            // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
+            if(!isExist || remainingTTL == null || remainingTTL <= 0) {
+                throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND);
+            }
+
+            if(isAuto) {
+                // 남은 기간만큼 새 Refresh Token 발급
+                refreshTokenExpiration = remainingTTL; // Redis에서 가져온 남은 TTL을 사용
+            } else {
+                refreshTokenExpiration = 60 * 60 * 24 * 1000L; // 24시간
+            }
+
+            // new tokens
+            newAccess = jwtUtil.createJwt("Authorization", "local",email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto);
+            newRefresh = jwtUtil.createJwt("Refresh", email, "local", userId, role, refreshTokenExpiration,isAuto);
+
+
+        }
+        else { //소셜
+            // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
+            if(!isExist) {
+                throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND);
+            }
+            refreshTokenExpiration = 30 * 60 * 60 * 24 * 1000L; // 30일
+            newAccess = jwtUtil.createOuathJwt("Authorization", "social", email, userId, role, ACCESS_TOKEN_EXPIRATION);
+            newRefresh = jwtUtil.createOuathJwt("Refresh", "social", email, userId, role, refreshTokenExpiration);
+        }
 
         // 기존 refresh DB 삭제, 새로운 refresh 저장
         // 기존 refresh 키 삭제
         redisUtil.deleteData("refresh:token:" + refresh);
         // Redis에 새로운 Refresh Token 저장
         redisUtil.setData("refresh:token:" + newRefresh, newRefresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+
 
         //헤더로 전해줌
         response.setHeader("Authorization", "Bearer " + newAccess);
