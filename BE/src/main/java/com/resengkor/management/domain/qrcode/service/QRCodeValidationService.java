@@ -29,6 +29,6 @@ public class QRCodeValidationService {
         // 만료 여부 확인
         return qrRepository.findByUuid(uuid)
                 .filter(qr -> qr.getExpiredAt().isAfter(LocalDateTime.now())).flatMap(qr -> bannerRequestRepository.findById(qr.getBannerRequest().getId())
-                        .map(bannerRequestMapper::toBannerRequestDTO)).orElse(null);
+                        .map(bannerRequestMapper::toBannerRequestDTOWithoutHorizontalLengthAndPostedDuration)).orElse(null);
     }
 }

@@ -44,7 +44,7 @@ public class QrCodeCreationService {
                 .build();
 
         // 선택된 typeWidth로 BannerType 조회
-        BannerType bannerType = bannerTypeRepository.findByTypeWidth(qrPageDataDTO.getTypeWidth())
+        BannerType bannerType = bannerTypeRepository.findByTypeWidthAndHorizontalLength(qrPageDataDTO.getTypeWidth(), qrPageDataDTO.getHorizontalLength())
                 .orElseThrow(() -> new IllegalArgumentException("해당 폭의 현수막을 찾을 수 없습니다."));
 
         // MapStruct를 사용하여 DTO -> Entity 변환
@@ -64,7 +64,7 @@ public class QrCodeCreationService {
 
         LocalDateTime now = LocalDateTime.now();
 //        LocalDateTime expirationDate = now.plusWeeks(2); // 유효기간 2주 설정
-        LocalDateTime expirationDate = now.plusDays(8); // 유효기간 8일 설정
+        LocalDateTime expirationDate = now.plusDays(qrPageDataDTO.getPostedDuration()); // 유효기간 8일 설정
 
         QR qr = QR.builder()
                 .uuid(uuid)
