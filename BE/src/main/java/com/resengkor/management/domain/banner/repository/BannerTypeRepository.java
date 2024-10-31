@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface BannerTypeRepository extends JpaRepository<BannerType, Long> {
 
@@ -15,4 +16,8 @@ public interface BannerTypeRepository extends JpaRepository<BannerType, Long> {
     List<BannerType> findByUserIdAndTypeWidth(Long userId, Integer typeWidth);
 
     BannerType findByUserIdAndTypeWidthAndHorizontalLength(Long userId, Integer typeWidth, int horizontalLength);
+
+    List<BannerType> findBannerTypesByTypeWidth(Integer typeWidth);
+
+    Optional<BannerType> findByTypeWidthAndHorizontalLength(Integer typeWidth, Integer horizontalLength);
 }

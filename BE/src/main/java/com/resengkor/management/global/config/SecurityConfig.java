@@ -151,13 +151,14 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/v1/login","/api/v1/logout",
                                 "/api/v1/mail/**","/api/v1/sms/**").permitAll()
-                                //hasRole() : 특정 Roll을 가져야함
-                                //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
-                                //아래 roleHierarchy() 메소드 덕분
-                                //hasRole(), hasAnyRole 자동으로 ROLE_접두사 추가해줌
-                                .requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}").hasRole("PENDING")  // PENDING 권한 부여
-                                .requestMatchers("/api/v1/users/**").hasAnyRole("GUEST")
-                                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        //hasRole() : 특정 Roll을 가져야함
+                        //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
+                        //아래 roleHierarchy() 메소드 덕분
+                        //hasRole(), hasAnyRole 자동으로 ROLE_접두사 추가해줌
+                        .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                        .requestMatchers("/api/v1/users/**").hasAnyRole("GUEST")
+                                .requestMatchers(HttpMethod.GET,"/api/v1/qr-code").permitAll()
+                                .requestMatchers(HttpMethod.POST,"api/v1/qr-code").hasRole("CUSTOMER")
                         .anyRequest().authenticated();
                 });// 위에서 설정하지 못한 나머지 url을 여기서 다 처리
 
@@ -202,7 +203,6 @@ public class SecurityConfig {
                 .role("DISTRIBUTOR").implies("AGENCY")
                 .role("AGENCY").implies("CUSTOMER")
                 .role("CUSTOMER").implies("GUEST")
-                .role("GUEST").implies("PENDING")
                 .build();
     }
 }

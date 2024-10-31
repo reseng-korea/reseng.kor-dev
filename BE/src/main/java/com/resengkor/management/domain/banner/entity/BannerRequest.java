@@ -3,6 +3,7 @@ package com.resengkor.management.domain.banner.entity;
 import com.resengkor.management.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.Period;
 
 @Entity
 @Getter
+@Builder (toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class BannerRequest {
