@@ -57,7 +57,7 @@ public class QrCodeCreationService {
 
         // uuid 및 QR url 생성
         String uuid = UUID.randomUUID().toString();
-        String qrUrl = "https://reseng.co.kr/validateQR?uuid=" + uuid;
+        String qrUrl = "https://reseng.co.kr/api/v1/qr-code?uuid=" + uuid;
 
         // QR 코드 생성
         ByteArrayOutputStream stream = QRCode.from(qrUrl).withSize(250, 250).stream();

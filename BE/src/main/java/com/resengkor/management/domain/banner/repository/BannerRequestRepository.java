@@ -8,5 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface BannerRequestRepository extends JpaRepository<BannerRequest, Long> {
-    Optional<BannerRequest> findByUuid(String uuid);
 }
