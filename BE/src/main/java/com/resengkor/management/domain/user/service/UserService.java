@@ -191,17 +191,10 @@ public class UserService {
 
         //3.만약에 로그인을 social로 했다면 따로 api 처리
         if(user.getLoginType().equals(LoginType.SOCIAL)){
-            if(user.getSocialProvider().equals(SocialProvider.GOOGLE)){
-                //만약에 구글
-
-            }
-            else if(user.getSocialProvider().equals(SocialProvider.KAKAO)){
+            if(user.getSocialProvider().equals(SocialProvider.KAKAO)){
                 String userId = user.getSocialId();
                 //만약에 카카오
                 kakaoUserWithdrawService.unlinkKakaoUser(userId);
-            }
-            else{
-
             }
         }
         //4.사용자 상태를 비활성으로 변경
