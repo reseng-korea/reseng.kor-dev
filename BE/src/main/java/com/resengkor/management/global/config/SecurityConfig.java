@@ -150,14 +150,15 @@ public class SecurityConfig {
                         auth
                         .requestMatchers(
                                 "/api/v1/login","/api/v1/logout",
-                                "/api/v1/mail/**","/api/v1/sms/**","/api/v1/qr-code").permitAll()
+                                "/api/v1/mail/**","/api/v1/sms/**").permitAll()
                         //hasRole() : 특정 Roll을 가져야함
                         //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
                         //아래 roleHierarchy() 메소드 덕분
                         //hasRole(), hasAnyRole 자동으로 ROLE_접두사 추가해줌
                         .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .requestMatchers("/api/v1/users/**").hasAnyRole("GUEST")
-                                .requestMatchers("api/v1/qr-code").hasRole("CUSTOMER")
+                                .requestMatchers(HttpMethod.GET,"/api/v1/qr-code").permitAll()
+                                .requestMatchers(HttpMethod.POST,"api/v1/qr-code").hasRole("CUSTOMER")
                         .anyRequest().authenticated();
                 });// 위에서 설정하지 못한 나머지 url을 여기서 다 처리
 
