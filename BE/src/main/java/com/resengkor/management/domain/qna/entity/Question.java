@@ -1,6 +1,7 @@
 package com.resengkor.management.domain.qna.entity;
 
 import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,7 +15,7 @@ import java.time.LocalDateTime;
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor
-public class Question {
+public class Question extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "question_id", updatable = false)
@@ -28,14 +29,6 @@ public class Question {
 
     @Column(name = "question_is_secret", nullable = false)
     private boolean isSecret;
-
-    @CreatedDate //엔티티가 생성될 때 생성 시간 저장
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate //엔티티가 수정될 때 수정 시간 저장
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
