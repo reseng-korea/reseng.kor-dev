@@ -50,6 +50,15 @@ public class UserController {
         return userServiceImpl.updateUser(userId, request);
     }
 
+    //회원정보 요청
+    @GetMapping("/{userId}")
+    public DataResponse<UserDTO> getUserInfo(@PathVariable Long userId){
+        log.info("회원 정보 요청 들어옴");
+        return userServiceImpl.getUserInfo(userId);
+    }
+
+
+
 
     @GetMapping("/test-login-id")
     public DataResponse<Long> tmp(){
