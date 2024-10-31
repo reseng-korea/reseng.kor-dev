@@ -26,11 +26,9 @@ public class QRCodeValidationService {
      * @return QrPageDataDTO 또는 null (uuid가 유효하지 않거나 만료된 경우)
      */
     public QrPageDataDTO validateQRCode(String uuid) {
+        // 만료 여부 확인
         return qrRepository.findByUuid(uuid)
-                .filter(qr -> qr.getExpiredAt().isAfter(LocalDateTime.now())) // 만료 여부 확인
-                .map(qr -> bannerRequestRepository.findById(qr.getBannerRequest().getId())
-                        .map(bannerRequestMapper::toBannerRequestDTO)
-                        .orElse(null)
-                ).orElse(null);
+                .filter(qr -> qr.getExpiredAt().isAfter(LocalDateTime.now())).flatMap(qr -> bannerRequestRepository.findById(qr.getBannerRequest().getId())
+                        .map(bannerRequestMapper::toBannerRequestDTO)).orElse(null);
     }
 }
