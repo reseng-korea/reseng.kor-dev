@@ -1,4 +1,4 @@
-package com.resengkor.management.domain.user.dto;
+package com.resengkor.management.domain.user.dto.request;
 
 
 import com.resengkor.management.domain.user.entity.Role;

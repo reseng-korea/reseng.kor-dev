@@ -66,7 +66,7 @@ public class JWTFilter extends OncePerRequestFilter {
         String category = jwtUtil.getCategory(access);
 
         // not access token
-        if(!category.equals("access")){
+        if(!category.equals("Authorization")){
             log.info("------------------------------------------------");
             log.info("Access토큰이 아님");
             log.info("------------------------------------------------");
