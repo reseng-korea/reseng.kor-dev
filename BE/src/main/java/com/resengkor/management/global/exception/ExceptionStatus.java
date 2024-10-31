@@ -30,9 +30,10 @@ public enum ExceptionStatus {
     MEMBER_ALREADY_EXIST(4010, "이미 존재하는 사용자입니다."),
     MEMBER_EMAIL_ALREADY_EXIST(4011, "이미 존재하는 이메일입니다."),
     MEMBER_PHONE_NUMBER_ALREADY_EXIST(4012, "이미 존재하는 전화번호입니다."),
-    MEMBER_INACTIVE(4013,"비활성화된 사용자입니다."),
+    MEMBER_INACTIVE(4013,"비활성화된 사용자입니다. 관리자에게 문의하세요. "),
     MEMBER_NOT_FOUND(4012, "존재하지 않는 사용자입니다."),
     MEMBER_PROFILE_NOT_FOUND(4013, "사용자의 상세정보가 존재하지 않습니다."),
+    VALIDATION_ERROR(4014, "Validation Error"),
 
     /* 이메일 */
     EMAIL_NOT_FOUND(4021, "존재하지 않는 이메일입니다."),

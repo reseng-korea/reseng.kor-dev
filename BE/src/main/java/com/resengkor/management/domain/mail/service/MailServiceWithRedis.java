@@ -82,7 +82,7 @@ public class MailServiceWithRedis {
 
     //이메일 인증
     @Transactional
-    public CommonResponse emailAuthentication(MailAuthDTO dto) {
+    public CommonResponse checkEmail(MailAuthDTO dto) {
         // Redis에서 인증 코드 조회
         String storedCode = redisUtil.getData("email:verification:" + dto.getEmail());
         if (storedCode == null) {
