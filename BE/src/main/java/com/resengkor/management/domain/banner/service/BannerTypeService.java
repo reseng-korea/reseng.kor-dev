@@ -36,15 +36,14 @@ public class BannerTypeService {
         bannersByTypeWidth.forEach((typeWidth, bannerList) -> {
             int standardCount = 0;
             List<Integer> allLengths = new ArrayList<>();
-            List<Integer> nonStandardLengths = new ArrayList<>();
 
             for (BannerType banner : bannerList) {
-                for (int i = 0; i < banner.getQuantity(); i++) {
-                    allLengths.add(bannerRequestMapper.INSTANCE.roundDoubleToInteger(banner.getHorizontalLength()));
-                }
+                int roundedLength = bannerRequestMapper.INSTANCE.roundDoubleToInteger(banner.getHorizontalLength());
+                allLengths.add(roundedLength);
+
                 // 정단 현수막인 경우 standardCount 증가
-                if (banner.getHorizontalLength() == 120) {
-                    standardCount += banner.getQuantity();
+                if (roundedLength == 120) {
+                    standardCount++;
                 }
             }
 
@@ -64,10 +63,9 @@ public class BannerTypeService {
         List<Integer> allLengths = new ArrayList<>();
 
         for (BannerType banner : banners) {
-            // 모든 현수막의 horizontalLength를 추가 (정단/비정단 포함)
-            for (int i = 0; i < banner.getQuantity(); i++) {
-                allLengths.add(bannerRequestMapper.INSTANCE.roundDoubleToInteger(banner.getHorizontalLength()));
-            }
+            // 각 배너의 horizontalLength를 추가
+            int roundedLength = bannerRequestMapper.INSTANCE.roundDoubleToInteger(banner.getHorizontalLength());
+            allLengths.add(roundedLength);
         }
 
         // 중복 제거 후 horizontalLength 기준으로 오름차순 정렬
@@ -96,7 +94,6 @@ public class BannerTypeService {
                         .typeWidth(bannerType.getTypeWidth())
                         .horizontalLength(remainingYards) // 업데이트된 horizontalLength 값 설정
                         .isStandard(bannerType.getIsStandard())
-                        .quantity(bannerType.getQuantity())
                         .user(bannerType.getUser())
                         .build();
 

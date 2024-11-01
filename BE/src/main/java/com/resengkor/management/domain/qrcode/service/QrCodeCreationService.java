@@ -5,6 +5,7 @@ import com.resengkor.management.domain.banner.entity.BannerType;
 import com.resengkor.management.domain.banner.mapper.BannerRequestMapper;
 import com.resengkor.management.domain.banner.repository.BannerRequestRepository;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
+import com.resengkor.management.domain.banner.service.BannerTypeService;
 import com.resengkor.management.domain.qrcode.QrRepository.QrRepository;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
 import com.resengkor.management.domain.qrcode.entity.QR;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
 import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.UUID;
 
 @Service
@@ -29,6 +31,7 @@ public class QrCodeCreationService {
     private final BannerTypeRepository bannerTypeRepository;
     private final QrRepository qrRepository;
     private final BannerRequestMapper bannerRequestMapper;
+    private final BannerTypeService bannerTypeService;
 
     public byte[] generateQRCode(QrPageDataDTO qrPageDataDTO) {
         // 현재 로그인된 사용자의 ID를 가져옴
@@ -44,13 +47,13 @@ public class QrCodeCreationService {
                 .build();
 
         // 선택된 typeWidth, horizontalLength로 BannerType 조회
-        BannerType bannerType = bannerTypeRepository.findByTypeWidthAndHorizontalLength(qrPageDataDTO.getTypeWidth(), bannerRequestMapper.adjustAndRoundLength(qrPageDataDTO.getHorizontalLength()))
-                .orElseThrow(() -> new IllegalArgumentException("해당 폭의 현수막을 찾을 수 없습니다."));
+        BannerType bannerType = bannerTypeService.findMatchingBannerType(userId, qrPageDataDTO);
 
         // MapStruct를 사용하여 DTO -> Entity 변환
         BannerRequest bannerRequest = bannerRequestMapper.toBannerRequest(qrPageDataDTO).toBuilder()
                 .user(user)
                 .bannerType(bannerType)
+                .postedDuration(Period.ofDays(qrPageDataDTO.getPostedDuration())) // postedDuration 설정
                 .build();
 
         bannerRequestRepository.save(bannerRequest);
@@ -62,13 +65,12 @@ public class QrCodeCreationService {
         // QR 코드 생성
         ByteArrayOutputStream stream = QRCode.from(qrUrl).withSize(250, 250).stream();
 
-        LocalDateTime now = LocalDateTime.now();
-//        LocalDateTime expirationDate = now.plusWeeks(2); // 유효기간 2주 설정
-        LocalDateTime expirationDate = now.plusDays(qrPageDataDTO.getPostedDuration()); // 유효기간 8일 설정
+        LocalDateTime startTime = qrPageDataDTO.getPostedDate().atStartOfDay();
+        LocalDateTime expirationDate = startTime.plusDays(qrPageDataDTO.getPostedDuration()); // 유효기간 8일 설정
 
         QR qr = QR.builder()
                 .uuid(uuid)
-                .createdAt(now)
+                .createdAt(startTime)
                 .expiredAt(expirationDate)
                 .generatedUrl(qrUrl)
                 .bannerRequest(bannerRequest)

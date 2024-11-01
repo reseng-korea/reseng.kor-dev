@@ -28,9 +28,6 @@ public class BannerType {
     @Column(name = "is_standard", nullable = false)
     private Boolean isStandard;
 
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
