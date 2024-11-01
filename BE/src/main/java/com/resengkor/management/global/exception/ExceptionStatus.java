@@ -46,7 +46,6 @@ public enum ExceptionStatus {
 
     DATA_NOT_FOUND(5000, "데이터가 존재하지 않습니다.");
 
-
     private final int code;
     private final String message;
 }

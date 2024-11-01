@@ -8,6 +8,7 @@ import com.resengkor.management.domain.user.service.UserService;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.DataResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -67,4 +68,14 @@ public class UserController {
     }
 
 
+    @Operation(description = "로그인 유저의 하위 사용자 목록 조건부 조회 (Pagination)")
+    @GetMapping("/pagination")
+    public DataResponse<?> getAllUserByManager(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "role", required = false) String role,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "createdDate", required = false) String createdDate) {
+
+        return userServiceImpl.getAllUserByManager(page, role, status, createdDate);
+    }
 }
