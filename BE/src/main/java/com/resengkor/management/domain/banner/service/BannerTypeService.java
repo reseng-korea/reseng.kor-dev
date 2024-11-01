@@ -2,12 +2,14 @@ package com.resengkor.management.domain.banner.service;
 
 import com.resengkor.management.domain.banner.dto.BannerInventoryDTO;
 import com.resengkor.management.domain.banner.entity.BannerType;
+import com.resengkor.management.domain.banner.mapper.BannerRequestMapper;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
+import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
 import com.resengkor.management.global.security.jwt.dto.CustomUserDetails;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 public class BannerTypeService {
 
     private final BannerTypeRepository bannerTypeRepository;
+    private final BannerRequestMapper bannerRequestMapper;
 
     public List<BannerInventoryDTO> getBannerInventory(Authentication authentication) {
         Long userId = getUserIdFromAuthentication(authentication);
@@ -37,7 +40,7 @@ public class BannerTypeService {
 
             for (BannerType banner : bannerList) {
                 for (int i = 0; i < banner.getQuantity(); i++) {
-                    allLengths.add(banner.getHorizontalLength());
+                    allLengths.add(bannerRequestMapper.INSTANCE.roundDoubleToInteger(banner.getHorizontalLength()));
                 }
                 // 정단 현수막인 경우 standardCount 증가
                 if (banner.getHorizontalLength() == 120) {
@@ -63,7 +66,7 @@ public class BannerTypeService {
         for (BannerType banner : banners) {
             // 모든 현수막의 horizontalLength를 추가 (정단/비정단 포함)
             for (int i = 0; i < banner.getQuantity(); i++) {
-                allLengths.add(banner.getHorizontalLength());
+                allLengths.add(bannerRequestMapper.INSTANCE.roundDoubleToInteger(banner.getHorizontalLength()));
             }
         }
 
@@ -77,33 +80,45 @@ public class BannerTypeService {
 
     // 현수막 사용 요청을 처리하여 재고 업데이트
     @Transactional
-    public void useBannerYards(Authentication authentication, Integer typeWidth, int horizontalLength, int yardToUse) {
+    public void useBannerYards(Authentication authentication, QrPageDataDTO qrPageDataDTO) {
         Long userId = getUserIdFromAuthentication(authentication);
 
-        // 해당 조건의 배너 조회
-        BannerType banner = bannerTypeRepository.findByUserIdAndTypeWidthAndHorizontalLength(
-                userId, typeWidth, horizontalLength);
+        // 선택된 typeWidth, horizontalLength로 BannerType 조회
+        BannerType bannerType = findMatchingBannerType(userId, qrPageDataDTO);
 
-        if (banner != null) {
-            int remainingYards = banner.getQuantity() - yardToUse;
+        if (bannerType != null) {
+            // 선택된 현수막 - 요청 현수막 길이 * 1.094
+            double remainingYards = bannerType.getHorizontalLength() - (qrPageDataDTO.getRequestedLength() * 1.094);
             if (remainingYards >= 0) {
-                // 기존 객체의 quantity 값만 변경
-                banner = BannerType.builder()
-                        .id(banner.getId())
-                        .typeWidth(banner.getTypeWidth())
-                        .horizontalLength(banner.getHorizontalLength())
-                        .isStandard(banner.getIsStandard())
-                        .quantity(remainingYards) // 업데이트된 quantity 값 설정
-                        .user(banner.getUser())
+                // 기존 객체의 horizontalLength 값만 변경
+                bannerType = BannerType.builder()
+                        .id(bannerType.getId())
+                        .typeWidth(bannerType.getTypeWidth())
+                        .horizontalLength(remainingYards) // 업데이트된 horizontalLength 값 설정
+                        .isStandard(bannerType.getIsStandard())
+                        .quantity(bannerType.getQuantity())
+                        .user(bannerType.getUser())
                         .build();
 
-                bannerTypeRepository.save(banner);
+                bannerTypeRepository.save(bannerType);
             } else {
-                throw new IllegalArgumentException("사용할 수 있는 갈아가 부족합니다.");
+                throw new IllegalArgumentException("사용할 수 있는 갈이가 부족합니다.");
             }
         } else {
-            throw new IllegalArgumentException("해당 조건에 맞는 정단 현수막을 찾을 수 없습니다.");
+            throw new IllegalArgumentException("해당 조건에 맞는 현수막을 찾을 수 없습니다.");
         }
+    }
+
+    // horizontalLength를 변환했을때 가장 가까운 BannerType을 반환
+    public BannerType findMatchingBannerType(Long userId, QrPageDataDTO qrPageDataDTO) {
+        double adjustedHorizontalLength = BannerRequestMapper.INSTANCE.adjustAndRoundLength(qrPageDataDTO.getHorizontalLength());
+
+        return bannerTypeRepository.findClosestByUserIdAndTypeWidth(
+                userId,
+                qrPageDataDTO.getTypeWidth(),
+                adjustedHorizontalLength,
+                PageRequest.of(0, 1) // 가장 가까운 하나만 조회
+        ).stream().findFirst().orElseThrow(() -> new RuntimeException("해당 조건에 맞는 BannerType이 없습니다."));
     }
 
     // 새로운 현수막 추가 메서드 (정단/비정단 추가에 따른 로직)

@@ -2,6 +2,7 @@ package com.resengkor.management.domain.banner.controller;
 
 import com.resengkor.management.domain.banner.dto.BannerInventoryDTO;
 import com.resengkor.management.domain.banner.service.BannerTypeService;
+import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -29,16 +30,14 @@ public class BannerTypeController {
         return bannerTypeService.getBannerInventoryBySpecificWidth(authentication, typeWidth);
     }
 
-    // 특정 배너의 야드를 사용하는 API
+    // 현수막 길이 수정 API
     @PatchMapping("/use-yards")
     public ResponseEntity<String> useBannerYards(
             Authentication authentication,
-            @RequestParam Integer typeWidth,
-            @RequestParam int horizontalLength,
-            @RequestParam int yardToUse) {
-
+            @RequestBody QrPageDataDTO qrPageDataDTO)
+    {
         try {
-            bannerTypeService.useBannerYards(authentication, typeWidth, horizontalLength, yardToUse);
+            bannerTypeService.useBannerYards(authentication, qrPageDataDTO);
             return ResponseEntity.ok("Banner yards updated successfully.");
         } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());

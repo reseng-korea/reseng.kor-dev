@@ -43,8 +43,8 @@ public class QrCodeCreationService {
                 .company(user.getCompanyName())
                 .build();
 
-        // 선택된 typeWidth로 BannerType 조회
-        BannerType bannerType = bannerTypeRepository.findByTypeWidthAndHorizontalLength(qrPageDataDTO.getTypeWidth(), qrPageDataDTO.getHorizontalLength())
+        // 선택된 typeWidth, horizontalLength로 BannerType 조회
+        BannerType bannerType = bannerTypeRepository.findByTypeWidthAndHorizontalLength(qrPageDataDTO.getTypeWidth(), bannerRequestMapper.adjustAndRoundLength(qrPageDataDTO.getHorizontalLength()))
                 .orElseThrow(() -> new IllegalArgumentException("해당 폭의 현수막을 찾을 수 없습니다."));
 
         // MapStruct를 사용하여 DTO -> Entity 변환
