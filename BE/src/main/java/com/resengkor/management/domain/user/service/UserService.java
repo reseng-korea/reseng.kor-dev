@@ -22,8 +22,10 @@ import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.service.KakaoUserWithdrawService;
 import com.resengkor.management.global.util.RedisUtil;
 import com.resengkor.management.global.util.TmpCodeUtil;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,10 +33,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 
 @Service
+@Getter
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
@@ -343,5 +348,40 @@ public class UserService {
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), userDTO);
+    }
+
+    public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String status, String createdDate) {
+
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+        User loginUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        Role userRole = loginUser.getRole();
+
+        if(userRole == Role.ROLE_PENDING || userRole == Role.ROLE_GUEST)
+            throw new CustomException(ExceptionStatus.FORBIDDEN_FAILED);
+
+        List<Role> accessibleRoles = getAccessibleRoles(userRole);
+
+        LocalDateTime createdAt = null;
+
+        if(createdDate != null && !createdDate.isEmpty())
+            createdAt = LocalDateTime.parse(createdDate);
+
+        PageRequest pageRequest = PageRequest.of(page, 10);
+
+        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, role, status, createdAt, accessibleRoles );
+
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), userListPaginationDTO);
+    }
+
+    private List<Role> getAccessibleRoles(Role userRole) {
+        return switch (userRole) {
+            case ROLE_MANAGER -> List.of(Role.ROLE_MANAGER, Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
+            case ROLE_DISTRIBUTOR -> List.of(Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
+            case ROLE_AGENCY -> List.of(Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
+            case ROLE_PENDING, ROLE_GUEST -> null;
+            case ROLE_CUSTOMER -> List.of(Role.ROLE_CUSTOMER);
+        };
     }
 }

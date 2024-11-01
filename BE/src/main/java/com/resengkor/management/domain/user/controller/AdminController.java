@@ -26,14 +26,14 @@ public class AdminController {
 
     //삭제하기(탈퇴하기랑 비슷)
 
-    @Operation(description = "MANAGER가 하위 모든 사용자 목록 조회")
-    @GetMapping("/users/pagination")
-    public DataResponse<?> getAllUserByManager(
-            @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "role", required = false) String role,
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "createdDate", required = false) String createdDate) {
-
-        return adminServiceImpl.getAllUserByManager(page, role, status, createdDate);
-    }
+//    @Operation(description = "MANAGER가 하위 모든 사용자 목록 조회")
+//    @GetMapping("/users/pagination")
+//    public DataResponse<?> getAllUserByManager(
+//            @RequestParam(value = "page", defaultValue = "0") int page,
+//            @RequestParam(value = "role", required = false) String role,
+//            @RequestParam(value = "status", required = false) String status,
+//            @RequestParam(value = "createdDate", required = false) String createdDate) {
+//
+//        return adminServiceImpl.getAllUserByManager(page, role, status, createdDate);
+//    }
 }

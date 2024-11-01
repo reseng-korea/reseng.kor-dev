@@ -23,12 +23,14 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     QUser user = QUser.user;
 
     @Override
-    public UserListPaginationDTO getAllUserByManager(Pageable pageable, String role, String status, LocalDateTime createdAt) {
+    public UserListPaginationDTO getAllUserByManager(Pageable pageable, String role, String status, LocalDateTime createdAt, List<Role> accessibleRoles) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
         if(role != null)
             builder.and(user.role.eq(Role.valueOf(role)));
+        else
+            builder.and(user.role.in(accessibleRoles));
 
         if(status != null)
             builder.and(user.status.eq(Boolean.parseBoolean(status)));
@@ -54,7 +56,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 .fetchOne()
         ).orElse(0L);
 
-        int totalPage = (int) Math.ceil((double) totalCount / pageable.getPageSize());
+//        int totalPage = (int) Math.ceil((double) totalCount / pageable.getPageSize());
 
         return UserListPaginationDTO.builder()
                 .totalCount(totalCount.intValue())
