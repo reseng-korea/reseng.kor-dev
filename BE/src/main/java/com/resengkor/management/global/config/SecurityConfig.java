@@ -69,7 +69,7 @@ public class SecurityConfig {
             "/api/v1/find-email",
             "/api/v1/find-password",
             "/api/v1/withdrawal",
-            "/api/v1/admin/users"
+            "/api/v1/users/pagination"
 
     );
 
