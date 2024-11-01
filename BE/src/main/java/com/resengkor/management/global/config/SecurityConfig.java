@@ -68,7 +68,8 @@ public class SecurityConfig {
     private static final List<String> GET_LIST = List.of(
             "/api/v1/find-email",
             "/api/v1/find-password",
-            "/api/v1/withdrawal"
+            "/api/v1/withdrawal",
+            "/api/v1/admin/users"
 
     );
 

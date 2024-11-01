@@ -1,5 +1,7 @@
 package com.resengkor.management.domain.user.service;
 
+import com.resengkor.management.domain.user.dto.UserDTO;
+import com.resengkor.management.domain.user.dto.UserListPaginationDTO;
 import com.resengkor.management.domain.user.entity.Role;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
@@ -12,9 +14,11 @@ import com.resengkor.management.global.security.authorization.UserAuthorizationU
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,7 +32,7 @@ public class AdminServiceImpl {
     private final RoleHierarchyRepository roleHierarchyRepository;
 
     @Transactional
-    public DataResponse<List<User>> getAllUserByManager() {
+    public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String status, String createdDate) {
 
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         User loginUser = userRepository.findById(userId)
@@ -37,8 +41,15 @@ public class AdminServiceImpl {
         if (loginUser.getRole() != Role.ROLE_MANAGER)
             throw new CustomException(ExceptionStatus.FORBIDDEN_FAILED);
 
-        List<User> userList = userRepository.findAll();
+        LocalDateTime createdAt = null;
 
-        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), userList);
+        if(createdDate != null && !createdDate.isEmpty())
+            createdAt = LocalDateTime.parse(createdDate);
+
+        PageRequest pageRequest = PageRequest.of(page, 10);
+
+        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, role, status, createdAt);
+
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), userListPaginationDTO);
     }
 }

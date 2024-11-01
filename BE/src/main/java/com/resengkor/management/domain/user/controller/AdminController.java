@@ -1,9 +1,7 @@
 package com.resengkor.management.domain.user.controller;
 
-import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.service.AdminServiceImpl;
 import com.resengkor.management.global.response.DataResponse;
-import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,9 +27,13 @@ public class AdminController {
     //삭제하기(탈퇴하기랑 비슷)
 
     @Operation(description = "MANAGER가 하위 모든 사용자 목록 조회")
-    @GetMapping("/users")
-    public DataResponse<?> getAllUserByManager() {
+    @GetMapping("/users/pagination")
+    public DataResponse<?> getAllUserByManager(
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "role", required = false) String role,
+            @RequestParam(value = "status", required = false) String status,
+            @RequestParam(value = "createdDate", required = false) String createdDate) {
 
-        return adminServiceImpl.getAllUserByManager();
+        return adminServiceImpl.getAllUserByManager(page, role, status, createdDate);
     }
 }
