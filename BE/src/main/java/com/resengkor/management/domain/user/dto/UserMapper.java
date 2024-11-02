@@ -38,4 +38,22 @@ public class UserMapper {
                 .longitude(userProfile.getLongitude())
                 .build();
     }
+
+    // 필요한 정보만 담은 CompanyInfoDTO 변환 메서드
+    public CompanyInfoDTO toCompanyInfoDTO(User user) {
+        if (user == null || user.getUserProfile() == null) {
+            return null;
+        }
+        UserProfile userProfile = user.getUserProfile();
+
+        return CompanyInfoDTO.builder()
+                .userId(user.getId())
+                .companyName(user.getCompanyName())
+                .phoneNumber(user.getPhoneNumber())
+                .userProfileId(userProfile.getId())
+                .address(userProfile.getFullAddress())
+                .latitude(userProfile.getLatitude())
+                .longitude(userProfile.getLongitude())
+                .build();
+    }
 }

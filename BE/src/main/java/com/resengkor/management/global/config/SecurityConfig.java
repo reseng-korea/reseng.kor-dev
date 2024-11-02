@@ -71,8 +71,8 @@ public class SecurityConfig {
             "/api/v1/check-email",
             "/api/v1/withdrawal",
             "/api/v1/users/pagination",
-            "/api/v1/regions/**"
-
+            "/api/v1/regions/**",
+            "/api/v1/companies/**"
     );
 
 
