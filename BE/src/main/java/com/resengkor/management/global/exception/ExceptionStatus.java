@@ -34,6 +34,7 @@ public enum ExceptionStatus {
     MEMBER_NOT_FOUND(4012, "존재하지 않는 사용자입니다."),
     MEMBER_PROFILE_NOT_FOUND(4013, "사용자의 상세정보가 존재하지 않습니다."),
     VALIDATION_ERROR(4014, "Validation Error"),
+    INVALID_PASSWORD(4015, "비밀번호가 불일치합니다"),
 
     /* 이메일 */
     EMAIL_NOT_FOUND(4021, "존재하지 않는 이메일입니다."),
@@ -45,7 +46,6 @@ public enum ExceptionStatus {
     SMS_SEND_FAIL(5002,"sms 발송 중 오류가 발생했습니다."),
 
     DATA_NOT_FOUND(5000, "데이터가 존재하지 않습니다.");
-
 
     private final int code;
     private final String message;

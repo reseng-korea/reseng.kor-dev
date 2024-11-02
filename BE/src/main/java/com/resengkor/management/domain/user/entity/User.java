@@ -1,6 +1,7 @@
 package com.resengkor.management.domain.user.entity;
 
 import com.resengkor.management.domain.qna.entity.Question;
+import com.resengkor.management.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,7 +15,7 @@ import java.util.List;
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor  // 모든 필드를 포함하는 생성자 생성
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", updatable = false)
@@ -43,10 +44,6 @@ public class User {
     @Column(name = "phone_number_status", nullable = false)
     private boolean phoneNumberStatus;
 
-    /*
-    - 핸드폰 번호 인증 코드
-    - 핸드폰 인증코드 생성시간
-     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -69,11 +66,6 @@ public class User {
     //소셜 로그인 id
     @Column(name = "member_social_id")
     private String socialId;
-
-    @CreatedDate //엔티티가 생성될 때 생성 시간 저장
-    @Column(name = "joined_at")
-    private LocalDateTime createdAt;
-
 
     @OneToOne(mappedBy = "user")
     private UserProfile userProfile;  // 1:1 관계로 UserInfo 연결

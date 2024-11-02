@@ -22,8 +22,10 @@ import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.service.KakaoUserWithdrawService;
 import com.resengkor.management.global.util.RedisUtil;
 import com.resengkor.management.global.util.TmpCodeUtil;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -31,10 +33,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.time.LocalDateTime;
 import java.util.*;
 
 
 @Service
+@Getter
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 @Slf4j
 public class UserService {
@@ -343,5 +348,101 @@ public class UserService {
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), userDTO);
+    }
+
+    public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String status, String createdDate) {
+
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+        User loginUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        Role userRole = loginUser.getRole();
+
+        if(userRole == Role.ROLE_PENDING || userRole == Role.ROLE_GUEST)
+            throw new CustomException(ExceptionStatus.FORBIDDEN_FAILED);
+
+        List<Role> accessibleRoles = getAccessibleRoles(userRole);
+
+        LocalDateTime createdAt = null;
+
+        if(createdDate != null && !createdDate.isEmpty())
+            createdAt = LocalDateTime.parse(createdDate);
+
+        PageRequest pageRequest = PageRequest.of(page, 10);
+
+        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, role, status, createdAt, accessibleRoles );
+
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), userListPaginationDTO);
+    }
+
+    private List<Role> getAccessibleRoles(Role userRole) {
+        return switch (userRole) {
+            case ROLE_MANAGER -> List.of(Role.ROLE_MANAGER, Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
+            case ROLE_DISTRIBUTOR -> List.of(Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
+            case ROLE_AGENCY -> List.of(Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
+            case ROLE_PENDING, ROLE_GUEST -> null;
+            case ROLE_CUSTOMER -> List.of(Role.ROLE_CUSTOMER);
+        };
+    }
+
+    //비밀번호 확인(정보 확인용)
+    public DataResponse<String> verifyPassword(VerifyPasswordRequest verifyPasswordRequest) {
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+        User loginUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        log.info("DTO 패스워드 = {}",verifyPasswordRequest.getPassword());
+        log.info("DB 패스워드 = {}",loginUser.getPassword());
+        // 사용자가 입력한 비밀번호와 데이터베이스에 저장된 비밀번호 비교
+        if (!passwordEncoder.matches(verifyPasswordRequest.getPassword(), loginUser.getPassword())) {
+            log.info("비밀번호 불일치");
+            throw new CustomException(ExceptionStatus.INVALID_PASSWORD); // 비밀번호 불일치 예외
+        }
+
+        log.info("비밀번호 확인 성공");
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage(),
+                "비밀번호 확인이 완료되었습니다.");
+    }
+
+
+    //임시번호 발급받아서 비밀번호 변경하기
+    @Transactional
+    public DataResponse<String> resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        Long userId = UserAuthorizationUtil.getLoginMemberId(); // 로그인한 사용자 ID 가져오기
+        User loginUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND)); // 사용자 찾기
+
+        // 기존 비밀번호 확인
+        if (!passwordEncoder.matches(resetPasswordRequest.getOldPassword(), loginUser.getPassword())) {
+            log.info("기존 비밀번호 불일치");
+            throw new CustomException(ExceptionStatus.INVALID_PASSWORD); // 비밀번호 불일치 예외
+        }
+
+        // 새 비밀번호로 변경
+        loginUser.editPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword())); // 비밀번호 암호화
+        userRepository.save(loginUser); // 변경된 사용자 정보 저장
+
+        log.info("비밀번호 변경 성공");
+        return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
+                ResponseStatus.UPDATED_SUCCESS.getMessage(),
+                "비밀번호가 성공적으로 변경되었습니다.");
+    }
+
+
+    //이메일 중복 확인하기
+    public DataResponse<String> emailDupCheck(String email) {
+        log.info("이메일 중복 확인하기");
+        // 입력된 이메일을 사용하여 데이터베이스에서 사용자 검색
+        boolean isDuplicate = userRepository.existsByEmail(email); // 존재 여부 확인
+
+        if (isDuplicate) {
+            throw new CustomException(ExceptionStatus.MEMBER_EMAIL_ALREADY_EXIST);
+        } else {
+            log.info("이메일 사용 가능: " + email);
+            return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                    ResponseStatus.RESPONSE_SUCCESS.getMessage(),
+                    "사용 가능한 이메일입니다.");
+        }
     }
 }

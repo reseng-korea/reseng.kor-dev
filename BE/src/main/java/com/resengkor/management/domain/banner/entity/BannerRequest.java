@@ -48,3 +48,4 @@ public class BannerRequest {
     @JoinColumn(name = "banner_type_id", nullable = false)
     private BannerType bannerType;
 }
+
