@@ -57,22 +57,21 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    // POST로 허용할 엔드포인트 목록
+    // POST로 허용할 엔드포인트 목록(role 상관없이 전체 접근 가능한 endpoint만!)
     private static final List<String> POST_LIST = List.of(
             "/api/v1/register",
             "/api/v1/oauth2-jwt-header",
             "/api/v1/reissue"
     );
 
-    // GET으로 허용할 엔드포인트 목록
+    // GET으로 허용할 엔드포인트 목록(role 상관없이 전체 접근 가능한 endpoint만!)
     private static final List<String> GET_LIST = List.of(
-            "/api/v1/find-email",
-            "/api/v1/find-password",
+            "/api/v1/find-email", "/api/v1/find-password",
             "/api/v1/check-email",
             "/api/v1/withdrawal",
             "/api/v1/users/pagination",
-            "/api/v1/regions/**",
-            "/api/v1/companies/**"
+            "/api/v1/regions/**", "/api/v1/companies/**",
+            "/api/v1/faq/**"
     );
 
 
