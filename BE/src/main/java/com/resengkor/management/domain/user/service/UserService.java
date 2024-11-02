@@ -384,4 +384,65 @@ public class UserService {
             case ROLE_CUSTOMER -> List.of(Role.ROLE_CUSTOMER);
         };
     }
+
+    //비밀번호 확인(정보 확인용)
+    public DataResponse<String> verifyPassword(VerifyPasswordRequest verifyPasswordRequest) {
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+        User loginUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        log.info("DTO 패스워드 = {}",verifyPasswordRequest.getPassword());
+        log.info("DB 패스워드 = {}",loginUser.getPassword());
+        // 사용자가 입력한 비밀번호와 데이터베이스에 저장된 비밀번호 비교
+        if (!passwordEncoder.matches(verifyPasswordRequest.getPassword(), loginUser.getPassword())) {
+            log.info("비밀번호 불일치");
+            throw new CustomException(ExceptionStatus.INVALID_PASSWORD); // 비밀번호 불일치 예외
+        }
+
+        log.info("비밀번호 확인 성공");
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage(),
+                "비밀번호 확인이 완료되었습니다.");
+    }
+
+
+    //임시번호 발급받아서 비밀번호 변경하기
+    @Transactional
+    public DataResponse<String> resetPassword(ResetPasswordRequest resetPasswordRequest) {
+        Long userId = UserAuthorizationUtil.getLoginMemberId(); // 로그인한 사용자 ID 가져오기
+        User loginUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND)); // 사용자 찾기
+
+        // 기존 비밀번호 확인
+        if (!passwordEncoder.matches(resetPasswordRequest.getOldPassword(), loginUser.getPassword())) {
+            log.info("기존 비밀번호 불일치");
+            throw new CustomException(ExceptionStatus.INVALID_PASSWORD); // 비밀번호 불일치 예외
+        }
+
+        // 새 비밀번호로 변경
+        loginUser.editPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword())); // 비밀번호 암호화
+        userRepository.save(loginUser); // 변경된 사용자 정보 저장
+
+        log.info("비밀번호 변경 성공");
+        return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
+                ResponseStatus.UPDATED_SUCCESS.getMessage(),
+                "비밀번호가 성공적으로 변경되었습니다.");
+    }
+
+
+    //이메일 중복 확인하기
+    public DataResponse<String> emailDupCheck(String email) {
+        log.info("이메일 중복 확인하기");
+        // 입력된 이메일을 사용하여 데이터베이스에서 사용자 검색
+        boolean isDuplicate = userRepository.existsByEmail(email); // 존재 여부 확인
+
+        if (isDuplicate) {
+            throw new CustomException(ExceptionStatus.MEMBER_EMAIL_ALREADY_EXIST);
+        } else {
+            log.info("이메일 사용 가능: " + email);
+            return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                    ResponseStatus.RESPONSE_SUCCESS.getMessage(),
+                    "사용 가능한 이메일입니다.");
+        }
+    }
 }

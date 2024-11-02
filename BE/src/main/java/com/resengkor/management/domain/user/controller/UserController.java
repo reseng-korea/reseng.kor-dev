@@ -3,10 +3,13 @@ package com.resengkor.management.domain.user.controller;
 
 import com.resengkor.management.domain.user.dto.request.OauthUserUpdateRequest;
 import com.resengkor.management.domain.user.dto.UserDTO;
+import com.resengkor.management.domain.user.dto.request.ResetPasswordRequest;
 import com.resengkor.management.domain.user.dto.request.UserUpdateRequest;
+import com.resengkor.management.domain.user.dto.request.VerifyPasswordRequest;
 import com.resengkor.management.domain.user.service.UserService;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
+import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.DataResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -58,7 +61,30 @@ public class UserController {
         return userServiceImpl.getUserInfo(userId);
     }
 
+    //일반 회원탈퇴
+    @PutMapping("/withdrawal")
+    public CommonResponse withdrawUser(@RequestHeader("Authorization") String token) {
+        return userServiceImpl.withdrawUser(token);
+    }
 
+    //비밀번호 확인(정보 확인용)
+    @PostMapping("/{userId}/password/verify")
+    public DataResponse<String> verifyPassword(@RequestBody VerifyPasswordRequest verifyPasswordRequest) {
+        return userServiceImpl.verifyPassword(verifyPasswordRequest);
+    }
+
+    //임시번호 발급받아서 비밀번호 변경하기 & 새 비밀번호로 변경하기
+    @PutMapping("/{userId}/password")
+    public DataResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, BindingResult bindingResult) {
+        log.info("새 비밀번호로 변경하기 : {}", resetPasswordRequest);
+        // 바인딩 에러가 있는지 확인
+        if (bindingResult.hasErrors()) {
+            Map<String, String> validatorResult = userServiceImpl.validateHandling(bindingResult);
+            log.warn("바인딩 에러 발생: {}", validatorResult);
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
+        }
+        return userServiceImpl.resetPassword(resetPasswordRequest);
+    }
 
 
     @GetMapping("/test-login-id")
