@@ -80,7 +80,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
                     .build();
         } catch (IOException e) {
             log.info("------------------------------------------------");
-            log.info("LoginDTO 직렬화 오류");
+            log.info("LoginDTO 역직렬화 오류: " + e.getMessage());
             log.info("------------------------------------------------");
             throw new CustomException(ExceptionStatus.EXCEPTION);
         }
