@@ -3,6 +3,7 @@ package com.resengkor.management.domain.banner.entity;
 import com.resengkor.management.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -10,6 +11,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder(toBuilder = true)
 public class BannerType {
 
     @Id
@@ -21,19 +23,13 @@ public class BannerType {
     private Integer typeWidth;
 
     @Column(name = "horizontal_length", nullable = false)
-    private Integer horizontalLength;
+    private Double horizontalLength;
 
     @Column(name = "is_standard", nullable = false)
     private Boolean isStandard;
 
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "order_history_id", nullable = false)
-    private OrderHistory orderHistory;
 }
+

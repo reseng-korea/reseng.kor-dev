@@ -3,6 +3,7 @@ package com.resengkor.management.domain.banner.entity;
 import com.resengkor.management.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,6 +12,7 @@ import java.time.Period;
 
 @Entity
 @Getter
+@Builder (toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
 public class BannerRequest {
@@ -32,7 +34,7 @@ public class BannerRequest {
     @Column(name = "posted_date", nullable = false)
     private LocalDate postedDate;
 
-    @Column(name = "posted_duration")
+    @Column(name = "posted_duration", nullable = false)
     private Period postedDuration;
 
     @Column(name = "posted_location", nullable = false)
@@ -46,3 +48,4 @@ public class BannerRequest {
     @JoinColumn(name = "banner_type_id", nullable = false)
     private BannerType bannerType;
 }
+
