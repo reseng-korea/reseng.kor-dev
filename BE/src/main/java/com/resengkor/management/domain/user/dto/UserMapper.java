@@ -32,6 +32,8 @@ public class UserMapper {
         return UserProfileDTO.builder()
                 .id(userProfile.getId())
                 .address(userProfile.getFullAddress())
+                .city(userProfile.getCity())
+                .district(userProfile.getDistrict())
                 .latitude(userProfile.getLatitude())
                 .longitude(userProfile.getLongitude())
                 .build();

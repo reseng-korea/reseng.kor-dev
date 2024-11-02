@@ -226,7 +226,7 @@ public class UserService {
     @PreAuthorize("#userId == principal.id")
     public DataResponse<UserDTO> oauthUpdateUser(Long userId, OauthUserUpdateRequest request) {
         // 1. 사용자 조회 (존재하지 않으면 예외 던지기)
-        User user = userRepository.findById(userId)
+        User user = userRepository.findUserWithProfileAndRegionById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
 
         // 이메일 및 전화번호 중복 검사
@@ -276,7 +276,7 @@ public class UserService {
     @Transactional
     public DataResponse<UserDTO> updateUser(Long userId, UserUpdateRequest request) {
         //1.사용자 조회 (존재하지 않으면 예외 던지기)
-        User user = userRepository.findById(userId)
+        User user = userRepository.findUserWithProfileAndRegionById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
         //2. 비밀번호 확인 후 설정
         String encodedPassword = passwordEncoder.encode(request.getPassword());
@@ -341,7 +341,7 @@ public class UserService {
 
     @PreAuthorize("#userId == principal.id")
     public DataResponse<UserDTO> getUserInfo(Long userId) {
-        User user = userRepository.findById(userId)
+        User user = userRepository.findUserWithProfileAndRegionById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
 
         UserDTO userDTO = userMapper.toUserDTO(user);
