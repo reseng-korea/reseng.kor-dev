@@ -34,7 +34,7 @@ public class BannerRequest {
     @Column(name = "posted_date", nullable = false)
     private LocalDate postedDate;
 
-    @Column(name = "posted_duration")
+    @Column(name = "posted_duration", nullable = false)
     private Period postedDuration;
 
     @Column(name = "posted_location", nullable = false)
@@ -48,3 +48,4 @@ public class BannerRequest {
     @JoinColumn(name = "banner_type_id", nullable = false)
     private BannerType bannerType;
 }
+
