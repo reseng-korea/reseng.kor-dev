@@ -152,7 +152,7 @@ public class SecurityConfig {
                         auth
                         .requestMatchers(
                                 "/api/v1/login","/api/v1/logout",
-                                "/api/v1/mail/**","/api/v1/sms/**").permitAll()
+                                "/api/v1/mail/**","/api/v1/sms/**","/api/vi/qna/**").permitAll()
                                 //hasRole() : 특정 Roll을 가져야함
                                 //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
                                 //아래 roleHierarchy() 메소드 덕분
@@ -161,7 +161,11 @@ public class SecurityConfig {
                                 .requestMatchers("/api/v1/users/**").hasAnyRole("GUEST")
                                 .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated();
-                });// 위에서 설정하지 못한 나머지 url을 여기서 다 처리
+                })
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 실패 시 처리
+                .accessDeniedHandler(customAccessDeniedHandler) // 권한 부족 시 처리
+        );// 위에서 설정하지 못한 나머지 url을 여기서 다 처리
 
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), CustomLoginFilter.class); //JWTFilter가 CustomLoginFilter 전에 실행
@@ -184,15 +188,6 @@ public class SecurityConfig {
                         .successHandler(new CustomOAuth2SuccessHandler(jwtUtil, redisUtil))
                         .failureHandler(authenticationFailureHandler())
                         .permitAll());
-
-
-        // 인가되지 않은 사용자에 대한 exception -> 프론트엔드로 코드 응답
-        //이거 하니까 로그인도 안 됌
-        http
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 실패 시 처리
-                        .accessDeniedHandler(customAccessDeniedHandler) // 권한 부족 시 처리
-                );
 
         return http.build();
     }

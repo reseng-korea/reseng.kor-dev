@@ -1,6 +1,5 @@
 package com.resengkor.management.domain.user.entity;
 
-import com.resengkor.management.domain.qna.entity.Question;
 import com.resengkor.management.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
@@ -69,9 +68,6 @@ public class User extends BaseEntity {
 
     @OneToOne(mappedBy = "user")
     private UserProfile userProfile;  // 1:1 관계로 UserInfo 연결
-
-    @OneToMany(mappedBy = "user")
-    private List<Question> questions;
 
     @Version
     private Integer version;  // 비관적 잠금 처리
