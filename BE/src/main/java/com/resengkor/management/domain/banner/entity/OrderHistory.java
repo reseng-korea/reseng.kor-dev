@@ -30,12 +30,12 @@ public class OrderHistory {
     @Column(name = "buyer", nullable = false)
     private String buyer;
 
-    @Column(name = "quantity", nullable = false)
-    private Integer quantity;
-
     @Column(name = "order_status", nullable = false)
     @Enumerated(EnumType.STRING)
     private OrderStatus orderStatus;
+
+    @Column(name = "receive_status", nullable = false)
+    private Boolean receiveStatus;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
