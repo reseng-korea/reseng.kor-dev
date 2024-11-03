@@ -23,9 +23,10 @@ public class BannerTypeService {
 
     private final BannerTypeRepository bannerTypeRepository;
     private final BannerRequestMapper bannerRequestMapper;
+    private final UserIdentificationService userIdentificationService;
 
     public List<BannerInventoryDTO> getBannerInventory(Authentication authentication) {
-        Long userId = getUserIdFromAuthentication(authentication);
+        Long userId = userIdentificationService.getUserIdFromAuthentication(authentication);
         List<BannerType> banners = bannerTypeRepository.findByUserId(userId);
 
         // 각 typeWidth에 대한 정단 및 비정단 정보를 BannerInventoryDTO 형태로 변환
@@ -57,7 +58,7 @@ public class BannerTypeService {
 
     // 특정 typeWidth에 대한 배너 인벤토리를 horizontalLength 기준 오름차순으로 정렬하여 반환
     public BannerInventoryDTO getBannerInventoryBySpecificWidth(Authentication authentication, Integer typeWidth) {
-        Long userId = getUserIdFromAuthentication(authentication);
+        Long userId = userIdentificationService.getUserIdFromAuthentication(authentication);
         List<BannerType> banners = bannerTypeRepository.findByUserIdAndTypeWidth(userId, typeWidth);
 
         List<Integer> allLengths = new ArrayList<>();
@@ -79,7 +80,7 @@ public class BannerTypeService {
     // 현수막 사용 요청을 처리하여 재고 업데이트
     @Transactional
     public void useBannerYards(Authentication authentication, QrPageDataDTO qrPageDataDTO) {
-        Long userId = getUserIdFromAuthentication(authentication);
+        Long userId = userIdentificationService.getUserIdFromAuthentication(authentication);
 
         // 선택된 typeWidth, horizontalLength로 BannerType 조회
         BannerType bannerType = findMatchingBannerType(userId, qrPageDataDTO);
@@ -136,9 +137,5 @@ public class BannerTypeService {
 //        bannerTypeRepository.save(newBanner);
 //    }
 
-    private Long getUserIdFromAuthentication(Authentication authentication) {
-        // CustomUserDetails 객체에서 사용자 ID(Long)를 올바르게 가져오는 방법
-        CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
-        return userDetails.getUserId();
-    }
+
 }
