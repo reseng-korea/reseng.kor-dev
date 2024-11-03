@@ -5,6 +5,7 @@ import com.resengkor.management.domain.banner.entity.BannerType;
 import com.resengkor.management.domain.banner.mapper.BannerRequestMapper;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
+import com.resengkor.management.domain.user.service.UserService;
 import com.resengkor.management.global.security.jwt.dto.CustomUserDetails;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -136,6 +137,4 @@ public class BannerTypeService {
 //
 //        bannerTypeRepository.save(newBanner);
 //    }
-
-
 }
