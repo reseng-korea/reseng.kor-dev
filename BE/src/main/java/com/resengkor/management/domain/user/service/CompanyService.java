@@ -47,7 +47,7 @@ public class CompanyService {
 
     public DataResponse<CompanyInfoDTO> getCompanyDetails(Long companyId) {
         User user = userRepository.findById(companyId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         CompanyInfoDTO companyInfoDTO = userMapper.toCompanyInfoDTO(user);
 

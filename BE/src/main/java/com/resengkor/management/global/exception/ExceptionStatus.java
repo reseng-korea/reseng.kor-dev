@@ -24,8 +24,18 @@ public enum ExceptionStatus {
     TOKEN_NOT_FOUND(-1004, "토큰이 DB에 존재하지 않습니다."),
     TOKEN_PARSE_ERROR(-1005, "JWT 토큰 파싱에 실패하였습니다."),
 
+    /* 인증 관련 */
     AUTHENTICATION_FAILED(4000, "유저 인증에 실패하였습니다."),
     FORBIDDEN_FAILED(4001, "콘텐츠에 접근할 수 없어, 정보를 조회할 수 없습니다."),
+    ACCESS_DENIED(4002, "접근이 거부되었습니다."),
+    INVALID_CREDENTIALS(4003, "잘못된 자격 증명입니다."),
+    USER_NOT_FOUND(4004, "존재하지 않는 사용자입니다."),
+    ACCOUNT_EXPIRED(4005, "계정이 만료되었습니다."),
+    CREDENTIALS_EXPIRED(4006, "자격 증명이 만료되었습니다."),
+    ACCOUNT_DISABLED(4007, "계정이 비활성화되었습니다."),
+    ACCOUNT_LOCKED(4008, "계정이 잠겼습니다."),
+    INSUFFICIENT_AUTHENTICATION(4009, "인증 정보가 부족합니다."),
+
 
     MEMBER_ALREADY_EXIST(4010, "이미 존재하는 사용자입니다."),
     MEMBER_EMAIL_ALREADY_EXIST(4011, "이미 존재하는 이메일입니다."),
@@ -41,6 +51,9 @@ public enum ExceptionStatus {
     CODE_MISMATCH(4022, "이메일 인증 코드가 일치하지 않습니다."),
     CODE_EXPIRED(4023, "인증 코드가 만료되었습니다."),
     EMAIL_FAILED(5001,"메일 발송 중 오류가 발생했습니다."),
+
+    METHOD_NOT_ALLOWED(4050, "지원되지 않는 HTTP 메서드 요청입니다."),
+
 
     /* SMS */
     SMS_SEND_FAIL(5002,"sms 발송 중 오류가 발생했습니다."),
