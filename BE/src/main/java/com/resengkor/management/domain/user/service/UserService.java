@@ -101,9 +101,9 @@ public class UserService {
 
         // Region 생성
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
-                .orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다.")); // 서울시 찾기
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND)); // 서울시 찾기
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
-                .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다.")); // 강남구 찾기
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND)); // 강남구 찾기
         log.info("region 조회 성공");
 
         // UserProfile 생성 및 연결 (latitude, longitude 없이)
@@ -241,9 +241,9 @@ public class UserService {
 
         // 3. 지역 조회 (UserProfile이 null일 경우나 업데이트 시 모두 사용됨)
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
-                .orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
-                .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
         // 4. UserProfile 조회 및 초기화
         UserProfile userProfile = user.getUserProfile();
@@ -292,9 +292,9 @@ public class UserService {
 
         // 4. 지역 정보 조회
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
-                .orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
-                .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
         // 5. UserProfile 정보 수정
         UserProfile userProfile = user.getUserProfile();

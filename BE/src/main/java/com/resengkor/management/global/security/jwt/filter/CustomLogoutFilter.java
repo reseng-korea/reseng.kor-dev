@@ -1,5 +1,6 @@
 package com.resengkor.management.global.security.jwt.filter;
 
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
@@ -48,14 +49,13 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
         // method check
         String requestMethod = request.getMethod();
+        ExceptionStatus exceptionStatus;
         if (!requestMethod.equals("POST")) {
             //로그아웃이더라도 post가 아니면 넘어감
 //            chain.doFilter(request, response);
 //            return;
             // POST가 아닌 요청인 경우 405 에러 반환
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
-            response.getWriter().write("{\"error\": \"POST method only allowed for logout\"}");
-            response.getWriter().flush();
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.METHOD_NOT_ALLOWED, HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
         }
 
@@ -66,15 +66,15 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         // refresh token null
         if(refresh == null){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(refresh);
 
         // not refresh token
-        if(!category.equals("refresh")){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        if("Refresh".equals(category)){
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_PARSE_ERROR, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
@@ -86,7 +86,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // not exist in DB
         if(!isExist){
             //없다면 이미 로그아웃인 상태
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_DB, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
