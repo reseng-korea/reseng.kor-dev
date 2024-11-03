@@ -125,7 +125,13 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         //2-1. Refresh 토큰 DB에 저장 메소드
 //        addRefreshEntity(email, refresh, refreshTokenExpiration);
-        redisUtil.setData("refresh:token:" + email, refresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+
+        boolean isStored = redisUtil.setData("refresh:token:" + email, refresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+        if (!isStored) {
+            log.error("로그인 성공: Refresh 토큰 Redis 저장 실패 (Redis 연결 오류)");
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.DB_CONNECTION_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return; // 오류 발생 시 메서드 종료
+        }
         log.info("------------------------------------------------");
         log.info("Refresh토큰 DB에 저장 성공");
         log.info("------------------------------------------------");

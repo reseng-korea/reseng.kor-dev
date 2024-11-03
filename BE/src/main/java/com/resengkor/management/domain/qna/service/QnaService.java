@@ -6,6 +6,8 @@ import com.resengkor.management.domain.qna.dto.QnaMapper;
 import com.resengkor.management.domain.qna.dto.request.AnswerRequest;
 import com.resengkor.management.domain.qna.dto.request.QuestionRequest;
 import com.resengkor.management.domain.qna.dto.response.AnswerResponse;
+import com.resengkor.management.domain.qna.dto.response.QuestionAnswerResponse;
+import com.resengkor.management.domain.qna.dto.response.QuestionDetailResponse;
 import com.resengkor.management.domain.qna.dto.response.QuestionResponse;
 import com.resengkor.management.domain.qna.entity.Answer;
 import com.resengkor.management.domain.qna.entity.Question;
@@ -75,7 +77,7 @@ public class QnaService {
 
     // 질문 생성
     @Transactional
-    public DataResponse<QuestionResponse> createQuestion(QuestionRequest questionRequest) {
+    public DataResponse<QuestionDetailResponse> createQuestion(QuestionRequest questionRequest) {
         log.info("---------Service : createQuestion method start---------");
         // 1. 로그인한 사용자 가져오기
         User loginUser = getCurrentLoginUser();
@@ -84,17 +86,17 @@ public class QnaService {
         // 3. 변환된 Question 엔티티를 데이터베이스에 저장
         questionRepository.save(question);
         // 4. 저장된 Question 엔티티를 QuestionResponse DTO로 변환
-        QuestionResponse questionResponse = qnaMapper.toQuestionResponse(question);
+        QuestionDetailResponse questionDetailResponse = qnaMapper.toQuestionDetailResponse(question);
 
         return new DataResponse<>(ResponseStatus.CREATED_SUCCESS.getCode(),
                 ResponseStatus.CREATED_SUCCESS.getMessage(),
-                questionResponse);
+                questionDetailResponse);
 
     }
 
     //질문 수정
     @Transactional
-    public DataResponse<QuestionResponse> updateQuestion(Long questionId, QuestionRequest questionRequest) {
+    public DataResponse<QuestionDetailResponse> updateQuestion(Long questionId, QuestionRequest questionRequest) {
         log.info("---------Service : updateQuestion method start---------");
         // 1. 주어진 ID로 질문 엔티티 조회
         Question question = questionRepository.findById(questionId)
@@ -110,8 +112,8 @@ public class QnaService {
         // 4. 변경된 질문 엔티티를 데이터베이스에 저장
         questionRepository.save(question);
         // 5. 수정된 질문 엔티티를 QuestionResponse DTO로 변환
-        QuestionResponse questionResponse = qnaMapper.toQuestionResponse(question);
-        return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(), ResponseStatus.UPDATED_SUCCESS.getMessage(), questionResponse);
+        QuestionDetailResponse questionDetailResponse = qnaMapper.toQuestionDetailResponse(question);
+        return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(), ResponseStatus.UPDATED_SUCCESS.getMessage(), questionDetailResponse);
     }
 
     //질문 삭제
@@ -143,7 +145,7 @@ public class QnaService {
 
 
     //질문 상세 조회
-    public DataResponse<QuestionResponse> getQuestionDetails(Long questionId, Long userId, String password) {
+    public DataResponse<QuestionAnswerResponse> getQuestionDetails(Long questionId, Long userId, String password) {
         log.info("---------Service : getQuestionDetails method start---------");
         // 1. 주어진 ID로 질문 엔티티 조회
         Question question = questionRepository.findById(questionId)
@@ -152,8 +154,20 @@ public class QnaService {
         // 2. 현재 로그인한 사용자 정보 가져오기
         User currentUser = getCurrentLoginUser();
 
+        // 3. 관리자인 경우 비밀글 접근 허용
+        if (currentUser.getRole().equals(Role.ROLE_MANAGER)) {
+            question.incrementViewCount();
+            QuestionAnswerResponse questionAnswerResponse = qnaMapper.toQuestionAnswerResponse(question);
+            return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                    ResponseStatus.RESPONSE_SUCCESS.getMessage(),
+                    questionAnswerResponse);
+        }
+
         // 3. 비밀글일 경우, 작성자나 관리자가 아닌 경우 비밀번호 검증
-        if (question.isSecret() && !question.getUser().getId().equals(userId)) {
+        if (question.isSecret()) {
+            if(!question.getUser().getId().equals(currentUser.getId())){
+                throw new CustomException(ExceptionStatus.ACCESS_DENIED);
+            }
             if (password == null || !question.getPassword().equals(password)) {
                 throw new CustomException(ExceptionStatus.INVALID_PASSWORD);
             }
@@ -162,18 +176,10 @@ public class QnaService {
         // 4. 조회수 증가
         question.incrementViewCount();
         // 5. Question 엔티티를 QuestionResponse DTO로 변환
-        QuestionResponse questionResponse = qnaMapper.toQuestionResponse(question);
-
-        // 6. 관리자인 경우 비밀글 접근 허용
-        if (currentUser.getRole().equals(Role.ROLE_MANAGER)) {
-            return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
-                    ResponseStatus.RESPONSE_SUCCESS.getMessage(),
-                    questionResponse);
-        }
-
+        QuestionAnswerResponse questionAnswerResponse = qnaMapper.toQuestionAnswerResponse(question);
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(),
-                questionResponse);
+                questionAnswerResponse);
     }
 
     //답변 생성

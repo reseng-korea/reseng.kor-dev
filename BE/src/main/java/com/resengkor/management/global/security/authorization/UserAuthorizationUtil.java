@@ -1,5 +1,7 @@
 package com.resengkor.management.global.security.authorization;
 
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.dto.CustomUserDetails;
 import com.resengkor.management.global.security.oauth.dto.CustomOAuth2User;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +33,6 @@ public class UserAuthorizationUtil {
             }
         }
 
-        throw new IllegalStateException("User is not authenticated or no member ID found");
+        throw new CustomException(ExceptionStatus.AUTHENTICATION_FAILED);
     }
 }

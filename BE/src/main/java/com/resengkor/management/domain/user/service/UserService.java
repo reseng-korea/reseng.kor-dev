@@ -211,10 +211,12 @@ public class UserService {
 
         //5.해당 유저의 refresh토큰 전부 삭제
 //        refreshRepository.deleteByEmail(userEmail);
-        redisUtil.deleteData("refresh:token:" + userEmail);
-        log.info("------------------------------------------------");
-        log.info("회원탈퇴:refresh 토큰 삭제");
-        log.info("------------------------------------------------");
+        boolean isDeleted = redisUtil.deleteData("refresh:token:" + userEmail);
+
+        if (!isDeleted) {
+            log.error("회원탈퇴: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
+            throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);
+        }
 
         return new CommonResponse(ResponseStatus.UPDATED_SUCCESS .getCode(),
                 ResponseStatus.UPDATED_SUCCESS .getMessage());
