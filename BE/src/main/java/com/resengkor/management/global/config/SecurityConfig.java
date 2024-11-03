@@ -57,20 +57,21 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
-    // POST로 허용할 엔드포인트 목록
+    // POST로 허용할 엔드포인트 목록(role 상관없이 전체 접근 가능한 endpoint만!)
     private static final List<String> POST_LIST = List.of(
             "/api/v1/register",
             "/api/v1/oauth2-jwt-header",
             "/api/v1/reissue"
     );
 
-    // GET으로 허용할 엔드포인트 목록
+    // GET으로 허용할 엔드포인트 목록(role 상관없이 전체 접근 가능한 endpoint만!)
     private static final List<String> GET_LIST = List.of(
-            "/api/v1/find-email",
-            "/api/v1/find-password",
+            "/api/v1/find-email", "/api/v1/find-password",
+            "/api/v1/check-email",
             "/api/v1/withdrawal",
-            "/api/v1/users/pagination"
-
+            "/api/v1/users/pagination",
+            "/api/v1/regions/**", "/api/v1/companies/**",
+            "/api/v1/faq/**"
     );
 
 
@@ -160,8 +161,22 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/users/**").hasAnyRole("GUEST")
                                 .requestMatchers(HttpMethod.GET,"/api/v1/qr-code").permitAll()
                                 .requestMatchers(HttpMethod.POST,"api/v1/qr-code").hasRole("CUSTOMER")
+//=======
+//                                "/api/v1/mail/**","/api/v1/sms/**","/api/vi/qna/**").permitAll()
+//                                //hasRole() : 특정 Roll을 가져야함
+//                                //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
+//                                //아래 roleHierarchy() 메소드 덕분
+//                                //hasRole(), hasAnyRole 자동으로 ROLE_접두사 추가해줌
+//                                .requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}").hasRole("PENDING")  // PENDING 권한 부여
+//                                .requestMatchers("/api/v1/users/**").hasAnyRole("GUEST")
+//                                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+//>>>>>>> origin/develop
                         .anyRequest().authenticated();
-                });// 위에서 설정하지 못한 나머지 url을 여기서 다 처리
+                })
+                .exceptionHandling(exceptionHandling -> exceptionHandling
+                .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 실패 시 처리
+                .accessDeniedHandler(customAccessDeniedHandler) // 권한 부족 시 처리
+        );// 위에서 설정하지 못한 나머지 url을 여기서 다 처리
 
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), CustomLoginFilter.class); //JWTFilter가 CustomLoginFilter 전에 실행
@@ -184,15 +199,6 @@ public class SecurityConfig {
                         .successHandler(new CustomOAuth2SuccessHandler(jwtUtil, redisUtil))
                         .failureHandler(authenticationFailureHandler())
                         .permitAll());
-
-
-        // 인가되지 않은 사용자에 대한 exception -> 프론트엔드로 코드 응답
-        //이거 하니까 로그인도 안 됌
-        http
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 실패 시 처리
-                        .accessDeniedHandler(customAccessDeniedHandler) // 권한 부족 시 처리
-                );
 
         return http.build();
     }

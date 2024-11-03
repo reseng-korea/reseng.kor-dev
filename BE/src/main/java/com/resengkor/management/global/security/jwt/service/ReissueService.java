@@ -55,7 +55,7 @@ public class ReissueService {
 
         String email = jwtUtil.getEmail(refresh);
         User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         long userId = user.getId();
         String role = jwtUtil.getRole(refresh);
         String loginType = jwtUtil.getLoginType(refresh);
@@ -74,7 +74,7 @@ public class ReissueService {
 
             // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
             if(!isExist || remainingTTL == null || remainingTTL <= 0) {
-                throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND);
+                throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
             }
 
             if(isAuto) {
@@ -93,7 +93,7 @@ public class ReissueService {
         else { //소셜
             // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
             if(!isExist) {
-                throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND);
+                throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
             }
             refreshTokenExpiration = 30 * 60 * 60 * 24 * 1000L; // 30일
             newAccess = jwtUtil.createOuathJwt("Authorization", "social", email, userId, role, ACCESS_TOKEN_EXPIRATION);
