@@ -2,7 +2,9 @@ package com.resengkor.management.domain.user.repository;
 
 import com.resengkor.management.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
@@ -24,6 +26,14 @@ public interface UserRepository extends JpaRepository<User, Long>,
 
     // 이메일과 전화번호가 모두 일치하는 사용자 찾기
     Optional<User> findByEmailAndPhoneNumber(String email, String phoneNumber);
+
+
+    @Query("SELECT u FROM User u " +
+            "JOIN FETCH u.userProfile up " +
+            "JOIN FETCH up.city " + // city와 district를 명확히 지정
+            "JOIN FETCH up.district " +
+            "WHERE u.id = :userId")
+    Optional<User> findUserWithProfileAndRegionById(@Param("userId") Long userId);
 
 
 
