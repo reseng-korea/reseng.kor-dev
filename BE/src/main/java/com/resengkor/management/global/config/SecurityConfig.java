@@ -152,14 +152,14 @@ public class SecurityConfig {
                         auth
                         .requestMatchers(
                                 "/api/v1/login","/api/v1/logout",
-                                "/api/v1/mail/**","/api/v1/sms/**","/api/v1/qna/**").permitAll()
+                                "/api/v1/mail/**","/api/v1/sms/**","/api/v1/qna/questions/**").permitAll()
                                 //hasRole() : 특정 Roll을 가져야함
                                 //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
                                 //아래 roleHierarchy() 메소드 덕분
                                 //hasRole(), hasAnyRole 자동으로 ROLE_접두사 추가해줌
                                 .requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}").hasRole("PENDING")  // PENDING 권한 부여
                                 .requestMatchers("/api/v1/users/**").hasAnyRole("GUEST")
-                                .requestMatchers("/api/v1/admin/**").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/admin/**","/api/v1/qna/answers/**").hasRole("ADMIN")
                         .anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptionHandling -> exceptionHandling
