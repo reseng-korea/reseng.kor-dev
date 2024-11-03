@@ -76,11 +76,11 @@ public class UserService {
 
             if (!user.isStatus()) { // 비활성 상태 확인
                 log.info("비활성 사용자입니다");
-                throw new CustomException(ExceptionStatus.MEMBER_INACTIVE); // 비활성 사용자 예외
+                throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
             }
 
             log.info("이미 존재함");
-            throw new CustomException(ExceptionStatus.MEMBER_ALREADY_EXIST); // 이미 존재하는 멤버 예외
+            throw new CustomException(ExceptionStatus.USER_ALREADY_EXIST); // 이미 존재하는 멤버 예외
         }
         //unique한 것 중복되면 error 던지기
 
@@ -101,9 +101,9 @@ public class UserService {
 
         // Region 생성
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
-                .orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다.")); // 서울시 찾기
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND)); // 서울시 찾기
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
-                .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다.")); // 강남구 찾기
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND)); // 강남구 찾기
         log.info("region 조회 성공");
 
         // UserProfile 생성 및 연결 (latitude, longitude 없이)
@@ -142,7 +142,7 @@ public class UserService {
     public DataResponse<FindEmailResponse> findEmail(FindEmailRequest request) {
         //없으면 에러 터뜨림
         User user = userRepository.findByCompanyNameAndPhoneNumber(request.getCompanyName(), request.getPhoneNumber())
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         log.info("맞는 회사명&핸드폰 번호 있음");
         // FindEmailResponse 객체 생성
         FindEmailResponse findEmailResponse = new FindEmailResponse();
@@ -155,7 +155,7 @@ public class UserService {
     @Transactional
     public DataResponse<String> findPassword(FindPasswordRequest request) {
         User user = userRepository.findByEmailAndPhoneNumber(request.getEmail(), request.getPhoneNumber())
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         log.info("맞는 이메일&핸드폰 번호 있음");
 
         // 2. 임시 비밀번호 생성
@@ -189,7 +189,7 @@ public class UserService {
         String userEmail = jwtUtil.getEmail(token);
         //2.사용자 찾기
         User user = userRepository.findByEmail(userEmail)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         log.info("------------------------------------------------");
         log.info("회원탈퇴:사용자 찾음");
         log.info("------------------------------------------------");
@@ -226,8 +226,8 @@ public class UserService {
     @PreAuthorize("#userId == principal.id")
     public DataResponse<UserDTO> oauthUpdateUser(Long userId, OauthUserUpdateRequest request) {
         // 1. 사용자 조회 (존재하지 않으면 예외 던지기)
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        User user = userRepository.findUserWithProfileAndRegionById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         // 이메일 및 전화번호 중복 검사
         validateUniqueEmailAndPhoneNumber(userId, request.getEmail(), request.getPhoneNumber());
@@ -241,9 +241,9 @@ public class UserService {
 
         // 3. 지역 조회 (UserProfile이 null일 경우나 업데이트 시 모두 사용됨)
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
-                .orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
-                .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
         // 4. UserProfile 조회 및 초기화
         UserProfile userProfile = user.getUserProfile();
@@ -276,8 +276,8 @@ public class UserService {
     @Transactional
     public DataResponse<UserDTO> updateUser(Long userId, UserUpdateRequest request) {
         //1.사용자 조회 (존재하지 않으면 예외 던지기)
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        User user = userRepository.findUserWithProfileAndRegionById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         //2. 비밀번호 확인 후 설정
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         user.editPassword(encodedPassword); // 비밀번호 수정
@@ -292,9 +292,9 @@ public class UserService {
 
         // 4. 지역 정보 조회
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
-                .orElseThrow(() -> new RuntimeException("상위 지역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
-                .orElseThrow(() -> new RuntimeException("하위 지역을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
         // 5. UserProfile 정보 수정
         UserProfile userProfile = user.getUserProfile();
@@ -317,13 +317,13 @@ public class UserService {
         // 이메일 중복 검사
         Optional<User> existingUserByEmail = userRepository.findByEmail(email);
         if (existingUserByEmail.isPresent() && !Objects.equals(existingUserByEmail.get().getId(), userId)) {
-            throw new CustomException(ExceptionStatus.MEMBER_EMAIL_ALREADY_EXIST);  // 이미 존재하는 이메일 예외
+            throw new CustomException(ExceptionStatus.USER_EMAIL_ALREADY_EXIST);  // 이미 존재하는 이메일 예외
         }
 
         // 전화번호 중복 검사
         Optional<User> existingUserByPhoneNumber = userRepository.findByPhoneNumber(phoneNumber);
         if (existingUserByPhoneNumber.isPresent() && !Objects.equals(existingUserByPhoneNumber.get().getId(), userId)) {
-            throw new CustomException(ExceptionStatus.MEMBER_PHONE_NUMBER_ALREADY_EXIST);  // 이미 존재하는 전화번호 예외
+            throw new CustomException(ExceptionStatus.USER_PHONE_NUMBER_ALREADY_EXIST);  // 이미 존재하는 전화번호 예외
         }
     }
 
@@ -331,7 +331,7 @@ public class UserService {
     public DataResponse<Long> tmp() {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         log.info("user 조회 성공");
         Long id = user.getId();
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
@@ -341,8 +341,8 @@ public class UserService {
 
     @PreAuthorize("#userId == principal.id")
     public DataResponse<UserDTO> getUserInfo(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        User user = userRepository.findUserWithProfileAndRegionById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         UserDTO userDTO = userMapper.toUserDTO(user);
 
@@ -389,7 +389,7 @@ public class UserService {
     public DataResponse<String> verifyPassword(VerifyPasswordRequest verifyPasswordRequest) {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         User loginUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         log.info("DTO 패스워드 = {}",verifyPasswordRequest.getPassword());
         log.info("DB 패스워드 = {}",loginUser.getPassword());
@@ -411,7 +411,7 @@ public class UserService {
     public DataResponse<String> resetPassword(ResetPasswordRequest resetPasswordRequest) {
         Long userId = UserAuthorizationUtil.getLoginMemberId(); // 로그인한 사용자 ID 가져오기
         User loginUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND)); // 사용자 찾기
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND)); // 사용자 찾기
 
         // 기존 비밀번호 확인
         if (!passwordEncoder.matches(resetPasswordRequest.getOldPassword(), loginUser.getPassword())) {
@@ -437,7 +437,7 @@ public class UserService {
         boolean isDuplicate = userRepository.existsByEmail(email); // 존재 여부 확인
 
         if (isDuplicate) {
-            throw new CustomException(ExceptionStatus.MEMBER_EMAIL_ALREADY_EXIST);
+            throw new CustomException(ExceptionStatus.USER_EMAIL_ALREADY_EXIST);
         } else {
             log.info("이메일 사용 가능: " + email);
             return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),

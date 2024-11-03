@@ -51,7 +51,7 @@ public class MailServiceWithRedis {
             javaMailSender.send(message); // 메일 발송
         } catch (MailException e) {
             e.printStackTrace();
-            throw new CustomException(ExceptionStatus.EMAIL_FAILED);
+            throw new CustomException(ExceptionStatus.EMAIL_SEND_FAIL);
         }
 
         return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(),

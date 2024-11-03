@@ -19,8 +19,10 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -53,18 +55,13 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 메서드가 POST인지 확인
         if (!request.getMethod().equalsIgnoreCase("POST")) {
-            // POST가 아닌 요청인 경우 405 에러 반환
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             try {
-                response.getWriter().write("{\"error\": \"POST method only allowed for login\"}");
-                response.getWriter().flush();
+                ErrorHandler.sendErrorResponse(response, ExceptionStatus.METHOD_NOT_ALLOWED, HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             } catch (IOException e) {
-                log.error("Response writing error", e);
+                throw new RuntimeException(e);
             }
             return null; // POST 요청이 아닌 경우 인증 시도 중단
         }
-
-
 
         // DTO 클래스로 역직렬화
         LoginDTO loginDTO;
@@ -171,29 +168,10 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         log.info("------------------------------------------------");
         log.info("로그인 실패");
         log.info("------------------------------------------------");
-        // HTTP 상태 코드와 Content-Type 설정
-        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        response.setContentType("application/json; charset=UTF-8");
 
-        String errorMessage;
+        failed.printStackTrace();
 
-        // 예외 종류에 따른 오류 메시지 설정
-        if (failed instanceof BadCredentialsException) {
-            errorMessage = "아이디 또는 비밀번호가 잘못되었습니다.";
-        } else if (failed instanceof DisabledException) {
-            errorMessage = "계정이 비활성화되었습니다. 관리자에게 문의하세요.";
-        } else if (failed instanceof LockedException) {
-            errorMessage = "계정이 잠겼습니다. 관리자에게 문의하세요.";
-        } else if (failed instanceof AccountExpiredException) {
-            errorMessage = "계정이 만료되었습니다. 관리자에게 문의하세요.";
-        } else if (failed instanceof CredentialsExpiredException) {
-            errorMessage = "비밀번호가 만료되었습니다. 비밀번호를 재설정하세요.";
-        } else {
-            errorMessage = "로그인에 실패했습니다. 자격 증명을 확인하세요.";
-        }
-
-        // JSON 형식으로 오류 메시지 반환
-        response.getWriter().write("{\"error\": \"" + errorMessage + "\"}");
-        response.getWriter().flush();
+        // 예외 처리 로직을 공통 메서드로 위임
+        ErrorHandler.handleAuthenticationException(response, failed);
     }
 }
