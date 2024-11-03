@@ -24,11 +24,13 @@ public class OrderHistory {
     @Column(name = "order_date", nullable = false)
     private LocalDate orderDate;
 
-    @Column(name = "seller", nullable = false)
-    private String seller;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "seller_id")
+    private User seller;
 
-    @Column(name = "buyer", nullable = false)
-    private String buyer;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "buyer_id")
+    private User buyer;
 
     @Column(name = "order_status", nullable = false)
     @Enumerated(EnumType.STRING)
