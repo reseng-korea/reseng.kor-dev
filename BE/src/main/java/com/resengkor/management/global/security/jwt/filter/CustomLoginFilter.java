@@ -55,18 +55,13 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 메서드가 POST인지 확인
         if (!request.getMethod().equalsIgnoreCase("POST")) {
-            // POST가 아닌 요청인 경우 405 에러 반환
-            response.setStatus(HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             try {
-                response.getWriter().write("{\"error\": \"POST method only allowed for login\"}");
-                response.getWriter().flush();
+                ErrorHandler.sendErrorResponse(response, ExceptionStatus.METHOD_NOT_ALLOWED, HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             } catch (IOException e) {
-                log.error("Response writing error", e);
+                throw new RuntimeException(e);
             }
             return null; // POST 요청이 아닌 경우 인증 시도 중단
         }
-
-
 
         // DTO 클래스로 역직렬화
         LoginDTO loginDTO;

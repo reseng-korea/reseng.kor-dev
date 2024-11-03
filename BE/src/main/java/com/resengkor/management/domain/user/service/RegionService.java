@@ -4,6 +4,8 @@ import com.resengkor.management.domain.user.dto.RegionDTO;
 import com.resengkor.management.domain.user.entity.Region;
 import com.resengkor.management.domain.user.repository.RegionHierarchyRepository;
 import com.resengkor.management.domain.user.repository.RegionRepository;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.DataResponse;
 import com.resengkor.management.global.response.ResponseStatus;
 import lombok.Getter;
@@ -38,7 +40,7 @@ public class RegionService {
 
     public DataResponse<List<RegionDTO>> findDistrictsByCity(String cityName) {
         Region city = regionRepository.findByRegionNameAndRegionType(cityName, "CITY")
-                .orElseThrow(() -> new RuntimeException("해당 CITY가 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
         List<Region> districts = regionHierarchyRepository.findDescendantsByAncestor(city);
         List<RegionDTO> districtDTOs = districts.stream()

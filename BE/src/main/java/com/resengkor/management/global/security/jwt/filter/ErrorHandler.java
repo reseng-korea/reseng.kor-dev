@@ -50,7 +50,12 @@ public class ErrorHandler {
             exceptionStatus = ExceptionStatus.AUTHENTICATION_FAILED;
         }
 
-        // Return the code and message from ExceptionStatus
+        sendErrorResponse(response, exceptionStatus, response.getStatus());
+    }
+
+    public static void sendErrorResponse(HttpServletResponse response, ExceptionStatus exceptionStatus, int statusCode) throws IOException {
+        response.setStatus(statusCode);
+        response.setContentType("application/json; charset=UTF-8");
         response.getWriter().write("{\"code\": " + exceptionStatus.getCode() + ", " +
                 "\"message\": \"" + exceptionStatus.getMessage() + "\"}");
         response.getWriter().flush();
