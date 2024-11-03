@@ -2,6 +2,7 @@ package com.resengkor.management.global.security.jwt.filter;
 
 import com.resengkor.management.domain.user.entity.Role;
 import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.dto.CustomUserDetails;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -58,7 +59,7 @@ public class JWTFilter extends OncePerRequestFilter {
             log.info("------------------------------------------------");
             log.info("Access토큰 만료");
             log.info("------------------------------------------------");
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.ACCESS_TOKEN_EXPIRED, HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
 

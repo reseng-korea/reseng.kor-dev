@@ -1,6 +1,6 @@
 package com.resengkor.management.domain.qna.dto.response;
 
-import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.domain.qna.entity.Answer;
 import lombok.Builder;
 import lombok.Data;
 
@@ -8,10 +8,14 @@ import java.time.LocalDateTime;
 
 @Data
 @Builder
-public class QuestionResponse {
+public class QuestionDetailResponse {
     private String title;
 
+    private String content;
+
     private boolean isSecret;
+
+    private String password;
 
     private int viewCount;
 
