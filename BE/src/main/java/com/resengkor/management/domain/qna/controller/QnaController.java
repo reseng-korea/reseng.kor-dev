@@ -4,6 +4,8 @@ package com.resengkor.management.domain.qna.controller;
 import com.resengkor.management.domain.qna.dto.request.AnswerRequest;
 import com.resengkor.management.domain.qna.dto.request.QuestionRequest;
 import com.resengkor.management.domain.qna.dto.response.AnswerResponse;
+import com.resengkor.management.domain.qna.dto.response.QuestionAnswerResponse;
+import com.resengkor.management.domain.qna.dto.response.QuestionDetailResponse;
 import com.resengkor.management.domain.qna.dto.response.QuestionResponse;
 import com.resengkor.management.domain.qna.service.QnaService;
 import com.resengkor.management.global.exception.CustomException;
@@ -29,7 +31,7 @@ public class QnaController {
     // 질문 생성 (GUEST 이상 가능)
     @PostMapping("/questions")
     @PreAuthorize("hasRole('ROLE_GUEST')")
-    public DataResponse<QuestionResponse> createQuestion(@Valid @RequestBody QuestionRequest questionRequest, BindingResult bindingResult) {
+    public DataResponse<QuestionDetailResponse> createQuestion(@Valid @RequestBody QuestionRequest questionRequest, BindingResult bindingResult) {
         log.info("---------Controller : createQuestion method start---------");
         if(bindingResult.hasErrors()) {
             Map<String, String> validatorResult = qnaService.validateHandling(bindingResult);
@@ -42,7 +44,7 @@ public class QnaController {
 
     // 질문 수정 (작성자만 가능)
     @PutMapping("/questions/{questionId}")
-    public DataResponse<QuestionResponse> updateQuestion(@PathVariable Long questionId, @Valid @RequestBody QuestionRequest questionDTO, BindingResult bindingResult) {
+    public DataResponse<QuestionDetailResponse> updateQuestion(@PathVariable Long questionId, @Valid @RequestBody QuestionRequest questionDTO, BindingResult bindingResult) {
         log.info("---------Controller : updateQuestion method start---------");
         if(bindingResult.hasErrors()) {
             Map<String, String> validatorResult = qnaService.validateHandling(bindingResult);
@@ -69,9 +71,9 @@ public class QnaController {
 
     // 질문 상세 조회 (작성자와 관리자만 비밀글 조회 가능)
     @GetMapping("/questions/{questionId}")
-    public DataResponse<QuestionResponse> getQuestionDetails(@PathVariable Long questionId,
-                                                             @RequestParam Long userId,
-                                                             @RequestParam(required = false) String password) {
+    public DataResponse<QuestionAnswerResponse> getQuestionDetails(@PathVariable Long questionId,
+                                                                   @RequestParam Long userId,
+                                                                   @RequestParam(required = false) String password) {
         log.info("---------Controller : getQuestionDetails method start---------");
         return qnaService.getQuestionDetails(questionId, userId, password);
     }
