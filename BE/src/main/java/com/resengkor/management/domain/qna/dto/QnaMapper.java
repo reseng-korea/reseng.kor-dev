@@ -3,6 +3,8 @@ package com.resengkor.management.domain.qna.dto;
 import com.resengkor.management.domain.qna.dto.request.AnswerRequest;
 import com.resengkor.management.domain.qna.dto.request.QuestionRequest;
 import com.resengkor.management.domain.qna.dto.response.AnswerResponse;
+import com.resengkor.management.domain.qna.dto.response.QuestionAnswerResponse;
+import com.resengkor.management.domain.qna.dto.response.QuestionDetailResponse;
 import com.resengkor.management.domain.qna.dto.response.QuestionResponse;
 import com.resengkor.management.domain.qna.entity.Answer;
 import com.resengkor.management.domain.qna.entity.Question;
@@ -27,11 +29,43 @@ public class QnaMapper {
     public QuestionResponse toQuestionResponse(Question question) {
         return QuestionResponse.builder()
                 .title(question.getTitle())
+                .isSecret(question.isSecret())
+                .viewCount(question.getViewCount())
+                .userId(question.getUser().getId())
+                .representativeName(question.getUser().getRepresentativeName())
+                .createdAt(question.getCreatedAt())
+                .build();
+    }
+
+    public QuestionDetailResponse toQuestionDetailResponse(Question question) {
+        return QuestionDetailResponse.builder()
+                .title(question.getTitle())
                 .content(question.getContent())
                 .isSecret(question.isSecret())
                 .password(question.getPassword())
                 .viewCount(question.getViewCount())
-                .user(question.getUser())
+                .userId(question.getUser().getId())
+                .representativeName(question.getUser().getRepresentativeName())
+                .createdAt(question.getCreatedAt())
+                .build();
+    }
+
+    public QuestionAnswerResponse toQuestionAnswerResponse(Question question) {
+        AnswerResponse answerResponse = null;
+        if (question.getAnswer() != null) {
+            answerResponse = toAnswerResponse(question.getAnswer());
+        }
+
+        return QuestionAnswerResponse.builder()
+                .title(question.getTitle())
+                .content(question.getContent())
+                .isSecret(question.isSecret())
+                .password(question.getPassword())
+                .viewCount(question.getViewCount())
+                .userId(question.getUser().getId())
+                .representativeName(question.getUser().getRepresentativeName())
+                .createdAt(question.getCreatedAt())
+                .answer(answerResponse)
                 .build();
     }
 
@@ -51,6 +85,8 @@ public class QnaMapper {
                 .content(answer.getContent())
                 .questionId(answer.getQuestion().getId())
                 .adminId(answer.getAdmin().getId())
+                .createdAt(answer.getCreatedAt())
+                .updatedAt(answer.getUpdatedAt())
                 .build();
     }
 }

@@ -94,6 +94,15 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거
 //        refreshRepository.deleteByRefresh(refresh);
-        redisUtil.deleteData("refresh:token:" + refresh);
+
+        boolean isDeleted = redisUtil.deleteData("refresh:token:" + refresh);
+        if (!isDeleted) {
+            log.error("로그아웃: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
+            // Redis 오류 시 예외 던지기
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.DB_CONNECTION_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        log.info("로그아웃: Refresh 토큰 삭제 성공");
     }
 }
