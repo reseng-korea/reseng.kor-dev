@@ -17,6 +17,9 @@ public class OrderBanner {
     @Column(name = "order_banner_id")
     private Long id;
 
+    @Column(name = "quantity", nullable = false)
+    private Integer quantity;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "order_history_id")
     private OrderHistory orderHistory;
