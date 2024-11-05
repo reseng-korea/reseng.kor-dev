@@ -54,7 +54,13 @@ const Faq = () => {
                         <div className="text-4xl font-extrabold text-primary">
                           Q
                         </div>
-                        <div className="text-lg text-gray4 font-semibold group-hover:text-primary">
+                        <div
+                          className={`text-lg text-gray4 font-semibold group-hover:text-primary ${
+                            activeIndex === index
+                              ? 'text-primary'
+                              : 'text-gray4'
+                          }`}
+                        >
                           {faq.question}
                         </div>
                       </div>

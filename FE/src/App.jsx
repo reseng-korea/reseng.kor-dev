@@ -95,7 +95,6 @@ function App() {
                 <MainSecondPage />
                 <MainThirdPage />
                 <MainFourthPage />
-                <Footer />
               </>
             }
           />
@@ -187,6 +186,7 @@ function App() {
           {/* 임시  페이지(삭제 예정) */}
           <Route path="/tmp" element={<Tmp />} />
         </Routes>
+        <Footer />
       </div>
     </>
   );

@@ -67,12 +67,12 @@ const Qna = () => {
           <div className="flex flex-col w-full">
             <table className="min-w-full bg-white border-b mt-4">
               <thead>
-                <tr className="bg-primary text-white">
-                  <th className="py-4 px-4 text-xl">번호</th>
-                  <th className="py-4 px-4 text-xl">제목</th>
-                  <th className="py-4 px-4 text-xl">작성자</th>
-                  <th className="py-4 px-4 text-xl">등록일</th>
-                  <th className="py-4 px-4 text-xl">조회수</th>
+                <tr className="bg-primary text-white text-lg">
+                  <th className="py-4 px-4 rounded-l-lg">번호</th>
+                  <th className="py-4 px-4">제목</th>
+                  <th className="py-4 px-4">작성자</th>
+                  <th className="py-4 px-4">등록일</th>
+                  <th className="py-4 px-4 rounded-r-lg">조회수</th>
                 </tr>
               </thead>
               <tbody>

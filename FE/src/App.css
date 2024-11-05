@@ -144,6 +144,7 @@ select {
 /* 사용페이지 : 세번째 메인 페이지 */
 .slide-up {
   animation: slideUp 1s ease-out; /* 애니메이션 적용 */
+  /* animation-name: none; */
 }
 
 @keyframes slideUp {
@@ -198,6 +199,24 @@ select {
   }
 }
 
+/* 애니메이션 */
+/* 효과 : 오른쪽에서 왼쪽으로 */
+/* 사용페이지 : Location */
+.move-left {
+  animation: moveLeft 1.5s ease-out forwards; /* 애니메이션 적용 */
+}
+
+@keyframes moveLeft {
+  from {
+    transform: translateX(50px); /* 시작 위치: 왼쪽에서 20px 이동 */
+    opacity: 0; /* 투명도: 시작할 때 투명 */
+  }
+  to {
+    transform: translateX(0); /* 최종 위치: 원래 위치 */
+    opacity: 1; /* 최종 투명도: 완전히 불투명 */
+  }
+}
+
 @keyframes slide-down {
   from {
     transform: translateY(-50px); /* 위에서 50px 떨어져 있음 */
@@ -210,7 +229,7 @@ select {
 }
 
 .slide-down {
-  animation: slide-down 0.5s ease-out forwards; /* 애니메이션 설정 */
+  animation: slide-down 1.5s ease-out forwards; /* 애니메이션 설정 */
 }
 
 .slide-in {
@@ -274,4 +293,19 @@ select {
 
 .image-zoom.zoom-active {
   animation: zoom-in 2s forwards; /* 확대 애니메이션 2초 동안 실행 */
+}
+
+/* hr바 나타나기 */
+@keyframes expand {
+  0% {
+    transform: scaleX(0);
+  }
+  100% {
+    transform: scaleX(1);
+  }
+}
+
+.hr-expand {
+  animation: expand 1.5s ease-out forwards;
+  transform-origin: center;
 }
