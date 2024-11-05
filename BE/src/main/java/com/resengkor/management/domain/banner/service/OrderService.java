@@ -1,11 +1,12 @@
 package com.resengkor.management.domain.banner.service;
 
 import com.resengkor.management.domain.banner.dto.OrderRequestDto;
+import com.resengkor.management.domain.banner.dto.OrderResponseDto;
 import com.resengkor.management.domain.banner.entity.BannerType;
 import com.resengkor.management.domain.banner.entity.OrderBanner;
 import com.resengkor.management.domain.banner.entity.OrderHistory;
 import com.resengkor.management.domain.banner.entity.OrderStatus;
-import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
+import com.resengkor.management.domain.banner.mapper.OrderHistoryMapper;
 import com.resengkor.management.domain.banner.repository.OrderHistoryRepository;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
@@ -16,6 +17,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -23,15 +25,19 @@ public class OrderService {
 
     private final UserRepository userRepository;
     private final RoleHierarchyRepository roleHierarchyRepository;
-    private final BannerTypeRepository bannerTypeRepository;
     private final OrderHistoryRepository orderHistoryRepository;
     private final UserIdentificationService userIdentificationService;
+    private final OrderHistoryMapper orderHistoryMapper;
+
+    private Long getUserId(Authentication authentication) {
+        // 로그인한 사용자 ID 가져오기
+        return userIdentificationService.getUserIdFromAuthentication(authentication);
+    }
 
     // 발주 요청
     @Transactional
     public void createOrder(OrderRequestDto orderRequestDto, Authentication authentication) {
-        // 로그인한 사용자 ID 가져오기
-        Long userId = userIdentificationService.getUserIdFromAuthentication(authentication);
+        Long userId = getUserId(authentication);
 
         // 본인(= buyer)
         User loginedUser = userRepository.findById(userId)
@@ -74,5 +80,14 @@ public class OrderService {
 
         // OrderHistory 저장 (Cascade 설정을 통해 BannerType도 함께 저장)
         orderHistoryRepository.save(orderHistory);
+    }
+
+
+    // 로그인한 사용자의 모든 발주 내역 조회
+    public List<OrderResponseDto> getUserOrderHistories(Authentication authentication) {
+        Long userId = getUserId(authentication);
+
+        List<OrderHistory> orderHistories = orderHistoryRepository.findByUserIdOrderByOrderDateDesc(userId);
+        return orderHistoryMapper.toDtoList(orderHistories);
     }
 }
