@@ -9,7 +9,7 @@ export default {
         placeHolder: '#F3F3F3',
         re: '#245A98',
         // 갈색
-
+        brown1: '#8B5E3C',
         // 선
         gray1: '#E2E2E2',
         gray2: '#D1D1D1',

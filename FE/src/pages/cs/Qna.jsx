@@ -57,12 +57,13 @@ const Qna = () => {
           <div className="flex flex-col w-full slide-up">
             <table className="min-w-full bg-white border-b mt-4">
               <thead>
-                <tr className="bg-primary text-white text-lg">
+                <tr className="bg-gray1 text-gray4 text-lg">
                   <th className="py-4 px-4 rounded-l-lg">번호</th>
                   <th className="py-4 px-4">제목</th>
                   <th className="py-4 px-4">작성자</th>
                   <th className="py-4 px-4">등록일</th>
-                  <th className="py-4 px-4 rounded-r-lg">조회수</th>
+                  <th className="py-4 px-4">조회수</th>
+                  <th className="py-4 px-4 rounded-r-lg">답변 상태</th>
                 </tr>
               </thead>
               <tbody>
@@ -72,7 +73,7 @@ const Qna = () => {
                     className="border-b hover:bg-placeHolder"
                     onClick={() => handleRowClick(inquiry.id)}
                   >
-                    <td className="py-3 px-4 border-b">{inquiry.id}</td>
+                    <td className="py-5 px-4 border-b">{inquiry.id}</td>
                     <td className="py-2 px-4 border-b text-left">
                       <div className="flex items-center space-x-2">
                         {inquiry.isSecret ? (
@@ -93,6 +94,15 @@ const Qna = () => {
                     <td className="py-2 px-4 border-b">{inquiry.author}</td>
                     <td className="py-2 px-4 border-b">{inquiry.date}</td>
                     <td className="py-2 px-4 border-b">{inquiry.views}</td>
+                    {inquiry.responseStatus ? (
+                      <td className="py-2 px-4 text-primary border-b">
+                        답변 완료
+                      </td>
+                    ) : (
+                      <td className="py-2 px-4 text-warning border-b">
+                        답변 대기
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>
