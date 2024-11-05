@@ -42,6 +42,11 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("category", String.class);
     }
 
+    public String getLoginType(String token) {
+
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("loginType", String.class);
+    }
+
     public Boolean getIsAuto(String token) {
 
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("isAuto", Boolean.class);
@@ -55,9 +60,10 @@ public class JWTUtil {
     }
 
     //일반 jwt
-    public String createJwt_v2(String category, String email, long userId, String role, Long expiredMs,boolean isAuto) {
+    public String createJwt(String category, String loginType, String email, long userId, String role, Long expiredMs,boolean isAuto) {
         return Jwts.builder()
                 .claim("category", category) //access인지, refresh인지 판단
+                .claim("loginType",loginType)
                 .claim("email", email)
                 .claim("userId", userId)
                 .claim("role", role)
@@ -68,26 +74,14 @@ public class JWTUtil {
                 .compact();
     }
 
-    //일반 jwt
-    public String createJwt(String category, String email, String role, Long expiredMs,boolean isAuto) {
-
-        return Jwts.builder()
-                .claim("category", category) //access인지, refresh인지 판단
-                .claim("email", email)
-                .claim("role", role)
-                .claim("isAuto",isAuto) //로그인 유지인지 아닌지
-                .issuedAt(new Date(System.currentTimeMillis()))
-                .expiration(new Date(System.currentTimeMillis() + expiredMs)) //유효기간
-                .signWith(secretKey)
-                .compact();
-    }
-
     //oauth jwt
-    public String createOuathJwt(String category, String email, String role, Long expiredMs) {
+    public String createOuathJwt(String category, String loginType, String email, long userId, String role, Long expiredMs) {
 
         return Jwts.builder()
                 .claim("category", category) //access인지, refresh인지 판단
+                .claim("loginType",loginType)
                 .claim("email", email)
+                .claim("userId", userId)
                 .claim("role", role)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs)) //유효기간

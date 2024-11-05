@@ -7,6 +7,7 @@ import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.ResponseStatus;
+import com.resengkor.management.global.util.TmpCodeUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
 import java.time.LocalDateTime;
-import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +38,7 @@ public class MailService {
     @Transactional
     public CommonResponse sendMail(String sendEmail) throws MessagingException, UnsupportedEncodingException {
         //1. 랜덤 인증번호 생성
-        String number = createNumber();
+        String number = TmpCodeUtil.generateAlphanumericPassword();
 
         //2. rds에 이메일+인증코드 저장
         saveVerificationCode(sendEmail, number);
@@ -49,7 +49,7 @@ public class MailService {
             javaMailSender.send(message); // 메일 발송
         } catch (MailException e) {
             e.printStackTrace();
-            throw new CustomException(ExceptionStatus.EMAIL_FAILED);
+            throw new CustomException(ExceptionStatus.EMAIL_SEND_FAIL);
         }
 
         return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(),
@@ -72,25 +72,6 @@ public class MailService {
         return message;
     }
 
-
-
-    // 랜덤으로 숫자 생성
-    public String createNumber() {
-        Random random = new Random();
-        StringBuilder key = new StringBuilder();
-
-        for (int i = 0; i < 8; i++) { // 인증 코드 8자리
-            int index = random.nextInt(3); // 0~2까지 랜덤, 랜덤값으로 switch문 실행
-
-            switch (index) {
-                case 0 -> key.append((char) (random.nextInt(26) + 97)); // 소문자
-                case 1 -> key.append((char) (random.nextInt(26) + 65)); // 대문자
-                case 2 -> key.append(random.nextInt(10)); // 숫자
-            }
-        }
-        return key.toString();
-    }
-
     // 이메일 및 인증 코드를 RDS에 저장
     private void saveVerificationCode(String email, String verificationCode) {
         MailVerification emailVerification = MailVerification.builder()
@@ -105,7 +86,7 @@ public class MailService {
 
     //이메일 인증
     @Transactional
-    public CommonResponse emailAuthentication(MailAuthDTO dto) {
+    public CommonResponse checkEmail(MailAuthDTO dto) {
         // 이메일로 인증 정보를 조회
 //        MailVerification emailVerification = emailVerificationRepository.findByEmail(dto.getEmail())
         MailVerification emailVerification = emailVerificationRepository.findLatestByEmail(dto.getEmail())

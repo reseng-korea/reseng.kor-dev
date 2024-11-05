@@ -1,6 +1,7 @@
 package com.resengkor.management.domain.user.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.resengkor.management.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -13,7 +14,7 @@ import java.time.LocalDateTime;
 @Builder(toBuilder = true)
 @Getter
 @Entity
-public class UserProfile {
+public class UserProfile extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -40,18 +41,14 @@ public class UserProfile {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @CreatedDate //엔티티가 생성될 때 생성 시간 저장
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate //엔티티가 수정될 때 수정 시간 저장
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
-
-    public void updateProfileInfo(String fullAddress, Region city, Region district) {
+    public void updateUserProfile(String fullAddress, Region city, Region district) {
         this.fullAddress = fullAddress;
         this.city = city;
         this.district = district;
+    }
+
+    public void updateUser(User user) {
+        this.user = user;
     }
 
 }
