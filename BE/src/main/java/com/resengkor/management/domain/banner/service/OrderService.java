@@ -7,6 +7,7 @@ import com.resengkor.management.domain.banner.entity.OrderBanner;
 import com.resengkor.management.domain.banner.entity.OrderHistory;
 import com.resengkor.management.domain.banner.entity.OrderStatus;
 import com.resengkor.management.domain.banner.mapper.OrderHistoryMapper;
+import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.domain.banner.repository.OrderHistoryRepository;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
@@ -23,10 +24,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderService {
 
+    // Repository
     private final UserRepository userRepository;
     private final RoleHierarchyRepository roleHierarchyRepository;
     private final OrderHistoryRepository orderHistoryRepository;
+    private final BannerTypeRepository bannerTypeRepository;
+
+    // Service
     private final UserIdentificationService userIdentificationService;
+
+    // Mapper
     private final OrderHistoryMapper orderHistoryMapper;
 
     private Long getUserId(Authentication authentication) {
@@ -89,5 +96,39 @@ public class OrderService {
 
         List<OrderHistory> orderHistories = orderHistoryRepository.findByUserIdOrderByOrderDateDesc(userId);
         return orderHistoryMapper.toDtoList(orderHistories);
+    }
+
+    // 수령 상태 업데이트 메서드
+    @Transactional
+    public void updateReceiveStatus(Long orderId, boolean receiveStatus) {
+        OrderHistory orderHistory = orderHistoryRepository.findById(orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // 수령 상태가 true로 변경되면, BannerType을 DB에 저장
+        if (receiveStatus && !orderHistory.getReceiveStatus()) {
+            saveBannerTypesToDb(orderHistory);
+        }
+
+        // 수령 상태 업데이트
+        orderHistory = orderHistory.toBuilder()
+                .receiveStatus(receiveStatus)
+                .build();
+
+        orderHistoryRepository.save(orderHistory);
+    }
+
+    // BannerType을 실제 DB에 저장하는 메서드
+    private void saveBannerTypesToDb(OrderHistory orderHistory) {
+        orderHistory.getOrderBanners().forEach(orderBanner -> {
+            BannerType bannerType = BannerType.builder()
+                    .typeWidth(orderBanner.getBannerType().getTypeWidth())
+                    .horizontalLength(orderBanner.getBannerType().getHorizontalLength())
+                    .isStandard(orderBanner.getBannerType().getIsStandard())
+                    .user(orderHistory.getUser())
+                    .build();
+
+            // BannerType을 DB에 저장
+            bannerTypeRepository.save(bannerType);
+        });
     }
 }
