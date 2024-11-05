@@ -2,11 +2,11 @@ package com.resengkor.management.domain.banner.service;
 
 import com.resengkor.management.domain.banner.dto.OrderRequestDto;
 import com.resengkor.management.domain.banner.entity.BannerType;
+import com.resengkor.management.domain.banner.entity.OrderBanner;
 import com.resengkor.management.domain.banner.entity.OrderHistory;
 import com.resengkor.management.domain.banner.entity.OrderStatus;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.domain.banner.repository.OrderHistoryRepository;
-import com.resengkor.management.domain.user.entity.RoleHierarchy;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
@@ -16,8 +16,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
-import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -29,41 +27,52 @@ public class OrderService {
     private final OrderHistoryRepository orderHistoryRepository;
     private final UserIdentificationService userIdentificationService;
 
-
     // 발주 요청
     @Transactional
     public void createOrder(OrderRequestDto orderRequestDto, Authentication authentication) {
+        // 로그인한 사용자 ID 가져오기
         Long userId = userIdentificationService.getUserIdFromAuthentication(authentication);
+
         // 본인(= buyer)
-        User loginedUser = userRepository.findById(userId).orElseThrow();
+        User loginedUser = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         // 부모 대리점(= seller) 조회
-        RoleHierarchy roleHierarchy = roleHierarchyRepository.findByDescendantAndDepth(userId, 1)
-                .orElseThrow(() -> new RuntimeException("Parent agency not found"));
-        User parentAgency = roleHierarchy.getAncestor();
+        User parentAgency = roleHierarchyRepository.findAncestorRole(userId)
+                .orElseThrow(()-> new RuntimeException("Parent agency not found"));
 
         // OrderHistory 생성
         OrderHistory orderHistory = OrderHistory.builder()
                 .orderDate(LocalDate.now())
-                .seller(parentAgency.getName())      // 부모 대리점 이름
-                .buyer(loginedUser.getName())       // 현재 로그인한 사용자 이름
+                .seller(parentAgency)  // 부모 대리점
+                .buyer(loginedUser)    // 현재 로그인한 사용자
                 .orderStatus(OrderStatus.UNCONFIRMED)    // 초기 상태는 UNCONFIRMED(미확인)
-                .receiveStatus(false)                // receiveStatus 기본값은 false
+                .receiveStatus(false)  // receiveStatus 기본값은 false
                 .user(loginedUser)
                 .build();
 
-        // BannerType 리스트 생성 후 연관 설정
-        request.getBannerRequests().forEach(bannerRequest -> {
-            BannerType bannerType = BannerType.builder()
-                    .typeWidth(bannerRequest.getTypeWidth())
-                    .horizontalLength(bannerRequest.getHorizontalLength())
-                    .isStandard(bannerRequest.getIsStandard())
-                    .user(loggedInUser)
+        // OrderHistoryBannerType 리스트 생성 후 연관 설정
+        orderRequestDto.getBannerRequests().forEach(bannerOrderItem -> {
+            // 새로운 BannerType 생성 (데이터베이스에 즉시 저장하지 않음)
+            BannerType newBannerType = BannerType.builder()
+                    .typeWidth(bannerOrderItem.getTypeWidth())
+                    .horizontalLength(120.0)
+                    .isStandard(true)
+                    .user(loginedUser) // 현재 로그인한 사용자와 연결
                     .build();
-            orderHistory.addBannerType(bannerType); // OrderHistory와 BannerType 관계 추가
+
+            // OrderBannerType 생성
+            OrderBanner orderBanner = OrderBanner.builder()
+                    .orderHistory(orderHistory)  // 연관된 OrderHistory 설정
+                    .bannerType(newBannerType)   // 생성된 BannerType 설정
+                    .quantity(bannerOrderItem.getQuantity()) // 요청된 배너 수량 설정
+                    .build();
+
+            // OrderHistory와 OrderBanner의 연관 관계 설정
+            orderHistory.addOrderBanner(newBannerType, bannerOrderItem.getQuantity());
         });
 
-        // OrderHistory 저장
+        // OrderHistory 저장 (Cascade 설정을 통해 BannerType도 함께 저장)
         orderHistoryRepository.save(orderHistory);
     }
 }

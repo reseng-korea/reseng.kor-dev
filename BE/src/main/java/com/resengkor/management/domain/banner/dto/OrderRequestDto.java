@@ -10,6 +10,6 @@ import java.util.List;
 @AllArgsConstructor
 public class OrderRequestDto {
 
-    private List<BannerRequest> bannerRequests;  // 배너 요청 정보
+    private List<BannerOrderItemDto> bannerRequests;  // 배너 요청 정보
 
 }

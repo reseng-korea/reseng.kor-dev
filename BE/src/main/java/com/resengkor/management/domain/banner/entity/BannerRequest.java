@@ -47,5 +47,6 @@ public class BannerRequest {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "banner_type_id", nullable = false)
     private BannerType bannerType;
+
 }
 

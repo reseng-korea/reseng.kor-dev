@@ -1,15 +1,19 @@
 package com.resengkor.management.domain.banner.entity;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "Order_Banner")
 @Entity
+@Builder(toBuilder = true)
 public class OrderBanner {
 
     @Id
