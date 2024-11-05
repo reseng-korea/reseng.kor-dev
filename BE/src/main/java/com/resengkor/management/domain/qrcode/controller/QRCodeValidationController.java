@@ -27,14 +27,6 @@ public class QRCodeValidationController {
     @GetMapping("/qr-code")
     public ResponseEntity<QrPageDataDTO> validateQRCode(@RequestParam String uuid) {
         QrPageDataDTO qrPageDataDTO = qrCodeValidationService.validateQRCode(uuid);
-
-        // QR 코드가 유효한 경우
-        if (qrPageDataDTO != null) {
-            return ResponseEntity.ok(qrPageDataDTO);
-        }
-        // QR 코드가 유효하지 않은 경우
-        else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
-        }
+        return ResponseEntity.ok(qrPageDataDTO);
     }
 }
