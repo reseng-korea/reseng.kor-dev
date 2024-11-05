@@ -3,6 +3,7 @@ package com.resengkor.management.domain.banner.entity;
 import com.resengkor.management.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Immutable;
@@ -14,6 +15,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @AllArgsConstructor
 @Immutable
+@Builder(toBuilder = true)
 public class OrderHistory {
 
     @Id
