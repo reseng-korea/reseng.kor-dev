@@ -2,6 +2,7 @@ package com.resengkor.management.domain.banner.controller;
 
 import com.resengkor.management.domain.banner.dto.OrderRequestDto;
 import com.resengkor.management.domain.banner.dto.OrderResponseDto;
+import com.resengkor.management.domain.banner.dto.ReceiveStatusUpdateDto;
 import com.resengkor.management.domain.banner.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,8 +34,8 @@ public class OrderController {
 
     // 수령 상태 업데이트 엔드포인트
     @PatchMapping("/{orderId}")
-    public ResponseEntity<String> updateReceiveStatus(@PathVariable Long orderId, @RequestParam boolean receiveStatus) {
-        orderService.updateReceiveStatus(orderId, receiveStatus);
+    public ResponseEntity<String> updateReceiveStatus(@PathVariable Long orderId, @RequestBody ReceiveStatusUpdateDto receiveStatusUpdateDto) {
+        orderService.updateReceiveStatus(orderId, receiveStatusUpdateDto.getReceiveStatus());
         return ResponseEntity.ok("Order receive status updated successfully");
     }
 }
