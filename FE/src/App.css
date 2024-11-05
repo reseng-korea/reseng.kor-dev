@@ -119,13 +119,13 @@ select {
 .fade-in-delay {
   opacity: 0;
   animation: fadeInDelay 1s forwards;
-  animation-delay: 2s; /* 첫 번째 요소가 끝나고 난 후 시작 */
+  animation-delay: 1.5s; /* 첫 번째 요소가 끝나고 난 후 시작 */
 }
 
 .fade-in-delay2 {
   opacity: 0;
   animation: fadeInDelay 1s forwards;
-  animation-delay: 3s; /* 첫 번째 요소가 끝나고 난 후 시작 */
+  animation-delay: 2.5s; /* 첫 번째 요소가 끝나고 난 후 시작 */
 }
 
 @keyframes fadeInDelay {

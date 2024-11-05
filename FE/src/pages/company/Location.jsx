@@ -1,50 +1,59 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
 import Layout from '../../components/Layouts';
-import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { tmplocationdata } from '../../data/tmplocationdata';
+import SubNavbar from '../../components/SubNavbar';
 import KakaoMap from '../../components/Map/KakaoMap';
 
 import location from '../../assets/location.png';
-
 import { FaHome } from 'react-icons/fa';
 import { IoIosCall } from 'react-icons/io';
 
+import { tmplocationdata } from '../../data/tmplocationdata';
+
 const Location = () => {
-  // 페이지 이동
-  const { navigateTo, routes } = useNavigateTo();
+  const navItems = [
+    { label: '회사 소개', route: '/company' },
+    { label: '연혁', route: '/history' },
+    { label: '오시는 길', route: '/location' },
+  ];
+
+  const [companies, setCompanies] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchCompanies = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get('/api/v1/companies', {
+          params: {
+            page: 0,
+            size: 10,
+          },
+        });
+        console.log('뭐 나오지');
+        console.log('서버로부터 받은 데이터:', response.data);
+        setCompanies(response.data); // 서버에서 받은 데이터 저장
+      } catch (err) {
+        setError(err.message); // 에러 메시지 저장
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCompanies();
+  }, []);
 
   return (
     <Layout>
       <div className="flex justify-center px-3 py-2">
         <div className="flex flex-col w-full">
-          <div className="mt-28 mb-12 text-5xl font-bold slide-up">
-            회사 소개
-          </div>
-          <div className="flex justify-center space-x-4 mt-2">
-            <button
-              onClick={() => navigateTo(routes.company)}
-              className="flex items-center justify-center w-32 h-10 border-none outline-none bg-transition slide-up"
-            >
-              <span className="text-black hover:text-primary mb-2">
-                회사 소개
-              </span>
-            </button>
-            <button
-              onClick={() => navigateTo(routes.history)}
-              className="flex items-center justify-center w-32 h-10 border-none outline-none bg-transition slide-up"
-            >
-              <span className="text-black hover:text-primary mb-2">연혁</span>
-            </button>
-            <button
-              onClick={() => navigateTo(routes.location)}
-              className="flex items-center justify-center w-32 h-10 border-0 border-b-2 border-primary rounded-none bg-transition"
-            >
-              <span className="font-bold text-primary mb-2 slide-up">
-                오시는 길
-              </span>
-            </button>
-          </div>
-          <hr className="w-full mb-12 border-t border-gray1 hr-expand" />
-
+          <SubNavbar
+            items={navItems}
+            activePage="오시는 길"
+            mainCategory="회사 소개"
+          />
           {/* A 구역: 업체 목록 */}
           {/* api 연결하면 데이터 가져와서 바로 넣어주면 될듯(지금은 더미데이터) */}
 

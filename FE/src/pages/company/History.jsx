@@ -1,48 +1,26 @@
 import Layout from '../../components/Layouts';
-import { useNavigateTo } from '../../hooks/useNavigateTo';
-
-import { timelineData } from '../../data/timelinedata';
+import SubNavbar from '../../components/SubNavbar';
 
 import history from '../../assets/history.png';
 
+import { timelineData } from '../../data/timelinedata';
+
 const History = () => {
-  // 페이지 이동
-  const { navigateTo, routes } = useNavigateTo();
+  const navItems = [
+    { label: '회사 소개', route: '/company' },
+    { label: '연혁', route: '/history' },
+    { label: '오시는 길', route: '/location' },
+  ];
 
   return (
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
         <div className="flex flex-col w-full">
-          {/* 하위 카테고리 */}
-          <div className="mt-28 mb-12 text-5xl font-bold slide-up">
-            회사 소개
-          </div>
-          <div className="flex justify-center">
-            <button
-              onClick={() => navigateTo(routes.company)}
-              className="flex items-center justify-center w-32 h-10 border-none outline-none bg-transition slide-up"
-            >
-              <span className="text-black hover:text-primary">회사 소개</span>
-            </button>
-            <button
-              onClick={() => navigateTo(routes.history)}
-              className="flex items-center justify-center w-32 h-10 border-0 border-b-2 border-[#2EA642] rounded-none bg-transition"
-            >
-              <span className="font-bold text-[#2EA642] slide-up">연혁</span>
-            </button>
-            {/* <button
-              onClick={() => navigateTo(routes.location)}
-              className="flex items-center justify-center w-30 h-10 rounded-none hover:border-b-2 hover:border-b-primary hover:text-primary"
-            > */}
-            <button
-              onClick={() => navigateTo(routes.location)}
-              className="flex items-center justify-center w-32 h-10 border-none outline-none bg-transition slide-up"
-            >
-              <span className="text-black hover:text-primary">오시는 길</span>
-            </button>
-          </div>
-          <hr className="w-full mb-12 border-t border-gray1 hr-expand" />
-
+          <SubNavbar
+            items={navItems}
+            activePage="연혁"
+            mainCategory="회사 소개"
+          />
           {/* 메인 */}
           <div className="flex flex-col">
             <div className="relative w-full h-80 rounded-2xl overflow-hidden">
