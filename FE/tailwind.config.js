@@ -8,6 +8,7 @@ export default {
         warning: '#F75252',
         placeHolder: '#F3F3F3',
         re: '#245A98',
+        and: '#EF7627',
         // 갈색
         brown1: '#8B5E3C',
         // 선
@@ -15,6 +16,8 @@ export default {
         gray2: '#D1D1D1',
         gray3: '#9C9C9C',
         gray4: '#373737',
+        // hover color
+        hover: '#2B8F3F',
       },
       rotate: {
         0: '0deg',

@@ -19,6 +19,9 @@ import MainFirstPage from './pages/main/MainFirstPage';
 import MainSecondPage from './pages/main/MainSecondPage';
 import MainThirdPage from './pages/main/MainThirdPage';
 import MainFourthPage from './pages/main/MainFourthPage';
+import MainFifthPage from './pages/main/MainFifthPage';
+import MainSixthPage from './pages/main/MainSixthPage';
+import MainSeventhPage from './pages/main/MainSeventhPage';
 
 // auth
 import LoginPage from './pages/auth/LoginPage';
@@ -80,6 +83,24 @@ function App() {
   // Navbar를 숨길지 여부를 결정하는 변수
   const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
+  const [isMainSixthVisible, setIsMainSixthVisible] = useState(false);
+
+  const handleScroll = () => {
+    const sixthPage = document.getElementById('main-sixth-page');
+    if (sixthPage) {
+      const rect = sixthPage.getBoundingClientRect();
+      const isVisible = rect.top <= window.innerHeight; // 시작 부분에 도달하자마자 true
+      setIsMainSixthVisible(isVisible);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
     <>
       <ScrollToTop />
@@ -92,8 +113,11 @@ function App() {
             element={
               <>
                 <MainFirstPage />
+                <MainFifthPage />
                 <MainSecondPage />
                 <MainThirdPage />
+                {/* <MainSixthPage isVisible={isMainSixthVisible} /> */}
+                <MainSeventhPage />
                 <MainFourthPage />
               </>
             }

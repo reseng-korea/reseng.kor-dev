@@ -22,18 +22,20 @@ const Location = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
         setLoading(true);
-        const response = await axios.get('/api/v1/companies', {
+        const response = await axios.get(`${apiUrl}/api/v1/companies`, {
           params: {
             page: 0,
             size: 10,
           },
         });
         console.log('뭐 나오지');
-        console.log('서버로부터 받은 데이터:', response.data);
+        console.log('서버로부터 받은 데이터:', response.content);
         setCompanies(response.data); // 서버에서 받은 데이터 저장
       } catch (err) {
         setError(err.message); // 에러 메시지 저장

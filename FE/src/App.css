@@ -309,3 +309,64 @@ select {
   animation: expand 1.5s ease-out forwards;
   transform-origin: center;
 }
+
+/* 회전 애니메이션 정의 */
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 애니메이션 스타일 */
+.rotate-ani {
+  animation: rotate 10s linear infinite; /* 2초에 한 번씩 회전, 무한 반복 */
+}
+
+@keyframes bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+.bounce-ani {
+  animation: bounce 2s ease-in-out infinite;
+}
+
+/* slide-up 애니메이션 */
+@keyframes slide-up {
+  from {
+    transform: translateY(100vh);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-slide-up {
+  animation: slide-up 0.7s ease-out forwards;
+}
+
+.slide-right-enter {
+  transform: translateX(100%);
+  transition: transform 0.5s ease;
+}
+.slide-right-enter-active {
+  transform: translateX(0);
+}
+
+.slide-down-enter {
+  transform: translateY(-100%);
+  transition: transform 0.5s ease;
+}
+.slide-down-enter-active {
+  transform: translateY(0);
+}
