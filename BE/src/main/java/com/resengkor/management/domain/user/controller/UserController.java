@@ -104,4 +104,10 @@ public class UserController {
 
         return userServiceImpl.getAllUserByManager(page, role, status, createdDate);
     }
+
+//    @Operation(description = "로그인 유저의 하위 사용자 등급 수정")
+//    @PatchMapping("/roles/{id}")
+//    public CommonResponse<> updateUserRole(@PathVariable("id") Long targetUserId) {
+//        return userServiceImpl.updateUserRole(targetUserId);
+//    }
 }
