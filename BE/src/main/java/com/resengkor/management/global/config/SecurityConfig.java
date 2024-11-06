@@ -71,7 +71,8 @@ public class SecurityConfig {
             "/api/v1/withdrawal",
             "/api/v1/users/pagination",
             "/api/v1/regions/**", "/api/v1/companies/**",
-            "/api/v1/faq/**"
+            "/api/v1/faq/**",
+            "api/v1/qr-code"
     );
 
 
@@ -152,7 +153,7 @@ public class SecurityConfig {
                         auth
                         .requestMatchers(
                                 "/api/v1/login","/api/v1/logout",
-                                "/api/v1/mail/**","/api/v1/sms/**","/api/v1/qna/questions/**", "api/v1/qr-code").permitAll()
+                                "/api/v1/mail/**","/api/v1/sms/**","/api/v1/qna/questions/**").permitAll()
                                 //hasRole() : 특정 Roll을 가져야함
                                 //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
                                 //아래 roleHierarchy() 메소드 덕분
