@@ -352,41 +352,6 @@ public class UserService {
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), userDTO);
     }
 
-    public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String status, String createdDate) {
-
-        Long userId = UserAuthorizationUtil.getLoginMemberId();
-        User loginUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
-
-        Role userRole = loginUser.getRole();
-
-        if(userRole == Role.ROLE_PENDING || userRole == Role.ROLE_GUEST)
-            throw new CustomException(ExceptionStatus.FORBIDDEN_FAILED);
-
-        List<Role> accessibleRoles = getAccessibleRoles(userRole);
-
-        LocalDateTime createdAt = null;
-
-        if(createdDate != null && !createdDate.isEmpty())
-            createdAt = LocalDateTime.parse(createdDate);
-
-        PageRequest pageRequest = PageRequest.of(page, 10);
-
-        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, role, status, createdAt, accessibleRoles );
-
-        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), userListPaginationDTO);
-    }
-
-    private List<Role> getAccessibleRoles(Role userRole) {
-        return switch (userRole) {
-            case ROLE_MANAGER -> List.of(Role.ROLE_MANAGER, Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
-            case ROLE_DISTRIBUTOR -> List.of(Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
-            case ROLE_AGENCY -> List.of(Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
-            case ROLE_PENDING, ROLE_GUEST -> null;
-            case ROLE_CUSTOMER -> List.of(Role.ROLE_CUSTOMER);
-        };
-    }
-
     //비밀번호 확인(정보 확인용)
     public DataResponse<String> verifyPassword(VerifyPasswordRequest verifyPasswordRequest) {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
@@ -446,5 +411,62 @@ public class UserService {
                     ResponseStatus.RESPONSE_SUCCESS.getMessage(),
                     "사용 가능한 이메일입니다.");
         }
+    }
+
+    public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String status, String createdDate) {
+
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+        User loginUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        Role userRole = loginUser.getRole();
+
+        if(userRole == Role.ROLE_PENDING || userRole == Role.ROLE_GUEST)
+            throw new CustomException(ExceptionStatus.FORBIDDEN_FAILED);
+
+        List<Role> accessibleRoles = getAccessibleRoles(userRole);
+
+        LocalDateTime createdAt = null;
+
+        if(createdDate != null && !createdDate.isEmpty())
+            createdAt = LocalDateTime.parse(createdDate);
+
+        PageRequest pageRequest = PageRequest.of(page, 10);
+
+        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, role, status, createdAt, accessibleRoles );
+
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), userListPaginationDTO);
+    }
+
+    private List<Role> getAccessibleRoles(Role userRole) {
+        return switch (userRole) {
+            case ROLE_MANAGER -> List.of(Role.ROLE_MANAGER, Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
+            case ROLE_DISTRIBUTOR -> List.of(Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
+            case ROLE_AGENCY -> List.of(Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
+            case ROLE_PENDING, ROLE_GUEST -> null;
+            case ROLE_CUSTOMER -> List.of(Role.ROLE_CUSTOMER);
+        };
+    }
+
+    @Transactional
+    public CommonResponse updateUserRole(UserRoleUpdateRequestDTO userRoleUpdateRequestDTO) {
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+        User loginUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        User targetUser = userRepository.findById(userRoleUpdateRequestDTO.getTargetUserId())
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        if(loginUser.getRole().getRank() <= targetUser.getRole().getRank())
+            throw new CustomException(ExceptionStatus.ROLE_CHANGE_FAIL);
+
+        List<Role> accessibleRoles = getAccessibleRoles(loginUser.getRole());
+
+        if (!accessibleRoles.contains(userRoleUpdateRequestDTO.getTargetRole()) || userRoleUpdateRequestDTO.getTargetRole().getRank() >= loginUser.getRole().getRank())
+            throw new CustomException(ExceptionStatus.ROLE_CHANGE_FAIL);
+
+        targetUser.updateUserRole(userRoleUpdateRequestDTO.getTargetRole());
+
+        return new CommonResponse(ResponseStatus.UPDATED_SUCCESS.getCode(), ResponseStatus.UPDATED_SUCCESS.getMessage());
     }
 }
