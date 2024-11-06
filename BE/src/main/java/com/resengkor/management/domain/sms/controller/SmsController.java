@@ -32,7 +32,7 @@ public class SmsController {
         return smsService.sendSms(messageDto,"verifyPhoneNumber");
     }
 
-    @GetMapping("/verify")
+    @PostMapping("/verify")
     public CommonResponse checkSms(@RequestBody MessageAuthDTO messageAuthDTO) {
         log.info("------------------------------------------------");
         log.info("enter checkSms");
