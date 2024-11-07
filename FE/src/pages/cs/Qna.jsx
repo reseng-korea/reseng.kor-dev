@@ -112,15 +112,16 @@ const Qna = () => {
               itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수(10개)
               totalItemsCount={sortedInquiryData.length} // 표시할 항목의 총 개수(전체)
               pageRangeDisplayed={5} //페이지네이터의 페이지 범위
+              hideFirstLastPages={true}
               prevPageText="<"
-              firstPageText="≪"
+              // firstPageText="≪"
               nextPageText=">"
-              lastPageText="≫"
+              // lastPageText="≫"
               onChange={handlePageChange}
               innerClass="flex justify-center mt-4"
-              activeClass="text-white bg-primary rounded"
-              activeLinkClass="text-white hover:text-white" // 활성화된 페이지 스타일 ( 숫자 부분)
-              itemClass="group inline-block px-4 py-2 border rounded text-gray4 mt-4 mx-0.5 hover:text-primary hover:border-primary" // 페이지 번호 스타일
+              activeClass="text-white bg-primary rounded-full"
+              activeLinkClass="!text-white hover:!text-white" // 활성화된 페이지 스타일 ( 숫자 부분)
+              itemClass="group inline-block px-4 py-2 border rounded-full text-gray4 mt-4 mx-0.5 hover:text-primary hover:border-primary" // 페이지 번호 스타일
               linkClass="group-hover:text-primary text-gray4" // 링크의 기본 스타일
             />
             <div className="flex justify-end mt-6">
