@@ -1,28 +1,39 @@
 package com.resengkor.management.domain.user.repository;
 
-
-
-import com.resengkor.management.domain.user.entity.Role;
 import com.resengkor.management.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
+public interface UserRepository extends JpaRepository<User, Long>,
+        UserCustomRepository, QuerydslPredicateExecutor<User> {
 
-    @Query("SELECT u FROM User u WHERE u.role = :role")
-    Optional<User> findByRole(@Param("role") Role role);
+    // 이메일이 존재하는지 확인하는 메소드
+    boolean existsByEmail(String email);
+
+    Optional<User> findByEmail(String email);
 
     // 업체명과 휴대폰 번호로 User를 찾는 메서드
     Optional<User> findByCompanyNameAndPhoneNumber(String companyName, String phoneNumber);
 
     // phoneNumber로 사용자 조회
     Optional<User> findByPhoneNumber(String phoneNumber);
+
+    // 이메일과 전화번호가 모두 일치하는 사용자 찾기
+    Optional<User> findByEmailAndPhoneNumber(String email, String phoneNumber);
+
+
+    @Query("SELECT u FROM User u " +
+            "JOIN FETCH u.userProfile up " +
+            "JOIN FETCH up.city " + // city와 district를 명확히 지정
+            "JOIN FETCH up.district " +
+            "WHERE u.id = :userId")
+    Optional<User> findUserWithProfileAndRegionById(@Param("userId") Long userId);
 
 
 

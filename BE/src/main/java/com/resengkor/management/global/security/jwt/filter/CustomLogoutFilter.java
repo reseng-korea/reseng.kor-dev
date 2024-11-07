@@ -1,36 +1,37 @@
 package com.resengkor.management.global.security.jwt.filter;
 
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
-import com.resengkor.management.global.util.CookieUtil;
+import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-import java.util.Arrays;
+
 
 /**
  * 로그아웃 필터
  * refresh 토큰 만료
  */
 //@RequiredArgsConstructor
+@Slf4j
 public class CustomLogoutFilter extends GenericFilterBean {
     private final JWTUtil jwtUtil;
-    private final RefreshRepository refreshRepository;
+    private final RedisUtil redisUtil;
+//    private final RefreshRepository refreshRepository;
     private final String defaultFilterUrl;
 
-    public CustomLogoutFilter(String defaultFilterUrl, JWTUtil jwtUtil, RefreshRepository refreshRepository) {
+    public CustomLogoutFilter(String defaultFilterUrl, JWTUtil jwtUtil, RedisUtil redisUtil) {
         this.defaultFilterUrl = defaultFilterUrl;
         this.jwtUtil = jwtUtil;
-        this.refreshRepository = refreshRepository;
+        this.redisUtil = redisUtil;
     }
 
     @Override
@@ -48,44 +49,60 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
         // method check
         String requestMethod = request.getMethod();
+        ExceptionStatus exceptionStatus;
         if (!requestMethod.equals("POST")) {
             //로그아웃이더라도 post가 아니면 넘어감
-            chain.doFilter(request, response);
+//            chain.doFilter(request, response);
+//            return;
+            // POST가 아닌 요청인 경우 405 에러 반환
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.METHOD_NOT_ALLOWED, HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
         }
 
         String refresh = null;
         refresh = request.getHeader("Refresh");
 
-        System.out.println("refresh = " + refresh);
+        log.info("refresh = " + refresh);
 
         // refresh token null
         if(refresh == null){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(refresh);
 
         // not refresh token
-        if(!category.equals("refresh")){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        if("Refresh".equals(category)){
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_PARSE_ERROR, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         //DB에 저장되어 있는지 확인
-        Boolean isExist = refreshRepository.existsByRefresh(refresh);
+//        Boolean isExist = refreshRepository.existsByRefresh(refresh);
+        // Redis에서 refresh 토큰 존재 여부 확인
+        Boolean isExist = redisUtil.existData("refresh:token:" + refresh);
 
         // not exist in DB
         if(!isExist){
             //없다면 이미 로그아웃인 상태
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_DB, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         // logout
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거
-        refreshRepository.deleteByRefresh(refresh);
+//        refreshRepository.deleteByRefresh(refresh);
+
+        boolean isDeleted = redisUtil.deleteData("refresh:token:" + refresh);
+        if (!isDeleted) {
+            log.error("로그아웃: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
+            // Redis 오류 시 예외 던지기
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.DB_CONNECTION_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            return;
+        }
+
+        log.info("로그아웃: Refresh 토큰 삭제 성공");
     }
 }

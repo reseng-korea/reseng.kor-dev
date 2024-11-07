@@ -5,6 +5,7 @@ import com.resengkor.management.global.security.oauth.service.OAuth2JwtHeaderSer
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,12 +18,15 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
+@Slf4j
 public class OAuth2Controller {
     private final OAuth2JwtHeaderService oAuth2JwtHeaderService;
 
     @PostMapping("/oauth2-jwt-header")
     public String oauth2JwtHeader(HttpServletRequest request, HttpServletResponse response) {
-        System.out.println("oauth2JwtHeader");
+        log.info("------------------------------------------------");
+        log.info("Enter oauth2JwtHeader");
+        log.info("------------------------------------------------");
         return oAuth2JwtHeaderService.oauth2JwtHeaderSet(request, response);
     }
 }

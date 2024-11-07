@@ -1,38 +1,22 @@
 import Layout from '../../components/Layouts';
-import { useNavigateTo } from '../../hooks/useNavigateTo';
+import SubNavbar from '../../components/SubNavbar';
 
 const Biodegradable = () => {
-  // 페이지 이동
-  const { navigateTo, routes } = useNavigateTo();
+  const navItems = [
+    { label: '친환경 현수막', route: '/items/banner' },
+    { label: '생분해 제품', route: '/items/biodegradable' },
+    { label: '재활용 제품', route: '/items/recycle' },
+  ];
 
   return (
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
         <div className="flex flex-col w-full">
-          <div className="mt-16 mb-6 text-3xl font-bold">아이템</div>
-          <div className="flex justify-center space-x-4">
-            <button
-              onClick={() => navigateTo(routes.itemsBanner)}
-              className="flex items-center justify-center w-40 h-10 border-none outline-none bg-transition"
-            >
-              <span className="text-black hover:text-primary">
-                친환경 현수막
-              </span>
-            </button>
-            <button
-              onClick={() => navigateTo(routes.itemsBiodegradable)}
-              className="flex items-center justify-center w-40 h-10 border-0 border-b-2 border-primary bg-transition rounded-none"
-            >
-              <span className="font-bold text-primary">생분해 제품</span>
-            </button>
-            <button
-              onClick={() => navigateTo(routes.itemsRecycle)}
-              className="flex items-center justify-center w-40 h-10 border-none outline-none bg-transition"
-            >
-              <span className="text-black hover:text-primary">재활용 제품</span>
-            </button>
-          </div>
-          <hr className="w-full mb-6 border-t border-gray1" />
+          <SubNavbar
+            items={navItems}
+            activePage="생분해 제품"
+            mainCategory="아이템"
+          />
         </div>
       </div>
     </Layout>

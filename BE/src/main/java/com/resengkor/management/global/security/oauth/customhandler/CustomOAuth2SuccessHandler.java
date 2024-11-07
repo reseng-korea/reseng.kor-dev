@@ -1,18 +1,24 @@
 package com.resengkor.management.global.security.oauth.customhandler;
 
+import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.service.RefreshTokenService;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.dto.CustomOAuth2User;
 import com.resengkor.management.global.util.CookieUtil;
+import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.util.concurrent.TimeUnit;
 
 /**
  * OAuth2 로그인 성공 후 JWT 발급
@@ -20,37 +26,56 @@ import java.net.URLEncoder;
  * 리다이렉트 되기 때문에 헤더로 전달 불가능
  */
 @RequiredArgsConstructor
+@Slf4j
 public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JWTUtil jwtUtil;
-    private final RefreshTokenService refreshTokenService;
-    private final long ACCESS_TOKEN_EXPIRATION= 60 * 10 * 1000L;
+    //    private final RefreshTokenService refreshTokenService;
+    private final RedisUtil redisUtil;
+    private final Integer ACCESS_TOKEN_EXPIRATION = 60 * 30;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
-        System.out.println("OAuth login success handler");
+        log.info("------------------------------------------------");
+        log.info("Enter OAuth login success handler");
+        log.info("------------------------------------------------");
+
         // create JWT
         CustomOAuth2User customOAuth2User = (CustomOAuth2User) authentication.getPrincipal();
-
-        String name = customOAuth2User.getName(); // 실제 이름
-        String username = customOAuth2User.getUsername(); // DB 저장용 식별자
+        String email = customOAuth2User.getEmail();
         String role = authentication.getAuthorities().iterator().next().getAuthority();
+        long userId = customOAuth2User.getUserId();
+        log.info("------------------------------------------------");
+        log.info("email = {}", email);
+        log.info("role = {}", role);
+        log.info("userId = {}", userId);
+        log.info("------------------------------------------------");
 
-        Integer expireS = 24 * 60 * 60;
-        String access = jwtUtil.createOuathJwt("access", username, role, ACCESS_TOKEN_EXPIRATION);
-        String refresh = jwtUtil.createOuathJwt("refresh", username, role, expireS * 1000L);
+        try {
+            Integer expireS = 30 * 24 * 60 * 60; // 기본 30일
+            String access = jwtUtil.createOuathJwt("Authorization", "social", email, userId, role, ACCESS_TOKEN_EXPIRATION * 1000L);
+            String refresh = jwtUtil.createOuathJwt("Refresh", "social", email, userId, role, expireS * 1000L);
 
-        // refresh 토큰 DB 저장
-        refreshTokenService.saveRefresh(username, expireS, refresh);
+            // Redis에 새로운 Refresh Token 저장
+            boolean isSaved = redisUtil.setData("refresh:token:" + refresh, refresh, expireS * 1000L, TimeUnit.MILLISECONDS);
+            if (!isSaved) {
+                log.error("OAuth 로그인 성공 후: Refresh 토큰 저장 실패 (Redis 연결 오류)");
+                throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR); // Redis 저장 실패 에러 던지기
+            }
 
-        response.addCookie(CookieUtil.createCookie("access", access, 60 * 10));
-        response.addCookie(CookieUtil.createCookie("refresh", refresh, expireS));
+            // 쿠키에 JWT 토큰 추가
+            response.addCookie(CookieUtil.createCookie("Authorization", access, ACCESS_TOKEN_EXPIRATION));
+            response.addCookie(CookieUtil.createCookie("Refresh", refresh, expireS));
 
-        // redirect query param 인코딩 후 전달
-        // 이후에 JWT 를 읽어서 데이터를 가져올 수도 있지만, JWT 파싱 비용이 많이 들기 때문에
-        // 처음 JWT 발급할 때 이름을 함께 넘긴 후, 로컬 스토리지에 저장한다.
+            // 리다이렉트 처리
+            // redirect query param 인코딩 후 전달
+            // 이후에 JWT 를 읽어서 데이터를 가져올 수도 있지만, JWT 파싱 비용이 많이 들기 때문에
+            // 처음 JWT 발급할 때 이름을 함께 넘긴 후, 로컬 스토리지에 저장한다.
 //        String encodedName = URLEncoder.encode(name, "UTF-8");
-//        response.sendRedirect("http://localhost:3000/oauth2-jwt-header?name=" + encodedName);
-        response.sendRedirect("http://localhost:3000/oauth2-jwt-header");
+//        response.sendRedirect("http://localhost:5173/oauth2-jwt-header?name=" + encodedName);
+            response.sendRedirect("http://localhost:5173/oauth2-jwt-header");
+        } catch (Exception e) {
+            log.error("OAuth 로그인 성공 후 토큰 생성 또는 저장 중 오류 발생: {}", e.getMessage());
+            throw new CustomException(ExceptionStatus.EXCEPTION); // 일반 예외 처리
+        }
     }
-
 }

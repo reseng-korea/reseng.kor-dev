@@ -1,6 +1,6 @@
 package com.resengkor.management.domain.user.entity;
 
-import com.resengkor.management.domain.qna.entity.Question;
+import com.resengkor.management.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,7 +14,7 @@ import java.util.List;
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor  // 모든 필드를 포함하는 생성자 생성
-public class User {
+public class User extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id", updatable = false)
@@ -43,10 +43,6 @@ public class User {
     @Column(name = "phone_number_status", nullable = false)
     private boolean phoneNumberStatus;
 
-    /*
-    - 핸드폰 번호 인증 코드
-    - 핸드폰 인증코드 생성시간
-     */
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
@@ -70,16 +66,8 @@ public class User {
     @Column(name = "member_social_id")
     private String socialId;
 
-    @CreatedDate //엔티티가 생성될 때 생성 시간 저장
-    @Column(name = "joined_at")
-    private LocalDateTime createdAt;
-
-
     @OneToOne(mappedBy = "user")
     private UserProfile userProfile;  // 1:1 관계로 UserInfo 연결
-
-    @OneToMany(mappedBy = "user")
-    private List<Question> questions;
 
     @Version
     private Integer version;  // 비관적 잠금 처리
@@ -100,5 +88,22 @@ public class User {
         this.companyName = companyName;
         this.representativeName = representativeName;
         this.phoneNumber = phoneNumber;
+    }
+
+    public void updatePhoneStatusAndRole(boolean phoneNumberStatus, Role role){
+        this.phoneNumberStatus = phoneNumberStatus;
+        this.role = role;
+    }
+
+    //양방향 연관관계 메소드
+    public void updateUserUserProfile(UserProfile userProfile) {
+        this.userProfile = userProfile;
+        if (userProfile != null) {
+            userProfile.updateUser(this);  // UserProfile에 User 설정
+        }
+    }
+
+    public void updateUserRole(Role role) {
+        this.role = role;
     }
 }
