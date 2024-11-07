@@ -23,6 +23,7 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -149,18 +150,22 @@ public class SecurityConfig {
                         // GET 메서드에 대한 URL 허용
                         GET_LIST.forEach(url -> auth.requestMatchers(HttpMethod.GET, url).permitAll());
 
-                        auth
-                        .requestMatchers(
-                                "/api/v1/login","/api/v1/logout",
-                                "/api/v1/mail/**","/api/v1/sms/**","/api/v1/qna/questions/**",
-                                "/api/v1/certificates/**","/api/v1/s3/**").permitAll()
-                                //hasRole() : 특정 Roll을 가져야함
-                                //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
-                                //아래 roleHierarchy() 메소드 덕분
-                                //hasRole(), hasAnyRole 자동으로 ROLE_접두사 추가해줌
+                    AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry guest = auth
+                            .requestMatchers(
+                                    "/api/v1/login", "/api/v1/logout",
+                                    "/api/v1/mail/**", "/api/v1/sms/**",
+                                    "/api/v1/certificates/**", "/api/v1/s3/**").permitAll()
+                            //hasRole() : 특정 Roll을 가져야함
+                            //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
+                            //아래 roleHierarchy() 메소드 덕분
+                            //hasRole(), hasAnyRole 자동으로 ROLE_접두사 추가해줌
+                                .requestMatchers(HttpMethod.GET, "/api/v1/qna/questions/**").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/qna/questions/**").hasRole("GUEST")
+                                .requestMatchers(HttpMethod.PUT, "/api/v1/qna/questions/**").hasRole("GUEST")
+                                .requestMatchers(HttpMethod.DELETE, "/api/v1/qna/questions/**").hasRole("GUEST")
                                 .requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}").hasRole("PENDING")  // PENDING 권한 부여
                                 .requestMatchers("/api/v1/users/**").hasAnyRole("GUEST")
-                                .requestMatchers("/api/v1/admin/**","/api/v1/qna/answers/**").hasRole("ADMIN")
+                                .requestMatchers("/api/v1/admin/**","/api/v1/qna/answers/**").hasRole("MANAGER")
                         .anyRequest().authenticated();
                 })
                 .exceptionHandling(exceptionHandling -> exceptionHandling
