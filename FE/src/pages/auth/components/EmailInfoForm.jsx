@@ -57,24 +57,24 @@ const EmailInfoForm = () => {
 
   const handleEmailCheckClick = async () => {
     if (!email) {
-      openModal(
-        '이메일을 입력해주세요.',
-        '(5초 뒤 창이 사라집니다.)',
-        'warning'
-      );
+      // openModal(
+      //   '이메일을 입력해주세요.',
+      //   '(5초 뒤 창이 사라집니다.)',
+      //   'warning'
+      // );
     } else if (!isValidEmail) {
-      openModal(
-        '올바르지 않은 이메일 형식입니다.',
-        '(5초 뒤 창이 사라집니다.)',
-        'warning'
-      );
+      // openModal(
+      //   '올바르지 않은 이메일 형식입니다.',
+      //   '(5초 뒤 창이 사라집니다.)',
+      //   'warning'
+      // );
     } else {
       setIsClicked(true);
-      openModal(
-        `${email} (으)로 인증번호가 발송되었습니다.`,
-        '(5초 뒤 창이 사라집니다.)',
-        'success'
-      );
+      // openModal(
+      //   `${email} (으)로 인증번호가 발송되었습니다.`,
+      //   '(5초 뒤 창이 사라집니다.)',
+      //   'success'
+      // );
       try {
         const response = await axios.post(
           `${apiUrl}/api/v1/mail/send-verification`,
@@ -102,11 +102,11 @@ const EmailInfoForm = () => {
 
   const handleEmailAuthClick = async () => {
     if (!authCode) {
-      openModal(
-        '인증번호를 입력해주세요.',
-        '(5초 뒤 창이 사라집니다.)',
-        'warning'
-      );
+      // openModal(
+      //   '인증번호를 입력해주세요.',
+      //   '(5초 뒤 창이 사라집니다.)',
+      //   'warning'
+      // );
     } else {
       try {
         console.log(authCode);
@@ -126,11 +126,11 @@ const EmailInfoForm = () => {
         console.log(response.data.code);
 
         if (response.data.code == 200) {
-          openModal(
-            '이메일 인증이 성공적으로 완료되었습니다.',
-            '(5초 뒤 창이 사라집니다.)',
-            'success'
-          );
+          // openModal(
+          //   '이메일 인증이 성공적으로 완료되었습니다.',
+          //   '(5초 뒤 창이 사라집니다.)',
+          //   'success'
+          // );
           setIsAuthVerified(true);
         }
       } catch (error) {
@@ -139,17 +139,17 @@ const EmailInfoForm = () => {
           error.response.data.message ==
           '인증 코드가 일치하지 않습니다. 올바른 코드를 입력해 주세요.'
         ) {
-          openModal(
-            '인증번호가 올바르지 않습니다. 다시 확인해 주세요.',
-            '(5초 뒤 창이 사라집니다.)',
-            'warning'
-          );
+          // openModal(
+          //   '인증번호가 올바르지 않습니다. 다시 확인해 주세요.',
+          //   '(5초 뒤 창이 사라집니다.)',
+          //   'warning'
+          // );
         } else {
-          openModal(
-            '인증번호가 만료되었습니다. 다시 요청하여 새로운 인증번호를 받아주세요.',
-            '(5초 뒤 창이 사라집니다.)',
-            'warning'
-          );
+          // openModal(
+          //   '인증번호가 만료되었습니다. 다시 요청하여 새로운 인증번호를 받아주세요.',
+          //   '(5초 뒤 창이 사라집니다.)',
+          //   'warning'
+          // );
         }
       }
     }

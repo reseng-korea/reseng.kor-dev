@@ -57,7 +57,7 @@ const Qna = () => {
           <div className="flex flex-col w-full slide-up">
             <table className="min-w-full bg-white border-b mt-4">
               <thead>
-                <tr className="bg-gray1 text-gray4 text-lg">
+                <tr className="bg-placeHolder text-gray4 text-lg">
                   <th className="py-4 px-4 rounded-l-lg">번호</th>
                   <th className="py-4 px-4">제목</th>
                   <th className="py-4 px-4">작성자</th>
@@ -129,7 +129,7 @@ const Qna = () => {
                 type="submit"
                 className="mb-4 px-12 py-3 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-white hover:text-primary"
               >
-                글쓰기
+                질문 등록
               </button>
             </div>
           </div>
