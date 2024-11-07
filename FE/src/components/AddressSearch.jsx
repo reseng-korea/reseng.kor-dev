@@ -26,7 +26,6 @@ const AddressSearch = () => {
       document.body.removeChild(script);
     };
   }, []);
-
   // Daum 주소 검색 함수
   const handleAddressSearch = () => {
     if (!isScriptLoaded) {
@@ -85,14 +84,14 @@ const AddressSearch = () => {
           readOnly
         />
 
-        {/* 주소 찾기 버튼 */}
+        {/* 주소 검색 버튼 */}
         <button
           onClick={handleAddressSearch}
-          className="group flex-grow-0 mb-2 bg-transition text-black border border-[#999999] font-bold py-2 px-4 rounded-lg hover:text-white hover:bg-primary transition-colors duration-300"
+          className="group flex-grow-0 mb-2 bg-primary font-bold py-2 px-4 rounded-lg hover:bg-hover transition-colors duration-300"
         >
           <div className="w-full flex items-center justify-center space-x-2">
-            <FaMagnifyingGlass className="text-primary group-hover:text-white transition-colors duration-300" />
-            <span className="text-primary group-hover:text-white transition-colors duration-300">
+            <FaMagnifyingGlass className="text-white transition-colors duration-300" />
+            <span className="text-white transition-colors duration-300">
               주소 검색
             </span>
           </div>

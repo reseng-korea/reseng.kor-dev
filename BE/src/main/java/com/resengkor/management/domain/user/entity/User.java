@@ -102,4 +102,8 @@ public class User extends BaseEntity {
             userProfile.updateUser(this);  // UserProfile에 User 설정
         }
     }
+
+    public void updateUserRole(Role role) {
+        this.role = role;
+    }
 }
