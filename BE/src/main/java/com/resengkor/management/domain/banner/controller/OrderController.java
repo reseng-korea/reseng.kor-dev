@@ -6,7 +6,6 @@ import com.resengkor.management.domain.banner.dto.ReceiveStatusUpdateDto;
 import com.resengkor.management.domain.banner.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -85,7 +85,7 @@ public class OrderService {
 
 
     // 로그인한 사용자의 모든 발주 내역 조회
-    public List<OrderResponseDto> getUserOrderHistories(Authentication authentication) {
+    public List<OrderResponseDto> getUserOrderHistories() {
         // 현재 로그인된 사용자의 ID를 가져옴
         Long userId = UserAuthorizationUtil.getLoginMemberId();
 
