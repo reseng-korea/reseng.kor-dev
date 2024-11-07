@@ -16,7 +16,7 @@ const FindIdPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen">
-      <div className="w-full max-w-lg p-8 rounded-lg shadow-md">
+      <div className="w-full max-w-lg p-8">
         <h1 className="pt-16 mb-6 text-2xl font-bold">아이디 찾기</h1>
         <hr className="w-full mb-6 border-t-2 border-primary" />
 
