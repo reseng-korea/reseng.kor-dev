@@ -16,13 +16,13 @@ const Footer = () => {
         <div className="text-left md:ml-8">
           <h2 className="mb-2 text-lg font-bold text-gray1 mb-4">(주)리앤생</h2>
           <p className="mb-2 text-gray3 text-sm">
-            사업자 등록번호 : 825-81-01881 | 대표 : 이오희
+            사업자 등록번호 : 837-88-03260 | 대표 : 이승현
           </p>
           <p className="mb-2 text-gray3 text-sm">
             41931 대구광역시 중구 국채보상로 488, 8층 (동산동, 섬유회관)
           </p>
           <p className="mb-2 text-gray3 text-sm">
-            Tel : (053) 252-6455/6454 | Fax : (053) 252-6438 | Email :
+            Tel : 070-4156-7809 | Fax : (053) 252-6438 | Email :
             reseng.kor@gmail.com
           </p>
         </div>

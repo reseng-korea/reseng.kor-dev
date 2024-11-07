@@ -113,11 +113,11 @@ function App() {
             element={
               <>
                 <MainFirstPage />
-                <MainFifthPage />
+                {/* <MainFifthPage /> */}
                 <MainSecondPage />
                 <MainThirdPage />
                 {/* <MainSixthPage isVisible={isMainSixthVisible} /> */}
-                <MainSeventhPage />
+                {/* <MainSeventhPage /> */}
                 <MainFourthPage />
               </>
             }

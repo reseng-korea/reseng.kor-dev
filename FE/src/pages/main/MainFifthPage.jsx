@@ -120,7 +120,7 @@ const MainFifthPage = () => {
             whileInView="visible"
             transition={{ duration: 0.8, delay: 2 }}
           >
-            지구를 아끼고
+            지구와
           </motion.span>
 
           <motion.img
@@ -131,6 +131,16 @@ const MainFifthPage = () => {
             whileInView="visible"
             transition={{ duration: 0.8, delay: 0.4 }}
           />
+
+          <motion.span
+            className="text-4xl sm:text-4xl md:text-7xl text-[#264d3b] font-bold"
+            variants={slideUpVariant}
+            initial="hidden"
+            whileInView="visible"
+            transition={{ duration: 0.8, delay: 2 }}
+          >
+            함께하는
+          </motion.span>
         </div>
 
         <div className="flex py-2 justify-center items-center space-x-8">
@@ -141,7 +151,7 @@ const MainFifthPage = () => {
             whileInView="visible"
             transition={{ duration: 0.8, delay: 2.4 }}
           >
-            자원을 절약하며
+            지속 가능한 미래를
           </motion.span>
 
           <motion.img
@@ -159,7 +169,7 @@ const MainFifthPage = () => {
             whileInView="visible"
             transition={{ duration: 0.8, delay: 2.4 }}
           >
-            함께 나아갑니다.
+            만듭니다.
           </motion.span>
         </div>
       </div>
