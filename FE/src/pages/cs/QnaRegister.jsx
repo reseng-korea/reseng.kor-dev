@@ -3,12 +3,14 @@ import { useState } from 'react';
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 import useModal from '../../hooks/useModal';
+import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const QnaRegister = () => {
   const navItems = [
     { label: '자주 묻는 질문', route: '/faq' },
     { label: '1:1 문의', route: '/qna' },
   ];
+  const { navigateTo, routes } = useNavigateTo();
 
   const { openModal, closeModal, RenderModal } = useModal();
 
@@ -77,23 +79,28 @@ const QnaRegister = () => {
       openModal({
         title: '문의가 등록되었습니다.',
         type: 'success',
-        isAutoClose: false,
+        isAutoClose: true,
         onConfirm: () => {
+          console.log('추후에 api 연결하고 성공했을 때 아래 두 코드 실행');
           closeModal();
-          console.log('추후에 api 연결하고, 목록으로 가는거');
+          navigateTo(routes.qna);
         },
       });
     }
   };
 
   const handleCancle = () => {
-    if (title || content || isSecret || password.length !== 0) {
+    console.log(title);
+    if (!title && !content && !isSecret && password.length == 0) {
+      navigateTo(routes.qna);
+    } else {
       openModal({
         title: '정말 취소하시겠습니까?',
         context: '입력하신 내용이 저장되지 않습니다.',
         type: 'warning',
-        isAutoClose: true,
-        onConfirm: () => console.log('확인 버튼 클릭됨'),
+        isAutoClose: false,
+        cancleButton: true,
+        onConfirm: () => navigateTo(routes.qna),
         onCancel: () => closeModal(), // closeModal을 명시적으로 호출
       });
     }

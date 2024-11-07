@@ -13,6 +13,7 @@ function CustomModal({
   context = '',
   type = 'info',
   isAutoClose = false,
+  cancleButton = false,
   onConfirm = () => {},
   onCancel,
 }) {
@@ -26,6 +27,7 @@ function CustomModal({
       context,
       type,
       isAutoClose,
+      cancleButton,
       onConfirm,
       onCancel,
     });
@@ -97,7 +99,7 @@ function CustomModal({
         >
           확인
         </button>
-        {isAutoClose && (
+        {cancleButton && (
           <button
             onClick={onCancel || closeModal}
             className="mt-6 px-4 py-2 border border-primary text-primary rounded-lg hover:border-hover hover:text-hover"
