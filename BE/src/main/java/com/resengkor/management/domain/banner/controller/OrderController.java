@@ -20,15 +20,15 @@ public class OrderController {
 
     // 발주 요청 생성 엔드포인트
     @PostMapping
-    public ResponseEntity<String> createOrder(@RequestBody OrderRequestDto orderRequestDto, Authentication authentication) {
-        orderService.createOrder(orderRequestDto, authentication);
+    public ResponseEntity<String> createOrder(@RequestBody OrderRequestDto orderRequestDto) {
+        orderService.createOrder(orderRequestDto);
         return ResponseEntity.ok("Order created successfully");
     }
 
     // 로그인한 사용자의 모든 발주 내역 조회 엔드포인트
     @GetMapping
-    public ResponseEntity<List<OrderResponseDto>> getUserOrderHistories(Authentication authentication) {
-        List<OrderResponseDto> userOrders = orderService.getUserOrderHistories(authentication);
+    public ResponseEntity<List<OrderResponseDto>> getUserOrderHistories() {
+        List<OrderResponseDto> userOrders = orderService.getUserOrderHistories();
         return ResponseEntity.ok(userOrders);
     }
 

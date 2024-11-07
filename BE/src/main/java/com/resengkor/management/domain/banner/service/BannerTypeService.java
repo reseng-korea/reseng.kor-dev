@@ -5,12 +5,11 @@ import com.resengkor.management.domain.banner.entity.BannerType;
 import com.resengkor.management.domain.banner.mapper.BannerRequestMapper;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
-import com.resengkor.management.domain.user.service.UserService;
-import com.resengkor.management.global.security.jwt.dto.CustomUserDetails;
+import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,16 +18,20 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BannerTypeService {
 
+    // repository
     private final BannerTypeRepository bannerTypeRepository;
+    // mapper
     private final BannerRequestMapper bannerRequestMapper;
-    private final UserIdentificationService userIdentificationService;
 
-    public List<BannerInventoryDTO> getBannerInventory(Authentication authentication) {
-        Long userId = userIdentificationService.getUserIdFromAuthentication(authentication);
+    // 보유 현수막 전체 재고 조회
+    public List<BannerInventoryDTO> getBannerInventory() {
+        // 현재 로그인된 사용자의 ID를 가져옴
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
         List<BannerType> banners = bannerTypeRepository.findByUserId(userId);
+
 
         // 각 typeWidth에 대한 정단 및 비정단 정보를 BannerInventoryDTO 형태로 변환
         Map<Integer, List<BannerType>> bannersByTypeWidth = banners.stream()
@@ -58,8 +61,9 @@ public class BannerTypeService {
     }
 
     // 특정 typeWidth에 대한 배너 인벤토리를 horizontalLength 기준 오름차순으로 정렬하여 반환
-    public BannerInventoryDTO getBannerInventoryBySpecificWidth(Authentication authentication, Integer typeWidth) {
-        Long userId = userIdentificationService.getUserIdFromAuthentication(authentication);
+    public BannerInventoryDTO getBannerInventoryBySpecificWidth(Integer typeWidth) {
+        // 현재 로그인된 사용자의 ID를 가져옴
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
         List<BannerType> banners = bannerTypeRepository.findByUserIdAndTypeWidth(userId, typeWidth);
 
         List<Integer> allLengths = new ArrayList<>();
@@ -80,8 +84,9 @@ public class BannerTypeService {
 
     // 현수막 사용 요청을 처리하여 재고 업데이트
     @Transactional
-    public void useBannerYards(Authentication authentication, QrPageDataDTO qrPageDataDTO) {
-        Long userId = userIdentificationService.getUserIdFromAuthentication(authentication);
+    public void useBannerYards(QrPageDataDTO qrPageDataDTO) {
+        // 현재 로그인된 사용자의 ID를 가져옴
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
 
         // 선택된 typeWidth, horizontalLength로 BannerType 조회
         BannerType bannerType = findMatchingBannerType(userId, qrPageDataDTO);
@@ -119,22 +124,4 @@ public class BannerTypeService {
                 PageRequest.of(0, 1) // 가장 가까운 하나만 조회
         ).stream().findFirst().orElseThrow(() -> new RuntimeException("해당 조건에 맞는 BannerType이 없습니다."));
     }
-
-    // 새로운 현수막 추가 메서드 (정단/비정단 추가에 따른 로직)
-//    public void addNewBanner(Authentication authentication, Integer typeWidth, int horizontalLength, int quantity) {
-//        Long userId = getUserIdFromAuthentication(authentication);
-//        BannerType newBanner = new BannerType();
-//        newBanner.setUserId(userId);
-//        newBanner.setTypeWidth(typeWidth);
-//        newBanner.setHorizontalLength(horizontalLength);
-//        newBanner.setQuantity(quantity);
-//
-//        // 기존의 standardCount 계산 로직과 일관성을 유지하기 위해 저장 전에 추가 로직 처리
-//        if (horizontalLength == 120) {
-//            // 정단 현수막인 경우 quantity만큼 standardCount 증가
-//            newBanner.setQuantity(newBanner.getQuantity() + quantity);
-//        }
-//
-//        bannerTypeRepository.save(newBanner);
-//    }
 }

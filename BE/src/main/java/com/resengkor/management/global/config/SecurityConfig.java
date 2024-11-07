@@ -99,12 +99,12 @@ public class SecurityConfig {
                     OAuth2AuthenticationException oauth2Exception = (OAuth2AuthenticationException) exception;
                     if ("member_inactive".equals(oauth2Exception.getError().getErrorCode())) {
                         // 비활성화된 사용자일 때 로그인 페이지로 리다이렉트
-                        response.sendRedirect("http://localhost:3000/login?error=true&message=" + URLEncoder.encode("사용자가 비활성화되었습니다. 관리자에게 문의하세요.", StandardCharsets.UTF_8));
+                        response.sendRedirect("http://localhost:5173/login?error=true&message=" + URLEncoder.encode("사용자가 비활성화되었습니다. 관리자에게 문의하세요.", StandardCharsets.UTF_8));
                         return; // 여기서 return 추가
                     }
                 }
                 // 일반적인 인증 실패 시
-                response.sendRedirect("http://localhost:3000/login?error=true&message=" + URLEncoder.encode("인증에 실패했습니다.", StandardCharsets.UTF_8));
+                response.sendRedirect("http://localhost:5173/login?error=true&message=" + URLEncoder.encode("인증에 실패했습니다.", StandardCharsets.UTF_8));
             }
         };
     }
@@ -119,7 +119,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
                         //앞 단 프론트 서버 주소
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:3000"));
+                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
                         //GET, POST, ... 모든 요청에 대해 허용
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         //Credentials값도 가져올 수 있도록 허용
@@ -153,7 +153,7 @@ public class SecurityConfig {
                         auth
                         .requestMatchers(
                                 "/api/v1/login","/api/v1/logout",
-                                "/api/v1/mail/**","/api/v1/sms/**","/api/v1/qna/questions/**").permitAll()
+                                "/api/v1/mail/**","/api/v1/sms/**","/api/v1/qna/questions/**","/api/v1/certificates/**").permitAll()
                                 //hasRole() : 특정 Roll을 가져야함
                                 //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
                                 //아래 roleHierarchy() 메소드 덕분

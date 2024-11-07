@@ -12,6 +12,7 @@ import com.resengkor.management.domain.banner.repository.OrderHistoryRepository;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
+import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
@@ -30,21 +31,14 @@ public class OrderService {
     private final OrderHistoryRepository orderHistoryRepository;
     private final BannerTypeRepository bannerTypeRepository;
 
-    // Service
-    private final UserIdentificationService userIdentificationService;
-
     // Mapper
     private final OrderHistoryMapper orderHistoryMapper;
 
-    private Long getUserId(Authentication authentication) {
-        // 로그인한 사용자 ID 가져오기
-        return userIdentificationService.getUserIdFromAuthentication(authentication);
-    }
-
     // 발주 요청
     @Transactional
-    public void createOrder(OrderRequestDto orderRequestDto, Authentication authentication) {
-        Long userId = getUserId(authentication);
+    public void createOrder(OrderRequestDto orderRequestDto) {
+        // 현재 로그인된 사용자의 ID를 가져옴
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
 
         // 본인(= buyer)
         User loginedUser = userRepository.findById(userId)
@@ -92,7 +86,8 @@ public class OrderService {
 
     // 로그인한 사용자의 모든 발주 내역 조회
     public List<OrderResponseDto> getUserOrderHistories(Authentication authentication) {
-        Long userId = getUserId(authentication);
+        // 현재 로그인된 사용자의 ID를 가져옴
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
 
         List<OrderHistory> orderHistories = orderHistoryRepository.findByUserIdOrderByOrderDateDesc(userId);
         return orderHistoryMapper.toDtoList(orderHistories);

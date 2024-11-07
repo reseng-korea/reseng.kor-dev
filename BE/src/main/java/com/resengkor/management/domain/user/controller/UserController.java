@@ -1,11 +1,8 @@
 package com.resengkor.management.domain.user.controller;
 
 
-import com.resengkor.management.domain.user.dto.request.OauthUserUpdateRequest;
+import com.resengkor.management.domain.user.dto.request.*;
 import com.resengkor.management.domain.user.dto.UserDTO;
-import com.resengkor.management.domain.user.dto.request.ResetPasswordRequest;
-import com.resengkor.management.domain.user.dto.request.UserUpdateRequest;
-import com.resengkor.management.domain.user.dto.request.VerifyPasswordRequest;
 import com.resengkor.management.domain.user.service.UserService;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
@@ -103,5 +100,12 @@ public class UserController {
             @RequestParam(value = "createdDate", required = false) String createdDate) {
 
         return userServiceImpl.getAllUserByManager(page, role, status, createdDate);
+    }
+
+    @Operation(description = "로그인 유저의 하위 사용자 등급 수정")
+    @PatchMapping("/roles")
+    public CommonResponse updateUserRole(@Valid @RequestBody UserRoleUpdateRequestDTO userRoleUpdateRequestDTO) {
+        log.info(String.valueOf(userRoleUpdateRequestDTO.getTargetRole()));
+        return userServiceImpl.updateUserRole(userRoleUpdateRequestDTO);
     }
 }
