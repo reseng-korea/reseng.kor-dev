@@ -51,10 +51,12 @@ function CustomModal({
     <Modal
       isOpen={isOpen}
       onRequestClose={closeModal}
+      shouldCloseOnOverlayClick={false} // 모달 외부 클릭으로 닫히지 않음
       contentLabel="Modal"
       style={{
         overlay: {
           backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          zIndex: 9999, // 오버레이의 z-index를 높게 설정
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -72,6 +74,7 @@ function CustomModal({
           flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
+          // zIndex: 10000, // 모달 콘텐츠도 nav보다 높게 설정
         },
       }}
     >

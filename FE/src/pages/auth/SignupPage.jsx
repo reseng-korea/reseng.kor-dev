@@ -16,7 +16,7 @@ const SignupPage = () => {
 
   return (
     <Layout>
-      <div className="flex flex-col mb-24 items-center justify-start">
+      <div className="flex flex-col items-center justify-start">
         <div className="w-full max-w-2xl p-8">
           <h1 className="mt-28 mb-12 text-3xl font-bold">회원가입</h1>
 
