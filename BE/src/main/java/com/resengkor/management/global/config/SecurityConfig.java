@@ -71,7 +71,8 @@ public class SecurityConfig {
             "/api/v1/withdrawal",
             "/api/v1/users/pagination",
             "/api/v1/regions/**", "/api/v1/companies/**",
-            "/api/v1/faq/**"
+            "/api/v1/faq/**",
+            "api/v1/qr-code"
     );
 
 
