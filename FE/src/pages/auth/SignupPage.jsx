@@ -34,7 +34,7 @@ const SignupPage = () => {
           <div className="flex flex-col items-center px-3 py-2">
             <button
               type="submit"
-              className="w-full px-4 py-2 font-bold text-white bg-primary rounded-lg hover:bg-hover"
+              className="w-full px-4 py-3 font-bold text-white bg-primary rounded-lg hover:bg-hover"
             >
               가입하기
             </button>

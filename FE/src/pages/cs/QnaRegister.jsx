@@ -3,6 +3,7 @@ import { useState } from 'react';
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 import useModal from '../../hooks/useModal';
+
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const QnaRegister = () => {
@@ -195,7 +196,6 @@ const QnaRegister = () => {
           </div>
         </div>
       </div>
-
       <RenderModal />
     </Layout>
   );

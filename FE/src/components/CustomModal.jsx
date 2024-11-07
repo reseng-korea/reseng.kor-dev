@@ -14,6 +14,8 @@ function CustomModal({
   type = 'info',
   isAutoClose = false,
   cancleButton = false,
+  buttonName = '확인',
+  cancleButtonName = '취소',
   onConfirm = () => {},
   onCancel,
 }) {
@@ -28,6 +30,8 @@ function CustomModal({
       type,
       isAutoClose,
       cancleButton,
+      buttonName,
+      cancleButtonName,
       onConfirm,
       onCancel,
     });
@@ -100,14 +104,14 @@ function CustomModal({
           onClick={onConfirm || closeModal}
           className="mt-6 px-4 py-2 bg-primary text-white rounded-lg hover:bg-hover"
         >
-          확인
+          {buttonName}
         </button>
         {cancleButton && (
           <button
             onClick={onCancel || closeModal}
             className="mt-6 px-4 py-2 border border-primary text-primary rounded-lg hover:border-hover hover:text-hover"
           >
-            취소
+            {cancleButtonName}
           </button>
         )}
       </div>

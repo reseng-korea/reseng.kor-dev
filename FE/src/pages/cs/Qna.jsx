@@ -128,7 +128,7 @@ const Qna = () => {
               <button
                 onClick={() => navigateTo(routes.qnaRegist)}
                 type="submit"
-                className="mb-4 px-12 py-3 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-white hover:text-primary"
+                className="mb-4 px-12 py-3 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-hover"
               >
                 질문 등록
               </button>

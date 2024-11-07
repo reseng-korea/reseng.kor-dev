@@ -10,6 +10,8 @@ const useModal = () => {
     type: 'info', // success or warning
     isAutoClose: false, // true이면 자동 닫힘
     cancleButton: false, // 취소 버튼
+    buttonName: '확인',
+    cancleButtonName: '취소',
     onConfirm: () => {}, // 첫 번째 버튼 클릭 핸들러
     onCancel: null, // 두 번째 버튼 클릭 핸들러 (있을 경우)
   });
@@ -20,6 +22,8 @@ const useModal = () => {
     type = 'info',
     isAutoClose = false,
     cancleButton = false,
+    buttonName = '확인',
+    cancleButtonName = '취소',
     onConfirm = () => {},
     onCancel = null,
   }) => {
@@ -29,6 +33,8 @@ const useModal = () => {
       type,
       isAutoClose,
       cancleButton,
+      buttonName,
+      cancleButtonName,
       onConfirm,
       onCancel,
     });
@@ -56,6 +62,8 @@ const useModal = () => {
         type={modalProps.type}
         isAutoClose={modalProps.isAutoClose}
         cancleButton={modalProps.cancleButton}
+        buttonName={modalProps.buttonName}
+        cancleButtonName={modalProps.cancleButtonName}
         onConfirm={modalProps.onConfirm}
         onCancel={modalProps.onCancel}
       />
