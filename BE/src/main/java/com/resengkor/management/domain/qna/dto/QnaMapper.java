@@ -33,6 +33,7 @@ public class QnaMapper {
                 .viewCount(question.getViewCount())
                 .userId(question.getUser().getId())
                 .representativeName(question.getUser().getRepresentativeName())
+                .isAnswered(question.isAnswered())
                 .createdAt(question.getCreatedAt())
                 .build();
     }
@@ -45,6 +46,7 @@ public class QnaMapper {
                 .password(question.getPassword())
                 .viewCount(question.getViewCount())
                 .userId(question.getUser().getId())
+                .isAnswered(question.isAnswered())
                 .representativeName(question.getUser().getRepresentativeName())
                 .createdAt(question.getCreatedAt())
                 .build();
@@ -65,6 +67,7 @@ public class QnaMapper {
                 .userId(question.getUser().getId())
                 .representativeName(question.getUser().getRepresentativeName())
                 .createdAt(question.getCreatedAt())
+                .isAnswered(question.isAnswered())
                 .answer(answerResponse)
                 .build();
     }

@@ -25,4 +25,6 @@ public class QuestionAnswerResponse {
     private LocalDateTime createdAt;
 
     private AnswerResponse answer;
+
+    private boolean isAnswered;
 }

@@ -200,6 +200,8 @@ public class QnaService {
         Answer answer = qnaMapper.toAnswerEntity(answerRequest, question, admin);
         // 5. 변환된 Answer 엔티티를 데이터베이스에 저장
         answerRepository.save(answer);
+        // 6. 질문의 응답 상태 업데이트
+        question.updateAnswer(answer); // 응답 상태를 true로 업데이트
 
         return new DataResponse<>(ResponseStatus.CREATED_SUCCESS.getCode(),
                 ResponseStatus.CREATED_SUCCESS.getMessage(), qnaMapper.toAnswerResponse(answer));
