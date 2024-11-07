@@ -23,7 +23,7 @@ public class QRCodeValidationService {
      * 관련 BannerRequest 정보를 BannerRequestDTO로 변환하여 반환합니다.
      *
      * @param uuid QR 코드의 고유 식별자
-     * @return QrPageDataDTO 또는 null (uuid가 유효하지 않거나 만료된 경우)
+     * @return QrPageDataDTO 또는 error message (uuid가 유효하지 않거나 만료된 경우)
      */
     public QrPageDataDTO validateQRCode(String uuid) {
         // 만료 여부 확인
