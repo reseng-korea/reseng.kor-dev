@@ -27,7 +27,7 @@ public class MailController {
         return mailService.sendMail(mailDTO.getEmail()); // Response body에 값을 반환
     }
 
-    @GetMapping("/verify")
+    @PostMapping("/verify")
     public CommonResponse checkEmail(@RequestBody MailAuthDTO mailAuthDTO) throws MessagingException, UnsupportedEncodingException {
         return mailService.checkEmail(mailAuthDTO); // Response body에 값을 반환
     }

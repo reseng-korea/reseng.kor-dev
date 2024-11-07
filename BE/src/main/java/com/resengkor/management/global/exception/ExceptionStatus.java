@@ -53,7 +53,8 @@ public enum ExceptionStatus {
     DB_CONNECTION_ERROR(5004, "데이터베이스 연결 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
 
 
-
+    // 6xx 등급 관련 오류
+    ROLE_CHANGE_FAIL(6001, "해당 유저의 등급을 변경할 권리가 없습니다."),
 
 
     FORBIDDEN_FAILED(4001, "콘텐츠에 접근할 수 없어, 정보를 조회할 수 없습니다."),
