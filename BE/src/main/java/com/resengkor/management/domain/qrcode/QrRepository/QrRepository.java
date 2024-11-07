@@ -6,5 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 public interface QrRepository extends JpaRepository<QR, Long> {
+
     Optional<QR> findByUuid(String uuid);
+
 }

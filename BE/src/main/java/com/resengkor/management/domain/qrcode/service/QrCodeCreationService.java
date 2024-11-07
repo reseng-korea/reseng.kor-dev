@@ -21,22 +21,20 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Service
+// Lombok이 생성한 생성자에 @Autowired가 추가되어 Spring이 필요한 의존성을 자동으로 주입할 수 있게 만드는 옵션
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class QrCodeCreationService {
 
+    // repository
     private final UserRepository userRepository;
     private final BannerRequestRepository bannerRequestRepository;
     private final BannerTypeRepository bannerTypeRepository;
     private final QrRepository qrRepository;
+    // mapper
     private final BannerRequestMapper bannerRequestMapper;
 
     public byte[] generateQRCode(QrPageDataDTO qrPageDataDTO) {
-        // 현재 로그인된 사용자의 ID를 가져옴
-        Long userId = UserAuthorizationUtil.getLoginMemberId();
-
-        // ID를 기반으로 사용자 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자를 찾을 수 없습니다."));
+        User user = getUser();
 
         // qrPageDataDTO에 로그인 된 사용자의 companyName을 설정
         qrPageDataDTO = qrPageDataDTO.toBuilder()
@@ -55,6 +53,10 @@ public class QrCodeCreationService {
 
         bannerRequestRepository.save(bannerRequest);
 
+        return getBytes(qrPageDataDTO, bannerRequest);
+    }
+
+    private byte[] getBytes(QrPageDataDTO qrPageDataDTO, BannerRequest bannerRequest) {
         // uuid 및 QR url 생성
         String uuid = UUID.randomUUID().toString();
         String qrUrl = "https://reseng.co.kr/validateQR?uuid=" + uuid;
@@ -63,9 +65,9 @@ public class QrCodeCreationService {
         ByteArrayOutputStream stream = QRCode.from(qrUrl).withSize(250, 250).stream();
 
         LocalDateTime now = LocalDateTime.now();
-//        LocalDateTime expirationDate = now.plusWeeks(2); // 유효기간 2주 설정
-        LocalDateTime expirationDate = now.plusDays(qrPageDataDTO.getPostedDuration()); // 유효기간 8일 설정
+        LocalDateTime expirationDate = now.plusDays(qrPageDataDTO.getPostedDuration()); // 유효기간(일) 설정
 
+        // QR 인스턴스 생성
         QR qr = QR.builder()
                 .uuid(uuid)
                 .createdAt(now)
@@ -77,5 +79,15 @@ public class QrCodeCreationService {
         qrRepository.save(qr);
 
         return stream.toByteArray();
+    }
+
+    private User getUser() {
+        // 현재 로그인된 사용자의 ID를 가져옴
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+
+        // ID를 기반으로 사용자 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자를 찾을 수 없습니다."));
+        return user;
     }
 }
