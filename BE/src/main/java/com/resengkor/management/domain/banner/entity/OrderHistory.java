@@ -48,6 +48,7 @@ public class OrderHistory {
     private User user;
 
     @OneToMany(mappedBy = "orderHistory", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<OrderBanner> orderBanners = new ArrayList<>();
 
     // OrderBanner 추가 메서드 (빌더 패턴 사용)

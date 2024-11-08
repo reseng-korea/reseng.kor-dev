@@ -2,10 +2,7 @@ package com.resengkor.management.domain.banner.service;
 
 import com.resengkor.management.domain.banner.dto.OrderRequestDto;
 import com.resengkor.management.domain.banner.dto.OrderResponseDto;
-import com.resengkor.management.domain.banner.entity.BannerType;
-import com.resengkor.management.domain.banner.entity.OrderBanner;
-import com.resengkor.management.domain.banner.entity.OrderHistory;
-import com.resengkor.management.domain.banner.entity.OrderStatus;
+import com.resengkor.management.domain.banner.entity.*;
 import com.resengkor.management.domain.banner.mapper.OrderHistoryMapper;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.domain.banner.repository.OrderHistoryRepository;
@@ -67,12 +64,14 @@ public class OrderService {
                     .user(loginedUser) // 현재 로그인한 사용자와 연결
                     .build();
 
-            // OrderBannerType 생성
+            // OrderBanner 생성
             OrderBanner orderBanner = OrderBanner.builder()
                     .orderHistory(orderHistory)  // 연관된 OrderHistory 설정
-                    .bannerType(newBannerType)   // 생성된 BannerType 설정
+                    .transientBannerType(newBannerType)   // 생성된 임시BannerType(= newBannerType) 설정
                     .quantity(bannerOrderItem.getQuantity()) // 요청된 배너 수량 설정
                     .build();
+
+            orderBanner.applyTransientBannerType(); // 임시 필드를 실제 필드로 이동
 
             // OrderHistory와 OrderBanner의 연관 관계 설정
             orderHistory.addOrderBanner(newBannerType, bannerOrderItem.getQuantity());
@@ -95,7 +94,11 @@ public class OrderService {
     // 수령 상태 업데이트 메서드
     @Transactional
     public void updateReceiveStatus(Long orderId, boolean receiveStatus) {
-        OrderHistory orderHistory = orderHistoryRepository.findById(orderId)
+        // 현재 로그인된 사용자의 ID를 가져옴
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+
+        // 현재 로그인된 ID와 orderHistoryId 모두 일치하는 주문내역 가져오기
+        OrderHistory orderHistory = orderHistoryRepository.findByUserIdAndId(userId, orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
         // 수령 상태가 true로 변경되면, BannerType을 DB에 저장
@@ -114,6 +117,11 @@ public class OrderService {
     // BannerType을 실제 DB에 저장하는 메서드
     private void saveBannerTypesToDb(OrderHistory orderHistory) {
         orderHistory.getOrderBanners().forEach(orderBanner -> {
+            // confirmOrder처럼 transientBannerType을 bannerType으로 설정
+            orderBanner = orderBanner.toBuilder()
+                    .bannerType(orderBanner.getTransientBannerType())
+                    .build();
+
             BannerType bannerType = BannerType.builder()
                     .typeWidth(orderBanner.getBannerType().getTypeWidth())
                     .horizontalLength(orderBanner.getBannerType().getHorizontalLength())
