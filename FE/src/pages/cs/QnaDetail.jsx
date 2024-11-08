@@ -51,7 +51,7 @@ const QnaDetail = () => {
 
           {/* 메인 */}
           <div
-            className="flex flex-col gap-x-6 items-center"
+            className="flex flex-col gap-x-6 items-center slide-up"
             // style={{ height: 'calc(100vh - 230px)' }}
           >
             {/* 질문 내용 */}
@@ -121,7 +121,7 @@ const QnaDetail = () => {
                   </div>
                 </div> */}
                 {/* 답변이 달렸을 때 */}
-                <div className="flex flex-col w-full px-8 py-4 bg-placeHolder rounded-lg">
+                <div className="flex flex-col w-full px-4 py-4 bg-placeHolder rounded-lg">
                   <div className="flex items-center space-x-2 m-4">
                     <span className="text-md text-gray4">관리자</span>
                     <span className="text-sm text-gray3">2024-11-08 12:24</span>

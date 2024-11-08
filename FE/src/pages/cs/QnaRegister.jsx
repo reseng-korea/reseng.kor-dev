@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import axios from 'axios';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
@@ -7,6 +8,8 @@ import useModal from '../../hooks/useModal';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const QnaRegister = () => {
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const accessToken = 'ra3424erwerer242423';
   const navItems = [
     { label: '자주 묻는 질문', route: '/faq' },
     { label: '1:1 문의', route: '/qna' },
@@ -51,7 +54,7 @@ const QnaRegister = () => {
   };
 
   // 등록 버튼 클릭 시
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!title) {
       console.log('1. QnaRegister에서 보낸다.');
       openModal({
@@ -77,16 +80,37 @@ const QnaRegister = () => {
         });
       }
     } else {
-      openModal({
-        title: '문의가 등록되었습니다.',
-        type: 'success',
-        isAutoClose: true,
-        onConfirm: () => {
-          console.log('추후에 api 연결하고 성공했을 때 아래 두 코드 실행');
-          closeModal();
-          navigateTo(routes.qna);
-        },
-      });
+      try {
+        const response = await axios.post(
+          `${apiUrl}/api/v1/qna/questions`,
+          {
+            title: title,
+            content: content,
+            isSecret: isSecret,
+            password: password,
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+
+      // openModal({
+      //   title: '문의가 등록되었습니다.',
+      //   type: 'success',
+      //   isAutoClose: true,
+      //   onConfirm: () => {
+      //     console.log('추후에 api 연결하고 성공했을 때 아래 두 코드 실행');
+      //     closeModal();
+      //     navigateTo(routes.qna);
+      //   },
+      // });
     }
   };
 

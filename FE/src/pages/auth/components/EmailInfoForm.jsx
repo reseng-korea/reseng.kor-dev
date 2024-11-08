@@ -81,7 +81,7 @@ const EmailInfoForm = () => {
           { email: email },
           {
             headers: {
-              // Authorization: `Bearer ${accessToken}`, // 실제 토큰 값으로 대체
+              Authorization: `Bearer ${accessToken}`, // 실제 토큰 값으로 대체
               'Content-Type': 'application/json',
             },
           }
