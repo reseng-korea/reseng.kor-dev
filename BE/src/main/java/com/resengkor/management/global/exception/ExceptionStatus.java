@@ -43,7 +43,7 @@ public enum ExceptionStatus {
     /* 이메일 및 인증 코드 오류 */
     EMAIL_NOT_FOUND(4030, "존재하지 않는 이메일입니다. 이메일 주소를 확인해 주세요."),
     CODE_MISMATCH(4031, "인증 코드가 일치하지 않습니다. 올바른 코드를 입력해 주세요."),
-    CODE_EXPIRED(4032, "인증 코드가 만료되었습니다. 새 코드를 요청해 주세요."),
+    CODE_EXPIRED(4032, "인증 코드가 존재하지 않습니다. 새 코드를 요청해 주세요."),
 
 
     // 5xx 서버 오류
@@ -51,10 +51,13 @@ public enum ExceptionStatus {
     SMS_SEND_FAIL(5002, "SMS 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
     DATA_NOT_FOUND(5003, "서버에서 데이터를 찾을 수 없습니다. 요청을 다시 확인해 주세요."),
     DB_CONNECTION_ERROR(5004, "데이터베이스 연결 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
-
+    S3_CONNECTION_ERROR(5005, "s3 연결 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
+    FILE_CONVERSION_ERROR(5006, "MultipartFile을 로컬 파일로 변환할 수 없습니다."),
 
     // 6xx 등급 관련 오류
     ROLE_CHANGE_FAIL(6001, "해당 유저의 등급을 변경할 권리가 없습니다."),
+    ROLE_PERMISSION_DENIED(6002, "해당 등급 변경에 필요한 권한이 부족합니다."),
+    HIERARCHY_NOT_FOUND(6003, "해당 부모-자식 관계가 존재하지 않습니다."),
 
 
     FORBIDDEN_FAILED(4001, "콘텐츠에 접근할 수 없어, 정보를 조회할 수 없습니다."),

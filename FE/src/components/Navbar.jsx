@@ -3,7 +3,7 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from '@headlessui/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/logo.png';
 
@@ -26,17 +26,34 @@ export default function Example() {
   const { navigateTo, routes } = useNavigateTo();
 
   const [isMenuOpen, setIsMenuOpen] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const handleMouseEnter = (menu) => setIsMenuOpen(menu);
   const handleMouseLeave = () => setIsMenuOpen(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <header>
       <Disclosure
         as="nav"
-        className="fixed top-0 left-0 z-50 w-full h-16 bg-white"
+        className={classNames(
+          'fixed top-0 left-0 z-50 w-full h-16 bg-white transition-shadow',
+          isScrolled ? 'shadow-md' : 'shadow-none'
+        )}
       >
-        <div className="px-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="px-2 mx-auto max-w-13xl sm:px-6 lg:px-24">
           <div className="relative flex items-center justify-between h-16">
             {/* Mobile menu button */}
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">

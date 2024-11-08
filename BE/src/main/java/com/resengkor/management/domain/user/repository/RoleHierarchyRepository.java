@@ -22,5 +22,4 @@ public interface RoleHierarchyRepository extends JpaRepository<RoleHierarchy, Lo
     @Query("SELECT rh.descendant FROM RoleHierarchy rh WHERE rh.ancestor.id = :userId")
     List<User> findDescendantRoles(@Param("userId") Long userId);
 
-
 }

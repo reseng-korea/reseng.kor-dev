@@ -66,9 +66,22 @@ public class MailServiceWithRedis {
         message.setRecipients(MimeMessage.RecipientType.TO, mail); //받는 사람
         message.setSubject("이메일 인증");
         String body = "";
-        body += "<h3>요청하신 인증 번호입니다.</h3>";
-        body += "<h1>" + number + "</h1>";
-        body += "<h3>감사합니다.</h3>";
+//        body += "<h3>요청하신 인증 번호입니다.</h3>";
+//        body += "<h1>" + number + "</h1>";
+//        body += "<h3>감사합니다.</h3>";
+        body = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; padding: 20px;'>"
+                + "<h2 style='color: #61A24E;'>이메일 인증</h2>"
+                + "<p>안녕하세요? <strong>(주)리앤생</strong> 입니다.</p>"
+                + "<p>아래 인증번호를 입력하여 이메일 인증을 해주세요.</p>"
+                + "<div style='text-align: center; margin-top: 20px;'>"
+                + "    <span style='font-size: 18px; color: #ffffff; background-color: #61A24E; padding: 10px 20px; border-radius: 5px;'>"
+                + "        인증번호: " + number + "</span>"
+                + "</div>"
+                + "<div style='margin-top: 30px; text-align: center;'>"
+                + "    <p style='color: #666666;'>감사합니다.</p>"
+                + "</div>"
+                + "</div>";
+
         message.setText(body, "UTF-8", "html");
 
         return message;

@@ -20,4 +20,6 @@ public class QuestionResponse {
     private String representativeName;
 
     private LocalDateTime createdAt;
+
+    private boolean isAnswered;
 }
