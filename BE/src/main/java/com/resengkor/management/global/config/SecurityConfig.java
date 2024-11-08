@@ -72,7 +72,8 @@ public class SecurityConfig {
             "/api/v1/withdrawal",
             "/api/v1/users/pagination",
             "/api/v1/regions/**", "/api/v1/companies/**",
-            "/api/v1/faq/**"
+            "/api/v1/faq/**",
+            "/api/v1/qualifications"
     );
 
 
@@ -141,37 +142,16 @@ public class SecurityConfig {
                 .httpBasic((auth) -> auth.disable()); //http basic 인증 방식 disable
 
         // 경로별 인가 작업
-
-        http
-                .authorizeHttpRequests(auth -> {
-                        // POST 메서드에 대한 URL 허용
-                        POST_LIST.forEach(url -> auth.requestMatchers(HttpMethod.POST, url).permitAll());
-
-                        // GET 메서드에 대한 URL 허용
-                        GET_LIST.forEach(url -> auth.requestMatchers(HttpMethod.GET, url).permitAll());
-
-                    AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry guest = auth
-                            .requestMatchers(
-                                    "/api/v1/login", "/api/v1/logout",
-                                    "/api/v1/mail/**", "/api/v1/sms/**",
-                                    "/api/v1/certificates/**", "/api/v1/s3/**").permitAll()
-                            //hasRole() : 특정 Roll을 가져야함
-                            //제일 낮은 권한을 설정해주면 알아서 높은 얘들을 허용해줌
-                            //아래 roleHierarchy() 메소드 덕분
-                            //hasRole(), hasAnyRole 자동으로 ROLE_접두사 추가해줌
-                                .requestMatchers(HttpMethod.GET, "/api/v1/qna/questions/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/v1/qna/questions/**").hasRole("GUEST")
-                                .requestMatchers(HttpMethod.PUT, "/api/v1/qna/questions/**").hasRole("GUEST")
-                                .requestMatchers(HttpMethod.DELETE, "/api/v1/qna/questions/**").hasRole("GUEST")
-                                .requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}").hasRole("PENDING")  // PENDING 권한 부여
-                                .requestMatchers("/api/v1/users/**").hasAnyRole("GUEST")
-                                .requestMatchers("/api/v1/admin/**","/api/v1/qna/answers/**").hasRole("MANAGER")
-                        .anyRequest().authenticated();
+        http.authorizeHttpRequests(auth -> {
+                    configurePublicEndpoints(auth);
+                    configureManagerEndpoints(auth);
+                    configureUserEndpoints(auth);
+                    auth.anyRequest().authenticated(); // 나머지 모든 요청은 인증 필요
                 })
                 .exceptionHandling(exceptionHandling -> exceptionHandling
-                .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 실패 시 처리
-                .accessDeniedHandler(customAccessDeniedHandler) // 권한 부족 시 처리
-        );// 위에서 설정하지 못한 나머지 url을 여기서 다 처리
+                        .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 실패 시 처리
+                        .accessDeniedHandler(customAccessDeniedHandler) // 권한 부족 시 처리
+                );
 
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), CustomLoginFilter.class); //JWTFilter가 CustomLoginFilter 전에 실행
@@ -197,6 +177,29 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    private void configurePublicEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
+        POST_LIST.forEach(url -> auth.requestMatchers(HttpMethod.POST, url).permitAll());
+        GET_LIST.forEach(url -> auth.requestMatchers(HttpMethod.GET, url).permitAll());
+        auth.requestMatchers("/api/v1/login", "/api/v1/logout", "/api/v1/mail/**", "/api/v1/sms/**", "/api/v1/s3/**").permitAll();
+    }
+
+    private void configureManagerEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
+        auth.requestMatchers(HttpMethod.POST, "/api/v1/qualifications/**").hasRole("MANAGER");
+        auth.requestMatchers(HttpMethod.PUT, "/api/v1/qualifications/**").hasRole("MANAGER");
+        auth.requestMatchers(HttpMethod.DELETE, "/api/v1/qualifications/**").hasRole("MANAGER");
+        auth.requestMatchers("/api/v1/admin/**", "/api/v1/qna/answers/**").hasRole("MANAGER");
+    }
+
+    private void configureUserEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
+        auth.requestMatchers("/api/v1/users/**").hasAnyRole("GUEST");
+        auth.requestMatchers(HttpMethod.GET, "/api/v1/qna/questions/**").permitAll();
+        auth.requestMatchers(HttpMethod.POST, "/api/v1/qna/questions/**").hasRole("GUEST");
+        auth.requestMatchers(HttpMethod.PUT, "/api/v1/qna/questions/**").hasRole("GUEST");
+        auth.requestMatchers(HttpMethod.DELETE, "/api/v1/qna/questions/**").hasRole("GUEST");
+        auth.requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}").hasRole("PENDING");
+    }
+
 
     @Bean
     public RoleHierarchy roleHierarchy() {
