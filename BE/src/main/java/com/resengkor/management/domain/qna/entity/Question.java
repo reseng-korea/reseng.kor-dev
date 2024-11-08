@@ -38,6 +38,10 @@ public class Question extends BaseEntity {
     @Column(name = "question_view_count", nullable = false)
     private int viewCount = 0; // 기본값 0
 
+    @Builder.Default
+    @Column(name = "question_is_answered", nullable = false)
+    private boolean isAnswered = false; // 응답 상태 기본값 false
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
@@ -58,6 +62,11 @@ public class Question extends BaseEntity {
 
     public void updateAnswer(Answer answer) {
         this.answer = answer;
+        if (answer != null) {
+            this.isAnswered = true; // 응답이 있을 경우 상태 업데이트
+        } else {
+            this.isAnswered = false; // 응답이 없으면 상태 false로 설정
+        }
     }
 
 }

@@ -51,7 +51,8 @@ public enum ExceptionStatus {
     SMS_SEND_FAIL(5002, "SMS 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
     DATA_NOT_FOUND(5003, "서버에서 데이터를 찾을 수 없습니다. 요청을 다시 확인해 주세요."),
     DB_CONNECTION_ERROR(5004, "데이터베이스 연결 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
-
+    S3_CONNECTION_ERROR(5005, "s3 연결 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
+    FILE_CONVERSION_ERROR(5006, "MultipartFile을 로컬 파일로 변환할 수 없습니다."),
 
     // 6xx 등급 관련 오류
     ROLE_CHANGE_FAIL(6001, "해당 유저의 등급을 변경할 권리가 없습니다."),
