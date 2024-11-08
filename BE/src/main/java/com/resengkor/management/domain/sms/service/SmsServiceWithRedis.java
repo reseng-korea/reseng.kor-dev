@@ -112,11 +112,11 @@ public class SmsServiceWithRedis {
         String contentMessage;
         if(type.equals("findPassword")){
             //임시 비밀번호 발급해주는 문자내용
-            contentMessage = "[서비스명 테스트닷] 임시 비밀번호: " + tmpCode + ". 로그인 후 비밀번호를 변경해 주세요.";
+            contentMessage = "[(주)리앤생] 임시 비밀번호는 [" + tmpCode + "]입니다. 로그인 후 비밀번호를 변경해 주세요.";
         }
         else{
             //핸드폰 인증해주는 문자내용
-            contentMessage = "[서비스명 테스트닷] 인증번호 [" + tmpCode + "]를 입력해주세요";
+            contentMessage = "[(주)리앤생] 핸드폰 인증번호 [" + tmpCode + "]입니다.";
         }
 
         SmsRequest request = SmsRequest.builder()
@@ -154,7 +154,7 @@ public class SmsServiceWithRedis {
         // Redis에서 인증 코드 조회
         String storedCode = redisUtil.getData("sms:verification:" + dto.getPhoneNumber());
         if (storedCode == null) {
-            throw new CustomException(ExceptionStatus.EMAIL_NOT_FOUND); // 인증 코드가 존재하지 않는 경우
+            throw new CustomException(ExceptionStatus.CODE_EXPIRED); // 인증 코드가 존재하지 않는 경우
         }
 
         log.info("------------------------------------------------");
