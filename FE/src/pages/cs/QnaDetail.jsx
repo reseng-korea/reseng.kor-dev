@@ -95,7 +95,7 @@ const QnaDetail = () => {
             {/* 버튼 */}
             <div className="flex flex-col w-4/5">
               <div className="flex space-x-2 justify-end items-end">
-                <button
+                {/* <button
                   onClick={handleDeletePost}
                   className="px-4 py-2 text-gray3 transition-colors duration-300 border border-gray3 text-xs sm:text-sm md:text-md rounded-lg hover:border-primary hover:text-primary"
                 >
@@ -106,8 +106,59 @@ const QnaDetail = () => {
                   className="px-4 py-2 text-gray3 transition-colors duration-300 border border-gray3 text-xs sm:text-sm md:text-md rounded-lg hover:border-primary hover:text-primary"
                 >
                   수정
-                </button>
+                </button> */}
               </div>
+
+              <div className="flex flex-col w-full justify-center mt-4">
+                {/* 관리자 : 답변 등록 / 나머지 : 답변 목록 */}
+                <span className="mb-4 font-bold text-left text-lg">
+                  답변 등록
+                </span>
+                {/* 답변이 아직 없을 때 */}
+                {/* <div className="flex w-full justify-center items-center min-h-[20vh]">
+                  <div className="text-center text-md">
+                    등록된 답변이 없습니다.
+                  </div>
+                </div> */}
+                {/* 답변이 달렸을 때 */}
+                <div className="flex flex-col w-full px-8 py-4 bg-placeHolder rounded-lg">
+                  <div className="flex items-center space-x-2 m-4">
+                    <span className="text-md text-gray4">관리자</span>
+                    <span className="text-sm text-gray3">2024-11-08 12:24</span>
+                  </div>
+                  <div className="flex items-start m-4">
+                    <span className="text-md text-left">
+                      답변입니다답변입니다답변입니다답변입니다답변입니다답변입니다답변입니다
+                      답변입니다답변입니다답변입니다답변입니다답변입니다답변입니다답변입니다
+                      답변입니다답변입니다답변입니다답변입니다답변입니다답변입니다답변입니다
+                    </span>
+                  </div>
+                </div>
+                <div className="flex space-x-2 justify-end items-end mt-2">
+                  <button className="px-4 py-2 text-gray3 transition-colors duration-300 border border-gray3 text-xs sm:text-sm md:text-md rounded-lg hover:border-primary hover:text-primary">
+                    삭제
+                  </button>
+                  <button className="px-4 py-2 text-gray3 transition-colors duration-300 border border-gray3 text-xs sm:text-sm md:text-md rounded-lg hover:border-primary hover:text-primary">
+                    수정
+                  </button>
+                </div>
+                {/* 관리자만 보이는 답변 달기 기능 */}
+                {/* <div className="flex flex-col w-full px-4 py-4 bg-placeHolder rounded-lg">
+                  <textarea
+                    // value={content}
+                    // onChange={handleContent}
+                    className="w-full p-2 mb-2 border rounded-lg resize-none"
+                    style={{ height: '8rem' }}
+                    placeholder="내용을 입력해주세요"
+                  />
+                  <div className="flex justify-end">
+                    <button className="px-4 py-3 font-bold text-white transition-colors duration-300 bg-primary hover:bg-hover text-xs sm:text-sm md:text-md rounded-lg">
+                      답변 등록
+                    </button>
+                  </div>
+                </div> */}
+              </div>
+              <hr className="w-full mt-12 mb-12 border-t border-gray2" />
               <div className="flex w-full justify-center mt-4">
                 <button
                   onClick={() => navigateTo(routes.qna)}

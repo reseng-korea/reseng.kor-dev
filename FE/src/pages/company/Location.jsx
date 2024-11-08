@@ -34,7 +34,7 @@ const Location = () => {
             size: 10,
           },
         });
-        console.log('뭐 나오지');
+        console.log(response);
         console.log('서버로부터 받은 데이터:', response.content);
         setCompanies(response.data); // 서버에서 받은 데이터 저장
       } catch (err) {
