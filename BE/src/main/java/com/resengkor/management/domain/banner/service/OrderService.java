@@ -6,6 +6,7 @@ import com.resengkor.management.domain.banner.entity.*;
 import com.resengkor.management.domain.banner.mapper.OrderHistoryMapper;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.domain.banner.repository.OrderHistoryRepository;
+import com.resengkor.management.domain.banner.repository.TemporaryBannerTypeRepository;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
@@ -26,6 +27,7 @@ public class OrderService {
     private final RoleHierarchyRepository roleHierarchyRepository;
     private final OrderHistoryRepository orderHistoryRepository;
     private final BannerTypeRepository bannerTypeRepository;
+    private final TemporaryBannerTypeRepository temporaryBannerTypeRepository;
 
     // Mapper
     private final OrderHistoryMapper orderHistoryMapper;
@@ -57,27 +59,31 @@ public class OrderService {
         // OrderHistoryBannerType 리스트 생성 후 연관 설정
         orderRequestDto.getBannerRequests().forEach(bannerOrderItem -> {
             // 새로운 BannerType 생성 (데이터베이스에 즉시 저장하지 않음)
-            BannerType newBannerType = BannerType.builder()
-                    .typeWidth(bannerOrderItem.getTypeWidth())
-                    .horizontalLength(120.0)
-                    .isStandard(true)
-                    .user(loginedUser) // 현재 로그인한 사용자와 연결
+//            BannerType newBannerType = BannerType.builder()
+//                    .typeWidth(bannerOrderItem.getTypeWidth())
+//                    .horizontalLength(120.0)
+//                    .isStandard(true)
+//                    .user(loginedUser) // 현재 로그인한 사용자와 연결
+//                    .build();
+
+            // 새로운 TemporaryBannerType 생성
+            TemporaryBannerType temporaryBannerType = new TemporaryBannerType().toBuilder()
+                    .temporaryTypeWidth(bannerOrderItem.getTypeWidth())
+                    .quantity(bannerOrderItem.getQuantity())
+                    .orderHistory(orderHistory)
                     .build();
 
             // OrderBanner 생성
-            OrderBanner orderBanner = OrderBanner.builder()
-                    .orderHistory(orderHistory)  // 연관된 OrderHistory 설정
-                    .transientBannerType(newBannerType)   // 생성된 임시BannerType(= newBannerType) 설정
-                    .quantity(bannerOrderItem.getQuantity()) // 요청된 배너 수량 설정
-                    .build();
+//            OrderBanner orderBanner = OrderBanner.builder()
+//                    .orderHistory(orderHistory)  // 연관된 OrderHistory 설정
+//                    .transientBannerType(newBannerType)   // 생성된 임시BannerType(= newBannerType) 설정
+//                    .quantity(bannerOrderItem.getQuantity()) // 요청된 배너 수량 설정
+//                    .build();
 
-            orderBanner.applyTransientBannerType(); // 임시 필드를 실제 필드로 이동
-
-            // OrderHistory와 OrderBanner의 연관 관계 설정
-            orderHistory.addOrderBanner(newBannerType, bannerOrderItem.getQuantity());
+            temporaryBannerTypeRepository.save(temporaryBannerType);
         });
 
-        // OrderHistory 저장 (Cascade 설정을 통해 BannerType도 함께 저장)
+        // OrderHistory 저장
         orderHistoryRepository.save(orderHistory);
     }
 
