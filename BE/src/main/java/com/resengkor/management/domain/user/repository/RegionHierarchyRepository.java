@@ -9,6 +9,6 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface RegionHierarchyRepository extends JpaRepository<RegionHierarchy, Long> {
-    @Query("SELECT rh.descendantRegion FROM RegionHierarchy rh WHERE rh.ancestorRegion = :ancestor")
+    @Query("SELECT rh.descendantRegion FROM RegionHierarchy rh WHERE rh.ancestorRegion = :ancestor AND rh.descendantRegion != :ancestor")
     List<Region> findDescendantsByAncestor(@Param("ancestor") Region ancestor);
 }

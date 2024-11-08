@@ -27,8 +27,8 @@ public class RegionController {
     }
 
     // 특정 CITY에 해당하는 DISTRICT를 가져오는 API
-    @GetMapping("/{cityName}/districts")
-    public DataResponse<List<RegionDTO>> getDistrictsByCity(@PathVariable String cityName) {
-        return regionService.findDistrictsByCity(cityName);
+    @GetMapping("/{cityId}/districts")
+    public DataResponse<List<RegionDTO>> getDistrictsByCity(@PathVariable Long cityId) {
+        return regionService.findDistrictsByCity(cityId);
     }
 }
