@@ -1,13 +1,16 @@
-import Layout from '../../components/Layouts';
-import { useNavigateTo } from '../../hooks/useNavigateTo';
 import React, { useState } from 'react';
+
+import Layout from '../../components/Layouts';
+import SubNavbar from '../../components/SubNavbar';
 
 import leaf from '../../assets/faq_icon.png';
 import faqData from '../../data/faqData.json';
 
 const Faq = () => {
-  // 페이지 이동
-  const { navigateTo, routes } = useNavigateTo();
+  const navItems = [
+    { label: '자주 묻는 질문', route: '/faq' },
+    { label: '1:1 문의', route: '/qna' },
+  ];
 
   const [activeIndex, setActiveIndex] = useState(null);
 
@@ -19,24 +22,11 @@ const Faq = () => {
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
         <div className="flex flex-col w-full slide-up">
-          {/* 하위 카테고리 */}
-
-          <div className="mt-16 mb-6 text-3xl font-bold">고객 센터</div>
-          <div className="flex justify-center space-x-4">
-            <button
-              onClick={() => navigateTo(routes.faq)}
-              className="flex items-center justify-center w-40 h-10 border-0 border-b-2 border-primary bg-transition rounded-none"
-            >
-              <span className="font-bold text-primary">자주 묻는 질문</span>
-            </button>
-            <button
-              onClick={() => navigateTo(routes.qna)}
-              className="flex items-center justify-center w-40 h-10 border-none outline-none bg-transition"
-            >
-              <span className="text-black hover:text-primary">1:1 문의</span>
-            </button>
-          </div>
-          <hr className="w-full mb-6 border-t border-gray1" />
+          <SubNavbar
+            items={navItems}
+            activePage="자주 묻는 질문"
+            mainCategory="고객 센터"
+          />
 
           {/* 메인 */}
           <div className="flex justify-center w-full">
@@ -44,27 +34,23 @@ const Faq = () => {
               {faqData.map((faq, index) => (
                 <div key={index} className="mb-6">
                   {/* 질문 + 답변 카드 */}
-                  <div
-                    className={`bg-placeHolder rounded-lg transition-all duration-500`}
-                  >
+                  <div className="bg-placeHolder rounded-lg transition-all duration-500 hover:text-primary">
                     {/* 질문 */}
                     <div
                       onClick={() => toggleAnswer(index)}
-                      className={`flex items-center justify-between rounded-lg gap-x-4 px-8 py-5 cursor-pointer hover:text-primary ${
-                        activeIndex === index
-                          ? 'bg-placeHolder'
-                          : 'bg-placeHolder'
-                      }`}
-                      // style={{
-                      //   borderLeftWidth: '14px',
-                      //   borderLeftColor: '#2EA642',
-                      // }}
+                      className="flex items-center justify-between rounded-lg gap-x-4 px-8 py-5 cursor-pointer hover:text-primary group"
                     >
-                      <div className="flex items-center gap-x-8">
+                      <div className="flex items-center gap-x-8 ">
                         <div className="text-4xl font-extrabold text-primary">
                           Q
                         </div>
-                        <div className="text-lg text-gray4 font-semibold">
+                        <div
+                          className={`text-lg text-gray4 font-semibold group-hover:text-primary ${
+                            activeIndex === index
+                              ? 'text-primary'
+                              : 'text-gray4'
+                          }`}
+                        >
                           {faq.question}
                         </div>
                       </div>

@@ -1,13 +1,10 @@
 package com.resengkor.management.domain.user.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.resengkor.management.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
@@ -19,6 +16,14 @@ public class UserProfile extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+//    @Column(nullable = false)
+    @Column
+    private String companyPhoneNumber;
+
+    @Column
+//    @Column(nullable = false)
+    private String faxNumber;
 
     @Column(nullable = false)
     private String fullAddress;//전체주소
@@ -41,7 +46,9 @@ public class UserProfile extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public void updateUserProfile(String fullAddress, Region city, Region district) {
+    public void updateUserProfile(String companyPhoneNumber,String faxNumber, String fullAddress, Region city, Region district) {
+        this.companyPhoneNumber = companyPhoneNumber;
+        this.faxNumber = faxNumber;
         this.fullAddress = fullAddress;
         this.city = city;
         this.district = district;
