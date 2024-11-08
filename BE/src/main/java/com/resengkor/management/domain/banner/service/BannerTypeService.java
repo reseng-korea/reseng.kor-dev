@@ -13,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -40,22 +41,25 @@ public class BannerTypeService {
         List<BannerInventoryDTO> inventoryList = new ArrayList<>();
         bannersByTypeWidth.forEach((typeWidth, bannerList) -> {
             int standardCount = 0;
-            List<Integer> allLengths = new ArrayList<>();
+            // 각 배너의 길이를 정수로 변환하고 오름차순으로 정렬된 리스트 생성
+            List<Integer> allLengths = bannerList.stream()
+                    .map(banner -> bannerRequestMapper.INSTANCE.roundDoubleToInteger(banner.getHorizontalLength()))
+                    .sorted()
+                    .distinct() // 중복 제거
+                    .collect(Collectors.toList());
 
-            for (BannerType banner : bannerList) {
-                int roundedLength = bannerRequestMapper.INSTANCE.roundDoubleToInteger(banner.getHorizontalLength());
-                allLengths.add(roundedLength);
-
-                // 정단 현수막인 경우 standardCount 증가
-                if (roundedLength == 120) {
+            // 정단 현수막인 경우 standardCount 증가
+            for (int length : allLengths) {
+                if (length == 120) {
                     standardCount++;
                 }
             }
 
-            // 중복 제거 후 horizontalLength 기준으로 오름차순 정렬
-            allLengths = allLengths.stream().sorted().collect(Collectors.toList());
             inventoryList.add(new BannerInventoryDTO(typeWidth, standardCount, allLengths));
         });
+
+        // typeWidth 기준으로 오름차순 정렬
+        inventoryList.sort(Comparator.comparingInt(BannerInventoryDTO::getTypeWidth));
 
         return inventoryList;
     }
