@@ -31,15 +31,4 @@ public class OrderBanner {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "banner_type_id")
     private BannerType bannerType;
-
-    // 실제 데이터베이스와 매핑되지 않는 임시 필드
-    @Transient
-    private BannerType transientBannerType;
-
-    // BannerType을 임시에서 실제 필드로 이동하는 메서드
-    public void applyTransientBannerType() {
-        if (this.transientBannerType != null) {
-            this.bannerType = this.transientBannerType;
-        }
-    }
 }

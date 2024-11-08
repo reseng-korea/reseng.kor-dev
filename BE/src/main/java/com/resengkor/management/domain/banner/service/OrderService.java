@@ -13,6 +13,7 @@ import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -68,7 +69,7 @@ public class OrderService {
 
             // 새로운 TemporaryBannerType 생성
             TemporaryBannerType temporaryBannerType = new TemporaryBannerType().toBuilder()
-                    .temporaryTypeWidth(bannerOrderItem.getTypeWidth())
+                    .temporaryTypeWidth(bannerOrderItem.getTemporaryTypeWidth())
                     .quantity(bannerOrderItem.getQuantity())
                     .orderHistory(orderHistory)
                     .build();
@@ -89,11 +90,15 @@ public class OrderService {
 
 
     // 로그인한 사용자의 모든 발주 내역 조회
+    @Transactional
     public List<OrderResponseDto> getUserOrderHistories() {
         // 현재 로그인된 사용자의 ID를 가져옴
         Long userId = UserAuthorizationUtil.getLoginMemberId();
 
+        // 사용자의 모든 발주내역 가져오기
         List<OrderHistory> orderHistories = orderHistoryRepository.findByUserIdOrderByOrderDateDesc(userId);
+
+        // DTO로 변환하여 반환
         return orderHistoryMapper.toDtoList(orderHistories);
     }
 
@@ -122,21 +127,21 @@ public class OrderService {
 
     // BannerType을 실제 DB에 저장하는 메서드
     private void saveBannerTypesToDb(OrderHistory orderHistory) {
-        orderHistory.getOrderBanners().forEach(orderBanner -> {
-            // confirmOrder처럼 transientBannerType을 bannerType으로 설정
-            orderBanner = orderBanner.toBuilder()
-                    .bannerType(orderBanner.getTransientBannerType())
-                    .build();
-
-            BannerType bannerType = BannerType.builder()
-                    .typeWidth(orderBanner.getBannerType().getTypeWidth())
-                    .horizontalLength(orderBanner.getBannerType().getHorizontalLength())
-                    .isStandard(orderBanner.getBannerType().getIsStandard())
-                    .user(orderHistory.getUser())
-                    .build();
-
-            // BannerType을 DB에 저장
-            bannerTypeRepository.save(bannerType);
-        });
+//        orderHistory.getOrderBanners().forEach(orderBanner -> {
+//            // confirmOrder처럼 transientBannerType을 bannerType으로 설정
+////            orderBanner = orderBanner.toBuilder()
+////                    .bannerType(orderBanner.getTransientBannerType())
+////                    .build();
+//
+//            BannerType bannerType = BannerType.builder()
+//                    .typeWidth(orderBanner.getBannerType().getTypeWidth())
+//                    .horizontalLength(orderBanner.getBannerType().getHorizontalLength())
+//                    .isStandard(orderBanner.getBannerType().getIsStandard())
+//                    .user(orderHistory.getUser())
+//                    .build();
+//
+//            // BannerType을 DB에 저장
+//            bannerTypeRepository.save(bannerType);
+//        });
     }
 }

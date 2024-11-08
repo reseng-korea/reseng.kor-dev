@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class BannerOrderItemDto {
 
-    private Integer typeWidth;
+    private Integer temporaryTypeWidth;
     private Integer quantity;
 
 }

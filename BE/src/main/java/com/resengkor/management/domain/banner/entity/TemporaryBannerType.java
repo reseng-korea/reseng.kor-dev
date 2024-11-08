@@ -24,7 +24,7 @@ public class TemporaryBannerType {
     @Column(name = "temporary_type_quantity", nullable = false)
     private Integer quantity;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     @JoinColumn(name = "order_history_id", nullable = false)
     private OrderHistory orderHistory;
 

@@ -1,5 +1,6 @@
 package com.resengkor.management.domain.banner.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.resengkor.management.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -47,19 +48,8 @@ public class OrderHistory {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "orderHistory", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<OrderBanner> orderBanners = new ArrayList<>();
-
-    // OrderBanner 추가 메서드 (빌더 패턴 사용)
-    public void addOrderBanner(BannerType bannerType, Integer quantity) {
-        OrderBanner orderBanner = OrderBanner.builder()
-                .orderHistory(this)     // 현재 OrderHistory 객체 설정
-                .bannerType(bannerType) // BannerType 설정
-                .quantity(quantity)     // 수량 설정
-                .build();
-
-        orderBanners.add(orderBanner);   // 리스트에 추가
-    }
+    // 양방향 매핑 추가
+    @OneToMany(mappedBy = "orderHistory", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<TemporaryBannerType> temporaryBannerTypes = new ArrayList<>();
 }
 

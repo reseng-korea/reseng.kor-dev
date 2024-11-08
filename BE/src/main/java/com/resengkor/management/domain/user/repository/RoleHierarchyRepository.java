@@ -1,6 +1,7 @@
 package com.resengkor.management.domain.user.repository;
 
 
+import com.resengkor.management.domain.user.entity.Region;
 import com.resengkor.management.domain.user.entity.RoleHierarchy;
 import com.resengkor.management.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -22,4 +23,5 @@ public interface RoleHierarchyRepository extends JpaRepository<RoleHierarchy, Lo
     @Query("SELECT rh.descendant FROM RoleHierarchy rh WHERE rh.ancestor.id = :userId")
     List<User> findDescendantRoles(@Param("userId") Long userId);
 
+    Optional<RoleHierarchy> findByAncestorAndDescendant(User ancester, User descendant);
 }
