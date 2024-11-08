@@ -31,7 +31,4 @@ public class RoleHierarchy {
         this.descendant = descendant;
         this.depth = depth;
     }
-
-
-
 }

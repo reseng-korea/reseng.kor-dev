@@ -1,48 +1,26 @@
 import Layout from '../../components/Layouts';
-import { useNavigateTo } from '../../hooks/useNavigateTo';
-
-import { timelineData } from '../../data/timelinedata';
+import SubNavbar from '../../components/SubNavbar';
 
 import history from '../../assets/history.png';
 
+import { timelineData } from '../../data/timelinedata';
+
 const History = () => {
-  // 페이지 이동
-  const { navigateTo, routes } = useNavigateTo();
+  const navItems = [
+    { label: '회사 소개', route: '/company' },
+    { label: '연혁', route: '/history' },
+    { label: '오시는 길', route: '/location' },
+  ];
 
   return (
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
         <div className="flex flex-col w-full">
-          {/* 하위 카테고리 */}
-          <div className="mt-16 mb-6 text-3xl font-bold slide-up">
-            회사 소개
-          </div>
-          <div className="flex justify-center slide-up">
-            <button
-              onClick={() => navigateTo(routes.company)}
-              className="flex items-center justify-center w-32 h-10 border-none outline-none bg-transition"
-            >
-              <span className="text-black hover:text-primary">회사 소개</span>
-            </button>
-            <button
-              onClick={() => navigateTo(routes.history)}
-              className="flex items-center justify-center w-32 h-10 border-0 border-b-2 border-[#2EA642] rounded-none bg-transition"
-            >
-              <span className="font-bold text-[#2EA642]">연혁</span>
-            </button>
-            {/* <button
-              onClick={() => navigateTo(routes.location)}
-              className="flex items-center justify-center w-30 h-10 rounded-none hover:border-b-2 hover:border-b-primary hover:text-primary"
-            > */}
-            <button
-              onClick={() => navigateTo(routes.location)}
-              className="flex items-center justify-center w-32 h-10 border-none outline-none bg-transition"
-            >
-              <span className="text-black hover:text-primary">오시는 길</span>
-            </button>
-          </div>
-          <hr className="w-full mb-12 border-t border-gray1 slide-up" />
-
+          <SubNavbar
+            items={navItems}
+            activePage="연혁"
+            mainCategory="회사 소개"
+          />
           {/* 메인 */}
           <div className="flex flex-col">
             <div className="relative w-full h-80 rounded-2xl overflow-hidden">
@@ -53,8 +31,9 @@ const History = () => {
               />
               <div className="absolute inset-0 flex items-center justify-center">
                 <span className="text-center text-lg font-bold text-white sm:text-lg md:text-xl lg:text-3xl fade-in">
-                  지속 가능한 세상을 위한 발걸음,
-                  <br />
+                  <span className="block mb-2">
+                    지속 가능한 세상을 위한 발걸음,
+                  </span>
                   리앤생의 친환경 여정입니다.
                 </span>
               </div>

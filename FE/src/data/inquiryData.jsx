@@ -7,6 +7,7 @@ export const inquiryData = [
     date: '2024-10-12',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 2,
@@ -15,6 +16,7 @@ export const inquiryData = [
     date: '2024-10-13',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 3,
@@ -23,6 +25,7 @@ export const inquiryData = [
     date: '2024-10-13',
     views: 10,
     isSecret: false,
+    responseStatus: true,
   },
   {
     id: 4,
@@ -31,6 +34,7 @@ export const inquiryData = [
     date: '2024-10-14',
     views: 10,
     isSecret: false,
+    responseStatus: true,
   },
   {
     id: 5,
@@ -39,6 +43,7 @@ export const inquiryData = [
     date: '2024-10-15',
     views: 10,
     isSecret: false,
+    responseStatus: true,
   },
   {
     id: 6,
@@ -47,6 +52,7 @@ export const inquiryData = [
     date: '2024-10-16',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 7,
@@ -55,6 +61,7 @@ export const inquiryData = [
     date: '2024-10-17',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 8,
@@ -63,6 +70,7 @@ export const inquiryData = [
     date: '2024-10-18',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 9,
@@ -71,6 +79,7 @@ export const inquiryData = [
     date: '2024-10-18',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 10,
@@ -79,6 +88,7 @@ export const inquiryData = [
     date: '2024-10-18',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 11,
@@ -87,6 +97,7 @@ export const inquiryData = [
     date: '2024-10-18',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 12,
@@ -96,6 +107,7 @@ export const inquiryData = [
     date: '2024-10-12',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 13,
@@ -104,6 +116,7 @@ export const inquiryData = [
     date: '2024-10-13',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 14,
@@ -112,6 +125,7 @@ export const inquiryData = [
     date: '2024-10-13',
     views: 10,
     isSecret: false,
+    responseStatus: true,
   },
   {
     id: 15,
@@ -120,6 +134,7 @@ export const inquiryData = [
     date: '2024-10-18',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 16,
@@ -129,6 +144,7 @@ export const inquiryData = [
     date: '2024-10-12',
     views: 10,
     isSecret: true,
+    responseStatus: true,
   },
   {
     id: 17,
@@ -137,6 +153,7 @@ export const inquiryData = [
     date: '2024-10-13',
     views: 10,
     isSecret: true,
+    responseStatus: false,
   },
   {
     id: 18,
@@ -145,6 +162,7 @@ export const inquiryData = [
     date: '2024-10-13',
     views: 10,
     isSecret: false,
+    responseStatus: false,
   },
   {
     id: 19,
@@ -153,6 +171,7 @@ export const inquiryData = [
     date: '2024-10-13',
     views: 10,
     isSecret: true,
+    responseStatus: false,
   },
   {
     id: 20,
@@ -161,5 +180,6 @@ export const inquiryData = [
     date: '2024-10-13',
     views: 10,
     isSecret: false,
+    responseStatus: false,
   },
 ];

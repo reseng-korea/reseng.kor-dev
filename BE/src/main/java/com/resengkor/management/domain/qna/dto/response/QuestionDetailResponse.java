@@ -24,4 +24,6 @@ public class QuestionDetailResponse {
     private String representativeName;
 
     private LocalDateTime createdAt;
+
+    private boolean isAnswered;
 }
