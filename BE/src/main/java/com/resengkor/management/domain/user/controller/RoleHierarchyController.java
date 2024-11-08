@@ -22,4 +22,11 @@ public class RoleHierarchyController {
 
         return roleHierarchyService.addRoleHierarchy(childId);
     }
+
+    @Operation(description = "부모-자식 관계 제거")
+    @DeleteMapping("/{childId}")
+    public CommonResponse deleteRoleHierarchy(@Valid @PathVariable("childId") Long childId) {
+
+        return roleHierarchyService.deleteRoleHierarchy(childId);
+    }
 }

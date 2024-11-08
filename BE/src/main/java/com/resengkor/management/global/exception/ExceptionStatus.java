@@ -56,6 +56,7 @@ public enum ExceptionStatus {
     // 6xx 등급 관련 오류
     ROLE_CHANGE_FAIL(6001, "해당 유저의 등급을 변경할 권리가 없습니다."),
     ROLE_PERMISSION_DENIED(6002, "해당 등급 변경에 필요한 권한이 부족합니다."),
+    HIERARCHY_NOT_FOUND(6003, "해당 부모-자식 관계가 존재하지 않습니다."),
 
 
     FORBIDDEN_FAILED(4001, "콘텐츠에 접근할 수 없어, 정보를 조회할 수 없습니다."),

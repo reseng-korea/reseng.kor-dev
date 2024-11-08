@@ -57,4 +57,30 @@ public class RoleHierarchyService {
 
         return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(), ResponseStatus.CREATED_SUCCESS.getMessage());
     }
+
+    @Transactional
+    public CommonResponse deleteRoleHierarchy(Long childId) {
+
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+        User loginUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        User childUser = userRepository.findById(childId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        if(loginUser.getRole().getRank() <= childUser.getRole().getRank())
+            throw new CustomException(ExceptionStatus.ROLE_PERMISSION_DENIED);
+
+        List<Role> accessibleRoles = userService.getAccessibleRoles(loginUser.getRole());
+
+        if (!accessibleRoles.contains(childUser.getRole()))
+            throw new CustomException(ExceptionStatus.ROLE_CHANGE_FAIL);
+
+        RoleHierarchy roleHierarchy = roleHierarchyRepository.findByAncestorAndDescendant(loginUser, childUser)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.HIERARCHY_NOT_FOUND));
+
+        roleHierarchyRepository.delete(roleHierarchy);
+
+        return new CommonResponse(ResponseStatus.DELETED_SUCCESS.getCode(), ResponseStatus.DELETED_SUCCESS.getMessage());
+    }
 }
