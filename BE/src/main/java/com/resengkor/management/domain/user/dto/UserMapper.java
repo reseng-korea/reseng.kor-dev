@@ -31,7 +31,9 @@ public class UserMapper {
         }
         return UserProfileDTO.builder()
                 .id(userProfile.getId())
-                .address(userProfile.getFullAddress())
+                .companyPhoneNumber(userProfile.getCompanyPhoneNumber())
+                .faxNumber(userProfile.getFaxNumber())
+                .fullAddress(userProfile.getFullAddress())
                 .city(userProfile.getCity())
                 .district(userProfile.getDistrict())
                 .latitude(userProfile.getLatitude())
@@ -41,19 +43,23 @@ public class UserMapper {
 
     // 필요한 정보만 담은 CompanyInfoDTO 변환 메서드
     public CompanyInfoDTO toCompanyInfoDTO(User user) {
-        if (user == null || user.getUserProfile() == null) {
+        if (user == null) {
             return null;
         }
+
         UserProfile userProfile = user.getUserProfile();
 
         return CompanyInfoDTO.builder()
                 .userId(user.getId())
+                .role(user.getRole() != null ? user.getRole().getRole() : null)
                 .companyName(user.getCompanyName())
-                .phoneNumber(user.getPhoneNumber())
-                .userProfileId(userProfile.getId())
-                .address(userProfile.getFullAddress())
-                .latitude(userProfile.getLatitude())
-                .longitude(userProfile.getLongitude())
+                .userProfileId(userProfile != null ? userProfile.getId() : null)
+                .companyPhoneNumber(userProfile != null ? userProfile.getCompanyPhoneNumber() : null)
+                .fullAddress(userProfile != null ? userProfile.getFullAddress() : null)
+                .city(userProfile != null ? userProfile.getCity() : null)
+                .district(userProfile != null ? userProfile.getDistrict() : null)
+                .latitude(userProfile != null ? userProfile.getLatitude() : null)
+                .longitude(userProfile != null ? userProfile.getLongitude() : null)
                 .build();
     }
 }
