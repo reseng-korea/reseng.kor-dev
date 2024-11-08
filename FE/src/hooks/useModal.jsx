@@ -2,7 +2,7 @@ import { useState } from 'react';
 import CustomModal from '../components/CustomModal';
 
 const useModal = () => {
-  console.log('2.useModal에서 받았다.');
+  // console.log('2.useModal에서 받았다.');
   const [isOpen, setIsOpen] = useState(false);
   const [modalProps, setModalProps] = useState({
     title: '',

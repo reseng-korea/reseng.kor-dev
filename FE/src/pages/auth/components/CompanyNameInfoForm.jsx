@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 
-const CompanyNameInfoForm = () => {
-  const [companyName, setCompanyName] = useState('');
+const CompanyNameInfoForm = ({ companyName, setCompanyName }) => {
+  const handleCompanyNameInputChange = (e) => {
+    const newCompanyName = e.target.value;
+    setCompanyName(newCompanyName);
+  };
+
   return (
     <>
       {/* 업체명 */}
@@ -10,7 +14,7 @@ const CompanyNameInfoForm = () => {
         <input
           type="text"
           value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
+          onChange={handleCompanyNameInputChange}
           className="w-full p-2 mb-1 border rounded-lg"
           placeholder="업체명을 입력해주세요"
         />

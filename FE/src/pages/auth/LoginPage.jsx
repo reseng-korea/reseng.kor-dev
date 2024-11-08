@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 import login from './../../assets/login.png';
 import kakao from './../../assets/kakao_logo.png';
@@ -9,6 +10,7 @@ import { useNavigateTo } from '../../hooks/useNavigateTo';
 import { IoIosMail, IoIosLock } from 'react-icons/io';
 
 const LoginPage = () => {
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
@@ -16,10 +18,35 @@ const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 로그인 처리 로직 (API 요청 등)
-    console.log('로그인 정보:', { email, password });
+    try {
+      const response = await axios.post(
+        `${apiUrl}/api/v1/login`,
+        {
+          email: email,
+          password: password,
+          isAuto: false,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
   };
 
   return (
@@ -48,6 +75,8 @@ const LoginPage = () => {
               <div className="flex items-center w-full px-3 py-2 border rounded-lg">
                 <input
                   type="email"
+                  value={email}
+                  onChange={handleEmailChange}
                   className="w-full text-xs outline-none sm:text-sm md:text-sm lg:text-base"
                   placeholder="이메일을 입력해주세요"
                 />
@@ -60,6 +89,8 @@ const LoginPage = () => {
               <div className="flex items-center w-full px-3 py-2 border rounded-lg">
                 <input
                   type="password"
+                  value={password}
+                  onChange={handlePasswordChange}
                   className="w-full text-[11px] outline-none sm:text-sm md:text-sm lg:text-base"
                   placeholder="비밀번호를 입력해주세요"
                 />
@@ -80,6 +111,7 @@ const LoginPage = () => {
             {/* 로그인 버튼 */}
             <button
               type="submit"
+              onClick={handleSubmit}
               className="w-full px-4 py-2 font-bold text-white bg-primary rounded-lg hover:bg-white hover:text-primary"
             >
               로그인

@@ -1,12 +1,39 @@
 import React, { useState } from 'react';
 
-const PasswordInfoForm = () => {
-  const [password, setPassword] = useState('');
+const PasswordInfoForm = ({
+  password,
+  setPassword,
+  isValidPassword,
+  setIsValidPassword,
+}) => {
   const [confirmPassword, setConfirmPassword] = useState('');
-
+  // 비밀번호 유효성 검사
+  const validatePassword = (password) => {
+    const passwordRegex =
+      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    return passwordRegex.test(password);
+  };
   // 비밀번호 일치 여부
-  const isPasswordMatched =
-    password && confirmPassword && password === confirmPassword;
+  const checkPasswordMatch = (password, confirmPassword) => {
+    return password && confirmPassword && password === confirmPassword;
+  };
+
+  const isPasswordMatched = checkPasswordMatch(password, confirmPassword);
+
+  const handlePasswordInputChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+    const isPasswordValid = validatePassword(newPassword);
+    const doesPasswordMatch = checkPasswordMatch(newPassword, confirmPassword);
+    setIsValidPassword(isPasswordValid && doesPasswordMatch);
+  };
+
+  const handleConfirmPasswordInputChange = (e) => {
+    const newConfirmPassword = e.target.value;
+    setConfirmPassword(newConfirmPassword);
+    const doesPasswordMatch = checkPasswordMatch(password, newConfirmPassword);
+    setIsValidPassword(validatePassword(password) && doesPasswordMatch);
+  };
 
   return (
     <>
@@ -19,7 +46,7 @@ const PasswordInfoForm = () => {
         <input
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handlePasswordInputChange}
           className="w-full p-2 mb-1 border rounded-lg"
           placeholder="비밀번호를 입력해주세요"
         />
@@ -31,7 +58,7 @@ const PasswordInfoForm = () => {
         <input
           type="password"
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={handleConfirmPasswordInputChange}
           className="w-full p-2 mb-1 border rounded-lg"
           placeholder="비밀번호를 한 번 더 입력해주세요"
         />

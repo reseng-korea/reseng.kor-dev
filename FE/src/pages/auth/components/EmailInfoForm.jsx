@@ -1,24 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Modal from 'react-modal';
 
-import CustomModal from '../../../components/CustomModal';
+import useModal from '../../../hooks/useModal';
 
-Modal.setAppElement('#root'); // 접근성 설정 (필수)
-
-const EmailInfoForm = () => {
+const EmailInfoForm = ({
+  email,
+  setEmail,
+  isValidEmail,
+  setIsValidEmail,
+  isConfirmEmail,
+  setIsConfirmEmail,
+}) => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
-  // 이메일
-  const [email, setEmail] = useState('');
-  // 이메일 유효성 상태
-  const [isValidEmail, setIsValidEmail] = useState(true);
   // 중복 확인 누름 상태 버튼
   const [isClicked, setIsClicked] = useState(false);
-  // 모달 상태 및 메시지 설정
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalTitle, setModalTitle] = useState('');
-  const [type, setType] = useState('');
   // 이메일 인증 번호
   const [authCode, setAuthCode] = useState('');
   // 인증 시간(5분)
@@ -27,19 +22,16 @@ const EmailInfoForm = () => {
   // 인증 완료
   const [isAuthVerified, setIsAuthVerified] = useState(false);
 
-  const [autoCloseMessage, setAutoCloseMessage] =
-    useState('(5초 뒤 창이 사라집니다.)');
+  const [modalOpen, setModalOpen] = useState(false);
+  const { openModal, closeModal, RenderModal } = useModal();
 
   // 이메일 입력 감지
   const handleEmailInputChange = (e) => {
-    setEmail(e.target.value);
-    console.log(email);
-
+    const newEmail = e.target.value;
+    setEmail(newEmail);
     // 이메일 유효성 검사
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    setIsValidEmail(emailRegex.test(email));
-
-    console.log(isValidEmail);
+    setIsValidEmail(emailRegex.test(newEmail));
   };
 
   // 인증번호 입력 감지
@@ -47,45 +39,54 @@ const EmailInfoForm = () => {
     setAuthCode(e.target.value);
   };
 
-  const openModal = (title, message, type) => {
-    setModalTitle(title);
-    setAutoCloseMessage(message);
-    setType(type);
-    setIsModalOpen(true);
-  };
-  const closeModal = () => setIsModalOpen(false);
-
   const handleEmailCheckClick = async () => {
     if (!email) {
-      // openModal(
-      //   '이메일을 입력해주세요.',
-      //   '(5초 뒤 창이 사라집니다.)',
-      //   'warning'
-      // );
+      setModalOpen(true);
+      openModal({
+        title: '이메일을 입력해주세요.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
+        },
+      });
     } else if (!isValidEmail) {
-      // openModal(
-      //   '올바르지 않은 이메일 형식입니다.',
-      //   '(5초 뒤 창이 사라집니다.)',
-      //   'warning'
-      // );
+      setModalOpen(true);
+      openModal({
+        title: '올바르지 않은 이메일 형식입니다.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
+        },
+      });
     } else {
       setIsClicked(true);
-      // openModal(
-      //   `${email} (으)로 인증번호가 발송되었습니다.`,
-      //   '(5초 뒤 창이 사라집니다.)',
-      //   'success'
-      // );
+      setModalOpen(true);
+      setTimeLeft(300);
+
       try {
         const response = await axios.post(
           `${apiUrl}/api/v1/mail/send-verification`,
           { email: email },
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`, // 실제 토큰 값으로 대체
+              // Authorization: `Bearer ${accessToken}`, // 실제 토큰 값으로 대체
               'Content-Type': 'application/json',
             },
           }
         );
+
+        openModal({
+          title: `${email} (으)로 인증번호가 발송되었습니다.`,
+          type: 'success',
+          isAutoClose: true,
+          onConfirm: () => {
+            closeModal(), setModalOpen(false);
+          },
+        });
+
+        console.log(response);
 
         if (response.status === 200) {
           console.log('사용 가능한 이메일입니다.');
@@ -102,11 +103,15 @@ const EmailInfoForm = () => {
 
   const handleEmailAuthClick = async () => {
     if (!authCode) {
-      // openModal(
-      //   '인증번호를 입력해주세요.',
-      //   '(5초 뒤 창이 사라집니다.)',
-      //   'warning'
-      // );
+      setModalOpen(true);
+      openModal({
+        title: '인증번호를 입력해주세요.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
+        },
+      });
     } else {
       try {
         console.log(authCode);
@@ -126,11 +131,16 @@ const EmailInfoForm = () => {
         console.log(response.data.code);
 
         if (response.data.code == 200) {
-          // openModal(
-          //   '이메일 인증이 성공적으로 완료되었습니다.',
-          //   '(5초 뒤 창이 사라집니다.)',
-          //   'success'
-          // );
+          setModalOpen(true);
+          setIsConfirmEmail(true);
+          openModal({
+            title: '이메일 인증이 성공적으로 완료되었습니다.',
+            type: 'success',
+            isAutoClose: true,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
           setIsAuthVerified(true);
         }
       } catch (error) {
@@ -139,17 +149,26 @@ const EmailInfoForm = () => {
           error.response.data.message ==
           '인증 코드가 일치하지 않습니다. 올바른 코드를 입력해 주세요.'
         ) {
-          // openModal(
-          //   '인증번호가 올바르지 않습니다. 다시 확인해 주세요.',
-          //   '(5초 뒤 창이 사라집니다.)',
-          //   'warning'
-          // );
+          setModalOpen(true);
+          openModal({
+            title: '인증번호가 올바르지 않습니다. 다시 확인해 주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
         } else {
-          // openModal(
-          //   '인증번호가 만료되었습니다. 다시 요청하여 새로운 인증번호를 받아주세요.',
-          //   '(5초 뒤 창이 사라집니다.)',
-          //   'warning'
-          // );
+          setModalOpen(true);
+          openModal({
+            title: '인증번호가 만료되었습니다.',
+            context: '다시 요청하여 새로운 인증번호를 받아주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
         }
       }
     }
@@ -184,6 +203,12 @@ const EmailInfoForm = () => {
             className="flex-grow p-2 mb-1 border rounded-lg"
             placeholder="이메일을 입력해주세요"
             onChange={handleEmailInputChange}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !isAuthVerified) {
+                // Enter 키를 눌렀을 때만 실행
+                handleEmailCheckClick(e);
+              }
+            }}
             disabled={isClicked}
           />
           <button
@@ -233,16 +258,7 @@ const EmailInfoForm = () => {
           </div>
         )}
       </div>
-
-      {isModalOpen && (
-        <CustomModal
-          isOpen={isModalOpen}
-          closeModal={closeModal}
-          title={modalTitle}
-          autoCloseMessage={autoCloseMessage}
-          type={type}
-        ></CustomModal>
-      )}
+      {modalOpen && <RenderModal />}
     </>
   );
 };
