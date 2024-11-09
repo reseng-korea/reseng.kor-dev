@@ -7,6 +7,7 @@ import com.resengkor.management.domain.sms.dto.MessageAuthDTO;
 import com.resengkor.management.domain.sms.dto.MessageDto;
 import com.resengkor.management.domain.sms.dto.SmsRequest;
 import com.resengkor.management.domain.sms.dto.SmsResponse;
+import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
@@ -46,6 +47,7 @@ public class SmsServiceWithRedis {
     //휴대폰 인증 번호
     private final String smsConfirmNum = TmpCodeUtil.generateNumericCode();
     private final RedisUtil redisUtil;
+    private final UserRepository userRepository;
 
     @Value("${spring.naver-cloud-sms.accessKey}")
     private String accessKey;
@@ -90,6 +92,8 @@ public class SmsServiceWithRedis {
     //메세지 발송
     @Transactional
     public SmsResponse sendSms(MessageDto messageDto, String type) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
+        //핸드폰 인증(만약 이미 존재하는 핸드폰이라면)
+        userRepository.findByPhoneNumber(messageDto.getTo()).orElseThrow(() -> new CustomException(ExceptionStatus.USER_PHONE_NUMBER_ALREADY_EXIST));
         return sendDetailSms(messageDto,type,smsConfirmNum);
     }
 

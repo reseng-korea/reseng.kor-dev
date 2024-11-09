@@ -13,25 +13,14 @@ public class OauthUserUpdateRequest {
 
     @NotBlank(message = "업체명은 필수 입력 값입니다.")
     private String companyName;
-
-    @NotBlank(message = "대표자명은 필수 입력 값입니다.")
     private String representativeName;
 
     @NotBlank(message = "핸드폰 번호는 필수 입력 값입니다.")
     private String phoneNumber;
-
-    @NotBlank(message = "회사 전화번호는 필수 입력 값입니다.")
     private String companyPhoneNumber;
-
-    @NotBlank(message = "팩스 번호는 필수 입력 값입니다.")
     private String faxNumber;
 
-    @NotBlank(message = "광역자치구는 필수 입력 값입니다.")
     private String cityName;
-
-    @NotBlank(message = "지역자치구는 필수 입력 값입니다.")
     private String districtName;
-
-    @NotBlank(message = "주소는 필수 입력 값입니다.")
-    private String fullAddress;
+//    private String fullAddress;
 }

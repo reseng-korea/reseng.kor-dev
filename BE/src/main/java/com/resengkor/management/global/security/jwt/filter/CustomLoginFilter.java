@@ -81,6 +81,20 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             log.info("------------------------------------------------");
             throw new CustomException(ExceptionStatus.EXCEPTION);
         }
+        // 이메일 유효성 검사: 이메일이 비어있거나 형식이 맞지 않으면 오류 발생
+        if (loginDTO.getEmail() == null || loginDTO.getEmail().isBlank()) {
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
+        }
+
+        // 이메일 형식 확인 (간단한 정규식 사용)
+        if (!loginDTO.getEmail().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
+        }
+
+        // 비밀번호 유효성 검사: 비밀번호가 비어있거나 형식이 맞지 않으면 오류 발생
+        if (loginDTO.getPassword() == null || !loginDTO.getPassword().matches("(?=.*\\W)(?=\\S+$).{8,16}")) {
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
+        }
 
         // 사용자 인증을 시도하기 위한 토큰 생성(아직 인증이 되지 않은 상태)
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(loginDTO.getEmail(), loginDTO.getPassword());
