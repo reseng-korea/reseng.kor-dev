@@ -26,6 +26,6 @@ public class UserRegisterRequest {
 
     private String cityName;
     private String districtName;
-    private String fullAddress;
-    //도로명 주소 추가
+    private String streetAddress;
+    private String detailAddress;
 }

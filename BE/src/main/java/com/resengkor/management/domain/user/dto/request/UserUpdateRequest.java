@@ -26,5 +26,6 @@ public class UserUpdateRequest {
     private String faxNumber;
     private String cityName;
     private String districtName;
-    private String fullAddress;
+    private String streetAddress;
+    private String detailAddress;
 }

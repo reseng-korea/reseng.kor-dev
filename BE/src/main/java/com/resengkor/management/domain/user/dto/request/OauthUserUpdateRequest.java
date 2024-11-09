@@ -22,5 +22,7 @@ public class OauthUserUpdateRequest {
 
     private String cityName;
     private String districtName;
-//    private String fullAddress;
+    private String streetAddress;
+    private String detailAddress;
+
 }
