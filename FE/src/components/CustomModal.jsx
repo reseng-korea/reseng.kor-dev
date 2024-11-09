@@ -70,6 +70,7 @@ function CustomModal({
           width: '500px',
           minHeight: '300px',
           padding: '20px',
+          marginRight: '100px',
           background: 'white',
           borderRadius: '10px',
           outline: 'none',
@@ -81,6 +82,7 @@ function CustomModal({
           // zIndex: 10000, // 모달 콘텐츠도 nav보다 높게 설정
         },
       }}
+      className="slide-up"
     >
       {type === 'success' && (
         <img src={success} alt="성공" className="w-16 h-16" />

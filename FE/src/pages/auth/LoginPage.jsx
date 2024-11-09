@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
+import useModal from '../../hooks/useModal';
+
 import login from './../../assets/login.png';
 import kakao from './../../assets/kakao_logo.png';
 import google from './../../assets/google_logo.png';
@@ -17,27 +19,69 @@ const LoginPage = () => {
   // 사용자 입력 상태 관리
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberLogin, setRememberLogin] = useState(false);
+
+  const [modalOpen, setModalOpen] = useState(false);
+  const { openModal, closeModal, RenderModal } = useModal();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post(
-        `${apiUrl}/api/v1/login`,
-        {
-          email: email,
-          password: password,
-          isAuto: false,
+    if (!email) {
+      setModalOpen(true);
+      openModal({
+        title: '아이디를 입력해주세요.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
         },
-        {
-          headers: {
-            'Content-Type': 'application/json',
+      });
+    } else if (!password) {
+      setModalOpen(true);
+      openModal({
+        title: '비밀번호를 입력해주세요.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
+        },
+      });
+    } else {
+      try {
+        const response = await axios.post(
+          `${apiUrl}/api/v1/login`,
+          {
+            email: email,
+            password: password,
+            isAuto: rememberLogin,
           },
-        }
-      );
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
-      console.log(response);
-    } catch (error) {
-      console.log(error);
+        navigateTo(routes.home);
+
+        console.log(response);
+        console.log(response.headers.authorization);
+        const accessToken = response.headers.authorization;
+        localStorage.setItem('accessToken', accessToken);
+        console.log(response.headers.refresh);
+      } catch (error) {
+        console.log(error);
+        setModalOpen(true);
+        openModal({
+          title: '아이디 또는 비밀번호가 올바르지 않습니다.',
+          context: '다시 확인해주세요.',
+          type: 'warning',
+          isAutoClose: false,
+          onConfirm: () => {
+            closeModal(), setModalOpen(false);
+          },
+        });
+      }
     }
   };
 
@@ -47,6 +91,11 @@ const LoginPage = () => {
 
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
+  };
+
+  const handleRememberLogin = (e) => {
+    setRememberLogin(e.target.checked);
+    console.log(e.target.checked);
   };
 
   return (
@@ -99,9 +148,14 @@ const LoginPage = () => {
 
             {/* 로그인 상태 유지 */}
             <div className="flex items-center px-3 py-2 mb-2">
-              <input type="checkbox" id="rememberMe" className="mr-2" />
+              <input
+                onChange={handleRememberLogin}
+                type="checkbox"
+                id="rememberLogin"
+                className="mr-2"
+              />
               <label
-                htmlFor="rememberMe"
+                htmlFor="rememberLogin"
                 className="text-xs text-gray-700 sm:text-sm md:text-sm lg:text-base"
               >
                 로그인 상태 유지
@@ -112,7 +166,7 @@ const LoginPage = () => {
             <button
               type="submit"
               onClick={handleSubmit}
-              className="w-full px-4 py-2 font-bold text-white bg-primary rounded-lg hover:bg-white hover:text-primary"
+              className="w-full px-4 py-2 font-bold text-white bg-primary rounded-lg hover:bg-hover"
             >
               로그인
             </button>
@@ -169,6 +223,7 @@ const LoginPage = () => {
           </form>
         </div>
       </div>
+      {modalOpen && <RenderModal />}
     </div>
   );
 };

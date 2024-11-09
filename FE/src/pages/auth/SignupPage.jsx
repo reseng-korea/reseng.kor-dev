@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import Layout from '../../components/Layouts';
@@ -37,17 +37,52 @@ const SignupPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
 
-  console.log(email, isValidEmail);
-  console.log(password, isValidPassword);
-  console.log(phoneNumber, isValidPhoneNumber);
-  console.log(companyName);
-  console.log(ownerName);
-  console.log(companyPhoneNumber);
-  console.log(companyFaxNumber);
-  console.log(region);
-  console.log(subRegion);
-  console.log(address);
-  console.log(detailAddress);
+  // console.log(email, isValidEmail);
+  // console.log(password, isValidPassword);
+  // console.log(phoneNumber, isValidPhoneNumber);
+  // console.log(companyName);
+  // console.log(ownerName);
+  // console.log(companyPhoneNumber);
+  // console.log(companyFaxNumber);
+  // console.log(region);
+  // console.log(subRegion);
+  // console.log(address);
+  // console.log(detailAddress);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      // F5 키나 Ctrl+R(Cmd+R) 새로고침을 감지
+      if (
+        e.key === 'F5' ||
+        (e.ctrlKey && e.key === 'r') ||
+        (e.metaKey && e.key === 'r')
+      ) {
+        e.preventDefault(); // 새로고침 동작 중지
+        setModalOpen(true);
+        openModal({
+          title: '새로고침 시 입력한 내용이 모두 사라집니다.',
+          context: '새로고침하시겠습니까?',
+          type: 'warning',
+          isAutoClose: false,
+          cancleButton: true,
+          onConfirm: () => {
+            closeModal();
+            setModalOpen(false);
+            // 새로고침을 허용하려면 아래 코드를 실행
+            window.location.reload();
+          },
+        });
+      }
+    };
+
+    // 키보드 이벤트 리스너 추가
+    window.addEventListener('keydown', handleKeyDown);
+
+    // 컴포넌트 언마운트 시 이벤트 리스너 제거
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [openModal, closeModal]);
 
   const handleSubmit = async () => {
     if (!email) {
@@ -224,7 +259,8 @@ const SignupPage = () => {
             faxNumber: companyFaxNumber,
             cityName: region,
             districtName: subRegion,
-            fullAddress: address + detailAddress,
+            streetAddress: address,
+            detailAddress: detailAddress,
           },
           {
             headers: {
@@ -233,10 +269,15 @@ const SignupPage = () => {
           }
         );
 
-        if (data.message == '요청에 성공되어 데이터가 생성되었습니다') {
+        console.log(response);
+
+        if (
+          response.data.message == '요청에 성공되어 데이터가 생성되었습니다'
+        ) {
+          setModalOpen(true);
           openModal({
             title: '회원가입이 완료되었습니다.',
-            type: 'warning',
+            type: 'success',
             isAutoClose: false,
             onConfirm: () => {
               closeModal(), setModalOpen(false);

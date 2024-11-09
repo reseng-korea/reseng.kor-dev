@@ -61,42 +61,62 @@ const EmailInfoForm = ({
         },
       });
     } else {
-      setIsClicked(true);
-      setModalOpen(true);
-      setTimeLeft(300);
-
       try {
-        const response = await axios.post(
-          `${apiUrl}/api/v1/mail/send-verification`,
-          { email: email },
+        const response = await axios.get(
+          `${apiUrl}/api/v1/check-email`,
+          { params: { email } },
           {
             headers: {
-              // Authorization: `Bearer ${accessToken}`, // 실제 토큰 값으로 대체
               'Content-Type': 'application/json',
             },
           }
         );
 
+        if (response.data.data == '사용 가능한 이메일입니다.') {
+          try {
+            const response = await axios.post(
+              `${apiUrl}/api/v1/mail/send-verification`,
+              { email: email },
+              {
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+
+            setIsClicked(true);
+            setModalOpen(true);
+            setTimeLeft(300);
+
+            openModal({
+              title: `${email} (으)로 인증번호가 발송되었습니다.`,
+              type: 'success',
+              isAutoClose: true,
+              onConfirm: () => {
+                closeModal(), setModalOpen(false);
+              },
+            });
+
+            console.log(response);
+
+            if (response.status === 200) {
+              console.log('사용 가능한 이메일입니다.');
+            }
+          } catch (error) {
+            console.log(error);
+          }
+        }
+      } catch (error) {
+        console.log(error);
+        setModalOpen(true);
         openModal({
-          title: `${email} (으)로 인증번호가 발송되었습니다.`,
-          type: 'success',
-          isAutoClose: true,
+          title: '이미 존재하는 이메일입니다.',
+          type: 'warning',
+          isAutoClose: false,
           onConfirm: () => {
             closeModal(), setModalOpen(false);
           },
         });
-
-        console.log(response);
-
-        if (response.status === 200) {
-          console.log('사용 가능한 이메일입니다.');
-        }
-      } catch (error) {
-        if (error.response && error.response.status === 409) {
-          console.error('이미 사용 중인 이메일입니다.');
-        } else {
-          console.error('이메일 중복 확인에 실패했습니다.', error);
-        }
       }
     }
   };

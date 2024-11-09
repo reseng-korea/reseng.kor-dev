@@ -54,14 +54,7 @@ const PhoneNumberInfoForm = ({
         },
       });
     } else {
-      setIsClicked(true);
-      setTimeLeft(180);
-      // 기존 타이머 있을 경우 초기화
-      if (timerRef.current) clearInterval(timerRef.current);
-      timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-
+      console.log(phoneNumber);
       try {
         const response = await axios.post(
           `${apiUrl}/api/v1/sms/send-verification`,
@@ -76,6 +69,13 @@ const PhoneNumberInfoForm = ({
 
         if (response.status == 200) {
           setModalOpen(true);
+          setIsClicked(true);
+          setTimeLeft(180);
+          // 기존 타이머 있을 경우 초기화
+          if (timerRef.current) clearInterval(timerRef.current);
+          timerRef.current = setInterval(() => {
+            setTimeLeft((prev) => prev - 1);
+          }, 1000);
           openModal({
             title: `${phoneNumber} (으)로 인증번호가 발송되었습니다.`,
             type: 'success',
@@ -86,6 +86,7 @@ const PhoneNumberInfoForm = ({
           });
         }
       } catch (error) {
+        console.error('이미 있음');
         console.log(error);
       }
     }
@@ -108,6 +109,7 @@ const PhoneNumberInfoForm = ({
           },
         }
       );
+      console.log(response.data.code);
       if (response.data.code == 200) {
         openModal({
           title: `인증이 완료되었습니다.`,
@@ -124,16 +126,33 @@ const PhoneNumberInfoForm = ({
         timerRef.current = null;
       }
     } catch (error) {
-      setModalOpen(true);
-      openModal({
-        title: '인증 번호가 일치하지 않습니다.',
-        context: '올바른 인증 번호를 입력해 주세요.',
-        type: 'warning',
-        isAutoClose: true,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
+      console.log(error.response.data.message);
+      if (
+        error.response.data.message ==
+        '인증 코드가 일치하지 않습니다. 올바른 코드를 입력해 주세요.'
+      ) {
+        setModalOpen(true);
+        openModal({
+          title: '인증 번호가 일치하지 않습니다.',
+          context: '올바른 인증 번호를 입력해 주세요.',
+          type: 'warning',
+          isAutoClose: true,
+          onConfirm: () => {
+            closeModal(), setModalOpen(false);
+          },
+        });
+      } else {
+        setModalOpen(true);
+        openModal({
+          title: '인증번호가 만료되었습니다.',
+          context: '다시 요청하여 새로운 인증번호를 받아주세요.',
+          type: 'warning',
+          isAutoClose: true,
+          onConfirm: () => {
+            closeModal(), setModalOpen(false);
+          },
+        });
+      }
     }
   };
 
