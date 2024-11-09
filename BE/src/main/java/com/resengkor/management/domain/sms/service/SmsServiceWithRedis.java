@@ -11,6 +11,7 @@ import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
+import com.resengkor.management.global.response.DataResponse;
 import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.util.RedisUtil;
 import com.resengkor.management.global.util.TmpCodeUtil;
@@ -93,8 +94,14 @@ public class SmsServiceWithRedis {
     @Transactional
     public SmsResponse sendSms(MessageDto messageDto, String type) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
         //핸드폰 인증(만약 이미 존재하는 핸드폰이라면)
-        userRepository.findByPhoneNumber(messageDto.getTo()).orElseThrow(() -> new CustomException(ExceptionStatus.USER_PHONE_NUMBER_ALREADY_EXIST));
-        return sendDetailSms(messageDto,type,smsConfirmNum);
+        boolean isDuplicate = userRepository.existsByPhoneNumber(messageDto.getTo()); // 존재 여부 확인
+
+        if (isDuplicate) {
+            throw new CustomException(ExceptionStatus.USER_PHONE_NUMBER_ALREADY_EXIST);
+        } else {
+            log.info("핸드폰 번호 사용 가능: " + messageDto.getTo());
+            return sendDetailSms(messageDto,type,smsConfirmNum);
+        }
     }
 
     @Transactional
