@@ -108,7 +108,8 @@ public class UserService {
 
         // UserProfile 생성 및 연결 (latitude, longitude 없이)
         UserProfile userProfile = UserProfile.builder()
-                .fullAddress(request.getFullAddress())
+                .streetAddress(request.getStreetAddress())
+                .detailAddress(request.getDetailAddress())
                 .companyPhoneNumber(request.getCompanyPhoneNumber())
                 .faxNumber(request.getFaxNumber())
                 .city(city)
@@ -253,12 +254,14 @@ public class UserService {
         UserProfile userProfile = user.getUserProfile();
         String companyPhoneNumber = request.getCompanyPhoneNumber();
         String faxNumber = request.getFaxNumber();
-        String fullAddress = request.getFullAddress();
+        String  streetAddres = request.getStreetAddress();
+        String detailAddress = request.getDetailAddress();
         if (userProfile == null) {
             userProfile = UserProfile.builder()
                     .companyPhoneNumber(companyPhoneNumber)
                     .faxNumber(faxNumber)
-                    .fullAddress(fullAddress)
+                    .streetAddress(streetAddres)
+                    .detailAddress(detailAddress)
                     .city(city)
                     .district(district)
                     .build();
@@ -266,7 +269,7 @@ public class UserService {
             userProfileRepository.save(userProfile);
         } else {
             // UserProfile이 이미 존재하면 정보 업데이트
-            userProfile.updateUserProfile(companyPhoneNumber, faxNumber, fullAddress, city, district);
+            userProfile.updateUserProfile(companyPhoneNumber, faxNumber, streetAddres, detailAddress, city, district);
         }
 
         // 5. 저장
@@ -306,8 +309,12 @@ public class UserService {
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
         // 5. UserProfile 정보 수정
+        String companyPhoneNumber = request.getCompanyPhoneNumber();
+        String faxNumber = request.getFaxNumber();
+        String  streetAddres = request.getStreetAddress();
+        String detailAddress = request.getDetailAddress();
         UserProfile userProfile = user.getUserProfile();
-        userProfile.updateUserProfile(request.getCompanyPhoneNumber(), request.getFaxNumber(), request.getFullAddress(), city, district);
+        userProfile.updateUserProfile(companyPhoneNumber, faxNumber, streetAddres, detailAddress, city, district);
         user.updateUserUserProfile(userProfile); // 양방향 관계 설정
 
         // 6. 저장

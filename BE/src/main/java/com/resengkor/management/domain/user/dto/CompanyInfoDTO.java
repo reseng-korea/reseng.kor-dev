@@ -15,7 +15,8 @@ public class CompanyInfoDTO {
     private Long userProfileId;
     private String companyPhoneNumber;
 //    private String faxNumber;
-    private String fullAddress;
+    private String streetAddress;
+    private String detailAddress;
     private Region city;
     private Region district;
     private Double latitude;

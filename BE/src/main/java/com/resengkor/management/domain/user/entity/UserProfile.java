@@ -17,16 +17,17 @@ public class UserProfile extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Column(nullable = false)
     @Column
     private String companyPhoneNumber;
 
     @Column
-//    @Column(nullable = false)
     private String faxNumber;
 
     @Column(nullable = false)
-    private String fullAddress;//전체주소
+    private String streetAddress; //도로명 주소
+
+    @Column(nullable = false)
+    private String detailAddress; //상세 주소
 
     @Column
     private Double latitude; //위도
@@ -46,10 +47,11 @@ public class UserProfile extends BaseEntity {
     @JoinColumn(name = "user_id")
     private User user;
 
-    public void updateUserProfile(String companyPhoneNumber,String faxNumber, String fullAddress, Region city, Region district) {
+    public void updateUserProfile(String companyPhoneNumber,String faxNumber, String streetAddress, String detailAddress, Region city, Region district) {
         this.companyPhoneNumber = companyPhoneNumber;
         this.faxNumber = faxNumber;
-        this.fullAddress = fullAddress;
+        this.streetAddress = streetAddress;
+        this.detailAddress = detailAddress;
         this.city = city;
         this.district = district;
     }
