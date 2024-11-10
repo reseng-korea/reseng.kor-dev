@@ -38,8 +38,8 @@ public class RegionService {
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), regionDTOs);
     }
 
-    public DataResponse<List<RegionDTO>> findDistrictsByCity(String cityName) {
-        Region city = regionRepository.findByRegionNameAndRegionType(cityName, "CITY")
+    public DataResponse<List<RegionDTO>> findDistrictsByCity(Long cityId) {
+        Region city = regionRepository.findByIdAndRegionType(cityId, "CITY")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
         List<Region> districts = regionHierarchyRepository.findDescendantsByAncestor(city);

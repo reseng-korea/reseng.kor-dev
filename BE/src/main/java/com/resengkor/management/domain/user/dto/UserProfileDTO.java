@@ -16,7 +16,8 @@ public class UserProfileDTO {
     private Long id;
     private String companyPhoneNumber;
     private String faxNumber;
-    private String fullAddress;
+    private String streetAddress;
+    private String detailAddress;
     private Double latitude;
     private Double longitude;
     private Region city;
@@ -25,11 +26,12 @@ public class UserProfileDTO {
 
     @Builder
     public UserProfileDTO(Long id,String companyPhoneNumber, String faxNumber,
-                          String fullAddress, Double latitude, Double longitude, Region city, Region district) {
+                          String streetAddress, String detailAddress, Double latitude, Double longitude, Region city, Region district) {
         this.id = id;
         this.companyPhoneNumber = companyPhoneNumber;
         this.faxNumber = faxNumber;
-        this.fullAddress = fullAddress;
+        this.streetAddress = streetAddress;
+        this.detailAddress = detailAddress;
         this.latitude = latitude;
         this.longitude = longitude;
         this.city = city;

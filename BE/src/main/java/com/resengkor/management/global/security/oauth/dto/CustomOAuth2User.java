@@ -34,7 +34,7 @@ public class CustomOAuth2User implements OAuth2User {
 
     @Override
     public String getName() {//실제 이름
-        return oAuth2UserDto.getName();
+        return oAuth2UserDto.getRepresentativeName();
     }
 
     public String getUsername(){
@@ -47,9 +47,5 @@ public class CustomOAuth2User implements OAuth2User {
 
     public Long getUserId() {
         return oAuth2UserDto.getUserId();
-    }
-
-    public boolean isEnabled() {
-        return oAuth2UserDto.isStatus();
     }
 }

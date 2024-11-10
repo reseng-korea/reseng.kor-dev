@@ -25,6 +25,14 @@ import java.util.Map;
 public class UserController {
     private final UserService userServiceImpl;
 
+    //테스트용
+    @GetMapping("/test-login-id")
+    public DataResponse<Long> tmp(){
+        log.info("enter test-login-id controller");
+        return userServiceImpl.tmp();
+    }
+
+
     //회원정보 추가하기(oauth용)
     @PutMapping("/oauth/{userId}")
     public DataResponse<UserDTO> oauthUpdateUser(@PathVariable Long userId, @Valid @RequestBody OauthUserUpdateRequest request, BindingResult bindingResult){
@@ -58,7 +66,7 @@ public class UserController {
         return userServiceImpl.getUserInfo(userId);
     }
 
-    //일반 회원탈퇴
+    //회원탈퇴
     @PutMapping("/withdrawal")
     public CommonResponse withdrawUser(@RequestHeader("Authorization") String token) {
         return userServiceImpl.withdrawUser(token);
@@ -66,13 +74,19 @@ public class UserController {
 
     //비밀번호 확인(정보 확인용)
     @PostMapping("/{userId}/password/verify")
-    public DataResponse<String> verifyPassword(@RequestBody VerifyPasswordRequest verifyPasswordRequest) {
+    public DataResponse<String> verifyPassword(@PathVariable Long userId, @Valid @RequestBody VerifyPasswordRequest verifyPasswordRequest, BindingResult bindingResult) {
+        // 바인딩 에러가 있는지 확인
+        if (bindingResult.hasErrors()) {
+            Map<String, String> validatorResult = userServiceImpl.validateHandling(bindingResult);
+            log.warn("바인딩 에러 발생: {}", validatorResult);
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
+        }
         return userServiceImpl.verifyPassword(verifyPasswordRequest);
     }
 
-    //임시번호 발급받아서 비밀번호 변경하기 & 새 비밀번호로 변경하기
+    //(두 경우 모두 로그인 완료한 상태)임시번호 발급받은 상태인데, 비밀번호 변경 & 새 비밀번호로 변경하기
     @PutMapping("/{userId}/password")
-    public DataResponse<String> resetPassword(@Valid @RequestBody ResetPasswordRequest resetPasswordRequest, BindingResult bindingResult) {
+    public DataResponse<String> resetPassword(@PathVariable Long userId, @Valid @RequestBody ResetPasswordRequest resetPasswordRequest, BindingResult bindingResult) {
         log.info("새 비밀번호로 변경하기 : {}", resetPasswordRequest);
         // 바인딩 에러가 있는지 확인
         if (bindingResult.hasErrors()) {
@@ -81,13 +95,6 @@ public class UserController {
             throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
         return userServiceImpl.resetPassword(resetPasswordRequest);
-    }
-
-
-    @GetMapping("/test-login-id")
-    public DataResponse<Long> tmp(){
-        log.info("enter test-login-id controller");
-        return userServiceImpl.tmp();
     }
 
 

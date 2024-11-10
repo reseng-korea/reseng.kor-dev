@@ -6,8 +6,6 @@ import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.ResponseStatus;
-import com.resengkor.management.global.security.jwt.entity.RefreshToken;
-import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -16,10 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -28,9 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class ReissueService {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
-//    private final RefreshRepository refreshRepository;
-    private final RefreshTokenService refreshTokenService;
-    private final long ACCESS_TOKEN_EXPIRATION= 60 * 30 * 1000L;
+    private final long ACCESS_TOKEN_EXPIRATION= 60 * 60 * 1000L; //1시간
     private final UserRepository userRepository;
 
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
@@ -56,6 +48,12 @@ public class ReissueService {
         String email = jwtUtil.getEmail(refresh);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+        // 비활성화된 user면 에러 던짐
+        if (!user.isStatus()) {
+            log.info("비활성 사용자입니다");
+            throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
+        }
+
         long userId = user.getId();
         String role = jwtUtil.getRole(refresh);
         String loginType = jwtUtil.getLoginType(refresh);

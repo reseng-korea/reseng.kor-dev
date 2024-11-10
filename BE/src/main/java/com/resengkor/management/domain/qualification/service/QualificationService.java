@@ -43,11 +43,11 @@ public class QualificationService {
         String url = s3Service.uploadFileToS3(s3FileName, multipartFile);
 
         // URL을 DB에 저장
-        Qualification certificate = Qualification.builder()
+        Qualification qualification = Qualification.builder()
                 .fileUrl(url)
                 .fileName(s3FileName)
                 .build();
-        qualificationRepository.save(certificate);
+        qualificationRepository.save(qualification);
 
         return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(),
                 ResponseStatus.CREATED_SUCCESS.getMessage());
