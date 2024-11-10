@@ -7,6 +7,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @NoArgsConstructor
@@ -22,8 +24,8 @@ public class BannerType {
     @Column(name = "type_width", nullable = false)
     private Integer typeWidth;
 
-    @Column(name = "horizontal_length", nullable = false)
-    private Double horizontalLength;
+    @Column(name = "horizontal_length", nullable = false, precision = 8, scale = 5)
+    private BigDecimal horizontalLength;
 
     @Column(name = "is_standard", nullable = false)
     private Boolean isStandard;

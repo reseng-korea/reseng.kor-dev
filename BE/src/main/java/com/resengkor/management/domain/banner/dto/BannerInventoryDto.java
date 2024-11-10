@@ -7,7 +7,7 @@ import java.util.List;
 
 @Getter
 @AllArgsConstructor
-public class BannerInventoryDTO {
+public class BannerInventoryDto {
 
     private Integer typeWidth;
     private Integer standardCount; // 정단 개수

@@ -1,13 +1,14 @@
 package com.resengkor.management.domain.banner.repository;
 
 import com.resengkor.management.domain.banner.entity.BannerType;
-import org.springframework.boot.Banner;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 public interface BannerTypeRepository extends JpaRepository<BannerType, Long> {
 
@@ -20,7 +21,16 @@ public interface BannerTypeRepository extends JpaRepository<BannerType, Long> {
     List<BannerType> findClosestByUserIdAndTypeWidth(
             @Param("userId") Long userId,
             @Param("typeWidth") Integer typeWidth,
-            @Param("adjustedHorizontalLength") double adjustedHorizontalLength,
+            @Param("adjustedHorizontalLength") BigDecimal adjustedHorizontalLength,
             Pageable pageable
     );
+
+    @Query("SELECT b FROM BannerType b " +
+            "WHERE b.user.id = :userId " +
+            "AND b.typeWidth = :typeWidth " +
+            "AND b.horizontalLength = :horizontalLength")
+    Optional<BannerType> findByUserIdAndTypeWidthAndExactLength(
+            Long userId,
+            Integer typeWidth,
+            BigDecimal horizontalLength);
 }
