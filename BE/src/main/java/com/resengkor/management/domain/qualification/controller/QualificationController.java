@@ -7,13 +7,14 @@ import com.resengkor.management.global.response.DataResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/v1/certificates")
+@RequestMapping("/api/v1/qualifications")
 @RequiredArgsConstructor
 @Slf4j
 public class QualificationController {
@@ -21,26 +22,30 @@ public class QualificationController {
     private final QualificationService qualificationService;
 
 
-    //certificate 업로드
+    //Qualification 업로드
     @PostMapping(path = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CommonResponse uploadCertificate(@RequestPart("file") MultipartFile multipartFile){
+    @PreAuthorize("hasRole('MANAGER')")
+    public CommonResponse uploadQualification(@RequestPart("file") MultipartFile multipartFile){
         return qualificationService.saveQualificationUrl(multipartFile);
     }
 
     //삭제
-    @DeleteMapping("/{id}")
-    public CommonResponse deleteCertificate(@PathVariable Long id) {
+    @DeleteMapping("/{qualificationId}")
+    @PreAuthorize("hasRole('MANAGER')")
+    public CommonResponse deleteQualification(@PathVariable("qualificationId") Long id) {
         return qualificationService.deleteQualification(id);
     }
 
     //수정
-    @PutMapping(path = "/{id}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public CommonResponse updateCertificate(@PathVariable Long id, @RequestPart("file") MultipartFile multipartFile) {
+    @PutMapping(path = "/{qualificationId}",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PreAuthorize("hasRole('MANAGER')")
+    public CommonResponse updateQualification(@PathVariable("qualificationId") Long id, @RequestPart("file") MultipartFile multipartFile) {
         return qualificationService.updateQualification(id, multipartFile);
     }
 
     //조회
     @GetMapping
+    @PreAuthorize("permitAll()")
     public DataResponse<List<QualificationDTO>> getAllQualifications() {
         return qualificationService.getAllQualifications();
     }

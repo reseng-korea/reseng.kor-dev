@@ -19,7 +19,7 @@ public class KakaoResponse implements OAuth2Response{
     }
 
     @Override
-    public String getName() {
+    public String getRepresentativeName() {
         return (String) ((Map) attribute.get("properties")).get("nickname");
     }
 
@@ -27,4 +27,15 @@ public class KakaoResponse implements OAuth2Response{
     public String getEmail() {
         return (String) ((Map) attribute.get("kakao_account")).get("email");
     }
+
+    //사업자로 바뀌면 PhoneNumber 메소드
+    @Override
+    public String getPhoneNumber() {
+        return "";
+    }
+    //사업자로 바뀌면 nickname이 아니라 실제 이름으로 받기
+//    @Override
+//    public String getName() {
+//        return (String) ((Map) attribute.get("properties")).get("nickname");
+//    }
 }

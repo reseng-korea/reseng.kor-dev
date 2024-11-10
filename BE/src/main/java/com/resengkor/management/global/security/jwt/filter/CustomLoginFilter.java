@@ -1,12 +1,10 @@
 package com.resengkor.management.global.security.jwt.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.dto.CustomUserDetails;
 import com.resengkor.management.global.security.jwt.dto.LoginDTO;
-//import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.FilterChain;
@@ -19,10 +17,8 @@ import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.util.StreamUtils;
-import org.springframework.web.HttpRequestMethodNotSupportedException;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -36,8 +32,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
-//    private final RefreshRepository refreshRepository;
-    private final long ACCESS_TOKEN_EXPIRATION= 60 * 30 * 1000L; //30분
+    private final long ACCESS_TOKEN_EXPIRATION= 60 * 60 * 1000L; //1시간
 
     public CustomLoginFilter(String defaultFilterUrl, AuthenticationManager authenticationManager, JWTUtil jwtUtil, RedisUtil redisUtil) {
         setFilterProcessesUrl(defaultFilterUrl);
@@ -80,6 +75,20 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             log.info("LoginDTO 역직렬화 오류: " + e.getMessage());
             log.info("------------------------------------------------");
             throw new CustomException(ExceptionStatus.EXCEPTION);
+        }
+        // 이메일 유효성 검사: 이메일이 비어있거나 형식이 맞지 않으면 오류 발생
+        if (loginDTO.getEmail() == null || loginDTO.getEmail().isBlank()) {
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
+        }
+
+        // 이메일 형식 확인 (간단한 정규식 사용)
+        if (!loginDTO.getEmail().matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
+        }
+
+        // 비밀번호 유효성 검사: 비밀번호가 비어있거나 형식이 맞지 않으면 오류 발생
+        if (loginDTO.getPassword() == null || !loginDTO.getPassword().matches("(?=.*\\W)(?=\\S+$).{8,16}")) {
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
 
         // 사용자 인증을 시도하기 위한 토큰 생성(아직 인증이 되지 않은 상태)
@@ -124,8 +133,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh = jwtUtil.createJwt("Refresh", "local", email, userId, role, refreshTokenExpiration,isAuto);
 
         //2-1. Refresh 토큰 DB에 저장 메소드
-//        addRefreshEntity(email, refresh, refreshTokenExpiration);
-
         boolean isStored = redisUtil.setData("refresh:token:" + email, refresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
         if (!isStored) {
             log.error("로그인 성공: Refresh 토큰 Redis 저장 실패 (Redis 연결 오류)");
@@ -153,17 +160,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         response.getWriter().write(objectMapper.writeValueAsString(responseBody));
         response.getWriter().flush();
     }
-
-    //Refresh 토큰 DB에 저장 메소드
-//    private void addRefreshEntity(String email, String refresh, Long expiredMs) {
-//        Date date = new Date(System.currentTimeMillis() + expiredMs);
-//        RefreshToken refreshToken = RefreshToken.builder()
-//                .email(email)
-//                .refresh(refresh)
-//                .expiration(date.toString())
-//                .build();
-//        refreshRepository.save(refreshToken);
-//    }
 
     //로그인 실패시 실행
     @Override

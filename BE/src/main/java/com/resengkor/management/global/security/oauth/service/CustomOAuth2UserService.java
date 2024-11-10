@@ -77,26 +77,29 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             else{
                 soialProvider = null;
             }
+            //email과 phone status는 추가 정보에서 false에서 인증받고 true로 바꾸는 걸로
+            //일단 기본값 false
             user = User.builder()
-                    .socialProvider(soialProvider)
-                    .socialId(response.getSocialId())
                     .email(response.getEmail())
-                    .emailStatus(true)
+                    .phoneNumber(response.getPhoneNumber())
                     .role(Role.ROLE_PENDING)
                     .loginType(LoginType.SOCIAL)
                     .status(true)
+                    .socialProvider(soialProvider)
+                    .socialId(response.getSocialId())
                     .build();
             user = userRepository.save(user);
 
             // Entity 목적 순수하게 유지하기 위해서 dto 로 전달..
             OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
-                    .socialProvider(response.getSocialProvider())
-                    .socialId(response.getSocialId())
-                    .name(response.getName())
-                    .email(response.getEmail())
                     .userId(user.getId())
+                    .representativeName(response.getRepresentativeName())
+                    .email(response.getEmail())
+                    .phoneNumber(response.getPhoneNumber())
                     .role("ROLE_PENDING")
                     .status(true)
+                    .socialProvider(response.getSocialProvider())
+                    .socialId(response.getSocialId())
                     .build();
 
             return new CustomOAuth2User(oAuth2UserDto);
@@ -106,22 +109,24 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             log.info("Email이 존재");
             log.info("------------------------------------------------");
             //존재하면 업데이트
+            //그런데 핸드폰은 구글에서 없는 경우가 있어서 빼고,
+            //이름 같은 경우도 바뀌지는 않을 것 같아서 일단 뺌
             user = isExist.get().toBuilder()
                     .socialId(response.getSocialId()) // 소셜 ID 업데이트
-                    .representativeName(response.getName())
                     .email(response.getEmail()) // 이메일 업데이트
                     .build();
             userRepository.save(user); // 업데이트된 사용자 정보 저장
 
             // Entity 목적 순수하게 유지하기 위해서 dto 로 전달..
             OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
-                    .socialProvider(response.getSocialProvider())
-                    .socialId(response.getSocialId())
-                    .name(response.getName())
-                    .email(response.getEmail())
                     .userId(isExist.get().getId())
+                    .representativeName(isExist.get().getRepresentativeName())
+                    .email(response.getEmail())
+                    .phoneNumber(isExist.get().getPhoneNumber())
                     .role(isExist.get().getRole().getRole())
                     .status(isExist.get().isStatus())
+                    .socialProvider(response.getSocialProvider())
+                    .socialId(response.getSocialId())
                     .build();
             if (!oAuth2UserDto.isStatus()) {
                 throw new OAuth2AuthenticationException(new OAuth2Error("member_inactive", "사용자가 비활성화되었습니다. 관리자에게 문의하세요", null));

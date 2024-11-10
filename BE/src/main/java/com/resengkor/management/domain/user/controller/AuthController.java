@@ -39,7 +39,7 @@ public class AuthController {
     }
 
     //아이디 찾기
-    @GetMapping("/find-email")
+    @PostMapping("/find-email")
     public DataResponse<FindEmailResponse> findEmail(@Valid @RequestBody FindEmailRequest findEmailRequest, BindingResult bindingResult) {
         log.info("이메일 찾기 요청이 들어옴: {}", findEmailRequest);
 
@@ -55,7 +55,7 @@ public class AuthController {
     }
 
     //비밀번호 찾기
-    @GetMapping("/find-password")
+    @PostMapping("/find-password")
     public DataResponse<String> findPassword(@Valid @RequestBody FindPasswordRequest findPasswordRequest, BindingResult bindingResult) {
         log.info("비밀번호 찾기 요청이 들어옴: {}", findPasswordRequest);
 
