@@ -1,9 +1,7 @@
 package com.resengkor.management.global.security.oauth.customhandler;
 
-import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
-import com.resengkor.management.global.security.jwt.service.RefreshTokenService;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.dto.CustomOAuth2User;
 import com.resengkor.management.global.util.CookieUtil;
@@ -17,7 +15,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import java.io.IOException;
-import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -29,9 +26,8 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
     private final JWTUtil jwtUtil;
-    //    private final RefreshTokenService refreshTokenService;
     private final RedisUtil redisUtil;
-    private final Integer ACCESS_TOKEN_EXPIRATION = 60 * 30;
+    private final Integer ACCESS_TOKEN_EXPIRATION = 60 * 60; //1시간
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {

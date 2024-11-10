@@ -212,7 +212,6 @@ public class UserService {
         log.info("------------------------------------------------");
 
         //5.해당 유저의 refresh토큰 전부 삭제
-//        refreshRepository.deleteByEmail(userEmail);
         boolean isDeleted = redisUtil.deleteData("refresh:token:" + userEmail);
 
         if (!isDeleted) {

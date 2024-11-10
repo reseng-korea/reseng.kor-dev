@@ -26,7 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class ReissueService {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
-    private final long ACCESS_TOKEN_EXPIRATION= 60 * 30 * 1000L;
+    private final long ACCESS_TOKEN_EXPIRATION= 60 * 60 * 1000L; //1시간
     private final UserRepository userRepository;
 
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
