@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@Builder(toBuilder = true)
+@Builder
 @AllArgsConstructor  // 모든 필드를 포함하는 생성자 생성
 public class User extends BaseEntity {
     @Id
@@ -24,8 +24,10 @@ public class User extends BaseEntity {
     private String email;
 
     //이메일 인증 여부
+    //0:인증x, 1: 인증
+    @Builder.Default
     @Column(name = "email_status", nullable = false)
-    private boolean emailStatus;
+    private boolean emailStatus = false;
 
     @Column(name = "password")
     private String password;
@@ -40,8 +42,10 @@ public class User extends BaseEntity {
     private String phoneNumber;
 
     //핸드폰 번호 인증 여부
+    //0:인증x, 1: 인증
+    @Builder.Default
     @Column(name = "phone_number_status", nullable = false)
-    private boolean phoneNumberStatus;
+    private boolean phoneNumberStatus = false;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -54,8 +58,9 @@ public class User extends BaseEntity {
 
     //회원 상태
     //0: 비활성화, 1 : 활성화
+    @Builder.Default
     @Column(name = "member_status", nullable = false)
-    protected boolean status;
+    private boolean status = true;
 
     //소셜 로그인 제공자
     @Enumerated(EnumType.STRING)
@@ -80,6 +85,7 @@ public class User extends BaseEntity {
     //사용자 회원탈퇴 처리
     public void editStatus(boolean status){
         this.status = status;
+        this.updatedAt = LocalDateTime.now();
     }
 
     //사용자 정보 수정
@@ -90,6 +96,7 @@ public class User extends BaseEntity {
         this.phoneNumber = phoneNumber;
     }
 
+    // oauthUpdateUser에서 사용됨.
     public void updatePhoneStatusAndRole(boolean phoneNumberStatus, Role role){
         this.phoneNumberStatus = phoneNumberStatus;
         this.role = role;
