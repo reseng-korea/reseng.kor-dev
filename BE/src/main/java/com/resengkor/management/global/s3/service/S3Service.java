@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -37,6 +38,9 @@ public class S3Service {
 
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
+
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private String maxSizeString;
 
     /**
      * 파일을 S3에 업로드하는 메서드
@@ -75,8 +79,13 @@ public class S3Service {
      * @return 업로드된 파일의 URL
      */
     public String uploadFileToS3(String s3FileName, MultipartFile multipartFile) {
-        // MultipartFile을 로컬 파일로 변환
+        // 파일 크기 제한 체크
+        long maxSize = DataSize.parse(maxSizeString).toBytes(); // maxSizeString을 바이트로 변환
+        if (multipartFile.getSize() > maxSize) {
+            throw new CustomException(ExceptionStatus.FILE_SIZE_LIMIT_EXCEEDED); // 적절한 예외 코드 사용
+        }
 
+        // MultipartFile을 로컬 파일로 변환
         File localFile = convertMultipartFileToFile(multipartFile)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.FILE_CONVERSION_ERROR));
         try{

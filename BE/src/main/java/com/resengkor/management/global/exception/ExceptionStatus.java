@@ -25,6 +25,8 @@ public enum ExceptionStatus {
     VALIDATION_ERROR(4000, "요청 데이터의 유효성 검사가 실패했습니다."),
     /* HTTP 메서드 오류 */
     METHOD_NOT_ALLOWED(4001, "지원되지 않는 HTTP 메서드 요청입니다. 요청 방식을 확인해 주세요."),
+    /* 파일 크기 제한 오류 */
+    FILE_SIZE_LIMIT_EXCEEDED(4002, "파일 크기가 허용된 용량을 초과하였습니다. 최대 5MB 이하의 파일만 업로드할 수 있습니다."),
 
     /* 인증 및 권한 오류 */
     AUTHENTICATION_FAILED(4010, "유저 인증에 실패하였습니다."),
