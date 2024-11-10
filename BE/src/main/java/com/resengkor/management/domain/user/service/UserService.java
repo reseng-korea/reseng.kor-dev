@@ -52,7 +52,6 @@ public class UserService {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil; // RedisUtil 추가
     private final SmsServiceWithRedis smsService;
-//    private final RefreshRepository refreshRepository;
     private final KakaoUserWithdrawService kakaoUserWithdrawService;
 
     @Transactional(readOnly = true)

@@ -2,8 +2,6 @@ package com.resengkor.management.global.config;
 
 import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.security.jwt.filter.*;
-//import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
-import com.resengkor.management.global.security.jwt.service.RefreshTokenService;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.customhandler.CustomOAuth2SuccessHandler;
 import com.resengkor.management.global.security.oauth.service.CustomOAuth2UserService;
@@ -16,7 +14,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchy;
 import org.springframework.security.access.hierarchicalroles.RoleHierarchyImpl;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -52,9 +49,6 @@ public class SecurityConfig {
     private final RedisUtil redisUtil;
     private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomOAuth2UserService customOAuth2UserService;
-//    private final RefreshTokenService refreshTokenService;
-//    private final RefreshRepository refreshRepository;
-    private final UserRepository userRepository;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 

@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@Builder
+@Builder(toBuilder = true)
 @AllArgsConstructor  // 모든 필드를 포함하는 생성자 생성
 public class User extends BaseEntity {
     @Id
