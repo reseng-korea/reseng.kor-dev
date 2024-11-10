@@ -31,6 +31,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+
+
         log.info("------------------------------------------------");
         log.info("Enter OAuth login success handler");
         log.info("------------------------------------------------");
@@ -40,6 +42,13 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         String email = customOAuth2User.getEmail();
         String role = authentication.getAuthorities().iterator().next().getAuthority();
         long userId = customOAuth2User.getUserId();
+        if (!customOAuth2User.getUserStatus()) {
+            log.info("비활성 사용자입니다");
+            throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
+        }
+
+
+
         log.info("------------------------------------------------");
         log.info("email = {}", email);
         log.info("role = {}", role);

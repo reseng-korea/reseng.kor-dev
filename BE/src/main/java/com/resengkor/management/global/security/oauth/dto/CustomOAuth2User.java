@@ -49,7 +49,7 @@ public class CustomOAuth2User implements OAuth2User {
         return oAuth2UserDto.getUserId();
     }
 
-    public boolean isEnabled() {
+    public boolean getUserStatus() {
         return oAuth2UserDto.isStatus();
     }
 }
