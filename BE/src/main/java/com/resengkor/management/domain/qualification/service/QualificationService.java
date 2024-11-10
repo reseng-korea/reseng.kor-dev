@@ -12,6 +12,7 @@ import com.resengkor.management.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -28,6 +29,7 @@ public class QualificationService {
     private final String DIR_NAME = "qualification";
 
     //생성
+    @Transactional
     public CommonResponse saveQualificationUrl(MultipartFile multipartFile) {
         // uuid 생성
         String uuid = UUID.randomUUID().toString();
@@ -64,6 +66,7 @@ public class QualificationService {
     }
 
     //삭제
+    @Transactional
     public CommonResponse deleteQualification(Long id) {
         // 파일명 조회
         String fileName = qualificationRepository.findFileNameById(id)
@@ -78,6 +81,7 @@ public class QualificationService {
     }
 
     //수정
+    @Transactional
     public CommonResponse updateQualification(Long id, MultipartFile multipartFile) {
         String oldFileName = qualificationRepository.findFileNameById(id)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
