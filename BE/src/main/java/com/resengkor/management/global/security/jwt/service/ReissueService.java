@@ -14,10 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -52,6 +48,12 @@ public class ReissueService {
         String email = jwtUtil.getEmail(refresh);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+        // 비활성화된 user면 에러 던짐
+        if (!user.isStatus()) {
+            log.info("비활성 사용자입니다");
+            throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
+        }
+
         long userId = user.getId();
         String role = jwtUtil.getRole(refresh);
         String loginType = jwtUtil.getLoginType(refresh);
