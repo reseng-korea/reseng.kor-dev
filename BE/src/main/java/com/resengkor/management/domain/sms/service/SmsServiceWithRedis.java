@@ -7,6 +7,7 @@ import com.resengkor.management.domain.sms.dto.MessageAuthDTO;
 import com.resengkor.management.domain.sms.dto.MessageDto;
 import com.resengkor.management.domain.sms.dto.SmsRequest;
 import com.resengkor.management.domain.sms.dto.SmsResponse;
+import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
@@ -38,6 +39,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -94,11 +96,17 @@ public class SmsServiceWithRedis {
     @Transactional
     public SmsResponse sendSms(MessageDto messageDto, String type) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
         //핸드폰 인증(만약 이미 존재하는 핸드폰이라면)
-        boolean isDuplicate = userRepository.existsByPhoneNumber(messageDto.getTo()); // 존재 여부 확인
-
-        if (isDuplicate) {
-            throw new CustomException(ExceptionStatus.USER_PHONE_NUMBER_ALREADY_EXIST);
-        } else {
+        Optional<User> existingUserByPhoneNumber = userRepository.findByPhoneNumber(messageDto.getTo());
+        if (existingUserByPhoneNumber.isPresent()) {
+            User user = existingUserByPhoneNumber.get();
+            if (!user.isStatus()) {
+                log.info("비활성 사용자입니다 (이메일 중복)");
+                throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
+            }
+            log.info("사용자입니다 (전화번호 중복)");
+            throw new CustomException(ExceptionStatus.USER_PHONE_NUMBER_ALREADY_EXIST); // 이미 존재하는 전화번호 예외
+        }
+        else{
             log.info("핸드폰 번호 사용 가능: " + messageDto.getTo());
             return sendDetailSms(messageDto,type,smsConfirmNum);
         }
