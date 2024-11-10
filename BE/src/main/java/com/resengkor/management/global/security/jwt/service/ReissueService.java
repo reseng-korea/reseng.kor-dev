@@ -6,8 +6,6 @@ import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.ResponseStatus;
-import com.resengkor.management.global.security.jwt.entity.RefreshToken;
-import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -28,9 +26,7 @@ import java.util.concurrent.TimeUnit;
 public class ReissueService {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
-//    private final RefreshRepository refreshRepository;
-    private final RefreshTokenService refreshTokenService;
-    private final long ACCESS_TOKEN_EXPIRATION= 60 * 30 * 1000L;
+    private final long ACCESS_TOKEN_EXPIRATION= 60 * 60 * 1000L; //1시간
     private final UserRepository userRepository;
 
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
