@@ -84,7 +84,7 @@ public class UserController {
         return userServiceImpl.verifyPassword(verifyPasswordRequest);
     }
 
-    //(두 경우 모두 로그인 완료한 상태)임시번호 발급받아서 비밀번호 변경하기 & 새 비밀번호로 변경하기
+    //(두 경우 모두 로그인 완료한 상태)임시번호 발급받은 상태인데, 비밀번호 변경 & 새 비밀번호로 변경하기
     @PutMapping("/{userId}/password")
     public DataResponse<String> resetPassword(@PathVariable Long userId, @Valid @RequestBody ResetPasswordRequest resetPasswordRequest, BindingResult bindingResult) {
         log.info("새 비밀번호로 변경하기 : {}", resetPasswordRequest);

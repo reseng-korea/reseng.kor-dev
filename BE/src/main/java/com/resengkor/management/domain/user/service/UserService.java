@@ -54,6 +54,18 @@ public class UserService {
     private final SmsServiceWithRedis smsService;
     private final KakaoUserWithdrawService kakaoUserWithdrawService;
 
+    //테스트용
+    public DataResponse<Long> tmp() {
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+        log.info("user 조회 성공");
+        Long id = user.getId();
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage(), id);
+    }
+
+    //유효성 검사
     @Transactional(readOnly = true)
     public Map<String, String> validateHandling(BindingResult bindingResult) {
         Map<String, String> validatorResult = new HashMap<>();
@@ -66,24 +78,64 @@ public class UserService {
         return validatorResult;
     }
 
+    private void checkUserIsWithdrawed(User user){
+        if (!user.isStatus()) {
+            log.info("비활성 사용자입니다 (이메일 중복)");
+            throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
+        }
+    }
+
+    //로그인O
+    //id, email, phoneNumber이 중복되는지 체크
+    //이때는 같은 정보가 있다고 해도 내가 아니라 남의 정보라서 그 정보가 비활성화된 것인지 알려줄 필요x
+    //update시 사용
+    private void validateUniqueEmailAndPhoneNumberWithId(Long userId, String email, String phoneNumber) {
+        // 1. 이메일 중복 검사
+        Optional<User> existingUserByEmail = userRepository.findByEmail(email);
+        if (existingUserByEmail.isPresent() && !Objects.equals(existingUserByEmail.get().getId(), userId)) {
+            //요청보낸 사용자와 이메일의 사용자랑 다름 => 오류
+            throw new CustomException(ExceptionStatus.USER_EMAIL_ALREADY_EXIST);  // 이미 존재하는 이메일 예외
+        }
+
+        // 2. 전화번호 중복 검사
+        Optional<User> existingUserByPhoneNumber = userRepository.findByPhoneNumber(phoneNumber);
+        if (existingUserByPhoneNumber.isPresent() && !Objects.equals(existingUserByPhoneNumber.get().getId(), userId)) {
+            //요청보낸 사용자와 핸드폰번호의 사용자랑 다름 => 오류
+            throw new CustomException(ExceptionStatus.USER_PHONE_NUMBER_ALREADY_EXIST);  // 이미 존재하는 전화번호 예외
+        }
+    }
+
+    //로그인x
+    //정보 찾으려고 하는데 내가 비활성화/중복되었다. 알려줄 필요 있음
+    private void validateUniqueEmailAndPhoneNumber(String email, String phoneNumber) {
+        // 1. 이메일 중복 검사
+        Optional<User> existingUserByEmail = userRepository.findByEmail(email);
+        if (existingUserByEmail.isPresent()) {
+            User user = existingUserByEmail.get();
+            checkUserIsWithdrawed(user); //비활성화된 이용자인지 확인
+            log.info("사용자입니다 (이메일 중복)");
+            throw new CustomException(ExceptionStatus.USER_EMAIL_ALREADY_EXIST); // 이미 존재하는 이메일 예외
+        }
+
+        // 2. 전화번호 중복 검사
+        Optional<User> existingUserByPhoneNumber = userRepository.findByPhoneNumber(phoneNumber);
+        if (existingUserByPhoneNumber.isPresent()) {
+            User user = existingUserByPhoneNumber.get();
+            checkUserIsWithdrawed(user); //비활성화된 이용자인지 확인
+            log.info("사용자입니다 (전화번호 중복)");
+            throw new CustomException(ExceptionStatus.USER_PHONE_NUMBER_ALREADY_EXIST); // 이미 존재하는 전화번호 예외
+        }
+    }
+
+    //일반 회원 등록하기
+    //로그인x
     @Transactional
     public DataResponse<UserDTO> registerUser(UserRegisterRequest request) {
-        // 이미 존재하는지 확인하고 예외 던지기
-        Optional<User> existingUser = userRepository.findByEmail(request.getEmail());
-        if (existingUser.isPresent()) {
-            User user = existingUser.get();
+        // 상황 : 핸드폰, 이메일 인증 완료한 상태
+        // 이메일이 존재하는지 확인하고 예외 던지기
+        validateUniqueEmailAndPhoneNumber(request.getEmail(), request.getPhoneNumber());
 
-            if (!user.isStatus()) { // 비활성 상태 확인
-                log.info("비활성 사용자입니다");
-                throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
-            }
-
-            log.info("이미 존재함");
-            throw new CustomException(ExceptionStatus.USER_ALREADY_EXIST); // 이미 존재하는 멤버 예외
-        }
-        //unique한 것 중복되면 error 던지기
-
-        // User 생성 (일반 사용자이므로 ROLE_GUEST 설정)
+        // 1. User 생성 (일반 사용자이므로 ROLE_GUEST 설정)
         User user = User.builder()
                 .email(request.getEmail())
                 .emailStatus(true) // 이미 인증한 이후에 생성되는 것이니까
@@ -98,33 +150,32 @@ public class UserService {
                 .build();
         log.info("유저 생성");
 
-        // Region 생성
+        // 2. Region 찾아오기
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND)); // 서울시 찾기
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND)); // 강남구 찾기
         log.info("region 조회 성공");
 
-        // UserProfile 생성 및 연결 (latitude, longitude 없이)
+        // 3. UserProfile 생성 및 연결 (latitude, longitude 없이)
         UserProfile userProfile = UserProfile.builder()
-                .streetAddress(request.getStreetAddress())
-                .detailAddress(request.getDetailAddress())
                 .companyPhoneNumber(request.getCompanyPhoneNumber())
                 .faxNumber(request.getFaxNumber())
+                .streetAddress(request.getStreetAddress())
+                .detailAddress(request.getDetailAddress())
                 .city(city)
                 .district(district)
                 .build();
 
-        // 양방향 관계 설정
+        // 4. 양방향 관계 설정
         user.updateUserUserProfile(userProfile); // User의 userProfile 설정
-
         userProfileRepository.save(userProfile); // UserProfile 먼저 저장
         log.info("프로파일 생성 성공");
 
-        // User 저장
+        // 5. User 저장
         User savedUser = userRepository.save(user);
 
-        // RoleHierarchy 생성 (상위 관계가 없는 일반 사용자는 자기 자신)
+        // 6. RoleHierarchy 생성 (상위 관계가 없는 일반 사용자는 자기 자신)
         RoleHierarchy roleHierarchy = RoleHierarchy.builder()
                 .ancestor(savedUser)  // 상위 관계: 자신
                 .descendant(savedUser)  // 하위 관계: 자신
@@ -133,7 +184,7 @@ public class UserService {
         roleHierarchyRepository.save(roleHierarchy);
         log.info("role 생성 성공");
 
-        // UserMapper를 사용하여 User를 UserDTO로 변환
+        // 7. 응답 생성
         UserDTO userDTO = userMapper.toUserDTO(savedUser);
 
         return new DataResponse<>(ResponseStatus.CREATED_SUCCESS.getCode(),
@@ -141,12 +192,17 @@ public class UserService {
     }
 
     //이메일 찾기
+    //로그인 x
     public DataResponse<FindEmailResponse> findEmail(FindEmailRequest request) {
-        //없으면 에러 터뜨림
+        //1. companyName과 phoneNumber로 사용자 차기 (없으면 에러 터뜨림)
         User user = userRepository.findByCompanyNameAndPhoneNumber(request.getCompanyName(), request.getPhoneNumber())
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         log.info("맞는 회사명&핸드폰 번호 있음");
-        // FindEmailResponse 객체 생성
+
+        //2. 사용자는 찾은 상태. 그런데 비활성화된 이용자인지 확인
+        checkUserIsWithdrawed(user);
+
+        //3. FindEmailResponse 객체 생성
         FindEmailResponse findEmailResponse = new FindEmailResponse();
         findEmailResponse.setEmail(user.getEmail()); // 이메일 설정
 
@@ -154,17 +210,23 @@ public class UserService {
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), findEmailResponse);
     }
 
+    //비밀번호 찾기
+    //로그인x
     @Transactional
     public DataResponse<String> findPassword(FindPasswordRequest request) {
+        //1. Email이랑 PhoneNumber로 사용자 찾기
         User user = userRepository.findByEmailAndPhoneNumber(request.getEmail(), request.getPhoneNumber())
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         log.info("맞는 이메일&핸드폰 번호 있음");
 
-        // 2. 임시 비밀번호 생성
+        //2. 사용자는 찾은 상태. 그런데 비활성화된 이용자인지 확인하기
+        checkUserIsWithdrawed(user);
+
+        //3. 임시 비밀번호 생성
         String temporaryPassword = TmpCodeUtil.generateAlphanumericPassword();
         log.info("임시 비밀번호 생성: {}", temporaryPassword);
 
-        // 3. SMS 전송
+        //4. SMS 전송
         MessageDto messageDto = new MessageDto(user.getPhoneNumber());
         try {
             smsService.sendDetailSms(messageDto,"findPassword",temporaryPassword);
@@ -172,7 +234,7 @@ public class UserService {
             throw new CustomException(ExceptionStatus.SMS_SEND_FAIL);
         }
 
-        // 4. 비밀번호 업데이트
+        // 5. 비밀번호 업데이트
         user.editPassword(passwordEncoder.encode(temporaryPassword));
         userRepository.save(user);
 
@@ -181,6 +243,7 @@ public class UserService {
     }
 
     //회원 탈퇴 로직
+    //로그인O
     @Transactional
     @PreAuthorize("#userId == principal.id")
     public CommonResponse withdrawUser(String token) {
@@ -213,7 +276,6 @@ public class UserService {
 
         //5.해당 유저의 refresh토큰 전부 삭제
         boolean isDeleted = redisUtil.deleteData("refresh:token:" + userEmail);
-
         if (!isDeleted) {
             log.error("회원탈퇴: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);
@@ -224,7 +286,8 @@ public class UserService {
     }
 
 
-    //회원정보 추가
+    //소셜 로그인 회원정보 추가(소셜 로그인 첫 회원가입시 바로 진행)
+    //로그인O
     @Transactional
     @PreAuthorize("#userId == principal.id")
     public DataResponse<UserDTO> oauthUpdateUser(Long userId, OauthUserUpdateRequest request) {
@@ -232,29 +295,30 @@ public class UserService {
         User user = userRepository.findUserWithProfileAndRegionById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
-        // 이메일 및 전화번호 중복 검사
-        validateUniqueEmailAndPhoneNumber(userId, request.getEmail(), request.getPhoneNumber());
+        // 2. 이메일 및 전화번호 중복 검사
+        validateUniqueEmailAndPhoneNumberWithId(userId, request.getEmail(), request.getPhoneNumber());
 
-        // 2. 사용자 정보 추가
+        // 3. 사용자 정보 추가
         user.updateUser(request.getEmail(), request.getCompanyName(),
                 request.getRepresentativeName(), request.getPhoneNumber());
 
-        // phoneStatus를 업데이트하고 Role을 PENDING에서 ROLE_GUEST로 승격
+        // 4. phoneStatus를 업데이트하고 Role을 PENDING에서 ROLE_GUEST로 승격
         user.updatePhoneStatusAndRole(true, Role.ROLE_GUEST);
 
-        // 3. 지역 조회 (UserProfile이 null일 경우나 업데이트 시 모두 사용됨)
+        // 5. 지역 조회 (UserProfile이 null일 경우나 업데이트 시 모두 사용됨)
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
-        // 4. UserProfile 조회 및 초기화
+        // 6. UserProfile 조회 및 초기화
         UserProfile userProfile = user.getUserProfile();
         String companyPhoneNumber = request.getCompanyPhoneNumber();
         String faxNumber = request.getFaxNumber();
         String  streetAddres = request.getStreetAddress();
         String detailAddress = request.getDetailAddress();
         if (userProfile == null) {
+            //소셜은 기본적으로 회원가입시 user만 생성
             userProfile = UserProfile.builder()
                     .companyPhoneNumber(companyPhoneNumber)
                     .faxNumber(faxNumber)
@@ -270,94 +334,73 @@ public class UserService {
             userProfile.updateUserProfile(companyPhoneNumber, faxNumber, streetAddres, detailAddress, city, district);
         }
 
-        // 5. 저장
+        // 7. 저장
         userRepository.save(user); // User 저장 시 UserProfile도 함께 저장
-
         log.info("회원 정보 수정 성공");
 
-        // UserMapper를 사용하여 User를 UserDTO로 변환
+        // 8. 응답 생성
         UserDTO userDTO = userMapper.toUserDTO(user);
 
         return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
                 ResponseStatus.UPDATED_SUCCESS.getMessage(), userDTO);
     }
 
+    //소셜+일반 사용자 정보 수정
+    //로그인O
     @PreAuthorize("#userId == principal.id")
     @Transactional
     public DataResponse<UserDTO> updateUser(Long userId, UserUpdateRequest request) {
         //1.사용자 조회 (존재하지 않으면 예외 던지기)
         User user = userRepository.findUserWithProfileAndRegionById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+
         //2. 비밀번호 확인 후 설정
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         user.editPassword(encodedPassword); // 비밀번호 수정
 
-        // 이메일 및 전화번호 중복 검사
-        validateUniqueEmailAndPhoneNumber(userId, request.getEmail(), request.getPhoneNumber());
+        //3. 이메일 및 전화번호 중복 검사
+        validateUniqueEmailAndPhoneNumberWithId(userId, request.getEmail(), request.getPhoneNumber());
 
-        //3.사용자 정보 추가
-        //중복되면 안 됌
+        //4.사용자 정보 수정
         user.updateUser(request.getEmail(), request.getCompanyName(),
                 request.getRepresentativeName(), request.getPhoneNumber());
 
-        // 4. 지역 정보 조회
+        // 5. 지역 정보 조회
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
-        // 5. UserProfile 정보 수정
+        // 6. UserProfile 정보 수정
         String companyPhoneNumber = request.getCompanyPhoneNumber();
         String faxNumber = request.getFaxNumber();
         String  streetAddres = request.getStreetAddress();
         String detailAddress = request.getDetailAddress();
         UserProfile userProfile = user.getUserProfile();
         userProfile.updateUserProfile(companyPhoneNumber, faxNumber, streetAddres, detailAddress, city, district);
-        user.updateUserUserProfile(userProfile); // 양방향 관계 설정
 
-        // 6. 저장
+        // 7. 양방향 관계 설정
+        user.updateUserUserProfile(userProfile);
+
+        // 8. 저장
         userRepository.save(user);
-
         log.info("회원 정보 수정 성공");
 
-
+        //9. 응답 생성
         UserDTO userDTO = userMapper.toUserDTO(user);
-
         return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
                 ResponseStatus.UPDATED_SUCCESS.getMessage(), userDTO);
     }
 
-    private void validateUniqueEmailAndPhoneNumber(Long userId, String email, String phoneNumber) {
-        // 이메일 중복 검사
-        Optional<User> existingUserByEmail = userRepository.findByEmail(email);
-        if (existingUserByEmail.isPresent() && !Objects.equals(existingUserByEmail.get().getId(), userId)) {
-            throw new CustomException(ExceptionStatus.USER_EMAIL_ALREADY_EXIST);  // 이미 존재하는 이메일 예외
-        }
-
-        // 전화번호 중복 검사
-        Optional<User> existingUserByPhoneNumber = userRepository.findByPhoneNumber(phoneNumber);
-        if (existingUserByPhoneNumber.isPresent() && !Objects.equals(existingUserByPhoneNumber.get().getId(), userId)) {
-            throw new CustomException(ExceptionStatus.USER_PHONE_NUMBER_ALREADY_EXIST);  // 이미 존재하는 전화번호 예외
-        }
-    }
-
-
-    public DataResponse<Long> tmp() {
-        Long userId = UserAuthorizationUtil.getLoginMemberId();
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
-        log.info("user 조회 성공");
-        Long id = user.getId();
-        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
-                ResponseStatus.RESPONSE_SUCCESS.getMessage(), id);
-    }
-
-
+    //사용자 정보 조회
+    //로그인O
     @PreAuthorize("#userId == principal.id")
     public DataResponse<UserDTO> getUserInfo(Long userId) {
+        //1. 사용자 찾기
         User user = userRepository.findUserWithProfileAndRegionById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
+        //2. 응답 생성
         UserDTO userDTO = userMapper.toUserDTO(user);
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
@@ -365,7 +408,9 @@ public class UserService {
     }
 
     //비밀번호 확인(정보 확인용)
+    //로그인O
     public DataResponse<String> verifyPassword(VerifyPasswordRequest verifyPasswordRequest) {
+        //1. 로그인한 사용자id를 가지고 로그인한 user 객체 가져오기
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         User loginUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
@@ -385,20 +430,22 @@ public class UserService {
     }
 
 
-    //임시번호 발급받아서 비밀번호 변경하기
+    //임시번호 발급받은 상태인데, 비밀번호 변경 & 새로운 비밀번호로 변경
+    //로그인 O
     @Transactional
     public DataResponse<String> resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        Long userId = UserAuthorizationUtil.getLoginMemberId(); // 로그인한 사용자 ID 가져오기
+        //1. 로그인한 사용자id를 가지고 로그인한 user 객체 가져오기
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
         User loginUser = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND)); // 사용자 찾기
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
-        // 기존 비밀번호 확인
+        //2. 기존 비밀번호 확인
         if (!passwordEncoder.matches(resetPasswordRequest.getOldPassword(), loginUser.getPassword())) {
             log.info("기존 비밀번호 불일치");
             throw new CustomException(ExceptionStatus.INVALID_PASSWORD); // 비밀번호 불일치 예외
         }
 
-        // 새 비밀번호로 변경
+        //3. 새 비밀번호로 변경
         loginUser.editPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword())); // 비밀번호 암호화
         userRepository.save(loginUser); // 변경된 사용자 정보 저장
 
@@ -410,19 +457,22 @@ public class UserService {
 
 
     //이메일 중복 확인하기
+    //로그인 x
     public DataResponse<String> emailDupCheck(String email) {
         log.info("이메일 중복 확인하기");
         // 입력된 이메일을 사용하여 데이터베이스에서 사용자 검색
-        boolean isDuplicate = userRepository.existsByEmail(email); // 존재 여부 확인
-
-        if (isDuplicate) {
-            throw new CustomException(ExceptionStatus.USER_EMAIL_ALREADY_EXIST);
-        } else {
-            log.info("이메일 사용 가능: " + email);
-            return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
-                    ResponseStatus.RESPONSE_SUCCESS.getMessage(),
-                    "사용 가능한 이메일입니다.");
+        Optional<User> existingUserByEmail = userRepository.findByEmail(email);
+        if (existingUserByEmail.isPresent()) {
+            User user = existingUserByEmail.get();
+            checkUserIsWithdrawed(user); //비활성화된 이용자인지 확인
+            log.info("사용자입니다 (이메일 중복)");
+            throw new CustomException(ExceptionStatus.USER_EMAIL_ALREADY_EXIST); // 이미 존재하는 이메일 예외
         }
+
+        log.info("이메일 사용 가능: " + email);
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage(),
+                "사용 가능한 이메일입니다.");
     }
 
     public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String status, String createdDate) {
