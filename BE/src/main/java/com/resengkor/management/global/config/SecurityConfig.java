@@ -65,6 +65,7 @@ public class SecurityConfig {
             "/api/v1/users/pagination",
             "/api/v1/regions/**", "/api/v1/companies/**",
             "/api/v1/faq/**",
+            "/api/v1/qna/questions/**",
             "/api/v1/qualifications"
     );
 
@@ -185,7 +186,6 @@ public class SecurityConfig {
 
     private void configureUserEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
         auth.requestMatchers("/api/v1/users/**").hasAnyRole("GUEST");
-        auth.requestMatchers(HttpMethod.GET, "/api/v1/qna/questions/**").permitAll();
         auth.requestMatchers(HttpMethod.GET, "/api/v1/withdrawal").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.POST, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.PUT, "/api/v1/qna/questions/**").hasRole("GUEST");
