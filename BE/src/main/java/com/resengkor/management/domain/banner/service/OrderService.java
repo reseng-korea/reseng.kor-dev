@@ -14,7 +14,6 @@ import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.hibernate.Hibernate;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -63,13 +62,6 @@ public class OrderService {
 
         // OrderHistoryBannerType 리스트 생성 후 연관 설정
         orderRequestDto.getBannerRequests().forEach(bannerOrderItem -> {
-            // 새로운 BannerType 생성 (데이터베이스에 즉시 저장하지 않음)
-//            BannerType newBannerType = BannerType.builder()
-//                    .typeWidth(bannerOrderItem.getTypeWidth())
-//                    .horizontalLength(120.0)
-//                    .isStandard(true)
-//                    .user(loginedUser) // 현재 로그인한 사용자와 연결
-//                    .build();
 
             // 새로운 TemporaryBannerType 생성
             TemporaryBannerType temporaryBannerType = new TemporaryBannerType().toBuilder()
@@ -77,13 +69,6 @@ public class OrderService {
                     .quantity(bannerOrderItem.getQuantity())
                     .orderHistory(orderHistory)
                     .build();
-
-            // OrderBanner 생성
-//            OrderBanner orderBanner = OrderBanner.builder()
-//                    .orderHistory(orderHistory)  // 연관된 OrderHistory 설정
-//                    .transientBannerType(newBannerType)   // 생성된 임시BannerType(= newBannerType) 설정
-//                    .quantity(bannerOrderItem.getQuantity()) // 요청된 배너 수량 설정
-//                    .build();
 
             temporaryBannerTypeRepository.save(temporaryBannerType);
         });
