@@ -62,7 +62,6 @@ public class SecurityConfig {
     private static final List<String> GET_LIST = List.of(
             "/api/v1/find-email", "/api/v1/find-password",
             "/api/v1/check-email",
-            "/api/v1/withdrawal",
             "/api/v1/users/pagination",
             "/api/v1/regions/**", "/api/v1/companies/**",
             "/api/v1/faq/**",
@@ -187,6 +186,7 @@ public class SecurityConfig {
     private void configureUserEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
         auth.requestMatchers("/api/v1/users/**").hasAnyRole("GUEST");
         auth.requestMatchers(HttpMethod.GET, "/api/v1/qna/questions/**").permitAll();
+        auth.requestMatchers(HttpMethod.GET, "/api/v1/withdrawal").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.POST, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.PUT, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.DELETE, "/api/v1/qna/questions/**").hasRole("GUEST");
