@@ -2,7 +2,6 @@ package com.resengkor.management.domain.mail.controller;
 
 import com.resengkor.management.domain.mail.dto.MailAuthDTO;
 import com.resengkor.management.domain.mail.dto.MailDTO;
-import com.resengkor.management.domain.mail.service.MailService;
 import com.resengkor.management.domain.mail.service.MailServiceWithRedis;
 import com.resengkor.management.global.response.CommonResponse;
 import jakarta.mail.MessagingException;
@@ -18,7 +17,6 @@ import java.io.UnsupportedEncodingException;
 @Slf4j
 public class MailController {
 
-//    private final MailService mailService;
     private final MailServiceWithRedis mailService;
 
     @PostMapping("/send-verification")
