@@ -42,7 +42,7 @@ public class JWTFilter extends OncePerRequestFilter {
         log.info("Access = "+access);
 
         // 토큰이 없다면 다음 필터로 넘김
-        if (access == null) {
+        if (access == null || access.isEmpty()) {
             //권한이 필요없는 api일 수도 있으니 일단 넘김
             log.info("------------------------------------------------");
             log.info("Access토큰 없음");
