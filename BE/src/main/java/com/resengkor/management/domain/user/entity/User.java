@@ -32,14 +32,14 @@ public class User extends BaseEntity {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "company_name")
-    private String companyName;
+    @Column(name = "company_name", nullable = false)
+    private String companyName; //아이디 찾기에 이용. 필수
 
     @Column(name = "representative_name")
     private String representativeName; //실제 이름
 
     @Column(name = "phone_number", unique = true)
-    private String phoneNumber;
+    private String phoneNumber; //구글소셜에서 핸드폰 번호 제공x
 
     //핸드폰 번호 인증 여부
     //0:인증x, 1: 인증
