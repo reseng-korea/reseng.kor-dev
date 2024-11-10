@@ -1,10 +1,8 @@
 package com.resengkor.management.global.security.oauth.service;
 
-import com.resengkor.management.domain.user.entity.LoginType;
+import com.resengkor.management.domain.user.entity.*;
+import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
-import com.resengkor.management.domain.user.entity.Role;
-import com.resengkor.management.domain.user.entity.SocialProvider;
-import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.oauth.dto.*;
@@ -26,6 +24,7 @@ import java.util.Optional;
 @Slf4j
 public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     private final UserRepository userRepository;
+    private final RoleHierarchyRepository roleHierarchyRepository;
 
     @Transactional
     @Override
@@ -89,6 +88,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .socialId(response.getSocialId())
                     .build();
             user = userRepository.save(user);
+
+            // RoleHierarchy 생성 (상위 관계가 없는 일반 사용자는 자기 자신)
+            RoleHierarchy roleHierarchy = RoleHierarchy.builder()
+                    .ancestor(user)  // 상위 관계: 자신
+                    .descendant(user)  // 하위 관계: 자신
+                    .depth(0)  // 자기 자신과의 관계는 depth 0
+                    .build();
+            roleHierarchyRepository.save(roleHierarchy);
 
             // Entity 목적 순수하게 유지하기 위해서 dto 로 전달..
             OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
