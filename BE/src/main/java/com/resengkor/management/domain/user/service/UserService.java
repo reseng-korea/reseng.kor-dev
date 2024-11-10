@@ -303,7 +303,7 @@ public class UserService {
                 request.getRepresentativeName(), request.getPhoneNumber());
 
         // 4. phoneStatus를 업데이트하고 Role을 PENDING에서 ROLE_GUEST로 승격
-        user.updatePhoneStatusAndRole(true, Role.ROLE_GUEST);
+        user.updateStatusAndRole(true, true, Role.ROLE_GUEST);
 
         // 5. 지역 조회 (UserProfile이 null일 경우나 업데이트 시 모두 사용됨)
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")

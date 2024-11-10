@@ -97,7 +97,8 @@ public class User extends BaseEntity {
     }
 
     // oauthUpdateUser에서 사용됨.
-    public void updatePhoneStatusAndRole(boolean phoneNumberStatus, Role role){
+    public void updateStatusAndRole(boolean emailStatus, boolean phoneNumberStatus, Role role){
+        this.emailStatus = emailStatus;
         this.phoneNumberStatus = phoneNumberStatus;
         this.role = role;
     }
