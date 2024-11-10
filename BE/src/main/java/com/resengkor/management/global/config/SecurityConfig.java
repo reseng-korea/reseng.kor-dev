@@ -55,8 +55,7 @@ public class SecurityConfig {
     // POST로 허용할 엔드포인트 목록(role 상관없이 전체 접근 가능한 endpoint만!)
     private static final List<String> POST_LIST = List.of(
             "/api/v1/register",
-            "/api/v1/oauth2-jwt-header",
-            "/api/v1/reissue"
+            "/api/v1/oauth2-jwt-header"
     );
 
     // GET으로 허용할 엔드포인트 목록(role 상관없이 전체 접근 가능한 endpoint만!)
@@ -191,7 +190,7 @@ public class SecurityConfig {
         auth.requestMatchers(HttpMethod.POST, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.PUT, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.DELETE, "/api/v1/qna/questions/**").hasRole("GUEST");
-        auth.requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}").hasRole("PENDING");
+        auth.requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}","/api/v1/reissue").hasRole("PENDING");
     }
 
 
