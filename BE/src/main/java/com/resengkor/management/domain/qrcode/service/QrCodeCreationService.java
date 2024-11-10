@@ -1,5 +1,6 @@
 package com.resengkor.management.domain.qrcode.service;
 
+import com.resengkor.management.domain.banner.dto.SelectedBannerRequestDto;
 import com.resengkor.management.domain.banner.entity.BannerRequest;
 import com.resengkor.management.domain.banner.entity.BannerType;
 import com.resengkor.management.domain.banner.mapper.BannerRequestMapper;
@@ -34,6 +35,7 @@ public class QrCodeCreationService {
     private final QrRepository qrRepository;
     // mapper
     private final BannerRequestMapper bannerRequestMapper;
+    // service
     private final BannerTypeService bannerTypeService;
 
     public byte[] generateQRCode(QrPageDataDTO qrPageDataDTO) {
@@ -44,8 +46,14 @@ public class QrCodeCreationService {
                 .company(user.getCompanyName())
                 .build();
 
+        // SelectedBannerRequestDto 생성
+        SelectedBannerRequestDto selectedBannerRequestDto = new SelectedBannerRequestDto(
+                qrPageDataDTO.getTypeWidth(),
+                qrPageDataDTO.getHorizontalLength()
+        );
+
         // 선택된 typeWidth, horizontalLength로 BannerType 조회
-        BannerType bannerType = bannerTypeService.findMatchingBannerType(user.getId(), qrPageDataDTO);
+        BannerType bannerType = bannerTypeService.findMatchingBannerType(user.getId(), selectedBannerRequestDto);
 
         // MapStruct를 사용하여 DTO -> Entity 변환
         BannerRequest bannerRequest = bannerRequestMapper.toBannerRequest(qrPageDataDTO).toBuilder()

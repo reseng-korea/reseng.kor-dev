@@ -1,6 +1,6 @@
 package com.resengkor.management.domain.banner.controller;
 
-import com.resengkor.management.domain.banner.dto.BannerInventoryDTO;
+import com.resengkor.management.domain.banner.dto.BannerInventoryDto;
 import com.resengkor.management.domain.banner.service.BannerTypeService;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +19,14 @@ public class BannerTypeController {
 
     // 보유 현수막 전체 재고 조회 API
     @GetMapping
-    public ResponseEntity<List<BannerInventoryDTO>> getBannerInventory() {
-        List<BannerInventoryDTO> inventoryList = bannerTypeService.getBannerInventory();
+    public ResponseEntity<List<BannerInventoryDto>> getBannerInventory() {
+        List<BannerInventoryDto> inventoryList = bannerTypeService.getBannerInventory();
         return ResponseEntity.ok(inventoryList);
     }
 
     // 보유 현수막 특정 폭(width) 재고 조회 API
     @GetMapping("/{typeWidth}")
-    public BannerInventoryDTO getBannerInventoryBySpecificWidth(@PathVariable Integer typeWidth) {
+    public BannerInventoryDto getBannerInventoryBySpecificWidth(@PathVariable Integer typeWidth) {
         return bannerTypeService.getBannerInventoryBySpecificWidth(typeWidth);
     }
 

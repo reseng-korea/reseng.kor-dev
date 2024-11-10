@@ -7,7 +7,9 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface BannerTypeRepository extends JpaRepository<BannerType, Long> {
@@ -21,7 +23,16 @@ public interface BannerTypeRepository extends JpaRepository<BannerType, Long> {
     List<BannerType> findClosestByUserIdAndTypeWidth(
             @Param("userId") Long userId,
             @Param("typeWidth") Integer typeWidth,
-            @Param("adjustedHorizontalLength") double adjustedHorizontalLength,
+            @Param("adjustedHorizontalLength") BigDecimal adjustedHorizontalLength,
             Pageable pageable
     );
+
+    @Query("SELECT b FROM BannerType b " +
+            "WHERE b.user.id = :userId " +
+            "AND b.typeWidth = :typeWidth " +
+            "AND b.horizontalLength = :horizontalLength")
+    Optional<BannerType> findByUserIdAndTypeWidthAndExactLength(
+            Long userId,
+            Integer typeWidth,
+            BigDecimal horizontalLength);
 }
