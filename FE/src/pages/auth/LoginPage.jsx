@@ -29,7 +29,7 @@ const LoginPage = () => {
     if (!email) {
       setModalOpen(true);
       openModal({
-        title: '아이디를 입력해주세요.',
+        primaryText: '아이디를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -39,7 +39,7 @@ const LoginPage = () => {
     } else if (!password) {
       setModalOpen(true);
       openModal({
-        title: '비밀번호를 입력해주세요.',
+        primaryText: '비밀번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -67,13 +67,15 @@ const LoginPage = () => {
         console.log(response);
         console.log(response.headers.authorization);
         const accessToken = response.headers.authorization;
+        localStorage.setItem('userId', response.data.userId);
         localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refrsh', response.headers.refresh);
         console.log(response.headers.refresh);
       } catch (error) {
         console.log(error);
         setModalOpen(true);
         openModal({
-          title: '아이디 또는 비밀번호가 올바르지 않습니다.',
+          primaryText: '아이디 또는 비밀번호가 올바르지 않습니다.',
           context: '다시 확인해주세요.',
           type: 'warning',
           isAutoClose: false,

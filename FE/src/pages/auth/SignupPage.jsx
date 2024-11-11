@@ -22,7 +22,10 @@ const SignupPage = () => {
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(false);
   const [isConfirmEmail, setIsConfirmEmail] = useState(false);
+  const [isAuthVerified, setIsAuthVerified] = useState(false);
+  const [isClicked, setIsClicked] = useState(false);
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [isValidPassword, setIsValidPassword] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(false);
@@ -94,10 +97,21 @@ const SignupPage = () => {
           closeModal(), setModalOpen(false);
         },
       });
-    } else if (!isValidPassword) {
+    } else if (!confirmPassword) {
       setModalOpen(true);
       openModal({
         primaryText: '비밀번호를 입력해주세요.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
+        },
+      });
+    } else if (!isValidPassword) {
+      setModalOpen(true);
+      openModal({
+        primaryText: '비밀번호가 일치하지 않습니다.',
+        context: ' 확인 후 다시 입력해 주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -276,10 +290,16 @@ const SignupPage = () => {
             setIsValidEmail={setIsValidEmail}
             isConfirmEmail={isConfirmEmail}
             setIsConfirmEmail={setIsConfirmEmail}
+            isAuthVerified={isAuthVerified}
+            setIsAuthVerified={setIsAuthVerified}
+            isClicked={isClicked}
+            setIsClicked={setIsClicked}
           />
           <PasswordInfoForm
             password={password}
             setPassword={setPassword}
+            confirmPassword={confirmPassword}
+            setConfirmPassword={setConfirmPassword}
             isValidPassword={isValidPassword}
             setIsValidPassword={setIsValidPassword}
           />

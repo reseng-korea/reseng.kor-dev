@@ -8,6 +8,8 @@ const PhoneNumberInfoForm = ({
   setPhoneNumber,
   isValidPhoneNumber,
   setIsValidPhoneNumber,
+  isPhoneNumberVerified,
+  setIsPhoneNumberVerified,
 }) => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   // 인증 요청 누름 상태 버튼
@@ -22,7 +24,7 @@ const PhoneNumberInfoForm = ({
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
   // 인증 완료
-  const [isAuthVerified, setIsAuthVerified] = useState(false);
+  // const [isAuthVerified, setIsAuthVerified] = useState(false);
 
   // 휴대폰 번호 입력 감지
   const handlePhoneNumberInputChange = (e) => {
@@ -40,7 +42,7 @@ const PhoneNumberInfoForm = ({
     if (!phoneNumber) {
       setModalOpen(true);
       openModal({
-        title: '휴대폰번호를 입력해주세요.',
+        primaryText: '휴대폰번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -50,7 +52,7 @@ const PhoneNumberInfoForm = ({
     } else if (phoneNumber.length != 11) {
       setModalOpen(true);
       openModal({
-        title: '입력된 휴대폰 번호가 올바르지 않습니다.',
+        primaryText: '입력된 휴대폰 번호가 올바르지 않습니다.',
         context: '다시 확인해주세요.',
         type: 'warning',
         isAutoClose: false,
@@ -75,7 +77,7 @@ const PhoneNumberInfoForm = ({
           setModalOpen(true);
 
           openModal({
-            title: `${phoneNumber} (으)로 인증번호가 발송되었습니다.`,
+            primaryText: `${phoneNumber} (으)로 인증번호가 발송되었습니다.`,
             type: 'success',
             isAutoClose: true,
             onConfirm: () => {
@@ -95,7 +97,7 @@ const PhoneNumberInfoForm = ({
         console.log(error);
         setModalOpen(true);
         openModal({
-          title: '이미 존재하는 휴대폰 번호입니다.',
+          primaryText: '이미 존재하는 휴대폰 번호입니다.',
           type: 'warning',
           isAutoClose: false,
           onConfirm: () => {
@@ -122,14 +124,14 @@ const PhoneNumberInfoForm = ({
       if (response.data.code == 200) {
         setModalOpen(true);
         openModal({
-          title: `인증이 완료되었습니다.`,
+          primaryText: `인증이 완료되었습니다.`,
           type: 'success',
           isAutoClose: true,
           onConfirm: () => {
             closeModal(), setModalOpen(false);
           },
         });
-        setIsAuthVerified(true);
+        setIsPhoneNumberVerified(true);
         clearInterval(timerRef.current);
         setIsValidPhoneNumber(true);
         timerRef.current = null;
@@ -142,7 +144,7 @@ const PhoneNumberInfoForm = ({
       ) {
         setModalOpen(true);
         openModal({
-          title: '인증 번호가 일치하지 않습니다.',
+          primaryText: '인증 번호가 일치하지 않습니다.',
           context: '올바른 인증 번호를 입력해 주세요.',
           type: 'warning',
           isAutoClose: true,
@@ -153,7 +155,7 @@ const PhoneNumberInfoForm = ({
       } else {
         setModalOpen(true);
         openModal({
-          title: '인증번호가 만료되었습니다.',
+          primaryText: '인증번호가 만료되었습니다.',
           context: '다시 요청하여 새로운 인증번호를 받아주세요.',
           type: 'warning',
           isAutoClose: true,
@@ -194,24 +196,28 @@ const PhoneNumberInfoForm = ({
             onChange={handlePhoneNumberInputChange}
             className="flex-grow p-2 mb-1 border rounded-lg"
             placeholder="숫자만 입력해주세요"
-            disabled={isAuthVerified}
+            disabled={isPhoneNumberVerified}
           />
           <button
             type="submit"
             onClick={handlePhoneNumberCheckClick}
             className={`flex-grow-0 px-4 py-2 mb-2 font-bold transition-colors duration-300 rounded-lg  ${
-              isAuthVerified
+              isPhoneNumberVerified
                 ? 'bg-gray3 text-white'
                 : isClicked
                   ? 'bg-transition text-gray3 border border-gray3 hover:text-gray4 hover:border-gray4'
                   : 'text-white bg-primary hover:bg-hover'
             }`}
           >
-            {isAuthVerified ? '인증 완료' : isClicked ? '재전송' : '중복 확인'}
+            {isPhoneNumberVerified
+              ? '인증 완료'
+              : isClicked
+                ? '재전송'
+                : '중복 확인'}
           </button>
         </div>
 
-        {isClicked && !isAuthVerified && (
+        {isClicked && !isPhoneNumberVerified && (
           <div className="flex flex-col w-full">
             <div className="flex items-center justify-center w-full mb-1 space-x-2">
               <input

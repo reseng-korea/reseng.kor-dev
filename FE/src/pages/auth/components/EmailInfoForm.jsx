@@ -10,10 +10,14 @@ const EmailInfoForm = ({
   setIsValidEmail,
   isConfirmEmail,
   setIsConfirmEmail,
+  isAuthVerified,
+  setIsAuthVerified,
+  isClicked,
+  setIsClicked,
 }) => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   // 중복 확인 누름 상태 버튼
-  const [isClicked, setIsClicked] = useState(false);
+  // const [isClicked, setIsClicked] = useState(false);
   // 이메일 인증 번호
   const [authCode, setAuthCode] = useState('');
   // 타이머 ID 저장
@@ -24,7 +28,7 @@ const EmailInfoForm = ({
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
   // 인증 완료
-  const [isAuthVerified, setIsAuthVerified] = useState(false);
+  // const [isAuthVerified, setIsAuthVerified] = useState(false);
 
   // 이메일 입력 감지
   const handleEmailInputChange = (e) => {
@@ -45,7 +49,7 @@ const EmailInfoForm = ({
     if (!email) {
       setModalOpen(true);
       openModal({
-        title: '이메일을 입력해주세요.',
+        primaryText: '이메일을 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -55,7 +59,7 @@ const EmailInfoForm = ({
     } else if (!isValidEmail) {
       setModalOpen(true);
       openModal({
-        title: '올바르지 않은 이메일 형식입니다.',
+        primaryText: '올바르지 않은 이메일 형식입니다.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -94,7 +98,8 @@ const EmailInfoForm = ({
               setModalOpen(true);
 
               openModal({
-                title: `${email} (으)로 인증번호가 발송되었습니다.`,
+                primaryText: `${email} (으)로`,
+                secondaryText: ' 인증번호가 발송되었습니다.',
                 type: 'success',
                 isAutoClose: true,
                 onConfirm: () => {
@@ -118,7 +123,7 @@ const EmailInfoForm = ({
         console.log(error);
         setModalOpen(true);
         openModal({
-          title: '이미 존재하는 이메일입니다.',
+          primaryText: '이미 존재하는 이메일입니다.',
           type: 'warning',
           isAutoClose: false,
           onConfirm: () => {
@@ -133,7 +138,7 @@ const EmailInfoForm = ({
     if (!authCode) {
       setModalOpen(true);
       openModal({
-        title: '인증번호를 입력해주세요.',
+        primaryText: '인증번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -141,6 +146,8 @@ const EmailInfoForm = ({
         },
       });
     } else {
+      console.log(email);
+      console.log(authCode);
       try {
         console.log(authCode);
         const response = await axios.post(
@@ -162,7 +169,7 @@ const EmailInfoForm = ({
           setModalOpen(true);
           setIsConfirmEmail(true);
           openModal({
-            title: '이메일 인증이 성공적으로 완료되었습니다.',
+            primaryText: '이메일 인증이 성공적으로 완료되었습니다.',
             type: 'success',
             isAutoClose: true,
             onConfirm: () => {
@@ -171,18 +178,18 @@ const EmailInfoForm = ({
           });
           setIsAuthVerified(true);
           clearInterval(timerRef.current);
-          setIsValidPhoneNumber(true);
+          setIsValidEmail(true);
           timerRef.current = null;
         }
       } catch (error) {
         console.log(error);
         if (
-          error.response.data.message ==
+          error.response.data.message ===
           '인증 코드가 일치하지 않습니다. 올바른 코드를 입력해 주세요.'
         ) {
           setModalOpen(true);
           openModal({
-            title: '인증번호가 올바르지 않습니다. 다시 확인해 주세요.',
+            primaryText: '인증번호가 올바르지 않습니다. 다시 확인해 주세요.',
             type: 'warning',
             isAutoClose: false,
             onConfirm: () => {
@@ -192,7 +199,7 @@ const EmailInfoForm = ({
         } else {
           setModalOpen(true);
           openModal({
-            title: '인증번호가 만료되었습니다.',
+            primaryText: '인증번호가 만료되었습니다.',
             context: '다시 요청하여 새로운 인증번호를 받아주세요.',
             type: 'warning',
             isAutoClose: false,

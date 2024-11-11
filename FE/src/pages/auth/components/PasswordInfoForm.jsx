@@ -3,10 +3,12 @@ import React, { useState } from 'react';
 const PasswordInfoForm = ({
   password,
   setPassword,
+  confirmPassword,
+  setConfirmPassword,
   isValidPassword,
   setIsValidPassword,
 }) => {
-  const [confirmPassword, setConfirmPassword] = useState('');
+  // const [confirmPassword, setConfirmPassword] = useState('');
   // 비밀번호 유효성 검사
   const validatePassword = (password) => {
     const passwordRegex =

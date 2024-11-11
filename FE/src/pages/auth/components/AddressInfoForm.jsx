@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import AddressSearch from '../../../components/AddressSearch';
 
@@ -16,32 +16,9 @@ const AddressInfoForm = ({
   const [regionsData, setRegionsData] = useState({});
   const [subRegionsData, setSubRegionsData] = useState({});
 
-  const handleRegionInputChange = async (e) => {
-    const newRegion = e.target.value;
-    setRegion(newRegion);
-    setSubRegion(''); // 하위 지역 초기화
-    setSubRegionsData({}); // 이전 하위 지역 데이터 초기화
-
-    const selectedRegion = regionsData[newRegion];
-    if (selectedRegion) {
-      // 선택된 region의 하위 지역 데이터 가져오기
-      try {
-        const response = await axios.get(
-          `${apiUrl}/api/v1/regions/${selectedRegion.id}/districts`
-        );
-        const subRegions = response.data.data.reduce((acc, item) => {
-          acc[item.regionName] = item.regionName;
-          return acc;
-        }, {});
-        setSubRegionsData(subRegions);
-      } catch (error) {
-        console.log(error);
-      }
-    }
-  };
-
-  const handleRegionClick = async () => {
-    if (Object.keys(regionsData).length === 0) {
+  // 페이지 로드 시 `regionsData`를 자동으로 가져옴
+  useEffect(() => {
+    async function loadRegionsData() {
       try {
         const response = await axios.get(`${apiUrl}/api/v1/regions/cities`);
         const regions = response.data.data.reduce((acc, item) => {
@@ -53,6 +30,38 @@ const AddressInfoForm = ({
         console.log(error);
       }
     }
+
+    loadRegionsData();
+  }, [apiUrl]);
+
+  // `region`이 변경될 때마다 `subRegion` 목록을 자동으로 불러옴
+  useEffect(() => {
+    async function loadSubRegions() {
+      if (region && regionsData[region]) {
+        try {
+          const response = await axios.get(
+            `${apiUrl}/api/v1/regions/${regionsData[region].id}/districts`
+          );
+          const subRegions = response.data.data.reduce((acc, item) => {
+            acc[item.regionName] = item.regionName;
+            return acc;
+          }, {});
+          setSubRegionsData(subRegions);
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        setSubRegionsData({}); // region이 없으면 하위 지역 초기화
+      }
+    }
+
+    loadSubRegions();
+  }, [region, regionsData, apiUrl]);
+
+  const handleRegionInputChange = (e) => {
+    const newRegion = e.target.value;
+    setRegion(newRegion);
+    setSubRegion(''); // 하위 지역 초기화
   };
 
   return (
@@ -62,9 +71,8 @@ const AddressInfoForm = ({
         <label className="self-start mb-2 text-lg">광역자치구</label>
         <select
           className="w-full p-2 mb-1 border rounded-lg"
-          value={region}
+          value={region || ''}
           onChange={handleRegionInputChange}
-          onClick={handleRegionClick}
         >
           <option value="">광역자치구를 선택해주세요</option>
           {Object.keys(regionsData).map((regionName) => (
@@ -80,7 +88,7 @@ const AddressInfoForm = ({
         <label className="self-start mb-2 text-lg">지역자치구</label>
         <select
           className="w-full p-2 mb-1 border rounded-lg"
-          value={subRegion}
+          value={subRegion || ''}
           onChange={(e) => setSubRegion(e.target.value)}
           disabled={!region}
         >

@@ -1,9 +1,35 @@
 // 임시페이지임 삭제 예정
 import { useNavigateTo } from '../hooks/useNavigateTo';
 
+import axios from 'axios';
+
 const Tmp = () => {
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
+
+  const handleLogout = async () => {
+    const accesstoken = localStorage.getItem('accessToken');
+    console.log(accesstoken);
+    const refresh = localStorage.getItem('refrsh');
+    console.log(refresh);
+
+    try {
+      const response = await axios.post(
+        `${apiUrl}/api/v1/logout`,
+        { Refresh: refresh },
+        {
+          headers: {
+            Authorization: accesstoken,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div className="flex justify-center px-3 py-2 min-h-screen mt-16">
@@ -34,6 +60,7 @@ const Tmp = () => {
         </button>
         <button onClick={() => navigateTo(routes.qrSuccess)}>qr 성공</button>
         <button onClick={() => navigateTo(routes.qrFailure)}>qr 실패</button>
+        <button onClick={handleLogout}>로그아웃</button>
       </div>
     </div>
   );
