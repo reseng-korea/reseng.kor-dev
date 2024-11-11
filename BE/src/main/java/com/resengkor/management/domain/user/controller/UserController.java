@@ -68,7 +68,7 @@ public class UserController {
 
     //회원탈퇴
     @PutMapping("/withdrawal")
-    public CommonResponse withdrawUser(@RequestHeader("Authorization") String token) {
+    public CommonResponse withdrawUser(@RequestHeader("Refresh") String token) {
         return userServiceImpl.withdrawUser(token);
     }
 
