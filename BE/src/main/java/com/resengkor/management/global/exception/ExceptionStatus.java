@@ -30,7 +30,7 @@ public enum ExceptionStatus {
 
     /* 인증 및 권한 오류 */
     AUTHENTICATION_FAILED(4010, "유저 인증에 실패하였습니다."),
-    ACCESS_DENIED(4011, "접근이 거부되었습니다. 필요한 권한이 없습니다."),
+    ACCESS_DENIED(4011, "접근이 거부되었습니다."),
     INVALID_CREDENTIALS(4012, "잘못된 자격 증명입니다. 아이디와 비밀번호를 다시 확인해 주세요."),
 
     /* 사용자 관련 오류 */
@@ -41,6 +41,7 @@ public enum ExceptionStatus {
     ACCOUNT_DISABLED(4024, "계정이 비활성화되었습니다. 관리자에게 문의하세요."),
     USER_PROFILE_NOT_FOUND(4025, "사용자의 상세 정보가 존재하지 않습니다."),
     INVALID_PASSWORD(4026, "비밀번호가 불일치합니다. 다시 입력해 주세요."),
+    USER_NOT_MATCH(4027, "사용자가 일치하지 않습니다"),
 
     /* 이메일 및 인증 코드 오류 */
     EMAIL_NOT_FOUND(4030, "존재하지 않는 이메일입니다. 이메일 주소를 확인해 주세요."),
