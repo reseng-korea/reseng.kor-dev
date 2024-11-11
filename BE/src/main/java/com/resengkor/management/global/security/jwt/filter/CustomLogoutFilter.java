@@ -1,7 +1,6 @@
 package com.resengkor.management.global.security.jwt.filter;
 
 import com.resengkor.management.global.exception.ExceptionStatus;
-import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.FilterChain;
@@ -25,7 +24,6 @@ import java.io.IOException;
 public class CustomLogoutFilter extends GenericFilterBean {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
-//    private final RefreshRepository refreshRepository;
     private final String defaultFilterUrl;
 
     public CustomLogoutFilter(String defaultFilterUrl, JWTUtil jwtUtil, RedisUtil redisUtil) {
@@ -78,10 +76,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        //DB에 저장되어 있는지 확인
-//        Boolean isExist = refreshRepository.existsByRefresh(refresh);
         // Redis에서 refresh 토큰 존재 여부 확인
-        Boolean isExist = redisUtil.existData("refresh:token:" + refresh);
+        String email = jwtUtil.getEmail(refresh);
+        Boolean isExist = redisUtil.existData("refresh:token:" + email);
 
         // not exist in DB
         if(!isExist){
@@ -93,9 +90,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // logout
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거
-//        refreshRepository.deleteByRefresh(refresh);
 
-        boolean isDeleted = redisUtil.deleteData("refresh:token:" + refresh);
+        boolean isDeleted = redisUtil.deleteData("refresh:token:" + email);
         if (!isDeleted) {
             log.error("로그아웃: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
             // Redis 오류 시 예외 던지기

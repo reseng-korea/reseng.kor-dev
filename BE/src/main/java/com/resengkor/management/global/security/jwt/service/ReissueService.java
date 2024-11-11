@@ -6,8 +6,6 @@ import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.ResponseStatus;
-import com.resengkor.management.global.security.jwt.entity.RefreshToken;
-import com.resengkor.management.global.security.jwt.repository.RefreshRepository;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -16,10 +14,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -28,9 +22,7 @@ import java.util.concurrent.TimeUnit;
 public class ReissueService {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
-//    private final RefreshRepository refreshRepository;
-    private final RefreshTokenService refreshTokenService;
-    private final long ACCESS_TOKEN_EXPIRATION= 60 * 30 * 1000L;
+    private final long ACCESS_TOKEN_EXPIRATION= 60 * 60 * 1000L; //1시간
     private final UserRepository userRepository;
 
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
@@ -56,9 +48,17 @@ public class ReissueService {
         String email = jwtUtil.getEmail(refresh);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+        log.info("user 찾기 성공");
+        // 비활성화된 user면 에러 던짐
+        if (!user.isStatus()) {
+            log.info("비활성 사용자입니다");
+            throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
+        }
+
         long userId = user.getId();
         String role = jwtUtil.getRole(refresh);
         String loginType = jwtUtil.getLoginType(refresh);
+        log.info("role = {}, loginType = {}", role, loginType);
 
 
         long refreshTokenExpiration;
@@ -66,14 +66,16 @@ public class ReissueService {
         String newRefresh;
 
         // Redis에서 refresh 토큰 유효성 검사
-        Boolean isExist = redisUtil.existData("refresh:token:" + refresh);
+        Boolean isExist = redisUtil.existData("refresh:token:" + email);
+        log.error("refreshKey : {}", refresh);
 
         if(loginType.equals("local")){
             boolean isAuto = jwtUtil.getIsAuto(refresh);
-            Long remainingTTL = redisUtil.getRemainingTTL("refresh:token:" + refresh);
+            Long remainingTTL = redisUtil.getRemainingTTL("refresh:token:" + email);
 
             // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
             if(!isExist || remainingTTL == -1L) {
+                log.error("isExist  = {}, remiainingTTL  = {}", isExist, remainingTTL);
                 throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
             }
 
@@ -102,13 +104,13 @@ public class ReissueService {
 
         // 기존 refresh DB 삭제, 새로운 refresh 저장
         // 기존 refresh 키 삭제
-        boolean isDeleted = redisUtil.deleteData("refresh:token:" + refresh);
+        boolean isDeleted = redisUtil.deleteData("refresh:token:" + email);
         if (!isDeleted) {
             log.error("ReissueService: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);
         }
         // Redis에 새로운 Refresh Token 저장
-        boolean isSaved = redisUtil.setData("refresh:token:" + newRefresh, newRefresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+        boolean isSaved = redisUtil.setData("refresh:token:" + email, newRefresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
         if (!isSaved) {
             log.error("ReissueService: Refresh 토큰 저장 실패 (Redis 연결 오류)");
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);

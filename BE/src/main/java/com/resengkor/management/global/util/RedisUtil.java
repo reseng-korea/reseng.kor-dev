@@ -48,17 +48,16 @@ public class RedisUtil {
 
     // Redis에서 값을 가지고 있는지 확인
     public boolean existData(String key) {
-        try {
-            return Boolean.TRUE.equals(redisTemplate.hasKey(key));
-        } catch (DataAccessException e) {
-            log.error("Redis 연결 오류 (existData): {}", e.getMessage(), e);
-            return false; // 기본값 반환
-        }
+        return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
 
     // 키의 남은 TTL(만료 시간) 가져오기
     public Long getRemainingTTL(String key) {
         try {
+            if (Boolean.FALSE.equals(redisTemplate.hasKey(key))) {
+                log.warn("Redis 키가 존재하지 않습니다: {}", key);
+                return -2L;
+            }
             return redisTemplate.getExpire(key); // 초 단위로 반환
         } catch (DataAccessException e) {
             log.error("Redis 연결 오류 (getRemainingTTL): {}", e.getMessage(), e);

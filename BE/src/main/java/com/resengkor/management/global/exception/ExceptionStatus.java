@@ -25,6 +25,8 @@ public enum ExceptionStatus {
     VALIDATION_ERROR(4000, "요청 데이터의 유효성 검사가 실패했습니다."),
     /* HTTP 메서드 오류 */
     METHOD_NOT_ALLOWED(4001, "지원되지 않는 HTTP 메서드 요청입니다. 요청 방식을 확인해 주세요."),
+    /* 파일 크기 제한 오류 */
+    FILE_SIZE_LIMIT_EXCEEDED(4002, "파일 크기가 허용된 용량을 초과하였습니다. 최대 5MB 이하의 파일만 업로드할 수 있습니다."),
 
     /* 인증 및 권한 오류 */
     AUTHENTICATION_FAILED(4010, "유저 인증에 실패하였습니다."),
@@ -43,7 +45,7 @@ public enum ExceptionStatus {
     /* 이메일 및 인증 코드 오류 */
     EMAIL_NOT_FOUND(4030, "존재하지 않는 이메일입니다. 이메일 주소를 확인해 주세요."),
     CODE_MISMATCH(4031, "인증 코드가 일치하지 않습니다. 올바른 코드를 입력해 주세요."),
-    CODE_EXPIRED(4032, "인증 코드가 만료되었습니다. 새 코드를 요청해 주세요."),
+    CODE_EXPIRED(4032, "인증 코드가 존재하지 않습니다. 새 코드를 요청해 주세요."),
 
 
     // 5xx 서버 오류
@@ -57,6 +59,7 @@ public enum ExceptionStatus {
     // 6xx 등급 관련 오류
     ROLE_CHANGE_FAIL(6001, "해당 유저의 등급을 변경할 권리가 없습니다."),
     ROLE_PERMISSION_DENIED(6002, "해당 등급 변경에 필요한 권한이 부족합니다."),
+    HIERARCHY_NOT_FOUND(6003, "해당 부모-자식 관계가 존재하지 않습니다."),
 
 
     FORBIDDEN_FAILED(4001, "콘텐츠에 접근할 수 없어, 정보를 조회할 수 없습니다."),

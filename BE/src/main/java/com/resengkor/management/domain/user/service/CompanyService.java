@@ -2,6 +2,7 @@ package com.resengkor.management.domain.user.service;
 
 import com.resengkor.management.domain.user.dto.CompanyInfoDTO;
 import com.resengkor.management.domain.user.dto.UserMapper;
+import com.resengkor.management.domain.user.entity.Role;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.entity.UserProfile;
 import com.resengkor.management.domain.user.repository.UserRepository;
@@ -15,6 +16,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import java.util.Arrays;
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class CompanyService {
@@ -26,19 +30,13 @@ public class CompanyService {
         // 페이지 요청 객체 생성
         PageRequest pageRequest = PageRequest.of(page, size);
 
+        // 필터링할 역할 목록 생성
+        List<Role> roles = Arrays.asList(Role.ROLE_DISTRIBUTOR, Role.ROLE_MANAGER);
         // User 엔티티를 페이지네이션을 사용하여 가져옴
-        Page<User> users = userRepository.findAll(pageRequest);
+        Page<User> users = userRepository.findAllWithProfileAndRegion(roles, pageRequest);
 
         // User 엔티티를 CompanyInfoDTO로 변환하면서 null 처리
-        Page<CompanyInfoDTO> companyInfoDTOs = users.map(user -> CompanyInfoDTO.builder()
-                .userId(user.getId())
-                .companyName(user.getCompanyName())
-                .phoneNumber(user.getPhoneNumber())
-                .address(user.getUserProfile() != null ? user.getUserProfile().getFullAddress() : null)
-                .latitude(user.getUserProfile() != null ? user.getUserProfile().getLatitude() : null)
-                .longitude(user.getUserProfile() != null ? user.getUserProfile().getLongitude() : null)
-                .build()
-        );
+        Page<CompanyInfoDTO> companyInfoDTOs = users.map(userMapper::toCompanyInfoDTO);
 
         // DataResponse에 담아서 반환
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
@@ -46,7 +44,7 @@ public class CompanyService {
     }
 
     public DataResponse<CompanyInfoDTO> getCompanyDetails(Long companyId) {
-        User user = userRepository.findById(companyId)
+        User user = userRepository.findUserWithProfileAndRegionById(companyId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         CompanyInfoDTO companyInfoDTO = userMapper.toCompanyInfoDTO(user);

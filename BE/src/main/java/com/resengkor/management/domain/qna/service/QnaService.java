@@ -145,29 +145,33 @@ public class QnaService {
 
 
     //질문 상세 조회
-    public DataResponse<QuestionAnswerResponse> getQuestionDetails(Long questionId, Long userId, String password) {
+    public DataResponse<QuestionAnswerResponse> getQuestionDetails(Long questionId, String password) {
         log.info("---------Service : getQuestionDetails method start---------");
         // 1. 주어진 ID로 질문 엔티티 조회
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
-        // 2. 현재 로그인한 사용자 정보 가져오기
-        User currentUser = getCurrentLoginUser();
-
-        // 3. 관리자인 경우 비밀글 접근 허용
-        if (currentUser.getRole().equals(Role.ROLE_MANAGER)) {
-            question.incrementViewCount();
-            QuestionAnswerResponse questionAnswerResponse = qnaMapper.toQuestionAnswerResponse(question);
-            return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
-                    ResponseStatus.RESPONSE_SUCCESS.getMessage(),
-                    questionAnswerResponse);
-        }
-
-        // 3. 비밀글일 경우, 작성자나 관리자가 아닌 경우 비밀번호 검증
+        //2. 비밀글인지 일단 확인
         if (question.isSecret()) {
-            if(!question.getUser().getId().equals(currentUser.getId())){
+            // 2-1. 현재 로그인한 사용자 정보 가져오기
+            //회원 아니면 여기서 오류 터짐
+            User currentUser = getCurrentLoginUser();
+
+            // 2-2. 관리자인 경우
+            if (currentUser.getRole().equals(Role.ROLE_MANAGER)) {
+                question.incrementViewCount();
+                QuestionAnswerResponse questionAnswerResponse = qnaMapper.toQuestionAnswerResponse(question);
+                return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                        ResponseStatus.RESPONSE_SUCCESS.getMessage(),
+                        questionAnswerResponse);
+            }
+
+            // 2-3. 작성자와 일치하지 않는 경우 접근 제한
+            if (!question.getUser().getId().equals(currentUser.getId())) {
                 throw new CustomException(ExceptionStatus.ACCESS_DENIED);
             }
+
+            // 2-4. 비밀번호가 틀린 경우
             if (password == null || !question.getPassword().equals(password)) {
                 throw new CustomException(ExceptionStatus.INVALID_PASSWORD);
             }

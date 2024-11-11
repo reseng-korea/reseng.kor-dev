@@ -7,9 +7,12 @@ import com.resengkor.management.domain.sms.dto.MessageAuthDTO;
 import com.resengkor.management.domain.sms.dto.MessageDto;
 import com.resengkor.management.domain.sms.dto.SmsRequest;
 import com.resengkor.management.domain.sms.dto.SmsResponse;
+import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
+import com.resengkor.management.global.response.DataResponse;
 import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.util.RedisUtil;
 import com.resengkor.management.global.util.TmpCodeUtil;
@@ -36,6 +39,7 @@ import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Configuration
@@ -46,6 +50,7 @@ public class SmsServiceWithRedis {
     //휴대폰 인증 번호
     private final String smsConfirmNum = TmpCodeUtil.generateNumericCode();
     private final RedisUtil redisUtil;
+    private final UserRepository userRepository;
 
     @Value("${spring.naver-cloud-sms.accessKey}")
     private String accessKey;
@@ -90,7 +95,21 @@ public class SmsServiceWithRedis {
     //메세지 발송
     @Transactional
     public SmsResponse sendSms(MessageDto messageDto, String type) throws JsonProcessingException, RestClientException, URISyntaxException, InvalidKeyException, NoSuchAlgorithmException, UnsupportedEncodingException {
-        return sendDetailSms(messageDto,type,smsConfirmNum);
+        //핸드폰 인증(만약 이미 존재하는 핸드폰이라면)
+        Optional<User> existingUserByPhoneNumber = userRepository.findByPhoneNumber(messageDto.getTo());
+        if (existingUserByPhoneNumber.isPresent()) {
+            User user = existingUserByPhoneNumber.get();
+            if (!user.isStatus()) {
+                log.info("비활성 사용자입니다 (이메일 중복)");
+                throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
+            }
+            log.info("사용자입니다 (전화번호 중복)");
+            throw new CustomException(ExceptionStatus.USER_PHONE_NUMBER_ALREADY_EXIST); // 이미 존재하는 전화번호 예외
+        }
+        else{
+            log.info("핸드폰 번호 사용 가능: " + messageDto.getTo());
+            return sendDetailSms(messageDto,type,smsConfirmNum);
+        }
     }
 
     @Transactional
@@ -112,11 +131,11 @@ public class SmsServiceWithRedis {
         String contentMessage;
         if(type.equals("findPassword")){
             //임시 비밀번호 발급해주는 문자내용
-            contentMessage = "[서비스명 테스트닷] 임시 비밀번호: " + tmpCode + ". 로그인 후 비밀번호를 변경해 주세요.";
+            contentMessage = "[(주)리앤생] 임시 비밀번호는 [" + tmpCode + "]입니다. 로그인 후 비밀번호를 변경해 주세요.";
         }
         else{
             //핸드폰 인증해주는 문자내용
-            contentMessage = "[서비스명 테스트닷] 인증번호 [" + tmpCode + "]를 입력해주세요";
+            contentMessage = "[(주)리앤생] 핸드폰 인증번호 [" + tmpCode + "]입니다.";
         }
 
         SmsRequest request = SmsRequest.builder()
@@ -154,7 +173,7 @@ public class SmsServiceWithRedis {
         // Redis에서 인증 코드 조회
         String storedCode = redisUtil.getData("sms:verification:" + dto.getPhoneNumber());
         if (storedCode == null) {
-            throw new CustomException(ExceptionStatus.EMAIL_NOT_FOUND); // 인증 코드가 존재하지 않는 경우
+            throw new CustomException(ExceptionStatus.CODE_EXPIRED); // 인증 코드가 존재하지 않는 경우
         }
 
         log.info("------------------------------------------------");
