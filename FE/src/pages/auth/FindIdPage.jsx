@@ -31,7 +31,7 @@ const FindIdPage = () => {
     if (!companyName) {
       setModalOpen(true);
       openModal({
-        title: '업체명을 입력해주세요.',
+        primaryText: '업체명을 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -41,7 +41,7 @@ const FindIdPage = () => {
     } else if (!phoneNumber) {
       setModalOpen(true);
       openModal({
-        title: '휴대폰 번호를 입력해주세요.',
+        primaryText: '휴대폰 번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -51,7 +51,7 @@ const FindIdPage = () => {
     } else if (phoneNumber.length != 11) {
       setModalOpen(true);
       openModal({
-        title: '올바른 휴대폰 번호를 입력해주세요.',
+        primaryText: '올바른 휴대폰 번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -69,22 +69,19 @@ const FindIdPage = () => {
             },
           }
         );
-        console.log(response);
+        console.log(response.data.data.email);
 
         // 성공했을 때
+        if (response.status == 200) {
+          const email = response.data.data.email;
 
-        // navigateTo(routes.idinquirySuccess, {response.data});
+          navigateTo(routes.idinquirySuccess, {
+            email,
+          });
+        }
       } catch (error) {
         console.log(error);
-        openModal({
-          title: '입력하신 정보와 일치하는 계정을 찾을 수 없습니다.',
-          context: '다시 확인해주세요.',
-          type: 'warning',
-          isAutoClose: false,
-          onConfirm: () => {
-            closeModal(), setModalOpen(false);
-          },
-        });
+        navigateTo(routes.idinquiryFailure);
       }
     }
   };

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 
 import useModal from '../../../hooks/useModal';
@@ -16,14 +16,15 @@ const EmailInfoForm = ({
   const [isClicked, setIsClicked] = useState(false);
   // 이메일 인증 번호
   const [authCode, setAuthCode] = useState('');
+  // 타이머 ID 저장
+  const timerRef = useRef(null);
   // 인증 시간(5분)
   const [timeLeft, setTimeLeft] = useState(300); // 5분 = 300초
 
-  // 인증 완료
-  const [isAuthVerified, setIsAuthVerified] = useState(false);
-
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
+  // 인증 완료
+  const [isAuthVerified, setIsAuthVerified] = useState(false);
 
   // 이메일 입력 감지
   const handleEmailInputChange = (e) => {
@@ -39,6 +40,7 @@ const EmailInfoForm = ({
     setAuthCode(e.target.value);
   };
 
+  // 중복 확인 클릭 시
   const handleEmailCheckClick = async () => {
     if (!email) {
       setModalOpen(true);
@@ -84,23 +86,29 @@ const EmailInfoForm = ({
               }
             );
 
-            setIsClicked(true);
-            setModalOpen(true);
-            setTimeLeft(300);
-
-            openModal({
-              title: `${email} (으)로 인증번호가 발송되었습니다.`,
-              type: 'success',
-              isAutoClose: true,
-              onConfirm: () => {
-                closeModal(), setModalOpen(false);
-              },
-            });
-
             console.log(response);
 
-            if (response.status === 200) {
-              console.log('사용 가능한 이메일입니다.');
+            if (
+              response.data.message == '요청에 성공되어 데이터가 생성되었습니다'
+            ) {
+              setModalOpen(true);
+
+              openModal({
+                title: `${email} (으)로 인증번호가 발송되었습니다.`,
+                type: 'success',
+                isAutoClose: true,
+                onConfirm: () => {
+                  closeModal();
+                  setModalOpen(false);
+                  setIsClicked(true);
+                  setTimeLeft(300);
+                  // 기존 타이머 있을 경우 초기화
+                  if (timerRef.current) clearInterval(timerRef.current);
+                  timerRef.current = setInterval(() => {
+                    setTimeLeft((prev) => prev - 1);
+                  }, 1000);
+                },
+              });
             }
           } catch (error) {
             console.log(error);
@@ -162,6 +170,9 @@ const EmailInfoForm = ({
             },
           });
           setIsAuthVerified(true);
+          clearInterval(timerRef.current);
+          setIsValidPhoneNumber(true);
+          timerRef.current = null;
         }
       } catch (error) {
         console.log(error);
@@ -195,12 +206,18 @@ const EmailInfoForm = ({
   };
 
   // 타이머 로직
+  // useEffect(() => {
+  //   if (timeLeft > 0) {
+  //     const timerId = setInterval(() => {
+  //       setTimeLeft((prev) => prev - 1);
+  //     }, 1000);
+  //     return () => clearInterval(timerId);
+  //   }
+  // }, [timeLeft]);
   useEffect(() => {
-    if (timeLeft > 0) {
-      const timerId = setInterval(() => {
-        setTimeLeft((prev) => prev - 1);
-      }, 1000);
-      return () => clearInterval(timerId);
+    if (timeLeft === 0 && timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
   }, [timeLeft]);
 

@@ -5,7 +5,8 @@ const useModal = () => {
   // console.log('2.useModal에서 받았다.');
   const [isOpen, setIsOpen] = useState(false);
   const [modalProps, setModalProps] = useState({
-    title: '',
+    primaryText: '',
+    secondaryText: '',
     context: '',
     type: 'info', // success or warning
     isAutoClose: false, // true이면 자동 닫힘
@@ -17,7 +18,8 @@ const useModal = () => {
   });
 
   const openModal = ({
-    title,
+    primaryText,
+    secondaryText = '',
     context = '',
     type = 'info',
     isAutoClose = false,
@@ -28,7 +30,8 @@ const useModal = () => {
     onCancel = null,
   }) => {
     setModalProps({
-      title,
+      primaryText,
+      secondaryText,
       context,
       type,
       isAutoClose,
@@ -40,7 +43,7 @@ const useModal = () => {
     });
     // setTimeout(() => setIsOpen(true), 0);
     setIsOpen(true);
-    console.log('3. 받은 내용이다. title : ', title);
+    console.log('3. 받은 내용이다. primaryText : ', primaryText);
   };
 
   const closeModal = () => setIsOpen(false);
@@ -57,7 +60,8 @@ const useModal = () => {
       <CustomModal
         isOpen={isOpen}
         closeModal={closeModal}
-        title={modalProps.title}
+        primaryText={modalProps.primaryText}
+        secondaryText={modalProps.secondaryText}
         context={modalProps.context}
         type={modalProps.type}
         isAutoClose={modalProps.isAutoClose}

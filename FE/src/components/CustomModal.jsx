@@ -9,7 +9,8 @@ Modal.setAppElement('#root'); // 접근성 설정
 function CustomModal({
   isOpen,
   closeModal,
-  title = '',
+  primaryText = '',
+  secondaryText = '',
   context = '',
   type = 'info',
   isAutoClose = false,
@@ -19,13 +20,13 @@ function CustomModal({
   onConfirm = () => {},
   onCancel,
 }) {
-  console.log('CustomModal로 넘어온 title:', title);
   const timerRef = useRef(null);
 
   useEffect(() => {
     // openModal 함수 내부
     console.log('5. CustomModal로 왔다.', {
-      title,
+      primaryText,
+      secondaryText,
       context,
       type,
       isAutoClose,
@@ -69,8 +70,8 @@ function CustomModal({
           position: 'relative',
           width: '500px',
           minHeight: '300px',
-          padding: '20px',
-          marginRight: '100px',
+          padding: '40px',
+          // marginRight: '100px',
           background: 'white',
           borderRadius: '10px',
           outline: 'none',
@@ -91,9 +92,10 @@ function CustomModal({
         <img src={warning} alt="경고" className="w-16 h-16" />
       )}
 
-      <h2 className="mt-4 text-xl font-bold text-center">{title}</h2>
+      <h2 className="mt-4 text-xl font-bold text-center">{primaryText}</h2>
+      <h2 className="text-xl font-bold text-center">{secondaryText}</h2>
 
-      {context && <p className="text-center">{context}</p>}
+      {context && <p className="mt-4 text-center">{context}</p>}
 
       {isAutoClose && (
         <span className="text-gray-500 text-xs mt-2">

@@ -36,7 +36,7 @@ const FindPasswordPage = () => {
     if (!email) {
       setModalOpen(true);
       openModal({
-        title: '이메일을 입력해주세요.',
+        primaryText: '이메일을 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -46,7 +46,7 @@ const FindPasswordPage = () => {
     } else if (!phoneNumber) {
       setModalOpen(true);
       openModal({
-        title: '휴대폰 번호를 입력해주세요.',
+        primaryText: '휴대폰 번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -56,7 +56,7 @@ const FindPasswordPage = () => {
     } else if (phoneNumber.length != 11) {
       setModalOpen(true);
       openModal({
-        title: '올바른 휴대폰 번호를 입력해주세요.',
+        primaryText: '올바른 휴대폰 번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -65,7 +65,7 @@ const FindPasswordPage = () => {
       });
     } else {
       try {
-        const response = await axios.get(
+        const response = await axios.post(
           `${apiUrl}/api/v1/find-password`,
           { email: email, phoneNumber: phoneNumber },
           {
@@ -75,24 +75,27 @@ const FindPasswordPage = () => {
           }
         );
         console.log(response);
-
         // 성공했을 때
-        setModalOpen(true);
-        openModal({
-          // title: `${response.data} (으)로 임시 비밀번호가 전송되었습니다.`,
-          title: `010-1111-1111(으)로 임시 비밀번호가 전송되었습니다.`,
-          type: 'success',
-          isAutoClose: false,
-          onConfirm: () => {
-            closeModal(), setModalOpen(false);
-            navigateTo(routes.signin);
-          },
-        });
+        if (response.status == 200) {
+          setModalOpen(true);
+          openModal({
+            // title: `${response.data} (으)로 임시 비밀번호가 전송되었습니다.`,
+            primaryText: `${phoneNumber}(으)로`,
+            secondaryText: ' 임시 비밀번호가 전송되었습니다.',
+            type: 'success',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+              navigateTo(routes.signin);
+            },
+          });
+        }
       } catch (error) {
         console.log(error);
         setModalOpen(true);
         openModal({
-          title: '입력하신 정보와 일치하는 계정을 찾을 수 없습니다.',
+          primaryText: '입력하신 정보와 일치하는 계정을',
+          secondaryText: '찾을 수 없습니다.',
           context: '다시 확인해주세요.',
           type: 'warning',
           isAutoClose: false,

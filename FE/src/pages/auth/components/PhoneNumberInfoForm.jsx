@@ -10,7 +10,6 @@ const PhoneNumberInfoForm = ({
   setIsValidPhoneNumber,
 }) => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-
   // 인증 요청 누름 상태 버튼
   const [isClicked, setIsClicked] = useState(false);
   // 휴대폰번호 인증 번호
@@ -25,13 +24,19 @@ const PhoneNumberInfoForm = ({
   // 인증 완료
   const [isAuthVerified, setIsAuthVerified] = useState(false);
 
+  // 휴대폰 번호 입력 감지
   const handlePhoneNumberInputChange = (e) => {
     const newPhoneNumber = e.target.value.replace(/[^0-9]/g, '');
     setPhoneNumber(newPhoneNumber);
   };
 
+  // 인증번호 입력 감지
+  const handleAuthInputChange = (e) => {
+    setAuthCode(e.target.value);
+  };
+
+  // 중복 확인 클릭 시
   const handlePhoneNumberCheckClick = async () => {
-    console.log(phoneNumber);
     if (!phoneNumber) {
       setModalOpen(true);
       openModal({
@@ -54,7 +59,6 @@ const PhoneNumberInfoForm = ({
         },
       });
     } else {
-      console.log(phoneNumber);
       try {
         const response = await axios.post(
           `${apiUrl}/api/v1/sms/send-verification`,
@@ -69,32 +73,37 @@ const PhoneNumberInfoForm = ({
 
         if (response.status == 200) {
           setModalOpen(true);
-          setIsClicked(true);
-          setTimeLeft(180);
-          // 기존 타이머 있을 경우 초기화
-          if (timerRef.current) clearInterval(timerRef.current);
-          timerRef.current = setInterval(() => {
-            setTimeLeft((prev) => prev - 1);
-          }, 1000);
+
           openModal({
             title: `${phoneNumber} (으)로 인증번호가 발송되었습니다.`,
             type: 'success',
             isAutoClose: true,
             onConfirm: () => {
-              closeModal(), setModalOpen(false);
+              closeModal();
+              setModalOpen(false);
+              setIsClicked(true);
+              setTimeLeft(180);
+              // 기존 타이머 있을 경우 초기화
+              if (timerRef.current) clearInterval(timerRef.current);
+              timerRef.current = setInterval(() => {
+                setTimeLeft((prev) => prev - 1);
+              }, 1000);
             },
           });
         }
       } catch (error) {
-        console.error('이미 있음');
         console.log(error);
+        setModalOpen(true);
+        openModal({
+          title: '이미 존재하는 휴대폰 번호입니다.',
+          type: 'warning',
+          isAutoClose: false,
+          onConfirm: () => {
+            closeModal(), setModalOpen(false);
+          },
+        });
       }
     }
-  };
-
-  // 인증번호 입력 감지
-  const handleAuthInputChange = (e) => {
-    setAuthCode(e.target.value);
   };
 
   const handlePhoneNumberAuthClick = async () => {
@@ -111,6 +120,7 @@ const PhoneNumberInfoForm = ({
       );
       console.log(response.data.code);
       if (response.data.code == 200) {
+        setModalOpen(true);
         openModal({
           title: `인증이 완료되었습니다.`,
           type: 'success',
@@ -119,7 +129,6 @@ const PhoneNumberInfoForm = ({
             closeModal(), setModalOpen(false);
           },
         });
-        setModalOpen(true);
         setIsAuthVerified(true);
         clearInterval(timerRef.current);
         setIsValidPhoneNumber(true);

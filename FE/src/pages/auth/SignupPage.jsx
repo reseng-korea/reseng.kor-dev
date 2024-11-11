@@ -60,7 +60,7 @@ const SignupPage = () => {
         e.preventDefault(); // 새로고침 동작 중지
         setModalOpen(true);
         openModal({
-          title: '새로고침 시 입력한 내용이 모두 사라집니다.',
+          primaryText: '새로고침 시 입력한 내용이 모두 사라집니다.',
           context: '새로고침하시겠습니까?',
           type: 'warning',
           isAutoClose: false,
@@ -88,7 +88,7 @@ const SignupPage = () => {
     if (!email) {
       setModalOpen(true);
       openModal({
-        title: '이메일을 입력해주세요.',
+        primaryText: '이메일을 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -98,7 +98,7 @@ const SignupPage = () => {
     } else if (!isValidEmail) {
       setModalOpen(true);
       openModal({
-        title: '올바른 이메일을 입력해주세요.',
+        primaryText: '올바른 이메일을 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -108,7 +108,7 @@ const SignupPage = () => {
     } else if (!isConfirmEmail) {
       setModalOpen(true);
       openModal({
-        title: '이메일 중복 확인을 해주세요.',
+        primaryText: '이메일 중복 확인을 해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -118,7 +118,7 @@ const SignupPage = () => {
     } else if (!password) {
       setModalOpen(true);
       openModal({
-        title: '비밀번호를 입력해주세요.',
+        primaryText: '비밀번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -128,7 +128,7 @@ const SignupPage = () => {
     } else if (!isValidPassword) {
       setModalOpen(true);
       openModal({
-        title: '비밀번호를 입력해주세요.',
+        primaryText: '비밀번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -138,7 +138,7 @@ const SignupPage = () => {
     } else if (!phoneNumber) {
       setModalOpen(true);
       openModal({
-        title: '휴대폰 번호를 입력해주세요.',
+        primaryText: '휴대폰 번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -148,7 +148,7 @@ const SignupPage = () => {
     } else if (phoneNumber.length != 11) {
       setModalOpen(true);
       openModal({
-        title: '올바른 휴대폰 번호를 입력해주세요.',
+        primaryText: '올바른 휴대폰 번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -158,7 +158,7 @@ const SignupPage = () => {
     } else if (!isValidPhoneNumber) {
       setModalOpen(true);
       openModal({
-        title: '휴대폰 번호 인증을 해주세요.',
+        primaryText: '휴대폰 번호 인증을 해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -168,7 +168,7 @@ const SignupPage = () => {
     } else if (!companyName) {
       setModalOpen(true);
       openModal({
-        title: '업체명을 입력해주세요.',
+        primaryText: '업체명을 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -178,7 +178,7 @@ const SignupPage = () => {
     } else if (!ownerName) {
       setModalOpen(true);
       openModal({
-        title: '대표자명을 입력해주세요.',
+        primaryText: '대표자명을 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -188,7 +188,7 @@ const SignupPage = () => {
     } else if (!companyPhoneNumber) {
       setModalOpen(true);
       openModal({
-        title: '회사 번호를 입력해주세요.',
+        primaryText: '회사 번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -198,7 +198,7 @@ const SignupPage = () => {
     } else if (!companyFaxNumber) {
       setModalOpen(true);
       openModal({
-        title: '팩스 번호를 입력해주세요.',
+        primaryText: '팩스 번호를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -208,7 +208,7 @@ const SignupPage = () => {
     } else if (!region) {
       setModalOpen(true);
       openModal({
-        title: '광역자치구를 선택해주세요.',
+        primaryText: '광역자치구를 선택해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -218,7 +218,7 @@ const SignupPage = () => {
     } else if (!subRegion) {
       setModalOpen(true);
       openModal({
-        title: '지역자치구를 선택해주세요.',
+        primaryText: '지역자치구를 선택해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -228,7 +228,7 @@ const SignupPage = () => {
     } else if (!address) {
       setModalOpen(true);
       openModal({
-        title: '주소를 입력해주세요.',
+        primaryText: '주소를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -238,7 +238,7 @@ const SignupPage = () => {
     } else if (!detailAddress) {
       setModalOpen(true);
       openModal({
-        title: '상세 주소를 입력해주세요.',
+        primaryText: '상세 주소를 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -276,7 +276,7 @@ const SignupPage = () => {
         ) {
           setModalOpen(true);
           openModal({
-            title: '회원가입이 완료되었습니다.',
+            primaryText: '회원가입이 완료되었습니다.',
             type: 'success',
             isAutoClose: false,
             onConfirm: () => {

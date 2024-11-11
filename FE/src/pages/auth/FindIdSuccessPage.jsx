@@ -1,9 +1,15 @@
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import { useLocation } from 'react-router-dom';
 import { FaCircleCheck } from 'react-icons/fa6';
 
 const FindIdSuccessPage = () => {
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
+  const location = useLocation(); // location 객체 가져오기
+  const email = location.state?.email; // 전달된 email 받아오기
+
+  const [localPart, domain] = email.split('@');
+  const maskedLocalPart = localPart.slice(0, -2) + '**';
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen pt-16  slide-up">
@@ -15,7 +21,8 @@ const FindIdSuccessPage = () => {
         </span>
         <hr className="w-full mt-2 mb-6 border-t-2 border-primary" />
         <span className="py-10">
-          회원님의 정보와 일치하는 아이디는 nayeon**@gmail.com 입니다.
+          회원님의 정보와 일치하는 아이디는
+          {email && `${maskedLocalPart}@${domain}`} 입니다.
         </span>
 
         <div className="flex items-center justify-center w-full px-3 py-2 mb-4 space-x-4">
