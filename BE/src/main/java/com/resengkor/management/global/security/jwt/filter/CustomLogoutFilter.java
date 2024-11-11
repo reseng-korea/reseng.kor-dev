@@ -111,7 +111,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         response.setStatus(HttpServletResponse.SC_OK);
 
         CommonResponse commonResponse = new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
-                ResponseStatus.RESPONSE_SUCCESS.getMessage());
+                "로그아웃에 성공했습니다");
 
         // 응답 JSON 생성
         ObjectMapper objectMapper = new ObjectMapper();

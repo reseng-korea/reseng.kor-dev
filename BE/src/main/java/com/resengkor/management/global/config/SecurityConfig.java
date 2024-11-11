@@ -175,7 +175,7 @@ public class SecurityConfig {
         POST_LIST.forEach(url -> auth.requestMatchers(HttpMethod.POST, url).permitAll());
         GET_LIST.forEach(url -> auth.requestMatchers(HttpMethod.GET, url).permitAll());
         auth.requestMatchers("/api/v1/login", "/api/v1/logout",
-                "/api/v1/mail/**", "/api/v1/sms/**", "/api/v1/s3/**", "/api/v1/withdrawal").permitAll();
+                "/api/v1/mail/**", "/api/v1/sms/**", "/api/v1/s3/**", "/api/v1/users/withdrawal").permitAll();
     }
 
     private void configureManagerEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
