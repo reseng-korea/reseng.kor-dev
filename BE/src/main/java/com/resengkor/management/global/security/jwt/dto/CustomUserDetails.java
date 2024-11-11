@@ -67,4 +67,39 @@ public class CustomUserDetails implements UserDetails {
         return user.getId();
     }
 
+    public boolean isEmailStatus() {
+        return user.isEmailStatus();
+    }
+
+    public boolean isTemporaryPasswordStatus() {
+        return user.isTemporaryPasswordStatus();
+    }
+
+    public String getCompanyName() {
+        return user.getCompanyName();
+    }
+
+    public String getRepresentativeName() {
+        return user.getRepresentativeName();
+    }
+
+    public String getPhoneNumber() {
+        return user.getPhoneNumber();
+    }
+
+    public boolean isPhoneNumberStatus() {
+        return user.isPhoneNumberStatus();
+    }
+
+    public String getLoginType() {
+        return user.getLoginType().toString();
+    }
+
+
+
+
+
+
+
+
 }

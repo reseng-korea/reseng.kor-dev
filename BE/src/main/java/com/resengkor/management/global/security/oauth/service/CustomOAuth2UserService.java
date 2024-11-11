@@ -76,12 +76,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             //일단 기본값 false
             user = User.builder()
                     .email(response.getEmail())
+                    .representativeName(response.getName())
                     .phoneNumber(response.getPhoneNumber())
                     .role(Role.ROLE_PENDING)
                     .loginType(LoginType.SOCIAL)
                     .status(true)
                     .socialProvider(soialProvider)
-                    .socialId(response.getSocialId())
+                    .socialId(response.getSocialProviderId())
                     .build();
             user = userRepository.save(user);
 
@@ -96,13 +97,13 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             // Entity 목적 순수하게 유지하기 위해서 dto 로 전달..
             OAuth2UserDTO oAuth2UserDto = OAuth2UserDTO.builder()
                     .userId(user.getId())
-                    .representativeName(response.getRepresentativeName())
+                    .representativeName(response.getName())
                     .email(response.getEmail())
                     .phoneNumber(response.getPhoneNumber())
                     .role("ROLE_PENDING")
                     .status(true)
                     .socialProvider(response.getSocialProvider())
-                    .socialId(response.getSocialId())
+                    .socialProviderId(response.getSocialProviderId())
                     .build();
 
             return new CustomOAuth2User(oAuth2UserDto);
@@ -115,7 +116,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             //그런데 핸드폰은 구글에서 없는 경우가 있어서 빼고,
             //이름 같은 경우도 바뀌지는 않을 것 같아서 일단 뺌
             user = isExist.get().toBuilder()
-                    .socialId(response.getSocialId()) // 소셜 ID 업데이트
+                    .socialId(response.getSocialProviderId()) // 소셜 ID 업데이트
                     .email(response.getEmail()) // 이메일 업데이트
                     .build();
             userRepository.save(user); // 업데이트된 사용자 정보 저장
@@ -129,7 +130,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .role(isExist.get().getRole().getRole())
                     .status(isExist.get().isStatus())
                     .socialProvider(response.getSocialProvider())
-                    .socialId(response.getSocialId())
+                    .socialProviderId(response.getSocialProviderId())
                     .build();
             if (!oAuth2UserDto.isStatus()) {
                 throw new OAuth2AuthenticationException(new OAuth2Error("member_inactive", "사용자가 비활성화되었습니다. 관리자에게 문의하세요", null));

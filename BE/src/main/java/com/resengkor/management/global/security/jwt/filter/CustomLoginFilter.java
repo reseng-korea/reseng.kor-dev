@@ -5,6 +5,7 @@ import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.dto.CustomUserDetails;
 import com.resengkor.management.global.security.jwt.dto.LoginDTO;
+import com.resengkor.management.global.security.jwt.dto.LoginResponse;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.FilterChain;
@@ -155,12 +156,23 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader("Refresh", refresh);
 
         // 응답 JSON 생성
-        Map<String, Object> responseBody = new HashMap<>();
-        responseBody.put("userId", userId);
+        LoginResponse loginResponse = LoginResponse.builder()
+                .id(userId)
+                .email(email)
+                .emailStatus(customUserDetails.isEmailStatus())
+                .temporaryPasswordStatus(customUserDetails.isTemporaryPasswordStatus())
+                .companyName(customUserDetails.getCompanyName())
+                .representativeName(customUserDetails.getRepresentativeName())
+                .phoneNumber(customUserDetails.getPhoneNumber())
+                .phoneNumberStatus(customUserDetails.isPhoneNumberStatus())
+                .role(role)
+                .loginType(customUserDetails.getLoginType())
+                .status(customUserDetails.isEnabled())
+                .build();
 
         // 응답 출력
         ObjectMapper objectMapper = new ObjectMapper();
-        response.getWriter().write(objectMapper.writeValueAsString(responseBody));
+        response.getWriter().write(objectMapper.writeValueAsString(loginResponse));
         response.getWriter().flush();
     }
 
