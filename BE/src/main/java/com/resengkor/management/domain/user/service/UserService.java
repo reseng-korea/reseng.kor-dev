@@ -210,7 +210,7 @@ public class UserService {
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), findEmailResponse);
     }
 
-    //비밀번호 찾기
+    //비밀번호 찾기(이메일, 핸드폰 번호)
     //로그인x
     @Transactional
     public DataResponse<String> findPassword(FindPasswordRequest request) {
@@ -236,6 +236,8 @@ public class UserService {
 
         // 5. 비밀번호 업데이트
         user.editPassword(passwordEncoder.encode(temporaryPassword));
+        //isTemporaryPassword true로 업뎃
+        user.editTemporaryPasswordStatus(true);
         userRepository.save(user);
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
@@ -448,6 +450,11 @@ public class UserService {
         //3. 새 비밀번호로 변경
         loginUser.editPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword())); // 비밀번호 암호화
         userRepository.save(loginUser); // 변경된 사용자 정보 저장
+
+        //4. 만약에 임시 비번 바꾸는 경우
+        if(loginUser.isTemporaryPasswordStatus()){//true면 임시 비번인 상태
+            loginUser.editTemporaryPasswordStatus(false);
+        }
 
         log.info("비밀번호 변경 성공");
         return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),

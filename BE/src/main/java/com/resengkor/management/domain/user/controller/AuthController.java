@@ -54,7 +54,7 @@ public class AuthController {
         return userService.findEmail(findEmailRequest);
     }
 
-    //비밀번호 찾기
+    //비밀번호 찾기(이메일, 핸드폰 번호로)
     @PostMapping("/find-password")
     public DataResponse<String> findPassword(@Valid @RequestBody FindPasswordRequest findPasswordRequest, BindingResult bindingResult) {
         log.info("비밀번호 찾기 요청이 들어옴: {}", findPasswordRequest);

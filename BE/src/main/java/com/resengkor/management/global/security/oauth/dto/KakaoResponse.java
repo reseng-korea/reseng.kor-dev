@@ -31,7 +31,7 @@ public class KakaoResponse implements OAuth2Response{
     //사업자로 바뀌면 PhoneNumber 메소드
     @Override
     public String getPhoneNumber() {
-        return "";
+        return null;
     }
     //사업자로 바뀌면 nickname이 아니라 실제 이름으로 받기
 //    @Override

@@ -4,7 +4,7 @@ import lombok.Builder;
 import lombok.Data;
 
 @Data
-public class OAuth2UserDto {
+public class OAuth2UserDTO {
     private String socialProvider;
     private String socialId;
     private String representativeName;//대표 이름
@@ -15,7 +15,7 @@ public class OAuth2UserDto {
     private String phoneNumber;
 
     @Builder
-    public OAuth2UserDto(String socialProvider, String socialId, String representativeName, String email, String role, Long userId, boolean status,String phoneNumber) {
+    public OAuth2UserDTO(String socialProvider, String socialId, String representativeName, String email, String role, Long userId, boolean status, String phoneNumber) {
         this.socialProvider = socialProvider;
         this.socialId = socialId;
         this.representativeName = representativeName;
