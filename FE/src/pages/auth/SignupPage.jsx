@@ -5,6 +5,7 @@ import Layout from '../../components/Layouts';
 import useModal from '../../hooks/useModal';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import usePreventRefresh from '../../hooks/usePreventRefresh';
 
 import EmailInfoForm from './components/EmailInfoForm';
 import PasswordInfoForm from './components/PasswordInfoForm';
@@ -37,6 +38,9 @@ const SignupPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
 
+  // 새로고침 데이터 날라감 방지
+  usePreventRefresh(openModal, closeModal, setModalOpen);
+
   // console.log(email, isValidEmail);
   // console.log(password, isValidPassword);
   // console.log(phoneNumber, isValidPhoneNumber);
@@ -48,41 +52,6 @@ const SignupPage = () => {
   // console.log(subRegion);
   // console.log(address);
   // console.log(detailAddress);
-
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      // F5 키나 Ctrl+R(Cmd+R) 새로고침을 감지
-      if (
-        e.key === 'F5' ||
-        (e.ctrlKey && e.key === 'r') ||
-        (e.metaKey && e.key === 'r')
-      ) {
-        e.preventDefault(); // 새로고침 동작 중지
-        setModalOpen(true);
-        openModal({
-          primaryText: '새로고침 시 입력한 내용이 모두 사라집니다.',
-          context: '새로고침하시겠습니까?',
-          type: 'warning',
-          isAutoClose: false,
-          cancleButton: true,
-          onConfirm: () => {
-            closeModal();
-            setModalOpen(false);
-            // 새로고침을 허용하려면 아래 코드를 실행
-            window.location.reload();
-          },
-        });
-      }
-    };
-
-    // 키보드 이벤트 리스너 추가
-    window.addEventListener('keydown', handleKeyDown);
-
-    // 컴포넌트 언마운트 시 이벤트 리스너 제거
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [openModal, closeModal]);
 
   const handleSubmit = async () => {
     if (!email) {

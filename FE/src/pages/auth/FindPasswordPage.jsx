@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import useModal from '../../hooks/useModal';
+import usePreventRefresh from '../../hooks/usePreventRefresh';
 
 const FindPasswordPage = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -15,6 +16,9 @@ const FindPasswordPage = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
+
+  // 새로고침 데이터 날라감 방지
+  usePreventRefresh(openModal, closeModal, setModalOpen);
 
   const handleEmailChange = (e) => {
     const value = e.target.value;
