@@ -71,7 +71,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String category = jwtUtil.getCategory(refresh);
 
         // not refresh token
-        if("Refresh".equals(category)){
+        if(!"Refresh".equals(category)){
             ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_PARSE_ERROR, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
