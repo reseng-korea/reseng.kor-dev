@@ -247,7 +247,6 @@ public class UserService {
     //회원 탈퇴 로직
     //로그인O
     @Transactional
-    @PreAuthorize("#userId == principal.id")
     public CommonResponse withdrawUser(String token) {
         log.info("------------------------------------------------");
         log.info("회원탈퇴 로직 시작");
@@ -291,14 +290,18 @@ public class UserService {
     //소셜 로그인 회원정보 추가(소셜 로그인 첫 회원가입시 바로 진행)
     //로그인O
     @Transactional
-    @PreAuthorize("#userId == principal.id")
     public DataResponse<UserDTO> oauthUpdateUser(Long userId, OauthUserUpdateRequest request) {
+        Long loginUserId = UserAuthorizationUtil.getLoginMemberId();
+        if(!userId.equals(loginUserId)){
+            throw new CustomException(ExceptionStatus.USER_NOT_MATCH);
+        }
+
         // 1. 사용자 조회 (존재하지 않으면 예외 던지기)
-        User user = userRepository.findUserWithProfileAndRegionById(userId)
+        User user = userRepository.findById(loginUserId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         // 2. 이메일 및 전화번호 중복 검사
-        validateUniqueEmailAndPhoneNumberWithId(userId, request.getEmail(), request.getPhoneNumber());
+        validateUniqueEmailAndPhoneNumberWithId(loginUserId, request.getEmail(), request.getPhoneNumber());
 
         // 3. 사용자 정보 추가
         user.updateUser(request.getEmail(), request.getCompanyName(),
@@ -349,11 +352,14 @@ public class UserService {
 
     //소셜+일반 사용자 정보 수정
     //로그인O
-    @PreAuthorize("#userId == principal.id")
     @Transactional
     public DataResponse<UserDTO> updateUser(Long userId, UserUpdateRequest request) {
+        Long loginUserId = UserAuthorizationUtil.getLoginMemberId();
+        if(!userId.equals(loginUserId)){
+            throw new CustomException(ExceptionStatus.USER_NOT_MATCH);
+        }
         //1.사용자 조회 (존재하지 않으면 예외 던지기)
-        User user = userRepository.findUserWithProfileAndRegionById(userId)
+        User user = userRepository.findUserWithProfileAndRegionById(loginUserId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         //2. 비밀번호 확인 후 설정
@@ -361,7 +367,7 @@ public class UserService {
         user.editPassword(encodedPassword); // 비밀번호 수정
 
         //3. 이메일 및 전화번호 중복 검사
-        validateUniqueEmailAndPhoneNumberWithId(userId, request.getEmail(), request.getPhoneNumber());
+        validateUniqueEmailAndPhoneNumberWithId(loginUserId, request.getEmail(), request.getPhoneNumber());
 
         //4.사용자 정보 수정
         user.updateUser(request.getEmail(), request.getCompanyName(),
@@ -396,10 +402,13 @@ public class UserService {
 
     //사용자 정보 조회
     //로그인O
-    @PreAuthorize("#userId == principal.id")
     public DataResponse<UserDTO> getUserInfo(Long userId) {
+        Long loginUserId = UserAuthorizationUtil.getLoginMemberId();
+        if(!userId.equals(loginUserId)){
+            throw new CustomException(ExceptionStatus.USER_NOT_MATCH);
+        }
         //1. 사용자 찾기
-        User user = userRepository.findUserWithProfileAndRegionById(userId)
+        User user = userRepository.findUserWithProfileAndRegionById(loginUserId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         //2. 응답 생성

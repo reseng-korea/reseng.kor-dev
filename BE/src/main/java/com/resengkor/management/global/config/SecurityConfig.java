@@ -186,11 +186,11 @@ public class SecurityConfig {
     }
 
     private void configureUserEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
+        auth.requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}").hasRole("PENDING");
         auth.requestMatchers("/api/v1/users/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.POST, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.PUT, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.DELETE, "/api/v1/qna/questions/**").hasRole("GUEST");
-        auth.requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}").hasRole("PENDING");
     }
 
 
