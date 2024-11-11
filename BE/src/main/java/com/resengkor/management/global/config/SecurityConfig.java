@@ -185,7 +185,7 @@ public class SecurityConfig {
     }
 
     private void configureUserEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
-        auth.requestMatchers("/api/v1/users/**").hasAnyRole("GUEST");
+        auth.requestMatchers("/api/v1/users/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.GET, "/api/v1/withdrawal").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.POST, "/api/v1/qna/questions/**","/api/v1/reissue").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.PUT, "/api/v1/qna/questions/**").hasRole("GUEST");
