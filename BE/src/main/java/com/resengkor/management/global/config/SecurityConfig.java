@@ -83,6 +83,7 @@ public class SecurityConfig {
 
     @Bean
     public AuthenticationFailureHandler authenticationFailureHandler() {
+        //CustomOAuth2UserService의  throw new OAuth2AuthenticationException 처리 여기서 함
         return new AuthenticationFailureHandler() {
             @Override
             public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
@@ -95,6 +96,10 @@ public class SecurityConfig {
                         // 비활성화된 사용자일 때 로그인 페이지로 리다이렉트
                         response.sendRedirect("http://localhost:5173/login?error=true&message=" + URLEncoder.encode("사용자가 비활성화되었습니다. 관리자에게 문의하세요.", StandardCharsets.UTF_8));
                         return; // 여기서 return 추가
+                    }
+                    else if("member_not_social".equals(oauth2Exception.getError().getErrorCode())){
+                        response.sendRedirect("http://localhost:5173/login?error=true&message=" + URLEncoder.encode("같은 이메일으로 일반회원으로 가입하셨습니다.", StandardCharsets.UTF_8));
+                        return;
                     }
                 }
                 // 일반적인 인증 실패 시
