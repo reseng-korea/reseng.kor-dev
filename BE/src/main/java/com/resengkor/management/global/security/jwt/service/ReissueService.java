@@ -48,6 +48,7 @@ public class ReissueService {
         String email = jwtUtil.getEmail(refresh);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+        log.info("user 찾기 성공");
         // 비활성화된 user면 에러 던짐
         if (!user.isStatus()) {
             log.info("비활성 사용자입니다");
@@ -57,6 +58,7 @@ public class ReissueService {
         long userId = user.getId();
         String role = jwtUtil.getRole(refresh);
         String loginType = jwtUtil.getLoginType(refresh);
+        log.info("role = {}, loginType = {}", role, loginType);
 
 
         long refreshTokenExpiration;
@@ -72,6 +74,7 @@ public class ReissueService {
 
             // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
             if(!isExist || remainingTTL == -1L) {
+                log.error("isExist {} = , remiainingTTL {} = ", isExist, remainingTTL);
                 throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
             }
 
