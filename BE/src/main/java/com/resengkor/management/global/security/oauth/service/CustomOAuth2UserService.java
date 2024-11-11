@@ -115,6 +115,12 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             //존재하면 업데이트
             //그런데 핸드폰은 구글에서 없는 경우가 있어서 빼고,
             //이름 같은 경우도 바뀌지는 않을 것 같아서 일단 뺌
+            //이메일이 소셜 이메일과 같을 수 있음
+            if(!isExist.get().getLoginType().equals(LoginType.SOCIAL)){
+                //소셜이 아니야!
+                throw new OAuth2AuthenticationException(new OAuth2Error("member_not_social", "같은 이메일으로 일반회원으로 가입하셨습니다.", null));
+            }
+
             user = isExist.get().toBuilder()
                     .socialId(response.getSocialProviderId()) // 소셜 ID 업데이트
                     .email(response.getEmail()) // 이메일 업데이트
