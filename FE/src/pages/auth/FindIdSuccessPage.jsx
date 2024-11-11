@@ -20,9 +20,15 @@ const FindIdSuccessPage = () => {
           개인정보 도용에 대한 피해 방지를 위하여 아이디 일부는 숨김 처리됩니다.
         </span>
         <hr className="w-full mt-2 mb-6 border-t-2 border-primary" />
-        <span className="py-10">
+        <span className="py-10 text-md">
           회원님의 정보와 일치하는 아이디는
-          {email && `${maskedLocalPart}@${domain}`} 입니다.
+          {email && (
+            <span className="text-xl font-bold">
+              {' '}
+              {maskedLocalPart}@{domain}{' '}
+            </span>
+          )}
+          입니다.
         </span>
 
         <div className="flex items-center justify-center w-full px-3 py-2 mb-4 space-x-4">
