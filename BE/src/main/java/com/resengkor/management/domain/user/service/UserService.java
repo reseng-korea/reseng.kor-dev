@@ -283,8 +283,8 @@ public class UserService {
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);
         }
 
-        return new CommonResponse(ResponseStatus.UPDATED_SUCCESS .getCode(),
-                ResponseStatus.UPDATED_SUCCESS .getMessage());
+        return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                "회원 탈퇴에 성공했습니다.");
     }
 
 
