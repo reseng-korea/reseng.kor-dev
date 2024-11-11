@@ -62,7 +62,7 @@ public class MailServiceWithRedis {
 
         message.setFrom(new InternetAddress(address, personal));
         message.setRecipients(MimeMessage.RecipientType.TO, mail); //받는 사람
-        message.setSubject("이메일 인증");
+        message.setSubject("[(주)리앤생] 이메일 인증번호 입니다)");
         String body = "";
         body = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; padding: 20px;'>"
                 + "<h2 style='color: #61A24E;'>이메일 인증</h2>"
@@ -84,7 +84,7 @@ public class MailServiceWithRedis {
 
     // 이메일 및 인증 코드를 RDS에 저장
     private void saveVerificationCode(String email, String verificationCode) {
-        redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
+//        redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
     }
 
 
