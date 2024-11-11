@@ -49,6 +49,7 @@ public class S3Service {
      * @return 업로드된 파일의 URL
      */
     public DataResponse<FileRequest> uploadFile(String dirName, MultipartFile multipartFile) {
+        log.info("------------Service : 에디터 파일 업로드  start------------");
         String uuid = UUID.randomUUID().toString();
 
         // null 체크: 원래 파일 이름이 null인지 확인
@@ -62,7 +63,9 @@ public class S3Service {
 
 
         // 업로드된 파일의 S3 URL 반환
+        log.info("------------에디터/인증서 파일 업로드  메소드 start------------");
         String url = uploadFileToS3(s3FileName, multipartFile);
+        log.info("------------s3에 파일 잘 올라감------------");
         FileRequest fileRequest = FileRequest.builder()
                 .fileName(s3FileName)
                 .fileType(multipartFile.getContentType())
@@ -84,6 +87,7 @@ public class S3Service {
         if (multipartFile.getSize() > maxSize) {
             throw new CustomException(ExceptionStatus.FILE_SIZE_LIMIT_EXCEEDED); // 적절한 예외 코드 사용
         }
+        log.info("-----------파일 크기 오류 안 남------------");
 
         // MultipartFile을 로컬 파일로 변환
         File localFile = convertMultipartFileToFile(multipartFile)
@@ -144,6 +148,7 @@ public class S3Service {
      * @return 파일 데이터를 포함한 ResponseEntity
      */
     public ResponseEntity<byte[]> downloadFileFromS3(String fileName) {
+        log.info("------------Service : 파일 다운로드 start------------");
         try {
             S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucket, fileName));
             S3ObjectInputStream inputStream = s3Object.getObjectContent();
@@ -175,6 +180,7 @@ public class S3Service {
      * @return 삭제 성공 응답
      */
     public CommonResponse deleteFileFromS3(String fileName) {
+        log.info("------------Service : 파일 삭제 start------------");
         amazonS3.deleteObject(bucket, fileName);
         return new CommonResponse(ResponseStatus.DELETED_SUCCESS.getCode(), ResponseStatus.DELETED_SUCCESS.getMessage());
     }
@@ -188,6 +194,7 @@ public class S3Service {
      * @return 새 파일의 URL
      */
     public String updateFileInS3(String oldFileName, String newFileName, MultipartFile multipartFile) {
+        log.info("------------Service : 파일 수정 start------------");
         // 기존 파일 삭제
         amazonS3.deleteObject(bucket, oldFileName);
 

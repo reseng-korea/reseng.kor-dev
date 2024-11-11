@@ -116,7 +116,7 @@ public class DocumentService {
                 ResponseStatus.DELETED_SUCCESS.getMessage());
     }
 
-    public ResponseEntity<byte[]> downloadFileFromS3(String type, Long fileId) {
+    public ResponseEntity<byte[]> downloadDocumentFile(String type, Long fileId) {
         // 파일 ID를 통해 해당 파일 찾기
         FileEntity file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));

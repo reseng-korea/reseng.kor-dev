@@ -58,8 +58,7 @@ public class DocumentController {
 
     //다운로드
     @GetMapping(path = "/download/{type}")
-    public ResponseEntity<byte[]> downloadFromS3(@PathVariable String type,
-                                                 @RequestParam Long fileId) throws IOException {
-        return documentService.downloadFileFromS3(type,fileId);
+    public ResponseEntity<byte[]> downloadDocumentFile(@PathVariable String type, @RequestParam Long fileId){
+        return documentService.downloadDocumentFile(type,fileId);
     }
 }
