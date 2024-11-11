@@ -3,8 +3,6 @@ package com.resengkor.management.global.security.oauth.service;
 import com.resengkor.management.domain.user.entity.*;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
-import com.resengkor.management.global.exception.CustomException;
-import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.oauth.dto.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -16,7 +14,6 @@ import org.springframework.security.oauth2.core.OAuth2Error;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
-import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -38,16 +35,15 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String clientName = userRequest.getClientRegistration().getClientName();
 
         OAuth2Response response = null;
-        Map<String, Object> attributes = oAuth2User.getAttributes();
         log.info("------------------------------------------------");
         log.info("getAttributes : {}",oAuth2User.getAttributes());
         log.info("------------------------------------------------");
 
         // 존재하는 provider 인지 확인
         if (clientName.equals("kakao")) {
-            response = new KakaoResponse(attributes);
+            response = new KakaoResponse(oAuth2User.getAttributes());
         } else if (clientName.equals("google")) {
-            response = new GoogleResponse(attributes);
+            response = new GoogleResponse(oAuth2User.getAttributes());
         } else {
             return null;
         }
@@ -98,7 +94,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             roleHierarchyRepository.save(roleHierarchy);
 
             // Entity 목적 순수하게 유지하기 위해서 dto 로 전달..
-            OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
+            OAuth2UserDTO oAuth2UserDto = OAuth2UserDTO.builder()
                     .userId(user.getId())
                     .representativeName(response.getRepresentativeName())
                     .email(response.getEmail())
@@ -125,7 +121,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             userRepository.save(user); // 업데이트된 사용자 정보 저장
 
             // Entity 목적 순수하게 유지하기 위해서 dto 로 전달..
-            OAuth2UserDto oAuth2UserDto = OAuth2UserDto.builder()
+            OAuth2UserDTO oAuth2UserDto = OAuth2UserDTO.builder()
                     .userId(isExist.get().getId())
                     .representativeName(isExist.get().getRepresentativeName())
                     .email(response.getEmail())

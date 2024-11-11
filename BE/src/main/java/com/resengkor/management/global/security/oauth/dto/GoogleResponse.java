@@ -30,6 +30,6 @@ public class GoogleResponse implements OAuth2Response {
 
     @Override
     public String getPhoneNumber() {
-        return "";
+        return null;
     }
 }

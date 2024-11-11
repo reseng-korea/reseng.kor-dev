@@ -1,7 +1,5 @@
 package com.resengkor.management.global.security.oauth.dto;
 
-import com.resengkor.management.global.exception.CustomException;
-import com.resengkor.management.global.exception.ExceptionStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -12,7 +10,7 @@ import java.util.Map;
 
 @RequiredArgsConstructor
 public class CustomOAuth2User implements OAuth2User {
-    private final OAuth2UserDto oAuth2UserDto;
+    private final OAuth2UserDTO oAuth2UserDto;
 
     // 통일 x -> return null
     @Override

@@ -84,7 +84,7 @@ public class MailServiceWithRedis {
 
     // 이메일 및 인증 코드를 RDS에 저장
     private void saveVerificationCode(String email, String verificationCode) {
-//        redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
+        redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
     }
 
 
@@ -94,7 +94,7 @@ public class MailServiceWithRedis {
         // Redis에서 인증 코드 조회
         String storedCode = redisUtil.getData("email:verification:" + dto.getEmail());
         if (storedCode == null) {
-            throw new CustomException(ExceptionStatus.EMAIL_NOT_FOUND); // 인증 코드가 존재하지 않는 경우
+            throw new CustomException(ExceptionStatus.CODE_EXPIRED); // 인증 코드가 존재하지 않는 경우
         }
 
         // 인증 코드 확인
