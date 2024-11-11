@@ -223,7 +223,7 @@ public class UserService {
         checkUserIsWithdrawed(user);
 
         //3. 임시 비밀번호 생성
-        String temporaryPassword = TmpCodeUtil.generateAlphanumericPassword();
+        String temporaryPassword = TmpCodeUtil.generateAlphanumericPasswordWithSpecialChars();
         log.info("임시 비밀번호 생성: {}", temporaryPassword);
 
         //4. SMS 전송
