@@ -174,7 +174,8 @@ public class SecurityConfig {
     private void configurePublicEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
         POST_LIST.forEach(url -> auth.requestMatchers(HttpMethod.POST, url).permitAll());
         GET_LIST.forEach(url -> auth.requestMatchers(HttpMethod.GET, url).permitAll());
-        auth.requestMatchers("/api/v1/login", "/api/v1/logout", "/api/v1/mail/**", "/api/v1/sms/**", "/api/v1/s3/**").permitAll();
+        auth.requestMatchers("/api/v1/login", "/api/v1/logout",
+                "/api/v1/mail/**", "/api/v1/sms/**", "/api/v1/s3/**", "/api/v1/withdrawal").permitAll();
     }
 
     private void configureManagerEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
@@ -186,7 +187,6 @@ public class SecurityConfig {
 
     private void configureUserEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
         auth.requestMatchers("/api/v1/users/**").hasRole("GUEST");
-        auth.requestMatchers(HttpMethod.GET, "/api/v1/withdrawal").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.POST, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.PUT, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.DELETE, "/api/v1/qna/questions/**").hasRole("GUEST");
