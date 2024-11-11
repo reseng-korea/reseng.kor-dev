@@ -1,6 +1,9 @@
 package com.resengkor.management.global.security.jwt.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.resengkor.management.global.exception.ExceptionStatus;
+import com.resengkor.management.global.response.CommonResponse;
+import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.FilterChain;
@@ -10,6 +13,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
@@ -100,5 +104,18 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         log.info("로그아웃: Refresh 토큰 삭제 성공");
+
+        // 성공 응답 설정
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+
+        CommonResponse commonResponse = new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage());
+
+        // 응답 JSON 생성
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(commonResponse));
+        response.getWriter().flush();
     }
 }
