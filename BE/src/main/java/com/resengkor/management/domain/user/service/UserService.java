@@ -467,6 +467,11 @@ public class UserService {
     //로그인 x
     public DataResponse<String> emailDupCheck(String email) {
         log.info("이메일 중복 확인하기");
+        //검색하기 전에 유효한 이메일인지 확인
+        if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
+        }
+
         // 입력된 이메일을 사용하여 데이터베이스에서 사용자 검색
         Optional<User> existingUserByEmail = userRepository.findByEmail(email);
         if (existingUserByEmail.isPresent()) {
