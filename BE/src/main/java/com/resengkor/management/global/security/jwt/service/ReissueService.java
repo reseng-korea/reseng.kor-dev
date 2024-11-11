@@ -67,6 +67,7 @@ public class ReissueService {
 
         // Redis에서 refresh 토큰 유효성 검사
         Boolean isExist = redisUtil.existData("refresh:token:" + refresh);
+        log.error("refreshKey : {}", refresh);
 
         if(loginType.equals("local")){
             boolean isAuto = jwtUtil.getIsAuto(refresh);
@@ -74,7 +75,7 @@ public class ReissueService {
 
             // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
             if(!isExist || remainingTTL == -1L) {
-                log.error("isExist {} = , remiainingTTL {} = ", isExist, remainingTTL);
+                log.error("isExist  = {}, remiainingTTL  = {}", isExist, remainingTTL);
                 throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
             }
 
