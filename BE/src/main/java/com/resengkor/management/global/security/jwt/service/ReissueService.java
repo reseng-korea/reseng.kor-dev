@@ -66,12 +66,12 @@ public class ReissueService {
         String newRefresh;
 
         // Redis에서 refresh 토큰 유효성 검사
-        Boolean isExist = redisUtil.existData("refresh:token:" + refresh);
+        Boolean isExist = redisUtil.existData("refresh:token:" + email);
         log.error("refreshKey : {}", refresh);
 
         if(loginType.equals("local")){
             boolean isAuto = jwtUtil.getIsAuto(refresh);
-            Long remainingTTL = redisUtil.getRemainingTTL("refresh:token:" + refresh);
+            Long remainingTTL = redisUtil.getRemainingTTL("refresh:token:" + email);
 
             // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
             if(!isExist || remainingTTL == -1L) {
@@ -104,13 +104,13 @@ public class ReissueService {
 
         // 기존 refresh DB 삭제, 새로운 refresh 저장
         // 기존 refresh 키 삭제
-        boolean isDeleted = redisUtil.deleteData("refresh:token:" + refresh);
+        boolean isDeleted = redisUtil.deleteData("refresh:token:" + email);
         if (!isDeleted) {
             log.error("ReissueService: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);
         }
         // Redis에 새로운 Refresh Token 저장
-        boolean isSaved = redisUtil.setData("refresh:token:" + newRefresh, newRefresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+        boolean isSaved = redisUtil.setData("refresh:token:" + email, newRefresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
         if (!isSaved) {
             log.error("ReissueService: Refresh 토큰 저장 실패 (Redis 연결 오류)");
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);

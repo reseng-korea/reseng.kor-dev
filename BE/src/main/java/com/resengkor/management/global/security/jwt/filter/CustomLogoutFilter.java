@@ -77,7 +77,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         // Redis에서 refresh 토큰 존재 여부 확인
-        Boolean isExist = redisUtil.existData("refresh:token:" + refresh);
+        String email = jwtUtil.getEmail(refresh);
+        Boolean isExist = redisUtil.existData("refresh:token:" + email);
 
         // not exist in DB
         if(!isExist){
@@ -90,7 +91,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거
 
-        boolean isDeleted = redisUtil.deleteData("refresh:token:" + refresh);
+        boolean isDeleted = redisUtil.deleteData("refresh:token:" + email);
         if (!isDeleted) {
             log.error("로그아웃: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
             // Redis 오류 시 예외 던지기
