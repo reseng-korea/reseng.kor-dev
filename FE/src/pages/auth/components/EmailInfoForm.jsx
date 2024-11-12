@@ -120,16 +120,30 @@ const EmailInfoForm = ({
           }
         }
       } catch (error) {
-        console.log(error);
-        setModalOpen(true);
-        openModal({
-          primaryText: '이미 존재하는 이메일입니다.',
-          type: 'warning',
-          isAutoClose: false,
-          onConfirm: () => {
-            closeModal(), setModalOpen(false);
-          },
-        });
+        const code = error.response.data.code;
+        if (code == 4024) {
+          setModalOpen(true);
+          openModal({
+            primaryText: '비활성화된 이메일입니다.',
+            context: '관리자에게 문의해주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
+        } else {
+          //code == 4022
+          setModalOpen(true);
+          openModal({
+            primaryText: '이미 존재하는 이메일입니다.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
+        }
       }
     }
   };
