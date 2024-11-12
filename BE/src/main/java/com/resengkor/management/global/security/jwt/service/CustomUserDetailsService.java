@@ -18,16 +18,11 @@ public class CustomUserDetailsService implements UserDetailsService {
 
     @Override
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        log.info("------------------------------------------------");
-        log.info("enter loadUserByUsername method");
-        log.info("------------------------------------------------");
+        log.info("----Service start: 일반회원 정보 로드하기-----");
         // 사용자 존재 여부 확인 및 UserDetails 반환
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
-
-        log.info("------------------------------------------------");
         log.info("DB에 있는 user 잘 찾아옴");
-        log.info("------------------------------------------------");
         return new CustomUserDetails(user);
     }
 }

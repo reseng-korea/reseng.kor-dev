@@ -16,9 +16,15 @@ public class UserMapper {
         return UserDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
+                .emailStatus(user.isEmailStatus())
+                .temporaryPasswordStatus(user.isTemporaryPasswordStatus())
                 .companyName(user.getCompanyName())
+                .representativeName(user.getRepresentativeName())
                 .phoneNumber(user.getPhoneNumber())
+                .phoneNumberStatus(user.isPhoneNumberStatus())
                 .role(user.getRole())
+                .loginType(user.getLoginType().toString())
+                .status(user.isStatus())
                 .createdAt(user.getCreatedAt())
                 .userProfile(toUserProfileDTO(user.getUserProfile())) // UserProfile -> UserProfileDTO 변환
                 .build();
