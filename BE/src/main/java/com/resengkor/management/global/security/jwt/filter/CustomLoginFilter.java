@@ -120,11 +120,13 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         //2. 토큰 생성
         //"access"를 통해 카테고리값을 넣어준다.
         long refreshTokenExpiration = isAuto ? 30 * 24 * 60 * 60 * 1000L : 24 * 60 * 60 * 1000L; //로그인 유지 30일, 일반 24시간
-        String access = jwtUtil.createJwt("Authorization", "local", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto);
-        String refresh = jwtUtil.createJwt("Refresh", "local", email, userId, role, refreshTokenExpiration,isAuto);
+        String sessionId = UUID.randomUUID().toString();
+        String access = jwtUtil.createJwt("Authorization", "local", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto,sessionId);
+        String refresh = jwtUtil.createJwt("Refresh", "local", email, userId, role, refreshTokenExpiration,isAuto,sessionId);
 
         //2-1. Refresh 토큰 DB에 저장 메소드
-        boolean isStored = redisUtil.setData("refresh:token:" + email, refresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+        String redisKey = "refresh_token:" + email + ":" + sessionId;
+        boolean isStored = redisUtil.setData(redisKey, refresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
         if (!isStored) {
             log.error("로그인 성공: Refresh 토큰 Redis 저장 실패 (Redis 연결 오류)");
             ErrorHandler.sendErrorResponse(response, ExceptionStatus.DB_CONNECTION_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);

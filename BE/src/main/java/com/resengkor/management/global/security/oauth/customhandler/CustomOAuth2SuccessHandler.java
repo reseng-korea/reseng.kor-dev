@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
 
 import java.io.IOException;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -46,12 +47,14 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
         log.info("------------------------------------------------");
 
         try {
+            String sessionId = UUID.randomUUID().toString();
             Integer expireS = 30 * 24 * 60 * 60; // 기본 30일
-            String access = jwtUtil.createOuathJwt("Authorization", "social", email, userId, role, ACCESS_TOKEN_EXPIRATION * 1000L);
-            String refresh = jwtUtil.createOuathJwt("Refresh", "social", email, userId, role, expireS * 1000L);
+            String access = jwtUtil.createOuathJwt("Authorization", "social", email, userId, role, ACCESS_TOKEN_EXPIRATION * 1000L,sessionId);
+            String refresh = jwtUtil.createOuathJwt("Refresh", "social", email, userId, role, expireS * 1000L,sessionId);
 
             // Redis에 새로운 Refresh Token 저장
-            boolean isSaved = redisUtil.setData("refresh:token:" + refresh, refresh, expireS * 1000L, TimeUnit.MILLISECONDS);
+            String redisKey = "refresh_token:" + email + ":" + sessionId;
+            boolean isSaved = redisUtil.setData(redisKey, refresh, expireS * 1000L, TimeUnit.MILLISECONDS);
             if (!isSaved) {
                 log.error("OAuth 로그인 성공 후: Refresh 토큰 저장 실패 (Redis 연결 오류)");
                 throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR); // Redis 저장 실패 에러 던지기
