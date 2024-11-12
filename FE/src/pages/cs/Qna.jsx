@@ -19,22 +19,17 @@ const Qna = () => {
   const { navigateTo, routes } = useNavigateTo();
 
   const [qnaData, setQnaData] = useState([]);
-
-  // 페이지당 표시할 항목 수 설정
+  const [totalElements, setTotalElements] = useState(0);
+  const [activePage, setActivePage] = useState(1);
   const itemsCountPerPage = 10;
 
-  const [activePage, setActivePage] = useState(1);
-
   // 현재 페이지에 해당하는 데이터 계산
-  const indexOfLastItem = activePage * itemsCountPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsCountPerPage;
-  const currentItems = [...qnaData].slice(indexOfFirstItem, indexOfLastItem);
+  // const indexOfLastItem = activePage * itemsCountPerPage;
+  // const indexOfFirstItem = indexOfLastItem - itemsCountPerPage;
+  // const currentItems = [...qnaData].slice(indexOfFirstItem, indexOfLastItem);
 
   const handlePageChange = (pageNumber) => {
-    console.log(`active page is ${pageNumber}`);
-    navigateTo(`/qna?page=${pageNumber}`);
-
-    setActivePage(pageNumber);
+    setActivePage(pageNumber); // 페이지 번호 변경 시 상태 업데이트
   };
 
   const handleRowClick = (id) => {
@@ -45,26 +40,35 @@ const Qna = () => {
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.get(`${apiUrl}/api/v1/qna/questions`);
+        const response = await axios.get(
+          `${apiUrl}/api/v1/qna/questions?page=${activePage - 1}&size=${itemsCountPerPage}`
+        );
+
         console.log(response);
 
-        const qnaItems = response.data.data.content.map((item, index) => ({
-          id: index + 1,
-          secret: item.secret,
-          title: item.title,
-          representativeName: item.representativeName,
-          createdAt: item.createdAt,
-          viewCount: item.viewCount,
-          answered: item.answered,
-        }));
+        setTotalElements(response.data.data.totalElements);
+        const startingIndex =
+          totalElements - (activePage - 1) * itemsCountPerPage;
 
-        setQnaData(qnaItems.reverse());
+        const sortedData = response.data.data.content
+          .map((item, index) => ({
+            id: index, // 고유 식별자
+            secret: item.secret,
+            title: item.title,
+            representativeName: item.representativeName,
+            createdAt: item.createdAt,
+            viewCount: item.viewCount,
+            answered: item.answered,
+          }))
+          .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        setQnaData(sortedData);
       } catch (error) {
         console.log(error);
       }
     }
     fetchData();
-  }, []);
+  }, [activePage]);
 
   return (
     <Layout>
@@ -89,13 +93,15 @@ const Qna = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentItems.map((items) => (
+                {qnaData.map((items, index) => (
                   <tr
                     key={items.id}
                     className="border-b hover:bg-placeHolder"
                     onClick={() => handleRowClick(items.id)}
                   >
-                    <td className="py-5 px-4 border-b">{items.id}</td>
+                    <td className="py-5 px-4 border-b">
+                      {index + 1 + (activePage - 1) * itemsCountPerPage}
+                    </td>
                     <td className="py-2 px-4 border-b text-left">
                       <div className="flex items-center space-x-2">
                         {items.secret ? (
@@ -110,7 +116,6 @@ const Qna = () => {
                         {items.title.length > 30
                           ? `${items.title.slice(0, 30)}...`
                           : items.title}
-                        {/* <span>{inquiry.title}</span> */}
                       </div>
                     </td>
                     <td className="py-2 px-4 border-b">
@@ -136,7 +141,7 @@ const Qna = () => {
             <Pagination
               activePage={activePage} //현재 페이지
               itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수(10개)
-              totalItemsCount={qnaData.length} // 표시할 항목의 총 개수(전체)
+              totalItemsCount={totalElements} // 표시할 항목의 총 개수(전체)
               pageRangeDisplayed={5} //페이지네이터의 페이지 범위
               hideFirstLastPages={true}
               prevPageText="<"
