@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -59,7 +60,7 @@ public class DocumentService {
 
     //조회
     public DataResponse<Page<DocumentResponse>> getDocumentList(String type,int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Document> documentPage = documentRepository.findByType(DocumentType.valueOf(type.toUpperCase()), pageRequest);
 
         Page<DocumentResponse> documentResponsePage = documentPage.map(DocumentResponse::fromEntity);
@@ -116,7 +117,7 @@ public class DocumentService {
                 ResponseStatus.DELETED_SUCCESS.getMessage());
     }
 
-    public ResponseEntity<byte[]> downloadFileFromS3(String type, Long fileId) {
+    public ResponseEntity<byte[]> downloadDocumentFile(String type, Long fileId) {
         // 파일 ID를 통해 해당 파일 찾기
         FileEntity file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
