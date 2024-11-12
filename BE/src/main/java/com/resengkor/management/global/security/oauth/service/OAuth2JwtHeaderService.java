@@ -30,7 +30,7 @@ public class OAuth2JwtHeaderService {
     private final UserRepository userRepository;
 
     public void oauth2JwtHeaderSet(HttpServletRequest request, HttpServletResponse response) {
-        log.info("Enter OAuth2USer header");
+        log.info("------Service Start : OAuth 쿠키-> access 발급 서비스---------");
 
         Cookie[] cookies = request.getCookies();
         String access = null;

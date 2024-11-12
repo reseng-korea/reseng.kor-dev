@@ -38,10 +38,12 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        log.info("----Filter Start: 로그아웃 진행-----");
         doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
     }
 
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+        log.info("----Filter Start: 내부 필터 로그아웃 진행-----");
         //해당요청이 logout요청인지 판단
         // uri check
         if (!request.getRequestURI().equals(defaultFilterUrl)) {
@@ -63,8 +65,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         String refresh = null;
         refresh = request.getHeader("Refresh");
-
-        log.info("refresh = " + refresh);
 
         // refresh token null
         if(refresh == null){

@@ -18,7 +18,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
 
     @Override
     public void handle(HttpServletRequest request, HttpServletResponse response, AccessDeniedException accessDeniedException) throws IOException, ServletException {
-        log.info("------------------------------------------------");
         log.info("CustomAccessDeniedHandler - handle method enter");
         log.info("Request URI: {}", request.getRequestURI());
         log.info("HTTP Method: {}", request.getMethod());
@@ -36,7 +35,6 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler {
         } else {
             log.info("Authentication object is null, indicating an unauthenticated user.");
         }
-
 
         // 403 Forbidden 상태 설정
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);

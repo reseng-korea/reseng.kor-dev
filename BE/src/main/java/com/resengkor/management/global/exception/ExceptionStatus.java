@@ -19,6 +19,7 @@ public enum ExceptionStatus {
     TOKEN_NOT_FOUND_IN_HEADER(1003, "토큰이 헤더에 없습니다. 인증이 필요합니다."),
     TOKEN_NOT_FOUND_IN_DB(1004, "토큰이 DB에 존재하지 않습니다. 다시 로그인해 주세요."),
     TOKEN_PARSE_ERROR(1005, "JWT 토큰 파싱에 실패하였습니다. 유효한 토큰을 사용해 주세요."),
+    TOKEN_IS_NOT_REFRESH(1006, "해당 토큰은 Refresh 토큰이 아닙니다"),
 
     // 4xx 클라이언트 오류
     /* 유효성 검사 오류 */
