@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.data.domain.Sort;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -135,7 +136,7 @@ public class QnaService {
     public DataResponse<Page<QuestionResponse>> getAllQuestions(int page, int size) {
         log.info("---------Service : getAllQuestions method start---------");
         // 1. 페이지 요청 객체 생성
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page, size,  Sort.by(Sort.Direction.DESC, "id"));
         // 2. 모든 질문을 페이지 단위로 조회
         Page<Question> questions = questionRepository.findAll(pageRequest);
         // 3. 조회된 질문 목록을 QuestionResponse DTO로 변환
