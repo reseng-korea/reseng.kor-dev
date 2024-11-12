@@ -65,19 +65,6 @@ public class UserService {
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), id);
     }
 
-    //유효성 검사
-    @Transactional(readOnly = true)
-    public Map<String, String> validateHandling(BindingResult bindingResult) {
-        Map<String, String> validatorResult = new HashMap<>();
-
-        for(FieldError error : bindingResult.getFieldErrors()) {
-            String validKeyName = String.format("valid_%s", error.getField());
-            validatorResult.put(validKeyName, error.getDefaultMessage());
-        }
-
-        return validatorResult;
-    }
-
     private void checkUserIsWithdrawed(User user){
         if (!user.isStatus()) {
             log.info("비활성 사용자입니다 (이메일 중복)");
