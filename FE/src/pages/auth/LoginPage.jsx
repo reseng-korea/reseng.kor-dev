@@ -67,22 +67,47 @@ const LoginPage = () => {
         console.log(response);
         console.log(response.headers.authorization);
         const accessToken = response.headers.authorization;
-        localStorage.setItem('userId', response.data.userId);
+        localStorage.setItem('userId', response.data.id);
         localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refrsh', response.headers.refresh);
+        localStorage.setItem('refreshToken', response.headers.refresh);
         console.log(response.headers.refresh);
       } catch (error) {
-        console.log(error);
-        setModalOpen(true);
-        openModal({
-          primaryText: '아이디 또는 비밀번호가 올바르지 않습니다.',
-          context: '다시 확인해주세요.',
-          type: 'warning',
-          isAutoClose: false,
-          onConfirm: () => {
-            closeModal(), setModalOpen(false);
-          },
-        });
+        const code = error.response.data.code;
+
+        if (code == 4024) {
+          setModalOpen(true);
+          openModal({
+            primaryText: '계정이 비활성화되었습니다.',
+            context: '관리자에게 문의하세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
+        } else if (code == 4012) {
+          setModalOpen(true);
+          openModal({
+            primaryText: '해당 정보로 등록된 회원이 없습니다.',
+            context: '아이디와 비밀번호를 다시 확인해 주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
+        } else {
+          setModalOpen(true);
+          openModal({
+            primaryText: '입력하신 정보가 유효하지 않습니다.',
+            context: '올바른 아이디와 비밀번호를 입력해주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
+        }
       }
     }
   };

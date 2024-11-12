@@ -6,6 +6,7 @@ import SubNavbar from '../../components/SubNavbar';
 
 import useModal from '../../hooks/useModal';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import usePreventRefresh from '../../hooks/usePreventRefresh';
 
 import EmailInfoForm from '../auth/components/EmailInfoForm';
 import PasswordInfoForm from '../auth/components/PasswordInfoForm';
@@ -29,9 +30,14 @@ const UserEdit = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
 
+  // 새로고침 데이터 날라감 방지
+  usePreventRefresh(openModal, closeModal, setModalOpen);
+
   const accesstoken = localStorage.getItem('accessToken');
   const userId = localStorage.getItem('userId');
-  const refreshtoken = localStorage.getItem('refrsh');
+  const refreshtoken = localStorage.getItem('refreshToken');
+
+  console.log(userId);
 
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -65,7 +71,7 @@ const UserEdit = () => {
 
         setEmail(response.data.data.email);
         setPhoneNumber(response.data.data.phoneNumber);
-        // setOwnerName();
+        setOwnerName(response.data.data.representativeName);
         setCompanyName(response.data.data.companyName);
         setCompanyPhoneNumber(
           response.data.data.userProfile.companyPhoneNumber
@@ -273,21 +279,52 @@ const UserEdit = () => {
 
   // 탈퇴하기 버튼 클릭
   const handleWithdraw = async () => {
-    try {
-      const response = await axios.put(
-        `${apiUrl}/api/v1/withdrawal`,
-        { Refresh: refreshtoken },
-        {
-          headers: {
-            Authorization: accesstoken,
-            'Content-Type': 'application/json',
-          },
+    setModalOpen(true);
+    openModal({
+      primaryText: '정말 탈퇴하시겠습니까?',
+      secondaryText: '탈퇴 시, 계정은 비활성화됩니다.',
+      context: '같은 정보로 재가입 시 관리자에게 문의하세요.',
+      type: 'warning',
+      isAutoClose: false,
+      cancleButton: true,
+      buttonName: '취소',
+      cancleButtonName: '탈퇴',
+      onConfirm: () => {
+        closeModal();
+        setModalOpen(false);
+      },
+      onCancel: async () => {
+        try {
+          const response = await axios.put(
+            `${apiUrl}/api/v1/users/withdrawal`,
+            {},
+            {
+              headers: {
+                Refresh: refreshtoken,
+              },
+            }
+          );
+
+          if (response.data.code == 200) {
+            navigateTo(routes.mypageWithdraw);
+          }
+          console.log(response);
+        } catch (error) {
+          console.log(error);
+
+          openModal({
+            primaryText: '탈퇴 요청이 실패했습니다.',
+            secondaryText: '잠시 후 다시 시도해 주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal();
+              setModalOpen(false);
+            },
+          });
         }
-      );
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
+      },
+    });
   };
 
   return (

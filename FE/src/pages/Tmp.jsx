@@ -11,20 +11,15 @@ const Tmp = () => {
   const handleLogout = async () => {
     const accesstoken = localStorage.getItem('accessToken');
     console.log(accesstoken);
-    const refresh = localStorage.getItem('refrsh');
-    console.log(refresh);
+    const refreshToken = localStorage.getItem('refreshToken');
+    console.log(refreshToken);
 
     try {
-      const response = await axios.post(
-        `${apiUrl}/api/v1/logout`,
-        { Refresh: refresh },
-        {
-          headers: {
-            Authorization: accesstoken,
-            'Content-Type': 'application/json',
-          },
-        }
-      );
+      const response = await axios.post(`${apiUrl}/api/v1/logout`, {
+        headers: {
+          Refresh: refreshToken,
+        },
+      });
       console.log(response);
     } catch (error) {
       console.log(error);

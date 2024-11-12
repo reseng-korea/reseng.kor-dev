@@ -113,7 +113,7 @@ function CustomModal({
         {cancleButton && (
           <button
             onClick={onCancel || closeModal}
-            className="mt-6 px-4 py-2 border border-primary text-primary rounded-lg hover:border-hover hover:text-hover"
+            className="mt-6 px-4 py-2 border border-primary text-primary rounded-lg hover:border-hoverLight hover:bg-hoverLight"
           >
             {cancleButtonName}
           </button>

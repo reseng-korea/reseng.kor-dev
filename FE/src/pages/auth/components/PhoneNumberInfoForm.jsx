@@ -77,9 +77,10 @@ const PhoneNumberInfoForm = ({
           setModalOpen(true);
 
           openModal({
-            primaryText: `${phoneNumber} (으)로 인증번호가 발송되었습니다.`,
+            primaryText: `${phoneNumber} (으)로`,
+            secondaryText: '인증번호가 발송되었습니다.',
             type: 'success',
-            isAutoClose: true,
+            isAutoClose: false,
             onConfirm: () => {
               closeModal();
               setModalOpen(false);
@@ -137,9 +138,9 @@ const PhoneNumberInfoForm = ({
         timerRef.current = null;
       }
     } catch (error) {
-      console.log(error.response.data.message);
+      console.log(error);
       if (
-        error.response.data.message ==
+        error.response.data.message ===
         '인증 코드가 일치하지 않습니다. 올바른 코드를 입력해 주세요.'
       ) {
         setModalOpen(true);

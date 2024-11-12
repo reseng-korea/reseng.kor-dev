@@ -71,13 +71,15 @@ import Withdraw from './pages/mypage/Withdraw';
 import QrSuccess from './pages/qr/QrSuccess';
 import QrFailure from './pages/qr/QrFailure';
 
+import ProtectedRoute from './components/ProtectedRoute';
+
 import Tmp from './pages/Tmp';
 
 function App() {
   // 현재 경로를 가져옴
   const location = useLocation();
 
-  // 특정 경로에 따라 Navbar를 숨김 (예: /signin, /signup, /pwinquiry 등)
+  // 특정 경로에 따라 Navbar를 숨김
   const hideNavbarPaths = ['/mypage/qr/success', '/mypage/qr/failure'];
 
   // Navbar를 숨길지 여부를 결정하는 변수
@@ -93,6 +95,13 @@ function App() {
       setIsMainSixthVisible(isVisible);
     }
   };
+
+  const isAuthenticated = () => {
+    const token = localStorage.getItem('accessToken');
+    return !!token; // 토큰이 있으면 true 반환
+  };
+
+  // console.log(isAuthenticated);
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -185,7 +194,15 @@ function App() {
 
           {/* mymage */}
           {/* 업체 관리 페이지 */}
-          <Route path="/mypage/member" element={<Member />} />
+          <Route
+            path="/mypage/member"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated()}>
+                <Member />
+              </ProtectedRoute>
+            }
+          />
+          {/* <Route path="/mypage/member" element={<Member />} /> */}
           {/* 현수막 관리 페이지 */}
           <Route path="/mypage/manage" element={<Manage />} />
           {/* 현수막 발주 페이지 - 발주 */}

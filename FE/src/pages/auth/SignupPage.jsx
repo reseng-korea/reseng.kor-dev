@@ -29,6 +29,7 @@ const SignupPage = () => {
   const [isValidPassword, setIsValidPassword] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(false);
+  const [isPhoneNumberVerified, setIsPhoneNumberVerified] = useState(false);
   const [companyName, setCompanyName] = useState('');
   const [ownerName, setOwnerName] = useState('');
   const [companyPhoneNumber, setCompanyPhoneNumber] = useState('');
@@ -308,6 +309,8 @@ const SignupPage = () => {
             setPhoneNumber={setPhoneNumber}
             isValidPhoneNumber={isValidPhoneNumber}
             setIsValidPhoneNumber={setIsValidPhoneNumber}
+            isPhoneNumberVerified={isPhoneNumberVerified}
+            setIsPhoneNumberVerified={setIsPhoneNumberVerified}
           />
           <CompanyNameInfoForm
             companyName={companyName}
