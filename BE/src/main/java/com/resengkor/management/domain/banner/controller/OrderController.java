@@ -31,6 +31,13 @@ public class OrderController {
         return ResponseEntity.ok(userOrders);
     }
 
+    // 특정 orderId로 발주 내역 조회
+    @GetMapping("/{orderId}")
+    public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Long orderId) {
+        OrderResponseDto responseDto = orderService.getUserOrderHistoryById(orderId);
+        return ResponseEntity.ok(responseDto);
+    }
+
     // 수령 상태 업데이트 엔드포인트
     @PatchMapping("/{orderId}")
     public ResponseEntity<String> updateReceiveStatus(@PathVariable Long orderId, @RequestBody ReceiveStatusUpdateDto receiveStatusUpdateDto) {

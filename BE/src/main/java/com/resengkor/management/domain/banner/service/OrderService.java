@@ -12,6 +12,7 @@ import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
+import jakarta.persistence.EntityManager;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -77,9 +78,7 @@ public class OrderService {
         orderHistoryRepository.save(orderHistory);
     }
 
-
     // 로그인한 사용자의 모든 발주 내역 조회
-    @Transactional
     public List<OrderResponseDto> getUserOrderHistories() {
         // 현재 로그인된 사용자의 ID를 가져옴
         Long userId = UserAuthorizationUtil.getLoginMemberId();
@@ -89,6 +88,19 @@ public class OrderService {
 
         // DTO로 변환하여 반환
         return orderHistoryMapper.toDtoList(orderHistories);
+    }
+
+    // 특정 orderId로 발주 내역 조회
+    public OrderResponseDto getUserOrderHistoryById(Long orderId) {
+        // 현재 로그인된 사용자의 ID를 가져옴
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+
+        // 현재 로그인된 사용자와 주어진 orderId에 해당하는 발주 내역 조회
+        OrderHistory orderHistory = orderHistoryRepository.findByUserIdAndId(userId, orderId)
+                .orElseThrow(() -> new RuntimeException("Order not found"));
+
+        // DTO로 변환하여 반환
+        return orderHistoryMapper.toDto(orderHistory);
     }
 
     // 수령 상태 업데이트 메서드
@@ -104,23 +116,19 @@ public class OrderService {
         // 수령 상태가 true로 변경되면, BannerType을 DB에 저장
         if (receiveStatus && !orderHistory.getReceiveStatus()) {
             saveOrderAndBannerTypes(orderHistory);
+            orderHistory.updateReceiveStatus(true);
         }
-
-        // 수령 상태 업데이트
-        orderHistory = orderHistory.toBuilder()
-                .receiveStatus(receiveStatus)
-                .build();
-
-        orderHistoryRepository.save(orderHistory);
     }
 
     // BannerType을 실제 DB에 저장하는 메서드
-    private void saveOrderAndBannerTypes(OrderHistory orderHistory) {
-        // temporaryBannerType 리스트 가져오기
-        List<TemporaryBannerType> temporaryBannerTypes = orderHistory.getTemporaryBannerTypes();
+    protected void saveOrderAndBannerTypes(OrderHistory orderHistory) {
 
-        // TemporaryBannerType 목록을 순회하면서 BannerType을 먼저 생성한 후 OrderBanner 생성
+        // temporaryBannerType 리스트 가져오기 (복사본 생성)
+        List<TemporaryBannerType> temporaryBannerTypes = new ArrayList<>(orderHistory.getTemporaryBannerTypes());
+
+        // Iterator 사용하여 안전하게 순회하면서 수정
         for (TemporaryBannerType tempBanner : temporaryBannerTypes) {
+
             // quantity 개수만큼 BannerType 생성 및 저장
             List<BannerType> createdBannerTypes = new ArrayList<>();
             for (int i = 0; i < tempBanner.getQuantity(); i++) {
@@ -136,10 +144,8 @@ public class OrderService {
 
             // 모든 BannerType 이 생성된 후, OrderBanner 를 딱 한 번 생성
             if (!createdBannerTypes.isEmpty()) {
-                // 첫 번째 생성된 BannerType 참조 (대표로 사용)
                 BannerType representativeBannerType = createdBannerTypes.getFirst();
 
-                // OrderBanner 는 딱 한 번만 생성
                 OrderBanner orderBanner = OrderBanner.builder()
                         .orderHistory(orderHistory)
                         .bannerType(representativeBannerType)
@@ -147,9 +153,6 @@ public class OrderService {
                         .build();
                 orderBannerRepository.save(orderBanner);
             }
-
-            // 생성이 완료된 후, 해당 `TemporaryBannerType`을 삭제
-            temporaryBannerTypeRepository.delete(tempBanner);
         }
     }
 }
