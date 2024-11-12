@@ -25,7 +25,7 @@ public class AuthController {
 
     // 회원가입 (일반 사용자 등록하기)
     @PostMapping("/register")
-    public DataResponse<UserDTO> registerUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest, BindingResult bindingResult) {
+    public DataResponse<UserDTO> registerUser(@Valid @RequestBody UserRegisterRequest request, BindingResult bindingResult) {
         log.info("----Controller Start: 회원가입-----");
 
         // 바인딩 에러가 있는지 확인
@@ -35,12 +35,12 @@ public class AuthController {
             throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
 
-        return userService.registerUser(userRegisterRequest);
+        return userService.registerUser(request);
     }
 
     // 아이디(이메일) 찾기
     @PostMapping("/find-email")
-    public DataResponse<FindEmailResponse> findEmail(@Valid @RequestBody FindEmailRequest findEmailRequest, BindingResult bindingResult) {
+    public DataResponse<FindEmailResponse> findEmail(@Valid @RequestBody FindEmailRequest request, BindingResult bindingResult) {
         log.info("----Controller Start: 아이디(이메일) 찾기-----");
 
         // 바인딩 에러가 있는지 확인
@@ -50,12 +50,12 @@ public class AuthController {
             throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
 
-        return userService.findEmail(findEmailRequest);
+        return userService.findEmail(request);
     }
 
     //비밀번호 찾기(이메일, 핸드폰 번호로)
     @PostMapping("/find-password")
-    public DataResponse<String> findPassword(@Valid @RequestBody FindPasswordRequest findPasswordRequest, BindingResult bindingResult) {
+    public DataResponse<String> findPassword(@Valid @RequestBody FindPasswordRequest request, BindingResult bindingResult) {
         log.info("----Controller Start: 비밀번호 찾기-----");
 
         // 바인딩 에러가 있는지 확인
@@ -65,7 +65,7 @@ public class AuthController {
             throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
 
-        return userService.findPassword(findPasswordRequest);
+        return userService.findPassword(request);
     }
 
     //이메일 중복 확인하기
