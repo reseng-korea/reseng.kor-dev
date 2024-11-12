@@ -7,7 +7,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CompanyDTO {
-    private Long Id;
+    private Long id;
     private String companyName;
     private String role;
     private String companyPhoneNumber;

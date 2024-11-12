@@ -14,20 +14,17 @@ public class CompanyMapper {
             return null;
         }
 
-        UserProfile userProfile = user.getUserProfile();
-
         return CompanyDTO.builder()
-                .userId(user.getId())
-                .role(user.getRole() != null ? user.getRole().getRole() : null)
-                .companyName(user.getCompanyName())
-                .userProfileId(userProfile != null ? userProfile.getId() : null)
-                .companyPhoneNumber(userProfile != null ? userProfile.getCompanyPhoneNumber() : null)
-                .streetAddress(userProfile != null ? userProfile.getStreetAddress() : null)
-                .detailAddress(userProfile != null ? userProfile.getDetailAddress() : null)
-                .city(userProfile != null ? userProfile.getCity() : null)
-                .district(userProfile != null ? userProfile.getDistrict() : null)
-                .latitude(userProfile != null ? userProfile.getLatitude() : null)
-                .longitude(userProfile != null ? userProfile.getLongitude() : null)
+                .id(company.getId())
+                .companyName(company.getCompanyName())
+                .role(company.getRole().toString())
+                .companyPhoneNumber(company.getCompanyPhoneNumber())
+                .streetAddress(company.getStreetAddress())
+                .detailAddress(company.getDetailAddress())
+                .city(company.getCity())
+                .district(company.getDistrict())
+                .latitude(company.getLatitude())
+                .longitude(company.getLongitude())
                 .build();
     }
 }
