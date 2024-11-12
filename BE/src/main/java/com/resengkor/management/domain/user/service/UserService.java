@@ -252,19 +252,21 @@ public class UserService {
     public CommonResponse withdrawUser(String headerRefresh) {
         log.info("----Service Start: 회원탈퇴-----");
         //1.JWT에서 사용자 이메일 추출
-        String userEmail = jwtUtil.getEmail(headerRefresh);
+        String email = jwtUtil.getEmail(headerRefresh);
+        String sessionId = jwtUtil.getSessionId(headerRefresh);
 
         //2.사용자 찾기
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         log.info("회원탈퇴 요청한 사용자 찾음");
 
         // Redis에서 refresh 토큰 유효성 검사
-        Boolean isExist = redisUtil.existData("refresh:token:" + userEmail);
+        String redisKey = "refresh_token:" + email + ":" + sessionId;
+        Boolean isExist = redisUtil.existData(redisKey);
         String redisRefresh;
         if(isExist){//Redis에 존재한다면
             //redis에 있는 value값 가져오기
-            redisRefresh = redisUtil.getData("refresh:token:" + userEmail);
+            redisRefresh = redisUtil.getData(redisKey);
             if(!headerRefresh.equals(redisRefresh)){
                 throw new CustomException(ExceptionStatus.INVALID_REFRESH_TOKEN);
             }
@@ -285,7 +287,7 @@ public class UserService {
         log.info("회원탈퇴 저장 성공");
 
         //5.해당 유저의 refresh토큰 전부 삭제
-        boolean isDeleted = redisUtil.deleteData("refresh:token:" + userEmail);
+        boolean isDeleted = redisUtil.deleteAllRefreshTokensByEmailUsingScan(email);
         if (!isDeleted) {
             log.error("Refresh 토큰 삭제 실패 (Redis 연결 오류)");
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);
