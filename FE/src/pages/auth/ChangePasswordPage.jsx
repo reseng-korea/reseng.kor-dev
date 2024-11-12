@@ -3,6 +3,7 @@ import axios from 'axios';
 
 import useModal from '../../hooks/useModal';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import usePreventRefresh from '../../hooks/usePreventRefresh';
 import {
   validatePassword,
   checkPasswordMatch,
@@ -11,6 +12,9 @@ import {
 const ChangePasswordPage = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
+
+  // 새로고침 데이터 날라감 방지
+  usePreventRefresh(openModal, closeModal, setModalOpen);
 
   const accesstoken = localStorage.getItem('accessToken');
   const userId = localStorage.getItem('userId');

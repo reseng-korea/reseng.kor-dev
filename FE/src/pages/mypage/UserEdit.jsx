@@ -47,6 +47,7 @@ const UserEdit = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isValidPassword, setIsValidPassword] = useState(false);
+  const [isPasswordMatched, setIsPasswordMatched] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(false);
   const [isPhoneNumberVerified, setIsPhoneNumberVerified] = useState(true);
@@ -362,6 +363,8 @@ const UserEdit = () => {
               setConfirmPassword={setConfirmPassword}
               isValidPassword={isValidPassword}
               setIsValidPassword={setIsValidPassword}
+              isPasswordMatched={isPasswordMatched}
+              setIsPasswordMatched={setIsPasswordMatched}
             />
             <PhoneNumberInfoForm
               phoneNumber={phoneNumber}

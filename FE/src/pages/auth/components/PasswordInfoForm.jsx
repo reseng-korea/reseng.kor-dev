@@ -1,4 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
+import {
+  validatePassword,
+  checkPasswordMatch,
+} from '../../../utils/PasswordValidation';
 
 const PasswordInfoForm = ({
   password,
@@ -7,35 +12,39 @@ const PasswordInfoForm = ({
   setConfirmPassword,
   isValidPassword,
   setIsValidPassword,
+  isPasswordMatched,
+  setIsPasswordMatched,
 }) => {
-  // const [confirmPassword, setConfirmPassword] = useState('');
   // 비밀번호 유효성 검사
-  const validatePassword = (password) => {
-    const passwordRegex =
-      /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-    return passwordRegex.test(password);
-  };
-  // 비밀번호 일치 여부
-  const checkPasswordMatch = (password, confirmPassword) => {
-    return password && confirmPassword && password === confirmPassword;
-  };
-
-  const isPasswordMatched = checkPasswordMatch(password, confirmPassword);
+  // const validatePassword = (password) => {
+  //   const passwordRegex =
+  //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+  //   return passwordRegex.test(password);
+  // };
+  // // 비밀번호 일치 여부
+  // const checkPasswordMatch = (password, confirmPassword) => {
+  //   return password && confirmPassword && password === confirmPassword;
+  // };
 
   const handlePasswordInputChange = (e) => {
     const newPassword = e.target.value;
     setPassword(newPassword);
-    const isPasswordValid = validatePassword(newPassword);
-    const doesPasswordMatch = checkPasswordMatch(newPassword, confirmPassword);
-    setIsValidPassword(isPasswordValid && doesPasswordMatch);
   };
 
   const handleConfirmPasswordInputChange = (e) => {
     const newConfirmPassword = e.target.value;
     setConfirmPassword(newConfirmPassword);
-    const doesPasswordMatch = checkPasswordMatch(password, newConfirmPassword);
-    setIsValidPassword(validatePassword(password) && doesPasswordMatch);
   };
+
+  useEffect(() => {
+    const isPasswordValid = validatePassword(password);
+    console.log(isPasswordValid);
+    const isConfirmPasswordValid = validatePassword(confirmPassword);
+    console.log(isConfirmPasswordValid);
+    const doesPasswordMatch = checkPasswordMatch(password, confirmPassword);
+    setIsValidPassword(isPasswordValid && isConfirmPasswordValid);
+    setIsPasswordMatched(doesPasswordMatch);
+  }, [password, confirmPassword]);
 
   return (
     <>

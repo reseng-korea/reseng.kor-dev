@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { inquiryData } from '../../data/inquiryData';
+
 import qnaIsSecret from '../../assets/qna_isSecret.png';
 import Pagination from 'react-js-pagination';
 
 const Qna = () => {
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const navItems = [
     { label: '자주 묻는 질문', route: '/faq' },
     { label: '1:1 문의', route: '/qna' },
@@ -16,8 +18,7 @@ const Qna = () => {
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
-  // 번호 기준으로 내림차순 정렬
-  const sortedInquiryData = [...inquiryData].sort((a, b) => b.id - a.id);
+  const [qnaData, setQnaData] = useState([]);
 
   // 페이지당 표시할 항목 수 설정
   const itemsCountPerPage = 10;
@@ -27,10 +28,7 @@ const Qna = () => {
   // 현재 페이지에 해당하는 데이터 계산
   const indexOfLastItem = activePage * itemsCountPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsCountPerPage;
-  const currentItems = sortedInquiryData.slice(
-    indexOfFirstItem,
-    indexOfLastItem
-  );
+  const currentItems = [...qnaData].slice(indexOfFirstItem, indexOfLastItem);
 
   const handlePageChange = (pageNumber) => {
     console.log(`active page is ${pageNumber}`);
@@ -43,6 +41,30 @@ const Qna = () => {
     // URL을 qna/{id}로 변경
     navigateTo(`/qna/${id}`);
   };
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await axios.get(`${apiUrl}/api/v1/qna/questions`);
+        console.log(response);
+
+        const qnaItems = response.data.data.content.map((item, index) => ({
+          id: index + 1,
+          secret: item.secret,
+          title: item.title,
+          representativeName: item.representativeName,
+          createdAt: item.createdAt,
+          viewCount: item.viewCount,
+          answered: item.answered,
+        }));
+
+        setQnaData(qnaItems.reverse());
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    fetchData();
+  }, []);
 
   return (
     <Layout>
@@ -67,16 +89,16 @@ const Qna = () => {
                 </tr>
               </thead>
               <tbody>
-                {currentItems.map((inquiry) => (
+                {currentItems.map((items) => (
                   <tr
-                    key={inquiry.id}
+                    key={items.id}
                     className="border-b hover:bg-placeHolder"
-                    onClick={() => handleRowClick(inquiry.id)}
+                    onClick={() => handleRowClick(items.id)}
                   >
-                    <td className="py-5 px-4 border-b">{inquiry.id}</td>
+                    <td className="py-5 px-4 border-b">{items.id}</td>
                     <td className="py-2 px-4 border-b text-left">
                       <div className="flex items-center space-x-2">
-                        {inquiry.isSecret ? (
+                        {items.secret ? (
                           <img
                             src={qnaIsSecret}
                             className="w-4 h-4 mr-2"
@@ -85,16 +107,20 @@ const Qna = () => {
                         ) : (
                           <span className="w-4 h-4 mr-2" /> // 공백을 위한 공간 유지
                         )}
-                        {inquiry.title.length > 30
-                          ? `${inquiry.title.slice(0, 30)}...`
-                          : inquiry.title}
+                        {items.title.length > 30
+                          ? `${items.title.slice(0, 30)}...`
+                          : items.title}
                         {/* <span>{inquiry.title}</span> */}
                       </div>
                     </td>
-                    <td className="py-2 px-4 border-b">{inquiry.author}</td>
-                    <td className="py-2 px-4 border-b">{inquiry.date}</td>
-                    <td className="py-2 px-4 border-b">{inquiry.views}</td>
-                    {inquiry.responseStatus ? (
+                    <td className="py-2 px-4 border-b">
+                      {items.representativeName}
+                    </td>
+                    <td className="py-2 px-4 border-b">
+                      {items.createdAt.slice(0, 10)}
+                    </td>
+                    <td className="py-2 px-4 border-b">{items.viewCount}</td>
+                    {items.answered ? (
                       <td className="py-2 px-4 text-primary border-b">
                         답변 완료
                       </td>
@@ -110,7 +136,7 @@ const Qna = () => {
             <Pagination
               activePage={activePage} //현재 페이지
               itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수(10개)
-              totalItemsCount={sortedInquiryData.length} // 표시할 항목의 총 개수(전체)
+              totalItemsCount={qnaData.length} // 표시할 항목의 총 개수(전체)
               pageRangeDisplayed={5} //페이지네이터의 페이지 범위
               hideFirstLastPages={true}
               prevPageText="<"

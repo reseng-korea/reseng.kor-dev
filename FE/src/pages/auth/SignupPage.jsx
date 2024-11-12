@@ -27,6 +27,7 @@ const SignupPage = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isValidPassword, setIsValidPassword] = useState(false);
+  const [isPasswordMatched, setIsPasswordMatched] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(false);
   const [isPhoneNumberVerified, setIsPhoneNumberVerified] = useState(false);
@@ -41,7 +42,6 @@ const SignupPage = () => {
 
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
-
   // 새로고침 데이터 날라감 방지
   usePreventRefresh(openModal, closeModal, setModalOpen);
 
@@ -303,6 +303,8 @@ const SignupPage = () => {
             setConfirmPassword={setConfirmPassword}
             isValidPassword={isValidPassword}
             setIsValidPassword={setIsValidPassword}
+            isPasswordMatched={isPasswordMatched}
+            setIsPasswordMatched={setIsPasswordMatched}
           />
           <PhoneNumberInfoForm
             phoneNumber={phoneNumber}

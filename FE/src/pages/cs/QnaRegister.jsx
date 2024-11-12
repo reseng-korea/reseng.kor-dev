@@ -6,17 +6,23 @@ import SubNavbar from '../../components/SubNavbar';
 import useModal from '../../hooks/useModal';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import usePreventRefresh from '../../hooks/usePreventRefresh';
 
 const QnaRegister = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const accessToken = 'ra3424erwerer242423';
+  const accesstoken = localStorage.getItem('accessToken');
+  const userId = localStorage.getItem('userId');
+  const refreshtoken = localStorage.getItem('refreshToken');
   const navItems = [
     { label: '자주 묻는 질문', route: '/faq' },
     { label: '1:1 문의', route: '/qna' },
   ];
   const { navigateTo, routes } = useNavigateTo();
 
+  const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
+  // 새로고침 데이터 날라감 방지
+  usePreventRefresh(openModal, closeModal, setModalOpen);
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -56,29 +62,35 @@ const QnaRegister = () => {
   // 등록 버튼 클릭 시
   const handleSubmit = async () => {
     if (!title) {
-      console.log('1. QnaRegister에서 보낸다.');
+      setModalOpen(true);
       openModal({
-        title: '제목을 입력해주세요.',
+        primaryText: '제목을 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
-        onConfirm: () => closeModal(),
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
+        },
       });
     } else if (!content) {
+      setModalOpen(true);
       openModal({
-        title: '내용을 입력해주세요.',
+        primaryText: '내용을 입력해주세요.',
         type: 'warning',
         isAutoClose: false,
-        onConfirm: () => closeModal(),
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
+        },
       });
-    } else if (isSecret) {
-      if (password.length != 4) {
-        openModal({
-          title: '비밀번호 4자리를 입력해주세요.',
-          type: 'warning',
-          isAutoClose: false,
-          onConfirm: () => closeModal(),
-        });
-      }
+    } else if (isSecret && password.length != 4) {
+      setModalOpen(true);
+      openModal({
+        primaryText: '비밀번호 4자리를 입력해주세요.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
+        },
+      });
     } else {
       try {
         const response = await axios.post(
@@ -91,26 +103,29 @@ const QnaRegister = () => {
           },
           {
             headers: {
-              Authorization: `Bearer ${accessToken}`,
+              Authorization: accesstoken,
               'Content-Type': 'application/json',
             },
           }
         );
         console.log(response);
+
+        if (response.data.code == 201) {
+          setModalOpen(true);
+          openModal({
+            primaryText: '문의가 등록되었습니다.',
+            type: 'success',
+            isAutoClose: true,
+            onConfirm: () => {
+              closeModal();
+              setModalOpen(false);
+              navigateTo(routes.qna);
+            },
+          });
+        }
       } catch (error) {
         console.log(error);
       }
-
-      // openModal({
-      //   title: '문의가 등록되었습니다.',
-      //   type: 'success',
-      //   isAutoClose: true,
-      //   onConfirm: () => {
-      //     console.log('추후에 api 연결하고 성공했을 때 아래 두 코드 실행');
-      //     closeModal();
-      //     navigateTo(routes.qna);
-      //   },
-      // });
     }
   };
 
@@ -119,14 +134,21 @@ const QnaRegister = () => {
     if (!title && !content && !isSecret && password.length == 0) {
       navigateTo(routes.qna);
     } else {
+      setModalOpen(true);
       openModal({
-        title: '정말 취소하시겠습니까?',
+        primaryText: '정말 취소하시겠습니까?',
         context: '입력하신 내용이 저장되지 않습니다.',
         type: 'warning',
         isAutoClose: false,
         cancleButton: true,
-        onConfirm: () => navigateTo(routes.qna),
-        onCancel: () => closeModal(), // closeModal을 명시적으로 호출
+        onConfirm: () => {
+          setModalOpen(false);
+          navigateTo(routes.qna);
+        },
+        onCancel: () => {
+          closeModal();
+          setModalOpen(false);
+        },
       });
     }
   };
@@ -220,7 +242,7 @@ const QnaRegister = () => {
           </div>
         </div>
       </div>
-      <RenderModal />
+      {modalOpen && <RenderModal />}
     </Layout>
   );
 };
