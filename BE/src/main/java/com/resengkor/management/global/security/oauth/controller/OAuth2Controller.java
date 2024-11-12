@@ -24,9 +24,8 @@ public class OAuth2Controller {
 
     @PostMapping("/oauth2-jwt-header")
     public void oauth2JwtHeader(HttpServletRequest request, HttpServletResponse response) {
-        log.info("------------------------------------------------");
-        log.info("Enter oauth2JwtHeader");
-        log.info("------------------------------------------------");
+        log.info("----Controller : OAuth 헤더 시작-----");
+
         oAuth2JwtHeaderService.oauth2JwtHeaderSet(request, response);
     }
 }

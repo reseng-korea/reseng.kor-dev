@@ -1,14 +1,12 @@
 package com.resengkor.management.global.config;
 
-import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.security.jwt.filter.*;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
+import com.resengkor.management.global.security.oauth.customhandler.CustomOAuth2AuthenticationFailureHandler;
 import com.resengkor.management.global.security.oauth.customhandler.CustomOAuth2SuccessHandler;
 import com.resengkor.management.global.security.oauth.service.CustomOAuth2UserService;
 import com.resengkor.management.global.util.RedisUtil;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +20,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -32,10 +28,6 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -69,11 +61,14 @@ public class SecurityConfig {
             "/api/v1/qualifications"
     );
 
-
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler() {
+        return new CustomOAuth2AuthenticationFailureHandler();
     }
 
     @Bean
@@ -81,32 +76,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AuthenticationFailureHandler authenticationFailureHandler() {
-        //CustomOAuth2UserService의  throw new OAuth2AuthenticationException 처리 여기서 함
-        return new AuthenticationFailureHandler() {
-            @Override
-            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                log.info("exception = " + exception.getMessage());
-
-                // 비활성화된 사용자 오류 메시지 확인
-                if (exception instanceof OAuth2AuthenticationException) {
-                    OAuth2AuthenticationException oauth2Exception = (OAuth2AuthenticationException) exception;
-                    if ("member_inactive".equals(oauth2Exception.getError().getErrorCode())) {
-                        // 비활성화된 사용자일 때 로그인 페이지로 리다이렉트
-                        response.sendRedirect("http://localhost:5173/login?error=true&message=" + URLEncoder.encode("사용자가 비활성화되었습니다. 관리자에게 문의하세요.", StandardCharsets.UTF_8));
-                        return; // 여기서 return 추가
-                    }
-                    else if("member_not_social".equals(oauth2Exception.getError().getErrorCode())){
-                        response.sendRedirect("http://localhost:5173/login?error=true&message=" + URLEncoder.encode("같은 이메일으로 일반회원으로 가입하셨습니다.", StandardCharsets.UTF_8));
-                        return;
-                    }
-                }
-                // 일반적인 인증 실패 시
-                response.sendRedirect("http://localhost:5173/login?error=true&message=" + URLEncoder.encode("인증에 실패했습니다.", StandardCharsets.UTF_8));
-            }
-        };
-    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // cors
@@ -170,7 +139,7 @@ public class SecurityConfig {
                         .userInfoEndpoint((userinfo) -> userinfo
                                 .userService(customOAuth2UserService))
                         .successHandler(new CustomOAuth2SuccessHandler(jwtUtil, redisUtil))
-                        .failureHandler(authenticationFailureHandler())
+                        .failureHandler(customOAuth2AuthenticationFailureHandler())
                         .permitAll());
 
         return http.build();

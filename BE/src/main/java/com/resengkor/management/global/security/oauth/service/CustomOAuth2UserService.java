@@ -3,6 +3,7 @@ package com.resengkor.management.global.security.oauth.service;
 import com.resengkor.management.domain.user.entity.*;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.oauth.dto.*;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -26,9 +27,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
     @Transactional
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        log.info("------------------------------------------------");
-        log.info("Enter CustomOAuth2UserService");
-        log.info("------------------------------------------------");
+        log.info("----Service Start : OAuth 회원 정보 가져오기-----");
 
         // userRequest -> registration 정보
         OAuth2User oAuth2User = super.loadUser(userRequest);
@@ -53,14 +52,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         User user;
 
         Optional<User> isExist = userRepository.findByEmail(response.getEmail());
-        log.info("------------------------------------------------");
-        log.info("response.getEmail() = {}",response.getEmail());
-        log.info("Email이 isExist = {}",isExist);
-        log.info("------------------------------------------------");
         if (isExist.isEmpty()) {
-            log.info("------------------------------------------------");
-            log.info("Email이 존재하지 않음");
-            log.info("------------------------------------------------");
+            log.info("OAuth사용자의 Email이 존재하지 않음");
             //존재하지 않는다면 새로 만듦
             SocialProvider soialProvider;
             if(response.getSocialProvider().equals("kakao")){
@@ -109,16 +102,14 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             return new CustomOAuth2User(oAuth2UserDto);
         }
         else {
-            log.info("------------------------------------------------");
-            log.info("Email이 존재");
-            log.info("------------------------------------------------");
+            log.info("OAuth사용자의 Email이 존재함");
             //존재하면 업데이트
             //그런데 핸드폰은 구글에서 없는 경우가 있어서 빼고,
             //이름 같은 경우도 바뀌지는 않을 것 같아서 일단 뺌
             //이메일이 소셜 이메일과 같을 수 있음
             if(!isExist.get().getLoginType().equals(LoginType.SOCIAL)){
-                //소셜이 아니야!
-                throw new OAuth2AuthenticationException(new OAuth2Error("member_not_social", "같은 이메일으로 일반회원으로 가입하셨습니다.", null));
+                //같은 이메일이 있는데 타입을 보니 소셜이 아님 -> 이미 일반으로 가입함
+                throw new OAuth2AuthenticationException(new OAuth2Error("member_already_register_local", "같은 이메일으로 일반회원으로 가입하셨습니다.", null));
             }
 
             user = isExist.get().toBuilder()

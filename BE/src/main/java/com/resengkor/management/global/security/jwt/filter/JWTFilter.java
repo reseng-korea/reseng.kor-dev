@@ -33,9 +33,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("------------------------------------------------");
-        log.info("JWT token filter in");
-        log.info("------------------------------------------------");
+        log.info("----Filter Start: JWT 토큰 필터 진행-----");
 
         // 헤더에서 Authorization 키에 담긴 토큰을 꺼냄
         String access = request.getHeader("Authorization");
@@ -59,9 +57,7 @@ public class JWTFilter extends OncePerRequestFilter {
         try{
             jwtUtil.isExpired(access);
         } catch (ExpiredJwtException e){
-            log.info("------------------------------------------------");
             log.info("Access토큰 만료");
-            log.info("------------------------------------------------");
             ErrorHandler.sendErrorResponse(response, ExceptionStatus.ACCESS_TOKEN_EXPIRED, HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -71,9 +67,7 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // not access token
         if(!category.equals("Authorization")){
-            log.info("------------------------------------------------");
             log.info("Access토큰이 아님");
-            log.info("------------------------------------------------");
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -103,9 +97,7 @@ public class JWTFilter extends OncePerRequestFilter {
         CustomUserDetails customUserDetails = new CustomUserDetails(userPrincipal);
         UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
-        log.info("------------------------------------------------");
-        log.info("jwt필터 넘어감");
-        log.info("------------------------------------------------");
+        log.info("----Filter End: JWT 토큰 필터 끝-----");
 
         filterChain.doFilter(request, response);
     }

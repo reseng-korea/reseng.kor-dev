@@ -19,6 +19,7 @@ public enum ExceptionStatus {
     TOKEN_NOT_FOUND_IN_HEADER(1003, "토큰이 헤더에 없습니다. 인증이 필요합니다."),
     TOKEN_NOT_FOUND_IN_DB(1004, "토큰이 DB에 존재하지 않습니다. 다시 로그인해 주세요."),
     TOKEN_PARSE_ERROR(1005, "JWT 토큰 파싱에 실패하였습니다. 유효한 토큰을 사용해 주세요."),
+    TOKEN_IS_NOT_REFRESH(1006, "해당 토큰은 Refresh 토큰이 아닙니다"),
 
     // 4xx 클라이언트 오류
     /* 유효성 검사 오류 */
@@ -41,7 +42,7 @@ public enum ExceptionStatus {
     ACCOUNT_DISABLED(4024, "계정이 비활성화되었습니다. 관리자에게 문의하세요."),
     USER_PROFILE_NOT_FOUND(4025, "사용자의 상세 정보가 존재하지 않습니다."),
     INVALID_PASSWORD(4026, "비밀번호가 불일치합니다. 다시 입력해 주세요."),
-    USER_NOT_MATCH(4027, "사용자가 일치하지 않습니다"),
+    USER_NOT_MATCH(4027, "로그인한 사용자와 요청된 사용자가 일치하지 않습니다."), //loginUserId와 pathVariableId가 다름
 
     /* 이메일 및 인증 코드 오류 */
     EMAIL_NOT_FOUND(4030, "존재하지 않는 이메일입니다. 이메일 주소를 확인해 주세요."),
@@ -56,6 +57,7 @@ public enum ExceptionStatus {
     DB_CONNECTION_ERROR(5004, "데이터베이스 연결 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
     S3_CONNECTION_ERROR(5005, "s3 연결 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
     FILE_CONVERSION_ERROR(5006, "MultipartFile을 로컬 파일로 변환할 수 없습니다."),
+    REGION_NOT_FOUND(5007, "해당 지역 데이터가 존재하지 않습니다"),
 
     // 6xx 등급 관련 오류
     ROLE_CHANGE_FAIL(6001, "해당 유저의 등급을 변경할 권리가 없습니다."),

@@ -26,6 +26,8 @@ public class ReissueService {
     private final UserRepository userRepository;
 
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
+        log.info("----Service Start: refresh 재발급 요청-----");
+
         // 헤더에서 refresh키에 담긴 토큰을 꺼냄
         String refresh = request.getHeader("Refresh");
         if (refresh == null) {
@@ -42,13 +44,14 @@ public class ReissueService {
         // refresh 토큰이 아님
         String category = jwtUtil.getCategory(refresh);
         if(!category.equals("Refresh")) {
-            throw new CustomException(ExceptionStatus.EXCEPTION);
+            throw new CustomException(ExceptionStatus.TOKEN_IS_NOT_REFRESH);
         }
 
         String email = jwtUtil.getEmail(refresh);
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         log.info("user 찾기 성공");
+
         // 비활성화된 user면 에러 던짐
         if (!user.isStatus()) {
             log.info("비활성 사용자입니다");
@@ -58,8 +61,6 @@ public class ReissueService {
         long userId = user.getId();
         String role = jwtUtil.getRole(refresh);
         String loginType = jwtUtil.getLoginType(refresh);
-        log.info("role = {}, loginType = {}", role, loginType);
-
 
         long refreshTokenExpiration;
         String newAccess;
@@ -120,10 +121,6 @@ public class ReissueService {
         //헤더로 전해줌
         response.setHeader("Authorization", "Bearer " + newAccess);
         response.setHeader("Refresh", newRefresh);
-
-        log.info("------------------------------------------------");
-        log.info("ReissueService 성공");
-        log.info("------------------------------------------------");
 
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS .getCode(),
                 ResponseStatus.RESPONSE_SUCCESS .getMessage());

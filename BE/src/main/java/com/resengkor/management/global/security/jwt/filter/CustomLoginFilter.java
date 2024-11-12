@@ -45,9 +45,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     //실제 로그인 진행 메소드
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException {
-        log.info("------------------------------------------------");
-        log.info("로그인 시작");
-        log.info("------------------------------------------------");
+        log.info("----Filter Start: 로그인 진행-----");
 
         // 메서드가 POST인지 확인
         if (!request.getMethod().equalsIgnoreCase("POST")) {
@@ -106,29 +104,18 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     //로그인 성공 핸들러 -> 여기서 jwt발급
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
-        log.info("------------------------------------------------");
-        log.info("로그인 성공해서 로그인 성공 핸들러 동작");
-        log.info("------------------------------------------------");
+        log.info("----Filter Start: 로그인 성공 핸들러 진행-----");
 
         //1. authentication에서 유저 정보를 가져오자.
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String email = customUserDetails.getUsername();
         long userId = customUserDetails.getUserId();
-        log.info("------------------------------------------------");
-        log.info("email = {}, userId = {}",email,userId);
-        log.info("------------------------------------------------");
-
         LoginDTO loginDTO = (LoginDTO) authentication.getDetails();
         boolean isAuto = loginDTO.isAuto();
-
-        //user의 role값을 가져온다.
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();//user의 role값을 가져온다.
         Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
         GrantedAuthority auth = iterator.next();
         String role = auth.getAuthority();
-        log.info("------------------------------------------------");
-        log.info("isAuto = {}, role = {}",isAuto,role);
-        log.info("------------------------------------------------");
 
         //2. 토큰 생성
         //"access"를 통해 카테고리값을 넣어준다.
@@ -143,9 +130,8 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             ErrorHandler.sendErrorResponse(response, ExceptionStatus.DB_CONNECTION_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return; // 오류 발생 시 메서드 종료
         }
-        log.info("------------------------------------------------");
         log.info("Refresh토큰 DB에 저장 성공");
-        log.info("------------------------------------------------");
+
 
         // 3. JSON 응답 설정
         response.setContentType("application/json");
@@ -174,6 +160,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         ObjectMapper objectMapper = new ObjectMapper();
         response.getWriter().write(objectMapper.writeValueAsString(loginResponse));
         response.getWriter().flush();
+        log.info("----Filter End: 로그인 성공 핸들러 끝-----");
     }
 
     //로그인 실패시 실행
@@ -182,13 +169,10 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         //unsuccessfulAuthentication에서 발생한 예외는 별도로 AuthenticationEntryPoint로 전달되지 않음
         //이 메서드는 로그인 실패 자체를 처리하기 때문에,
         // 만약 여기서 예외가 발생해도 다른 예외 처리 메커니즘(AuthenticationEntryPoint 등)이 호출되지 않는다.
-        log.info("------------------------------------------------");
-        log.info("로그인 실패");
-        log.info("------------------------------------------------");
-
+        log.info("----Filter Start: 로그인 실패 핸들러 진행-----");
         failed.printStackTrace();
-
         // 예외 처리 로직을 공통 메서드로 위임
         ErrorHandler.handleAuthenticationException(response, failed);
+        log.info("----Filter End: 로그인 실패 핸들러 끝-----");
     }
 }
