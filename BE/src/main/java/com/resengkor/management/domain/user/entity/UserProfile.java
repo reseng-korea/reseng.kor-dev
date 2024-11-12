@@ -1,26 +1,33 @@
 package com.resengkor.management.domain.user.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
+import com.resengkor.management.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.annotation.LastModifiedDate;
 
-import java.time.LocalDateTime;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder(toBuilder = true)
 @Getter
 @Entity
-public class UserProfile {
+public class UserProfile extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
+    private String companyPhoneNumber;
+
+    @Column
+    private String faxNumber;
+
     @Column(nullable = false)
-    private String fullAddress;//전체주소
+    private String streetAddress; //도로명 주소
+
+    @Column(nullable = false)
+    private String detailAddress; //상세 주소
 
     @Column
     private Double latitude; //위도
@@ -40,12 +47,17 @@ public class UserProfile {
     @JoinColumn(name = "user_id")
     private User user;
 
-    @CreatedDate //엔티티가 생성될 때 생성 시간 저장
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    public void updateUserProfile(String companyPhoneNumber,String faxNumber, String streetAddress, String detailAddress, Region city, Region district) {
+        this.companyPhoneNumber = companyPhoneNumber;
+        this.faxNumber = faxNumber;
+        this.streetAddress = streetAddress;
+        this.detailAddress = detailAddress;
+        this.city = city;
+        this.district = district;
+    }
 
-    @LastModifiedDate //엔티티가 수정될 때 수정 시간 저장
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    public void updateUser(User user) {
+        this.user = user;
+    }
 
 }

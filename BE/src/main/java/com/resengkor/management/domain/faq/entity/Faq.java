@@ -1,5 +1,6 @@
 package com.resengkor.management.domain.faq.entity;
 
+import com.resengkor.management.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -12,7 +13,7 @@ import java.time.LocalDateTime;
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor  // 모든 필드를 포함하는 생성자 생성
-public class Faq {
+public class Faq extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -22,12 +23,4 @@ public class Faq {
 
     @Column(name = "faq_content", nullable = false)
     private String content;
-
-    @CreatedDate //엔티티가 생성될 때 생성 시간 저장
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
-
-    @LastModifiedDate //엔티티가 수정될 때 수정 시간 저장
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 }

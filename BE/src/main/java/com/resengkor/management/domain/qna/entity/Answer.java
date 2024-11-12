@@ -1,6 +1,8 @@
 package com.resengkor.management.domain.qna.entity;
 
 import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.domain.user.entity.UserProfile;
+import com.resengkor.management.global.common.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -14,11 +16,14 @@ import java.time.LocalDateTime;
 @Entity
 @Builder(toBuilder = true)
 @AllArgsConstructor
-public class Answer {
+public class Answer extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "answer_id", updatable = false)
     private Long id;
+
+    @Column(name = "answer_content", nullable = false)
+    private String content;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "question_id", nullable = false)
@@ -28,11 +33,17 @@ public class Answer {
     @JoinColumn(name = "user_id", nullable = false)
     private User admin;
 
-    @CreatedDate //엔티티가 생성될 때 생성 시간 저장
-    @Column(name = "created_at")
-    private LocalDateTime createdAt;
+    // 연관관계 메소드
+    public void updateAnswerQuestion(Question question) {
+        this.question = question;
+        if (question != null) {
+            question.updateAnswer(this);// Question에 Answer 설정
+        }
+    }
 
-    @LastModifiedDate //엔티티가 수정될 때 수정 시간 저장
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
+    public void updateContent(String content) {
+        if (content != null) {
+            this.content = content;
+        }
+    }
 }

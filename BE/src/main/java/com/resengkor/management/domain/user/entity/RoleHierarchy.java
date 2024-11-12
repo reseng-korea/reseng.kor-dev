@@ -22,21 +22,13 @@ public class RoleHierarchy {
     @JoinColumn(referencedColumnName = "user_id",name = "descendant_role_id", nullable = false)
     private User descendant;  // 하위 사용자
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
-    private Role role;  // 하위 사용자의 역할을 직접 나타냄
-
     @Column(nullable = false)
     private int depth;  // 관계 깊이
 
     @Builder
-    public RoleHierarchy(User ancestor, User descendant, Role role, int depth) {
+    public RoleHierarchy(User ancestor, User descendant, int depth) {
         this.ancestor = ancestor;
         this.descendant = descendant;
-        this.role = role;
         this.depth = depth;
     }
-
-
-
 }

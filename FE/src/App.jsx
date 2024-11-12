@@ -4,6 +4,7 @@ import {
   Routes,
   Route,
   Navigate,
+  useLocation,
 } from 'react-router-dom';
 
 import './App.css';
@@ -18,6 +19,9 @@ import MainFirstPage from './pages/main/MainFirstPage';
 import MainSecondPage from './pages/main/MainSecondPage';
 import MainThirdPage from './pages/main/MainThirdPage';
 import MainFourthPage from './pages/main/MainFourthPage';
+import MainFifthPage from './pages/main/MainFifthPage';
+import MainSixthPage from './pages/main/MainSixthPage';
+import MainSeventhPage from './pages/main/MainSeventhPage';
 
 // auth
 import LoginPage from './pages/auth/LoginPage';
@@ -41,9 +45,11 @@ import QnaRegister from './pages/cs/QnaRegister';
 import QnaDetail from './pages/cs/QnaDetail';
 
 //reference Room
-import Certificate from './pages/referenceRoom/certificate';
-import Coa from './pages/referenceRoom/coa';
-import Press from './pages/referenceRoom/press';
+import Certificate from './pages/referenceRoom/Certificate';
+import Coa from './pages/referenceRoom/Coa';
+import CoaDetail from './pages/referenceRoom/CoaDetail';
+import Press from './pages/referenceRoom/Press';
+import PressDetail from './pages/referenceRoom/PressDetail';
 
 //items
 import Banner from './pages/items/Banner';
@@ -54,18 +60,51 @@ import Recycle from './pages/items/Recycle';
 import Member from './pages/mypage/Member';
 import Manage from './pages/mypage/Manage';
 import Order from './pages/mypage/Order';
+import OrderList from './pages/mypage/OrderList';
+import OfferList from './pages/mypage/OfferList';
 import Qr from './pages/mypage/Qr';
 import UserConfirm from './pages/mypage/UserConfirm';
 import UserEdit from './pages/mypage/UserEdit';
 import Withdraw from './pages/mypage/Withdraw';
 
+// qr
+import QrSuccess from './pages/qr/QrSuccess';
+import QrFailure from './pages/qr/QrFailure';
+
 import Tmp from './pages/Tmp';
 
 function App() {
+  // 현재 경로를 가져옴
+  const location = useLocation();
+
+  // 특정 경로에 따라 Navbar를 숨김 (예: /signin, /signup, /pwinquiry 등)
+  const hideNavbarPaths = ['/mypage/qr/success', '/mypage/qr/failure'];
+
+  // Navbar를 숨길지 여부를 결정하는 변수
+  const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
+
+  const [isMainSixthVisible, setIsMainSixthVisible] = useState(false);
+
+  const handleScroll = () => {
+    const sixthPage = document.getElementById('main-sixth-page');
+    if (sixthPage) {
+      const rect = sixthPage.getBoundingClientRect();
+      const isVisible = rect.top <= window.innerHeight; // 시작 부분에 도달하자마자 true
+      setIsMainSixthVisible(isVisible);
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', handleScroll);
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+    };
+  }, []);
+
   return (
-    <Router>
+    <>
       <ScrollToTop />
-      <Navbar />
+      {!shouldHideNavbar && <Navbar />}
       <div className="h-screen">
         <Routes>
           {/* 메인페이지 */}
@@ -74,10 +113,12 @@ function App() {
             element={
               <>
                 <MainFirstPage />
+                {/* <MainFifthPage /> */}
                 <MainSecondPage />
                 <MainThirdPage />
+                {/* <MainSixthPage isVisible={isMainSixthVisible} /> */}
+                {/* <MainSeventhPage /> */}
                 <MainFourthPage />
-                <Footer />
               </>
             }
           />
@@ -111,21 +152,28 @@ function App() {
           {/* 자주 묻는 질문 페이지 */}
           <Route path="/faq" element={<Faq />} />
           {/* 사용자가 "/qna"로 들어왔을 때 자동으로 "/qna/1"로 리다이렉트 */}
-          <Route path="/qna" element={<Navigate to="/qna/1" />} />
+          {/* <Route
+            path="//qna/?page={:pageNumber}"
+            element={<Navigate to="/qna/?page={1}" />}
+          /> */}
           {/* 1:1 문의 페이지 */}
-          <Route path="/qna/:pageNumber" element={<Qna />} />
+          <Route path="/qna" element={<Qna />} />
           {/* 1:1 문의 글 등록 페이지 */}
           <Route path="/qna/register" element={<QnaRegister />} />
           {/* 1:1 문의 글 상세 페이지 */}
-          <Route path="/qna/12" element={<QnaDetail />} />
+          <Route path="/qna/:pageNumber" element={<QnaDetail />} />
 
           {/* reference Room */}
           {/* 인증서 페이지 */}
           <Route path="/certificate" element={<Certificate />} />
           {/* 성적서 페이지 */}
           <Route path="/coa" element={<Coa />} />
+          {/* 성적서 상세 페이지 */}
+          <Route path="/coa/1" element={<CoaDetail />} />
           {/* 보도 자료 페이지 */}
           <Route path="/press" element={<Press />} />
+          {/* 보도 자료 상세 페이지 */}
+          <Route path="/press/1" element={<PressDetail />} />
 
           {/* items */}
           {/* (아이템) 친환경 현수막 페이지 */}
@@ -140,8 +188,12 @@ function App() {
           <Route path="/mypage/member" element={<Member />} />
           {/* 현수막 관리 페이지 */}
           <Route path="/mypage/manage" element={<Manage />} />
-          {/* 현수막 발주 페이지 */}
+          {/* 현수막 발주 페이지 - 발주 */}
           <Route path="/mypage/order" element={<Order />} />
+          {/* 현수막 발주 페이지 - 발주 내역 */}
+          <Route path="/mypage/orderlist" element={<OrderList />} />
+          {/* 현수막 발주 페이지 - 발주 받은 내역 */}
+          <Route path="/mypage/offerlist" element={<OfferList />} />
           {/* QR 발생기 페이지 */}
           <Route path="/mypage/qr" element={<Qr />} />
           {/* 회원 정보 확인 페이지 */}
@@ -151,11 +203,16 @@ function App() {
           {/* 탈퇴 페이지 */}
           <Route path="/mypage/withdraw" element={<Withdraw />} />
 
+          {/* QR 발생기 확인 성공 페이지 */}
+          <Route path="/mypage/qr/success" element={<QrSuccess />} />
+          {/* QR 발생기 확인 실패 페이지 */}
+          <Route path="/mypage/qr/failure" element={<QrFailure />} />
           {/* 임시  페이지(삭제 예정) */}
           <Route path="/tmp" element={<Tmp />} />
         </Routes>
+        <Footer />
       </div>
-    </Router>
+    </>
   );
 }
 

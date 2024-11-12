@@ -1,9 +1,11 @@
 package com.resengkor.management.global.security.oauth.dto;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Map;
 
+@Slf4j
 @RequiredArgsConstructor
 public class GoogleResponse implements OAuth2Response {
     private final Map<String, Object> attribute;
@@ -14,7 +16,7 @@ public class GoogleResponse implements OAuth2Response {
     }
 
     @Override
-    public String getSocialId() {
+    public String getSocialProviderId() {
         return attribute.get("sub").toString();
     }
 
@@ -26,5 +28,10 @@ public class GoogleResponse implements OAuth2Response {
     @Override
     public String getEmail() {
         return attribute.get("email").toString();
+    }
+
+    @Override
+    public String getPhoneNumber() {
+        return null;
     }
 }

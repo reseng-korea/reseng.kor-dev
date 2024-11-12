@@ -1,13 +1,16 @@
-import Layout from '../../components/Layouts';
-import { useNavigateTo } from '../../hooks/useNavigateTo';
 import React, { useState } from 'react';
 
+import Layout from '../../components/Layouts';
+import SubNavbar from '../../components/SubNavbar';
+
 import leaf from '../../assets/faq_icon.png';
-import faqData from '../data/faqData.json';
+import faqData from '../../data/faqData.json';
 
 const Faq = () => {
-  // 페이지 이동
-  const { navigateTo, routes } = useNavigateTo();
+  const navItems = [
+    { label: '자주 묻는 질문', route: '/faq' },
+    { label: '1:1 문의', route: '/qna' },
+  ];
 
   const [activeIndex, setActiveIndex] = useState(null);
 
@@ -18,64 +21,62 @@ const Faq = () => {
   return (
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
-        <div className="flex flex-col w-full">
-          {/* 하위 카테고리 */}
-          <div className="mt-16 mb-6 text-3xl font-bold">고객 센터</div>
-          <div className="flex justify-center space-x-4">
-            <button
-              onClick={() => navigateTo(routes.faq)}
-              className="flex items-center justify-center h-10 border-0 border-b-2 border-primary bg-transition rounded-none"
-            >
-              <span className="font-bold text-primary">자주 묻는 질문</span>
-            </button>
-            <button
-              onClick={() => navigateTo(routes.qna)}
-              className="flex items-center justify-center h-10 border-none outline-none bg-transition hover:text-lg"
-            >
-              <span className="text-black">1:1 문의</span>
-            </button>
-          </div>
-          <hr className="w-full mb-6 border-t border-gray1" />
+        <div className="flex flex-col w-full slide-up">
+          <SubNavbar
+            items={navItems}
+            activePage="자주 묻는 질문"
+            mainCategory="고객 센터"
+          />
 
           {/* 메인 */}
           <div className="flex justify-center w-full">
-            <div className="w-4/5 p-5">
+            <div className="w-full p-5">
               {faqData.map((faq, index) => (
-                <div key={index}>
-                  {/* 질문 */}
-                  <div
-                    onClick={() => toggleAnswer(index)}
-                    className="flex items-center justify-between gap-x-4 px-6 py-5 mb-6 bg-white shadow-lg rounded-lg cursor-pointer"
-                    style={{
-                      borderLeftWidth: '14px',
-                      borderLeftColor: '#2EA642',
-                    }}
-                  >
-                    <div className="flex items-center gap-x-4">
-                      <div className="text-2xl font-extrabold text-gray3">
-                        Q
+                <div key={index} className="mb-6">
+                  {/* 질문 + 답변 카드 */}
+                  <div className="bg-placeHolder rounded-lg transition-all duration-500 hover:text-primary">
+                    {/* 질문 */}
+                    <div
+                      onClick={() => toggleAnswer(index)}
+                      className="flex items-center justify-between rounded-lg gap-x-4 px-8 py-5 cursor-pointer hover:text-primary group"
+                    >
+                      <div className="flex items-center gap-x-8 ">
+                        <div className="text-4xl font-extrabold text-primary">
+                          Q
+                        </div>
+                        <div
+                          className={`text-lg text-gray4 font-semibold group-hover:text-primary ${
+                            activeIndex === index
+                              ? 'text-primary'
+                              : 'text-gray4'
+                          }`}
+                        >
+                          {faq.question}
+                        </div>
                       </div>
-                      <div className="text-lg">{faq.question}</div>
+                      <img
+                        src={leaf}
+                        className={`w-8 h-8 transform transition-transform duration-500 ${
+                          activeIndex === index ? 'rotate-181' : 'rotate-0'
+                        }`}
+                      />
                     </div>
-                    <img src={leaf} className="w-8 h-8" />
-                  </div>
 
-                  {/* 답변 */}
-                  <div
-                    className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                      activeIndex === index
-                        ? 'max-h-40 opacity-100 py-2'
-                        : 'max-h-0 opacity-0 py-0'
-                    }`}
-                    style={{
-                      transitionProperty: 'max-height, opacity, padding',
-                    }}
-                  >
-                    <div className="flex justify-center gap-x-4 px-8 py-6 mb-12 bg-placeHolder shadow-lg rounded-lg cursor-pointer">
-                      <div className="text-2xl font-extrabold text-primary">
-                        A
+                    {/* 답변 */}
+                    <div
+                      className={`overflow-hidden px-8 transition-all bg-white border border-placeHolder duration-500 ease-in-out ${
+                        activeIndex === index
+                          ? 'max-h-40 opacity-100 py-6 px-6 rounded-bl-lg rounded-br-lg'
+                          : 'max-h-0 opacity-0 py-0 px-6'
+                      }`}
+                      style={{
+                        transitionProperty: 'max-height, opacity, padding',
+                      }}
+                    >
+                      <div className="flex gap-x-4 rounded-b-lg">
+                        <div className="text-4xl font-extrabold text-re">A</div>
+                        <p className="text-left text-gray4">{faq.answer}</p>
                       </div>
-                      <p className="text-left text-gray4">{faq.answer}</p>
                     </div>
                   </div>
                 </div>

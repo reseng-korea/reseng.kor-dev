@@ -2,35 +2,26 @@ package com.resengkor.management.domain.user.dto;
 
 
 import com.resengkor.management.domain.user.entity.Role;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Getter
-@Setter
-@NoArgsConstructor
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class UserDTO {
-
     private Long id;
     private String email;
+    private boolean emailStatus;
+    private boolean temporaryPasswordStatus;
     private String companyName;
+    private String representativeName;
     private String phoneNumber;
+    private boolean phoneNumberStatus;
     private Role role;
+    private String loginType;
+    private boolean status;
     private LocalDateTime createdAt;
     private UserProfileDTO userProfile;
-
-    @Builder
-    public UserDTO(Long id, String email, String companyName, String phoneNumber, Role role, LocalDateTime createdAt, UserProfileDTO userProfile) {
-        this.id = id;
-        this.email = email;
-        this.companyName = companyName;
-        this.phoneNumber = phoneNumber;
-        this.role = role;
-        this.createdAt = createdAt;
-        this.userProfile = userProfile;
-    }
 }

@@ -1,11 +1,18 @@
 import React, { useState } from 'react';
+
 import Layout from '../../components/Layouts';
+import SubNavbar from '../../components/SubNavbar';
+
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { inquiryData } from '../data/inquiryData';
+import { inquiryData } from '../../data/inquiryData';
 import qnaIsSecret from '../../assets/qna_isSecret.png';
 import Pagination from 'react-js-pagination';
 
 const Qna = () => {
+  const navItems = [
+    { label: '자주 묻는 질문', route: '/faq' },
+    { label: '1:1 문의', route: '/qna' },
+  ];
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
@@ -27,43 +34,36 @@ const Qna = () => {
 
   const handlePageChange = (pageNumber) => {
     console.log(`active page is ${pageNumber}`);
-    navigateTo(`${routes.qna.replace(':pageNumber', pageNumber)}`);
+    navigateTo(`/qna?page=${pageNumber}`);
 
     setActivePage(pageNumber);
+  };
+
+  const handleRowClick = (id) => {
+    // URL을 qna/{id}로 변경
+    navigateTo(`/qna/${id}`);
   };
 
   return (
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
         <div className="flex flex-col w-full">
-          {/* 하위 카테고리 */}
-          <div className="mt-16 mb-6 text-3xl font-bold">고객 센터</div>
-          <div className="flex justify-center space-x-4">
-            <button
-              onClick={() => navigateTo(routes.faq)}
-              className="flex items-center justify-center h-10 border-none outline-none bg-transition hover:text-lg"
-            >
-              <span className="text-black">자주 묻는 질문</span>
-            </button>
-            <button
-              onClick={() => navigateTo(routes.qna)}
-              className="flex items-center justify-center h-10 border-0 border-b-2 border-primary bg-transition rounded-none"
-            >
-              <span className="font-bold text-primary">1:1 문의</span>
-            </button>
-          </div>
-          <hr className="w-full mb-6 border-t border-gray1" />
-
+          <SubNavbar
+            items={navItems}
+            activePage="1:1 문의"
+            mainCategory="고객 센터"
+          />
           {/* 메인 */}
-          <div className="flex flex-col w-full">
+          <div className="flex flex-col w-full slide-up">
             <table className="min-w-full bg-white border-b mt-4">
               <thead>
-                <tr className="bg-primary text-white">
-                  <th className="py-4 px-4 text-xl">번호</th>
-                  <th className="py-4 px-4 text-xl">제목</th>
-                  <th className="py-4 px-4 text-xl">작성자</th>
-                  <th className="py-4 px-4 text-xl">등록일</th>
-                  <th className="py-4 px-4 text-xl">조회수</th>
+                <tr className="bg-gray1 text-gray4 text-lg">
+                  <th className="py-4 px-4 rounded-l-lg">번호</th>
+                  <th className="py-4 px-4">제목</th>
+                  <th className="py-4 px-4">작성자</th>
+                  <th className="py-4 px-4">등록일</th>
+                  <th className="py-4 px-4">조회수</th>
+                  <th className="py-4 px-4 rounded-r-lg">답변 상태</th>
                 </tr>
               </thead>
               <tbody>
@@ -71,8 +71,9 @@ const Qna = () => {
                   <tr
                     key={inquiry.id}
                     className="border-b hover:bg-placeHolder"
+                    onClick={() => handleRowClick(inquiry.id)}
                   >
-                    <td className="py-3 px-4 border-b">{inquiry.id}</td>
+                    <td className="py-5 px-4 border-b">{inquiry.id}</td>
                     <td className="py-2 px-4 border-b text-left">
                       <div className="flex items-center space-x-2">
                         {inquiry.isSecret ? (
@@ -93,6 +94,15 @@ const Qna = () => {
                     <td className="py-2 px-4 border-b">{inquiry.author}</td>
                     <td className="py-2 px-4 border-b">{inquiry.date}</td>
                     <td className="py-2 px-4 border-b">{inquiry.views}</td>
+                    {inquiry.responseStatus ? (
+                      <td className="py-2 px-4 text-primary border-b">
+                        답변 완료
+                      </td>
+                    ) : (
+                      <td className="py-2 px-4 text-warning border-b">
+                        답변 대기
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

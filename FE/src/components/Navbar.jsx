@@ -3,7 +3,7 @@ import {
   DisclosureButton,
   DisclosurePanel,
 } from '@headlessui/react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import logo from '../assets/logo.png';
 
@@ -26,17 +26,34 @@ export default function Example() {
   const { navigateTo, routes } = useNavigateTo();
 
   const [isMenuOpen, setIsMenuOpen] = useState(null);
+  const [isScrolled, setIsScrolled] = useState(false);
 
   const handleMouseEnter = (menu) => setIsMenuOpen(menu);
   const handleMouseLeave = () => setIsMenuOpen(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > 0) {
+        setIsScrolled(true);
+      } else {
+        setIsScrolled(false);
+      }
+    };
+
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <header>
       <Disclosure
         as="nav"
-        className="fixed top-0 left-0 z-50 w-full h-16 bg-white"
+        className={classNames(
+          'fixed top-0 left-0 z-50 w-full h-16 bg-white transition-shadow',
+          isScrolled ? 'shadow-md' : 'shadow-none'
+        )}
       >
-        <div className="px-2 mx-auto max-w-7xl sm:px-6 lg:px-8">
+        <div className="px-2 mx-auto max-w-13xl sm:px-6 lg:px-24">
           <div className="relative flex items-center justify-between h-16">
             {/* Mobile menu button */}
             <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
@@ -76,7 +93,7 @@ export default function Example() {
                   onClick={() => navigateTo(routes.company)}
                   className="relative flex text-sm bg-transparent hover:border-2"
                 >
-                  <p>회사소개</p>
+                  <p className="text-gray4 font-bold">회사소개</p>
                 </button>
 
                 {isMenuOpen === 'about' && (
@@ -114,7 +131,7 @@ export default function Example() {
                   className="relative flex text-sm bg-transparent hover:border-2"
                 >
                   <span className="sr-only">Open support menu</span>
-                  <p>고객센터</p>
+                  <p className="text-gray4 font-bold">고객센터</p>
                 </button>
 
                 {isMenuOpen === 'support' && (
@@ -146,7 +163,7 @@ export default function Example() {
                   className="relative flex text-sm bg-transparent hover:border-2"
                 >
                   <span className="sr-only">Open resources menu</span>
-                  <p>자료실</p>
+                  <p className="text-gray4 font-bold">자료실</p>
                 </button>
 
                 {isMenuOpen === 'resources' && (
@@ -184,7 +201,7 @@ export default function Example() {
                   className="relative flex text-sm bg-transparent hover:border-2"
                 >
                   <span className="sr-only">Open login menu</span>
-                  <p>로그인</p>
+                  <p className="text-gray4 font-bold">로그인</p>
                 </button>
               </div>
 
@@ -198,7 +215,7 @@ export default function Example() {
                   onClick={() => navigateTo(routes.tmp)}
                   className="relative flex text-sm bg-transparent hover:border-2"
                 >
-                  <p>임시</p>
+                  <p className="text-gray4 font-bold">임시</p>
                 </button>
               </div>
             </div>

@@ -1,33 +1,30 @@
 import Layout from '../../components/Layouts';
+import SubNavbar from '../../components/SubNavbar';
+
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import { useParams } from 'react-router-dom';
 
 import { IoPersonSharp } from 'react-icons/io5';
 
 const QnaDetail = () => {
+  const navItems = [
+    { label: '자주 묻는 질문', route: '/faq' },
+    { label: '1:1 문의', route: '/qna' },
+  ];
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
+
+  const { id } = useParams();
 
   return (
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
         <div className="flex flex-col w-full">
-          {/* 하위 카테고리 */}
-          <div className="mt-16 mb-6 text-3xl font-bold">고객 센터</div>
-          <div className="flex justify-center space-x-4">
-            <button
-              onClick={() => navigateTo(routes.faq)}
-              className="flex items-center justify-center h-10 border-none outline-none bg-transition hover:text-lg"
-            >
-              <span className="text-black">자주 묻는 질문</span>
-            </button>
-            <button
-              onClick={() => navigateTo(routes.qna)}
-              className="flex items-center justify-center h-10 border-0 border-b-2 border-primary bg-transition rounded-none"
-            >
-              <span className="font-bold text-primary">1:1 문의</span>
-            </button>
-          </div>
-          <hr className="w-full mb-6 border-t border-gray1" />
+          <SubNavbar
+            items={navItems}
+            activePage="1:1 문의"
+            mainCategory="고객 센터"
+          />
 
           {/* 메인 */}
           <div
@@ -35,9 +32,9 @@ const QnaDetail = () => {
             // style={{ height: 'calc(100vh - 230px)' }}
           >
             {/* 네모박스 */}
-            <div className="flex flex-col flex-grow w-4/5 bg-transition border border-black mb-4">
-              <div className="flex justify-between p-6 space-x-12">
-                <span className="w-full text-left text-xs sm:text-sm md:text-md">
+            <div className="flex flex-col flex-grow w-4/5 bg-transition border border-black rounded-lg mb-4">
+              <div className="flex justify-between p-6 space-x-12 bg-placeHolder rounded-lg">
+                <span className="w-full text-left text-lg font-bold">
                   제목입니다제목입니다
                 </span>
                 <div className="flex items-center justify-end space-x-2 w-[30%]">
@@ -72,7 +69,10 @@ const QnaDetail = () => {
                 <button className="px-4 py-2 font-bold text-gray4 transition-colors duration-300 bg-white border border-gray4 text-xs sm:text-sm md:text-md rounded-lg hover:bg-white hover:text-primary">
                   삭제
                 </button>
-                <button className="px-4 py-2 font-bold text-gray4 transition-colors duration-300 bg-white border border-gray4 text-xs sm:text-sm md:text-md rounded-lg hover:bg-white hover:text-primary">
+                <button
+                  onClick={() => navigateTo(routes.qnaRegist)}
+                  className="px-4 py-2 font-bold text-gray4 transition-colors duration-300 bg-white border border-gray4 text-xs sm:text-sm md:text-md rounded-lg hover:bg-white hover:text-primary"
+                >
                   수정
                 </button>
               </div>
