@@ -3,6 +3,7 @@ package com.resengkor.management.domain.banner.controller;
 import com.resengkor.management.domain.banner.dto.OrderRequestDto;
 import com.resengkor.management.domain.banner.dto.OrderResponseDto;
 import com.resengkor.management.domain.banner.dto.ReceiveStatusUpdateDto;
+import com.resengkor.management.domain.banner.dto.ReceivedOrderResponseDto;
 import com.resengkor.management.domain.banner.service.OrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,20 @@ public class OrderController {
     @PatchMapping("/{orderId}")
     public ResponseEntity<String> updateReceiveStatus(@PathVariable Long orderId, @RequestBody ReceiveStatusUpdateDto receiveStatusUpdateDto) {
         orderService.updateReceiveStatus(orderId, receiveStatusUpdateDto.getReceiveStatus());
-        return ResponseEntity.ok("Order receive status updated successfully");
+        return ResponseEntity.ok("Order - receiveStatus updated successfully");
+    }
+
+    // 로그인한 사용자와 sellerId가 같은 발주내역 모두 조회
+    @GetMapping("/seller")
+    public ResponseEntity<List<ReceivedOrderResponseDto>> getUserReceivedOrderHistories() {
+        List<ReceivedOrderResponseDto> sellerOrders = orderService.getUserReceivedOrderHistories();
+        return ResponseEntity.ok(sellerOrders);
+    }
+
+    // 배송 상태 업데이트 엔드포인트
+    @PatchMapping("/status/{orderId}")
+    public ResponseEntity<String> updateOrderStatus(@PathVariable Long orderId, @RequestBody OrderStatusUpdateRequestDto orderStatusUpdateRequestDto) {
+        orderService.updateOrderStatus(orderId, orderStatusUpdateRequestDto.getOrderStatus());
+        return ResponseEntity.ok("Order - orderStatus updated successfully");
     }
 }

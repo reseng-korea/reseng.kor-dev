@@ -2,8 +2,10 @@ package com.resengkor.management.domain.banner.service;
 
 import com.resengkor.management.domain.banner.dto.OrderRequestDto;
 import com.resengkor.management.domain.banner.dto.OrderResponseDto;
+import com.resengkor.management.domain.banner.dto.ReceivedOrderResponseDto;
 import com.resengkor.management.domain.banner.entity.*;
 import com.resengkor.management.domain.banner.mapper.OrderHistoryMapper;
+import com.resengkor.management.domain.banner.mapper.ReceivedOrderHistoryMapper;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.domain.banner.repository.OrderBannerRepository;
 import com.resengkor.management.domain.banner.repository.OrderHistoryRepository;
@@ -36,6 +38,7 @@ public class OrderService {
 
     // Mapper
     private final OrderHistoryMapper orderHistoryMapper;
+    private final ReceivedOrderHistoryMapper receivedOrderHistoryMapper;
 
     // 발주 요청
     @Transactional
@@ -133,7 +136,7 @@ public class OrderService {
             List<BannerType> createdBannerTypes = new ArrayList<>();
             for (int i = 0; i < tempBanner.getQuantity(); i++) {
                 BannerType bannerType = BannerType.builder()
-                        .user(orderHistory.getSeller())
+                        .user(orderHistory.getBuyer())
                         .typeWidth(tempBanner.getTemporaryTypeWidth())
                         .horizontalLength(BigDecimal.valueOf(120)) // 항상 120로 설정
                         .isStandard(true) // 항상 true로 설정
@@ -154,5 +157,31 @@ public class OrderService {
                 orderBannerRepository.save(orderBanner);
             }
         }
+    }
+
+
+    // 로그인한 사용자의 모든 발주 내역 조회
+    public List<ReceivedOrderResponseDto> getUserReceivedOrderHistories() {
+        // 현재 로그인된 사용자의 ID를 가져옴
+        Long sellerId = UserAuthorizationUtil.getLoginMemberId();
+
+        // 로그인 한 아이디와 sellerId가 같은 모든 발주내역 가져오기
+        List<OrderHistory> orderHistories = orderHistoryRepository.findBySellerIdOrderByOrderDateDesc(sellerId);
+
+        // DTO로 변환하여 반환
+        return receivedOrderHistoryMapper.toReceivedDtoList(orderHistories);
+    }
+
+    // 배송상태 업데이트 기능
+    @Transactional
+    public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
+        // 현재 로그인된 사용자의 ID를 가져옴
+        Long sellerId = UserAuthorizationUtil.getLoginMemberId();
+
+        OrderHistory orderHistory = orderHistoryRepository.findOrderHistoryByIdAndSellerId(orderId,sellerId)
+                .orElseThrow(() -> new IllegalArgumentException("Order not found"));
+
+        orderHistory.updateOrderStatus(newStatus);
+        orderHistoryRepository.save(orderHistory);
     }
 }

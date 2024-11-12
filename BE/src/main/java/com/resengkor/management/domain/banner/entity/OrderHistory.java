@@ -1,13 +1,11 @@
 package com.resengkor.management.domain.banner.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.resengkor.management.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Immutable;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -55,6 +53,11 @@ public class OrderHistory {
     // 수령 상태를 업데이트하는 비즈니스 메서드
     public void updateReceiveStatus(boolean newReceiveStatus) {
         this.receiveStatus = newReceiveStatus;
+    }
+
+    // 상태 업데이트 메서드
+    public void updateOrderStatus(OrderStatus newStatus) {
+        this.orderStatus = newStatus;
     }
 
     @Override
