@@ -249,15 +249,26 @@ public class UserService {
     //회원 탈퇴 로직
     //로그인O
     @Transactional
-    public CommonResponse withdrawUser(String token) {
+    public CommonResponse withdrawUser(String headerRefresh) {
         log.info("----Service Start: 회원탈퇴-----");
         //1.JWT에서 사용자 이메일 추출
-        String userEmail = jwtUtil.getEmail(token);
+        String userEmail = jwtUtil.getEmail(headerRefresh);
 
         //2.사용자 찾기
         User user = userRepository.findByEmail(userEmail)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         log.info("회원탈퇴 요청한 사용자 찾음");
+
+        // Redis에서 refresh 토큰 유효성 검사
+        Boolean isExist = redisUtil.existData("refresh:token:" + userEmail);
+        String redisRefresh;
+        if(isExist){//Redis에 존재한다면
+            //redis에 있는 value값 가져오기
+            redisRefresh = redisUtil.getData("refresh:token:" + userEmail);
+            if(!headerRefresh.equals(redisRefresh)){
+                throw new CustomException(ExceptionStatus.INVALID_REFRESH_TOKEN);
+            }
+        }
 
         //3.만약에 로그인을 social로 했다면 따로 api 처리
         if(user.getLoginType().equals(LoginType.SOCIAL)){

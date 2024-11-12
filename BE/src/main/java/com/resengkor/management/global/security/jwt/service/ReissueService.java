@@ -29,29 +29,39 @@ public class ReissueService {
         log.info("----Service Start: refresh 재발급 요청-----");
 
         // 헤더에서 refresh키에 담긴 토큰을 꺼냄
-        String refresh = request.getHeader("Refresh");
-        if (refresh == null) {
+        String headerRefresh = request.getHeader("Refresh");
+        if (headerRefresh == null) {
             throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER);
         }
 
         // 만료된 토큰은 payload 읽을 수 없음 -> ExpiredJwtException 발생
         try {
-            jwtUtil.isExpired(refresh);
+            jwtUtil.isExpired(headerRefresh);
         } catch(ExpiredJwtException e){
             throw new CustomException(ExceptionStatus.REFRESH_TOKEN_EXPIRED);
         }
 
         // refresh 토큰이 아님
-        String category = jwtUtil.getCategory(refresh);
+        String category = jwtUtil.getCategory(headerRefresh);
         if(!category.equals("Refresh")) {
             throw new CustomException(ExceptionStatus.TOKEN_IS_NOT_REFRESH);
         }
+        String email = jwtUtil.getEmail(headerRefresh);
 
-        String email = jwtUtil.getEmail(refresh);
+        // Redis에서 refresh 토큰 유효성 검사
+        Boolean isExist = redisUtil.existData("refresh:token:" + email);
+        String redisRefresh;
+        if(isExist){//Redis에 존재한다면
+            //redis에 있는 value값 가져오기
+            redisRefresh = redisUtil.getData("refresh:token:" + email);
+            if(!headerRefresh.equals(redisRefresh)){
+                throw new CustomException(ExceptionStatus.INVALID_REFRESH_TOKEN);
+            }
+        }
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         log.info("user 찾기 성공");
-
         // 비활성화된 user면 에러 던짐
         if (!user.isStatus()) {
             log.info("비활성 사용자입니다");
@@ -59,19 +69,16 @@ public class ReissueService {
         }
 
         long userId = user.getId();
-        String role = jwtUtil.getRole(refresh);
-        String loginType = jwtUtil.getLoginType(refresh);
+        String role = jwtUtil.getRole(headerRefresh);
+        String loginType = jwtUtil.getLoginType(headerRefresh);
 
         long refreshTokenExpiration;
         String newAccess;
         String newRefresh;
 
-        // Redis에서 refresh 토큰 유효성 검사
-        Boolean isExist = redisUtil.existData("refresh:token:" + email);
-        log.error("refreshKey : {}", refresh);
 
         if(loginType.equals("local")){
-            boolean isAuto = jwtUtil.getIsAuto(refresh);
+            boolean isAuto = jwtUtil.getIsAuto(headerRefresh);
             Long remainingTTL = redisUtil.getRemainingTTL("refresh:token:" + email);
 
             // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
