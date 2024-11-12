@@ -62,9 +62,14 @@ const LoginPage = () => {
           }
         );
 
-        navigateTo(routes.home);
+        // 임시 비밀번호인지 판단 여부
+        if (response.data.temporaryPasswordStatus) {
+          navigateTo(routes.pwinquiryNew);
+        } else {
+          navigateTo(routes.home);
+        }
 
-        console.log(response);
+        console.log(response.data);
         console.log(response.headers.authorization);
         const accessToken = response.headers.authorization;
         localStorage.setItem('userId', response.data.id);

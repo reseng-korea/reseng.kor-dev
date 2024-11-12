@@ -311,7 +311,7 @@ const UserEdit = () => {
           console.log(response);
         } catch (error) {
           console.log(error);
-
+          setModalOpen(true);
           openModal({
             primaryText: '탈퇴 요청이 실패했습니다.',
             secondaryText: '잠시 후 다시 시도해 주세요.',
