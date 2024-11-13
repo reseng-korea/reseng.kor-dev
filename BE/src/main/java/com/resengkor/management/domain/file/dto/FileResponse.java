@@ -5,16 +5,14 @@ import lombok.Data;
 
 @Data
 public class FileResponse {
-    private Long id;
-    private String url;
-    private String name;
+    private Long fileId;
+    private String fileName;
     private String fileType;
 
     @Builder
-    public FileResponse(Long id, String url, String name, String fileType) {
-        this.id = id;
-        this.url = url;
-        this.name = name;
+    public FileResponse(Long fileId, String fileName, String fileType) {
+        this.fileId = fileId;
+        this.fileName = fileName;
         this.fileType = fileType;
     }
 }
