@@ -69,10 +69,11 @@ const LoginPage = () => {
           navigateTo(routes.home);
         }
 
-        console.log(response.data);
+        console.log(response);
         console.log(response.headers.authorization);
         const accessToken = response.headers.authorization;
         localStorage.setItem('userId', response.data.id);
+        localStorage.setItem('role', response.data.role);
         localStorage.setItem('accessToken', accessToken);
         localStorage.setItem('refreshToken', response.headers.refresh);
         console.log(response.headers.refresh);

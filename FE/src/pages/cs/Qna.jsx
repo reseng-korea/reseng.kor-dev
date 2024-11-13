@@ -14,6 +14,7 @@ import Pagination from 'react-js-pagination';
 const Qna = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
+  const role = localStorage.getItem('role');
   const navItems = [
     { label: '자주 묻는 질문', route: '/faq' },
     { label: '1:1 문의', route: '/qna' },
@@ -42,126 +43,139 @@ const Qna = () => {
     setSearchParams({ page: pageNumber }); // 페이지 번호를 URL 쿼리 파라미터에 설정
   };
 
+  // detail 페이지로 데이터 보내는 함수
+  const handleResponse = (data, index) => {
+    const {
+      questionId,
+      userId,
+      title,
+      content,
+      representativeName,
+      createdAt,
+      viewCount,
+      secret,
+      password,
+      answered,
+    } = data;
+
+    const {
+      answerId: answerId = '',
+      content: answerContent = '',
+      createdAt: answerCreatedAt = '',
+      updatedAt: answerUpdatedAt = '',
+    } = data.answer || {};
+
+    navigateTo(routes.qnaDetail.replace(':pageNumber', index), {
+      activePage,
+      questionId,
+      userId,
+      title,
+      content,
+      representativeName,
+      createdAt: createdAt ? formatCreatedAt(createdAt) : '',
+      viewCount,
+      secret,
+      password,
+      answered,
+      answerId,
+      answerContent,
+      answerCreatedAt: answerCreatedAt ? formatCreatedAt(answerCreatedAt) : '',
+      answerUpdatedAt: answerUpdatedAt ? formatCreatedAt(answerUpdatedAt) : '',
+    });
+  };
+
   const handleRowClick = async (index, id, isSecret) => {
-    // 비밀글일 때
-    if (isSecret) {
-      openModalWithInput({
-        primaryText: '비밀글 기능으로 보호된 글입니다.',
-        context: '작성자와 관리자만 열람하실 수 있습니다.',
-        subContext: '본인이라면 비밀번호를 입력해주세요.',
-        inputPlaceholder: '비밀번호 4자리',
-        type: 'warning',
-        onConfirm: async (inputValue) => {
-          console.log('입력된 비밀번호:', inputValue);
-          try {
-            const response = await axios.get(
-              `${apiUrl}/api/v1/qna/questions/${id}?password=${inputValue}`,
-              {
-                headers: {
-                  Authorization: accesstoken,
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
-
-            if (response.data.code == 200) {
-              const {
-                questionId,
-                userId,
-                title,
-                content,
-                representativeName,
-                createdAt,
-                viewCount,
-                secret,
-              } = response.data.data;
-
-              navigateTo(routes.qnaDetail.replace(':pageNumber', index), {
-                activePage,
-                questionId,
-                userId,
-                title,
-                content,
-                representativeName,
-                createdAt: formatCreatedAt(createdAt),
-                viewCount,
-                secret,
-              });
-            }
-            console.log(response);
-          } catch (error) {
-            console.log(error);
-            console.log(error.response.data.code);
-            if (error.response.data.code == 4026) {
-              openModal({
-                primaryText: '비밀번호가 틀립니다.',
-                context: '확인 후 다시 입력해주세요.',
-                type: 'warning',
-                isAutoClose: false,
-                onConfirm: () => {
-                  closeModal();
-                },
-              });
-            } else {
-              // error.response.data.code == 4011
-              openModal({
-                primaryText: '해당 글은 작성자와 관리자만',
-                secondaryText: '열람 가능합니다.',
-                type: 'warning',
-                isAutoClose: false,
-                onConfirm: () => {
-                  closeModal();
-                },
-              });
-            }
-          }
-        },
-        onCancel: () => {
-          closeModal();
-        },
-      });
-
-      //
-      // 비밀글이 아닐 때
-    } else {
+    // 관리자라면
+    if (role === 'ROLE_MANAGER') {
       try {
         const response = await axios.get(
-          `${apiUrl}/api/v1/qna/questions/${id}`
-          // {
-          //   headers: {
-          //     Authorization: accesstoken,
-          //     'Content-Type': 'application/json',
-          //   },
-          // }
+          `${apiUrl}/api/v1/qna/questions/${id}?password=`,
+          {
+            headers: {
+              Authorization: accesstoken,
+              'Content-Type': 'application/json',
+            },
+          }
         );
-        console.log(response);
 
+        // 데이터 처리
         if (response.data.code == 200) {
-          const {
-            questionId,
-            userId,
-            title,
-            content,
-            representativeName,
-            createdAt,
-            viewCount,
-            secret,
-          } = response.data.data;
-
-          navigateTo(routes.qnaDetail.replace(':pageNumber', index), {
-            activePage,
-            questionId,
-            userId,
-            title,
-            content,
-            representativeName,
-            createdAt: formatCreatedAt(createdAt),
-            viewCount,
-            secret,
-          });
+          handleResponse(response.data.data, index);
         }
       } catch (error) {
         console.log(error);
+      }
+      // 관리자가 아니라면
+    } else {
+      // 비밀글일 때
+      if (isSecret) {
+        openModalWithInput({
+          primaryText: '비밀글 기능으로 보호된 글입니다.',
+          context: '작성자와 관리자만 열람하실 수 있습니다.',
+          subContext: '본인이라면 비밀번호를 입력해주세요.',
+          inputPlaceholder: '비밀번호 4자리',
+          type: 'warning',
+          onConfirm: async (password) => {
+            console.log('입력된 비밀번호:', password);
+            try {
+              const response = await axios.get(
+                `${apiUrl}/api/v1/qna/questions/${id}?password=${password}`,
+                {
+                  headers: {
+                    Authorization: accesstoken,
+                    'Content-Type': 'application/json',
+                  },
+                }
+              );
+              console.log(response);
+              if (response.data.code == 200) {
+                handleResponse(response.data.data, index);
+              }
+            } catch (error) {
+              console.log(error);
+              console.log(error.response.data.code);
+              if (error.response.data.code == 4026) {
+                openModal({
+                  primaryText: '비밀번호가 틀립니다.',
+                  context: '확인 후 다시 입력해주세요.',
+                  type: 'warning',
+                  isAutoClose: false,
+                  onConfirm: () => {
+                    closeModal();
+                  },
+                });
+              } else {
+                // error.response.data.code == 4011
+                openModal({
+                  primaryText: '해당 글은 작성자와 관리자만',
+                  secondaryText: '열람 가능합니다.',
+                  type: 'warning',
+                  isAutoClose: false,
+                  onConfirm: () => {
+                    closeModal();
+                  },
+                });
+              }
+            }
+          },
+          onCancel: () => {
+            closeModal();
+          },
+        });
+        // 비밀글이 아닐 때
+      } else {
+        try {
+          const response = await axios.get(
+            `${apiUrl}/api/v1/qna/questions/${id}`
+          );
+          console.log(response);
+
+          if (response.data.code == 200) {
+            handleResponse(response.data.data, index);
+          }
+        } catch (error) {
+          console.log(error);
+        }
       }
     }
   };

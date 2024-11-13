@@ -12,7 +12,7 @@ import usePreventRefresh from '../../hooks/usePreventRefresh';
 
 const QnaRegister = () => {
   const location = useLocation();
-  const data = location.state || {};
+  const data = location.state?.data || {};
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
@@ -46,6 +46,9 @@ const QnaRegister = () => {
       setTitle(data.title);
       setContent(data.content);
       setIsSecret(data.secret);
+    } else {
+      console.log('데이터없니', data);
+      console.log('데이터없니', data.isModify);
     }
   }, [data]);
 
@@ -113,7 +116,6 @@ const QnaRegister = () => {
     } else {
       // 수정 로직이라면
       if (data.isModify) {
-        console.log('퀘스쳔 아이디다 25여야함');
         console.log(data.questionId);
         try {
           const response = await axios.put(
@@ -131,7 +133,7 @@ const QnaRegister = () => {
               },
             }
           );
-          console.log(response);
+          console.log('수정 버튼 클릭', response);
 
           if (response.data.code == 201) {
             setModalOpen(true);
