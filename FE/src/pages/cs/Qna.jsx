@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useSearchParams } from 'react-router-dom';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import useModal from '../../hooks/useModal';
 
 import qnaIsSecret from '../../assets/qna_isSecret.png';
 import Pagination from 'react-js-pagination';
 
 const Qna = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const accesstoken = localStorage.getItem('accessToken');
   const navItems = [
     { label: '자주 묻는 질문', route: '/faq' },
     { label: '1:1 문의', route: '/qna' },
@@ -18,23 +21,109 @@ const Qna = () => {
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
+  const [modalOpen, setModalOpen] = useState(false);
+  const { openModal, closeModal, RenderModal } = useModal();
+
   const [qnaData, setQnaData] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
-  const [activePage, setActivePage] = useState(1);
+  // const [activePage, setActivePage] = useState(1);
   const itemsCountPerPage = 10;
 
-  // 현재 페이지에 해당하는 데이터 계산
-  // const indexOfLastItem = activePage * itemsCountPerPage;
-  // const indexOfFirstItem = indexOfLastItem - itemsCountPerPage;
-  // const currentItems = [...qnaData].slice(indexOfFirstItem, indexOfLastItem);
-
-  const handlePageChange = (pageNumber) => {
-    setActivePage(pageNumber); // 페이지 번호 변경 시 상태 업데이트
+  // 게시 작성 날짜 포맷
+  const formatCreatedAt = (createdAt) => {
+    const [date, time] = createdAt.split('T');
+    return `${date} ${time.slice(0, 8)}`;
   };
 
-  const handleRowClick = (id) => {
-    // URL을 qna/{id}로 변경
-    navigateTo(`/qna/${id}`);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const activePage = parseInt(searchParams.get('page')) || 1;
+
+  const handlePageChange = (pageNumber) => {
+    setSearchParams({ page: pageNumber }); // 페이지 번호를 URL 쿼리 파라미터에 설정
+  };
+
+  const handleRowClick = async (index, id, isSecret) => {
+    if (isSecret) {
+      try {
+        const response = await axios.get(
+          `${apiUrl}/api/v1/qna/questions/${id}?password=1234`,
+          {
+            headers: {
+              Authorization: accesstoken,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (response.data.code == 200) {
+          const {
+            questionId,
+            userId,
+            title,
+            content,
+            representativeName,
+            createdAt,
+            viewCount,
+            secret,
+          } = response.data.data;
+
+          navigateTo(routes.qnaDetail.replace(':pageNumber', index), {
+            activePage,
+            questionId,
+            userId,
+            title,
+            content,
+            representativeName,
+            createdAt: formatCreatedAt(createdAt),
+            viewCount,
+            secret,
+          });
+        }
+        console.log(response);
+      } catch (error) {
+        console.log(error);
+      }
+    } else {
+      try {
+        const response = await axios.get(
+          `${apiUrl}/api/v1/qna/questions/${id}`,
+          {
+            headers: {
+              Authorization: accesstoken,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+        console.log(response);
+
+        if (response.data.code == 200) {
+          const {
+            questionId,
+            userId,
+            title,
+            content,
+            representativeName,
+            createdAt,
+            viewCount,
+            secret,
+          } = response.data.data;
+
+          navigateTo(routes.qnaDetail.replace(':pageNumber', index), {
+            activePage,
+            questionId,
+            userId,
+            title,
+            content,
+            representativeName,
+            createdAt: formatCreatedAt(createdAt),
+            viewCount,
+            secret,
+          });
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    }
   };
 
   useEffect(() => {
@@ -51,8 +140,8 @@ const Qna = () => {
           totalElements - (activePage - 1) * itemsCountPerPage;
 
         const sortedData = response.data.data.content
-          .map((item, index) => ({
-            id: index, // 고유 식별자
+          .map((item) => ({
+            id: item.questionId,
             secret: item.secret,
             title: item.title,
             representativeName: item.representativeName,
@@ -84,12 +173,12 @@ const Qna = () => {
             <table className="min-w-full bg-white border-b mt-4">
               <thead>
                 <tr className="bg-placeHolder text-gray4 text-lg">
-                  <th className="py-4 px-4 rounded-l-lg">번호</th>
-                  <th className="py-4 px-4">제목</th>
-                  <th className="py-4 px-4">작성자</th>
-                  <th className="py-4 px-4">등록일</th>
-                  <th className="py-4 px-4">조회수</th>
-                  <th className="py-4 px-4 rounded-r-lg">답변 상태</th>
+                  <th className="w-1/12 py-4 px-4 rounded-l-lg">번호</th>
+                  <th className="w-4/12 py-4 px-4 w-1/8">제목</th>
+                  <th className="w-2/12 py-4 px-4">작성자</th>
+                  <th className="w-2/12 py-4 px-4">등록일</th>
+                  <th className="w-1/12 py-4 px-4">조회수</th>
+                  <th className="w-3/12 py-4 px-4 rounded-r-lg">답변 상태</th>
                 </tr>
               </thead>
               <tbody>
@@ -97,10 +186,20 @@ const Qna = () => {
                   <tr
                     key={items.id}
                     className="border-b hover:bg-placeHolder"
-                    onClick={() => handleRowClick(items.id)}
+                    onClick={() =>
+                      handleRowClick(
+                        totalElements -
+                          index -
+                          (activePage - 1) * itemsCountPerPage,
+                        items.id,
+                        items.secret
+                      )
+                    }
                   >
                     <td className="py-5 px-4 border-b">
-                      {index + 1 + (activePage - 1) * itemsCountPerPage}
+                      {totalElements -
+                        index -
+                        (activePage - 1) * itemsCountPerPage}
                     </td>
                     <td className="py-2 px-4 border-b text-left">
                       <div className="flex items-center space-x-2">
@@ -113,8 +212,8 @@ const Qna = () => {
                         ) : (
                           <span className="w-4 h-4 mr-2" /> // 공백을 위한 공간 유지
                         )}
-                        {items.title.length > 30
-                          ? `${items.title.slice(0, 30)}...`
+                        {items.title.length > 20
+                          ? `${items.title.slice(0, 20)}...`
                           : items.title}
                       </div>
                     </td>
@@ -125,15 +224,11 @@ const Qna = () => {
                       {items.createdAt.slice(0, 10)}
                     </td>
                     <td className="py-2 px-4 border-b">{items.viewCount}</td>
-                    {items.answered ? (
-                      <td className="py-2 px-4 text-primary border-b">
-                        답변 완료
-                      </td>
-                    ) : (
-                      <td className="py-2 px-4 text-warning border-b">
-                        답변 대기
-                      </td>
-                    )}
+                    <td
+                      className={`py-2 px-4 border-b ${items.answered ? 'text-primary' : 'text-warning'}`}
+                    >
+                      {items.answered ? '답변 완료' : '답변 대기'}
+                    </td>
                   </tr>
                 ))}
               </tbody>
