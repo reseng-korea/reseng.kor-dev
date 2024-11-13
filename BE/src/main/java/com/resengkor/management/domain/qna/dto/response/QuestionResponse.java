@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class QuestionResponse {
+    private Long questionId;
+
     private String title;
 
     private boolean isSecret;

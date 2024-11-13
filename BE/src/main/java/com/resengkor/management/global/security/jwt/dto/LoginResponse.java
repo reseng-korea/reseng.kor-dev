@@ -1,6 +1,6 @@
-package com.resengkor.management.domain.user.dto;
+package com.resengkor.management.global.security.jwt.dto;
 
-
+import com.resengkor.management.domain.user.dto.UserProfileDTO;
 import com.resengkor.management.domain.user.entity.Role;
 import lombok.*;
 
@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserDTO {
+public class LoginResponse {
     private Long id;
     private String email;
     private boolean emailStatus;
@@ -19,9 +19,7 @@ public class UserDTO {
     private String representativeName;
     private String phoneNumber;
     private boolean phoneNumberStatus;
-    private Role role;
+    private String role;
     private String loginType;
     private boolean status;
-    private LocalDateTime createdAt;
-    private UserProfileDTO userProfile;
 }

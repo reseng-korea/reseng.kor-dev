@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -29,7 +30,7 @@ public class Document extends BaseEntity {
     private String content;
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FileEntity> files;  // 파일 목록 (일대다 관계)
+    private List<FileEntity> files = new ArrayList<>();  // 파일 목록 (일대다 관계)
 
     // 파일 추가 메서드
     public void addFile(FileEntity file) {

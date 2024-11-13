@@ -17,6 +17,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
@@ -38,6 +39,9 @@ public class S3Service {
     @Value("${spring.cloud.aws.s3.bucket}")
     private String bucket;
 
+    @Value("${spring.servlet.multipart.max-file-size}")
+    private String maxSizeString;
+
     /**
      * 파일을 S3에 업로드하는 메서드
      * @param dirName 디렉토리 이름 (예: "grades", "news")
@@ -45,6 +49,7 @@ public class S3Service {
      * @return 업로드된 파일의 URL
      */
     public DataResponse<FileRequest> uploadFile(String dirName, MultipartFile multipartFile) {
+        log.info("------------Service : 에디터 파일 업로드  start------------");
         String uuid = UUID.randomUUID().toString();
 
         // null 체크: 원래 파일 이름이 null인지 확인
@@ -58,7 +63,9 @@ public class S3Service {
 
 
         // 업로드된 파일의 S3 URL 반환
+        log.info("------------에디터/인증서 파일 업로드  메소드 start------------");
         String url = uploadFileToS3(s3FileName, multipartFile);
+        log.info("s3에 파일 잘 올라감");
         FileRequest fileRequest = FileRequest.builder()
                 .fileName(s3FileName)
                 .fileType(multipartFile.getContentType())
@@ -75,33 +82,38 @@ public class S3Service {
      * @return 업로드된 파일의 URL
      */
     public String uploadFileToS3(String s3FileName, MultipartFile multipartFile) {
-        // MultipartFile을 로컬 파일로 변환
+        // 파일 크기 제한 체크
+        long maxSize = DataSize.parse(maxSizeString).toBytes(); // maxSizeString을 바이트로 변환
+        if (multipartFile.getSize() > maxSize) {
+            throw new CustomException(ExceptionStatus.FILE_SIZE_LIMIT_EXCEEDED); // 적절한 예외 코드 사용
+        }
+        log.info("파일 크기 오류 안 남");
 
-        File localFile = convertMultipartFileToFile(multipartFile)
+        // MultipartFile을 로컬 파일로 변환
+        File localFile = convertMultipartFileToLocalFile(multipartFile)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.FILE_CONVERSION_ERROR));
         try{
             // S3에 파일 업로드 및 퍼블릭 읽기 권한 설정
-            amazonS3.putObject(new PutObjectRequest(bucket, s3FileName, localFile)
-                    .withCannedAcl(CannedAccessControlList.PublicRead));
+            amazonS3.putObject(new PutObjectRequest(bucket, s3FileName, localFile) //버킷, 파일명, 서버저장한파일
+                    .withCannedAcl(CannedAccessControlList.PublicRead));//보안 설정.외부에서 public으로 읽을 수 있음
         } catch (Exception e) {
+            e.printStackTrace();
             throw new CustomException(ExceptionStatus.S3_CONNECTION_ERROR);
         } finally{
-            // 로컬에 생성된 임시 파일 삭제
-            deleteLocalFile(localFile);
+            deleteLocalFile(localFile); // 로컬에 생성된 임시 파일 삭제
         }
         // 업로드된 파일의 S3 URL 반환
-        return amazonS3.getUrl(bucket, s3FileName).toString();
+        return amazonS3.getUrl(bucket, s3FileName).toString(); //버킷이름, 파일이름으로 s3에 저장된 주소 받음
     }
 
-
-
-
+    
     /**
      * 로컬에 생성된 파일을 삭제하는 메서드
      * @param file 삭제할 로컬 파일
      */
     private void deleteLocalFile(File file) {
         if (file.exists() && !file.delete()) {
+            //파일이 존재하면 파일을 삭제하는데 return값이 false면 로컬 파일 실패한 것
             log.warn("로컬 파일 삭제 실패: {}", file.getName());
         }
     }
@@ -111,9 +123,10 @@ public class S3Service {
      * @param file 변환할 MultipartFile
      * @return 변환된 로컬 파일 객체 (Optional)
      */
-    private Optional<File> convertMultipartFileToFile(MultipartFile file) {
+    private Optional<File> convertMultipartFileToLocalFile(MultipartFile file) {
         // 업로드된 파일의 이름을 사용해 새 파일 생성
         File convertedFile = new File(file.getOriginalFilename());
+        //1
         try {
             if (convertedFile.createNewFile()) {
                 // 파일에 데이터를 씁니다.
@@ -123,7 +136,7 @@ public class S3Service {
                 return Optional.of(convertedFile);
             }
         } catch (IOException e) {
-            throw new CustomException(ExceptionStatus.EMAIL_SEND_FAIL);  // 예시로 사용한 Status이며, 실제 오류 코드에 맞게 변경 필요
+            throw new CustomException(ExceptionStatus.FILE_CONVERSION_ERROR);
         }
         return Optional.empty();
     }
@@ -135,6 +148,7 @@ public class S3Service {
      * @return 파일 데이터를 포함한 ResponseEntity
      */
     public ResponseEntity<byte[]> downloadFileFromS3(String fileName) {
+        log.info("------------Service : 파일 다운로드 start------------");
         try {
             S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucket, fileName));
             S3ObjectInputStream inputStream = s3Object.getObjectContent();
@@ -166,6 +180,7 @@ public class S3Service {
      * @return 삭제 성공 응답
      */
     public CommonResponse deleteFileFromS3(String fileName) {
+        log.info("------------Service : 파일 삭제 start------------");
         amazonS3.deleteObject(bucket, fileName);
         return new CommonResponse(ResponseStatus.DELETED_SUCCESS.getCode(), ResponseStatus.DELETED_SUCCESS.getMessage());
     }
@@ -179,6 +194,7 @@ public class S3Service {
      * @return 새 파일의 URL
      */
     public String updateFileInS3(String oldFileName, String newFileName, MultipartFile multipartFile) {
+        log.info("------------Service : 파일 수정 start------------");
         // 기존 파일 삭제
         amazonS3.deleteObject(bucket, oldFileName);
 

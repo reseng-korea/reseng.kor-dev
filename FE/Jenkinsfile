@@ -60,6 +60,13 @@ pipeline {
             }
         }
 
+        // 빌드 캐시 정리 단계 추가
+        stage("Docker Cache Cleaning") {
+            steps {
+                sh "docker builder prune -f"
+            }
+        }
+
         // 컨테이너 실행
         stage("Docker Container Run") {
             steps {

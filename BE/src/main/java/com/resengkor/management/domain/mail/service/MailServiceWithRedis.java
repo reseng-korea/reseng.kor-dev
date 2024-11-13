@@ -37,6 +37,10 @@ public class MailServiceWithRedis {
     @Transactional
     public CommonResponse sendMail(String sendEmail) throws MessagingException, UnsupportedEncodingException {
         log.info("enter send-verification service");
+        if (!sendEmail.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
+        }
+
         //1. 랜덤 인증번호 생성
         String number = TmpCodeUtil.generateAlphanumericPassword();
 
@@ -62,7 +66,7 @@ public class MailServiceWithRedis {
 
         message.setFrom(new InternetAddress(address, personal));
         message.setRecipients(MimeMessage.RecipientType.TO, mail); //받는 사람
-        message.setSubject("이메일 인증");
+        message.setSubject("[(주)리앤생] 이메일 인증번호 입니다)");
         String body = "";
         body = "<div style='font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; border: 1px solid #e0e0e0; padding: 20px;'>"
                 + "<h2 style='color: #61A24E;'>이메일 인증</h2>"
@@ -94,7 +98,7 @@ public class MailServiceWithRedis {
         // Redis에서 인증 코드 조회
         String storedCode = redisUtil.getData("email:verification:" + dto.getEmail());
         if (storedCode == null) {
-            throw new CustomException(ExceptionStatus.EMAIL_NOT_FOUND); // 인증 코드가 존재하지 않는 경우
+            throw new CustomException(ExceptionStatus.CODE_EXPIRED); // 인증 코드가 존재하지 않는 경우
         }
 
         // 인증 코드 확인

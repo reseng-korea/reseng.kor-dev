@@ -8,6 +8,8 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class QuestionAnswerResponse {
+    private Long questionId;
+
     private String title;
 
     private String content;

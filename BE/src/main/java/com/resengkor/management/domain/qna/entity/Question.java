@@ -25,7 +25,7 @@ public class Question extends BaseEntity {
     @Column(name = "question_title", nullable = false)
     private String title;
 
-    @Column(name = "question_content", nullable = false)
+    @Column(name = "question_content", nullable = false, columnDefinition = "VARCHAR(500 CHAR)")
     private String content;
 
     @Column(name = "question_is_secret", nullable = false)
