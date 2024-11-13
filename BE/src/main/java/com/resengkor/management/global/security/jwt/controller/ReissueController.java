@@ -23,9 +23,7 @@ public class ReissueController {
     private final ReissueService reissueService;
     @PostMapping("/reissue")
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
-        log.info("------------------------------------------------");
-        log.info("enter reissue controller");
-        log.info("------------------------------------------------");
+        log.info("----Controller Start: refresh 재발급 요청-----");
         return reissueService.reissue(request, response);
     }
 }

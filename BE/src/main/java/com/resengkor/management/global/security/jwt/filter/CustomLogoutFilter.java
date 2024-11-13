@@ -1,6 +1,9 @@
 package com.resengkor.management.global.security.jwt.filter;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.resengkor.management.global.exception.ExceptionStatus;
+import com.resengkor.management.global.response.CommonResponse;
+import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.FilterChain;
@@ -10,6 +13,7 @@ import jakarta.servlet.ServletResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
@@ -34,10 +38,12 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+        log.info("----Filter Start: 로그아웃 진행-----");
         doFilter((HttpServletRequest) request, (HttpServletResponse) response, chain);
     }
 
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
+        log.info("----Filter Start: 내부 필터 로그아웃 진행-----");
         //해당요청이 logout요청인지 판단
         // uri check
         if (!request.getRequestURI().equals(defaultFilterUrl)) {
@@ -60,8 +66,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String refresh = null;
         refresh = request.getHeader("Refresh");
 
-        log.info("refresh = " + refresh);
-
         // refresh token null
         if(refresh == null){
             ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER, HttpServletResponse.SC_BAD_REQUEST);
@@ -71,14 +75,17 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String category = jwtUtil.getCategory(refresh);
 
         // not refresh token
-        if("Refresh".equals(category)){
+        if(!"Refresh".equals(category)){
             ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_PARSE_ERROR, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
         // Redis에서 refresh 토큰 존재 여부 확인
         String email = jwtUtil.getEmail(refresh);
-        Boolean isExist = redisUtil.existData("refresh:token:" + email);
+        String sessionId = jwtUtil.getSessionId(refresh);
+        
+        String redisKey = "refresh_token:" + email + ":" + sessionId; //해당 기기에 해당하는 redis Key 가져옴
+        Boolean isExist = redisUtil.existData(redisKey);
 
         // not exist in DB
         if(!isExist){
@@ -91,7 +98,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거
 
-        boolean isDeleted = redisUtil.deleteData("refresh:token:" + email);
+        boolean isDeleted = redisUtil.deleteData(redisKey);
         if (!isDeleted) {
             log.error("로그아웃: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
             // Redis 오류 시 예외 던지기
@@ -100,5 +107,18 @@ public class CustomLogoutFilter extends GenericFilterBean {
         }
 
         log.info("로그아웃: Refresh 토큰 삭제 성공");
+
+        // 성공 응답 설정
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(HttpServletResponse.SC_OK);
+
+        CommonResponse commonResponse = new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                "로그아웃에 성공했습니다");
+
+        // 응답 JSON 생성
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(commonResponse));
+        response.getWriter().flush();
     }
 }

@@ -37,6 +37,10 @@ public class MailServiceWithRedis {
     @Transactional
     public CommonResponse sendMail(String sendEmail) throws MessagingException, UnsupportedEncodingException {
         log.info("enter send-verification service");
+        if (!sendEmail.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
+        }
+
         //1. 랜덤 인증번호 생성
         String number = TmpCodeUtil.generateAlphanumericPassword();
 

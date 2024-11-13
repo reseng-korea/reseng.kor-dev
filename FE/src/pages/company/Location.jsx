@@ -9,8 +9,6 @@ import location from '../../assets/location.png';
 import { FaHome } from 'react-icons/fa';
 import { IoIosCall } from 'react-icons/io';
 
-import { tmplocationdata } from '../../data/tmplocationdata';
-
 const Location = () => {
   const navItems = [
     { label: '회사 소개', route: '/company' },
@@ -18,14 +16,19 @@ const Location = () => {
     { label: '오시는 길', route: '/location' },
   ];
 
-  const [companies, setCompanies] = useState([]);
+  const [company, setCompany] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+
+  const [selectedCompany, setSelectedCompany] = useState(null);
+  // 선택한 업체의 정보를 저장
+  const handleCompanySelect = (company) => {
+    setSelectedCompany(company);
+  };
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    const fetchCompanies = async () => {
+    const fetchCompany = async () => {
       try {
         setLoading(true);
         const response = await axios.get(`${apiUrl}/api/v1/companies`, {
@@ -35,16 +38,16 @@ const Location = () => {
           },
         });
         console.log(response);
-        console.log('서버로부터 받은 데이터:', response.content);
-        setCompanies(response.data); // 서버에서 받은 데이터 저장
-      } catch (err) {
-        setError(err.message); // 에러 메시지 저장
+        console.log(response.data.data.content);
+        setCompany(response.data.data.content); // 서버에서 받은 데이터 저장
+      } catch (error) {
+        console.log(error);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchCompanies();
+    fetchCompany();
   }, []);
 
   return (
@@ -57,8 +60,6 @@ const Location = () => {
             mainCategory="회사 소개"
           />
           {/* A 구역: 업체 목록 */}
-          {/* api 연결하면 데이터 가져와서 바로 넣어주면 될듯(지금은 더미데이터) */}
-
           <div className="flex flex-col">
             {/* 소개 */}
             <div className="relative w-full h-80 rounded-2xl overflow-hidden">
@@ -90,20 +91,25 @@ const Location = () => {
                     업체 목록
                   </h1>
                   <div className="flex-grow px-2 overflow-y-auto">
-                    {tmplocationdata.map((item, index) => (
+                    {company.map((item, index) => (
                       <div
-                        key={index}
-                        className="p-6 mt-4 mb-6 text-left bg-white shadow-even rounded-2xl hover:bg-placeHolder hover:shadow-lg transition-all duration-300"
+                        key={item.id}
+                        onClick={() => handleCompanySelect(item)}
+                        className={`p-6 mt-4 mb-6 text-left shadow-even rounded-2xl transition-all duration-300 ${
+                          selectedCompany?.id === item.id
+                            ? 'bg-placeHolder'
+                            : 'hover:bg-placeHolder'
+                        }`}
                       >
                         <div className="flex justify-between mb-4">
                           <p className="p-2 mb-2 text-[10px] font-bold sm:text-sm md:text-lg lg:text-xl">
-                            {item.name}
+                            {item.companyName}
                           </p>
                           <p
-                            className={`p-2 mb-2 text-md text-white font-bold rounded-lg
-                            ${item.type === '본사' ? 'bg-primary' : 'bg-re'} `}
+                            className={`px-4 py-2 mb-2 text-md text-white font-bold rounded-lg
+                            ${item.role === 'ROLE_MANAGER' ? 'bg-primary' : 'bg-re'} `}
                           >
-                            {item.type}
+                            {item.role === 'ROLE_MANAGER' ? '본사' : '총판'}
                           </p>
                         </div>
                         {/* <hr className="mb-5" /> */}
@@ -113,7 +119,7 @@ const Location = () => {
                         </p> */}
                           <FaHome className="text-gray3" />
                           <p className="mb-1 text-[10px] flex-grow sm:text-sm">
-                            {item.address}
+                            {`${item.city} ${item.streetAddress} ${item.detailAddress}`}
                           </p>
                         </div>
                         <div className="flex justify-center items-center px-2 space-x-2">
@@ -122,7 +128,7 @@ const Location = () => {
                         </p> */}
                           <IoIosCall className="text-gray3" />
                           <p className="mb-1 text-[10px] flex-grow sm:text-sm">
-                            {item.phone}
+                            {item.companyPhoneNumber}
                           </p>
                         </div>
                       </div>
@@ -136,7 +142,7 @@ const Location = () => {
               {/* 본사, 총판, 대리점의 마커 색을 다르게 해야할까 고민 */}
               {/* 마커 띄울 때 이름도 띄워야할 지에 대해서도 고민 */}
               <div className="w-2/3 move-left">
-                <KakaoMap />
+                <KakaoMap company={company} selectedCompany={selectedCompany} />
               </div>
             </div>
           </div>

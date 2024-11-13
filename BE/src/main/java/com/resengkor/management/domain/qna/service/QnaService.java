@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.data.domain.Sort;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -135,7 +136,7 @@ public class QnaService {
     public DataResponse<Page<QuestionResponse>> getAllQuestions(int page, int size) {
         log.info("---------Service : getAllQuestions method start---------");
         // 1. 페이지 요청 객체 생성
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page, size,  Sort.by(Sort.Direction.DESC, "id"));
         // 2. 모든 질문을 페이지 단위로 조회
         Page<Question> questions = questionRepository.findAll(pageRequest);
         // 3. 조회된 질문 목록을 QuestionResponse DTO로 변환
@@ -145,6 +146,7 @@ public class QnaService {
 
 
     //질문 상세 조회
+    @Transactional
     public DataResponse<QuestionAnswerResponse> getQuestionDetails(Long questionId, String password) {
         log.info("---------Service : getQuestionDetails method start---------");
         // 1. 주어진 ID로 질문 엔티티 조회
@@ -179,6 +181,8 @@ public class QnaService {
 
         // 4. 조회수 증가
         question.incrementViewCount();
+        questionRepository.save(question);
+
         // 5. Question 엔티티를 QuestionResponse DTO로 변환
         QuestionAnswerResponse questionAnswerResponse = qnaMapper.toQuestionAnswerResponse(question);
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
@@ -253,6 +257,14 @@ public class QnaService {
 
         // 4. 답변 엔티티 삭제
         answerRepository.delete(answer);
+
+        // 5. 질문의 답변 여부 false 로 수정
+        Question question = answer.getQuestion();
+        if (question != null) {
+            question.updateAnswer(null);
+            questionRepository.save(question);
+        }
+
         return new DataResponse<>(ResponseStatus.DELETED_SUCCESS.getCode(),
                 ResponseStatus.DELETED_SUCCESS.getMessage(), null);
     }

@@ -15,6 +15,13 @@ public class UserAuthorizationUtil {
     private UserAuthorizationUtil() {
         throw new AssertionError();
     }
+
+    //loginUserId랑 pathVariableUserId랑 같은지 체크
+    public static void checkUserMatch(Long pathVariableUserId, Long loginUserId) {
+        if (!pathVariableUserId.equals(loginUserId)) {
+            throw new CustomException(ExceptionStatus.USER_NOT_MATCH);
+        }
+    }
     public static Long getLoginMemberId() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 

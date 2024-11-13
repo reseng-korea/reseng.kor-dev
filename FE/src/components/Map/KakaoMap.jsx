@@ -1,12 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { tmplocationdata } from '../../data/tmplocationdata';
-import marker3 from '../../assets/marker_3.png';
-import marker4 from '../../assets/marker_4.png';
+// import marker3 from '../../assets/marker_3.png';
+// import marker4 from '../../assets/marker_4.png';
+import marker3 from '../../assets/marker_manager.png';
+import marker4 from '../../assets/marker_distributor.png';
 
-const KakaoMap = () => {
+const KakaoMap = ({ company, selectedCompany }) => {
   const [isMapLoaded, setIsMapLoaded] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const mapRef = useRef(null);
+  const selectedMarkerRef = useRef(null);
   const markersRef = useRef([]);
 
   useEffect(() => {
@@ -37,6 +40,28 @@ const KakaoMap = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (selectedCategory === '본사') {
+      const headquarters = company.find(
+        (location) => location.role === 'ROLE_MANAGER'
+      );
+      if (headquarters && mapRef.current) {
+        const headquartersPosition = new window.kakao.maps.LatLng(
+          headquarters.latitude,
+          headquarters.longitude
+        );
+        mapRef.current.setCenter(headquartersPosition);
+        mapRef.current.setLevel(3);
+      }
+    } else if (selectedCategory === '총판') {
+      const koreaCenter = new window.kakao.maps.LatLng(36.5, 127.5);
+      if (mapRef.current) {
+        mapRef.current.setCenter(koreaCenter);
+        mapRef.current.setLevel(13);
+      }
+    }
+  }, [selectedCategory, company]);
+
   const initializeMap = () => {
     const container = document.getElementById('map');
     const options = {
@@ -54,7 +79,7 @@ const KakaoMap = () => {
       const koreaCenter = new window.kakao.maps.LatLng(36.5, 127.5);
 
       // 지도 크기 재조정
-      mapRef.current.relayout();
+      // mapRef.current.relayout();
 
       // 한국 중심과 확대 수준 설정
       mapRef.current.setCenter(koreaCenter);
@@ -71,38 +96,34 @@ const KakaoMap = () => {
     markersRef.current.forEach((marker) => marker.setMap(null));
     markersRef.current = [];
 
-    const imageSize = new window.kakao.maps.Size(44, 48);
+    const imageSize = new window.kakao.maps.Size(70, 76);
 
-    const filteredLocations = tmplocationdata.filter((location) =>
+    const filteredLocations = company.filter((location) =>
       selectedCategory === '전체'
         ? true
-        : location.category === selectedCategory
+        : (location.role === 'ROLE_MANAGER' && selectedCategory === '본사') ||
+          (location.role === 'ROLE_DISTRIBUTOR' && selectedCategory === '총판')
     );
 
     filteredLocations.forEach((location) => {
       const markerPosition = new window.kakao.maps.LatLng(
-        location.lat,
-        location.lon
+        location.latitude,
+        location.longitude
       );
-      const imageSrc =
-        location.category === '본사'
-          ? marker3
-          : location.category === '총판'
-            ? marker4
-            : null;
-      const markerImage = imageSrc
-        ? new window.kakao.maps.MarkerImage(imageSrc, imageSize)
-        : null;
+      const imageSrc = location.role === 'ROLE_MANAGER' ? marker3 : marker4;
+      const markerImage = new window.kakao.maps.MarkerImage(
+        imageSrc,
+        imageSize
+      );
       const marker = new window.kakao.maps.Marker({
         map: mapRef.current,
         position: markerPosition,
-        title: location.name,
         image: markerImage,
       });
 
       const content = `
       <div style="
-        padding: 16px; 
+        padding: 25px; 
         font-size: 12px;
         width: 200px;
         max-width: 200px;
@@ -111,8 +132,8 @@ const KakaoMap = () => {
         background-color: white;
         white-space: normal;
       ">
-        <div style="font-weight: bold; margin-bottom: 4px;">${location.name}</div>
-        <div>${location.address}</div>
+        <div style="font-weight: bold; margin-bottom: 4px;">${location.companyName}</div>
+        <div>${location.city} ${location.streetAddress} ${location.detailAddress}</div>
       </div>
     `;
 
@@ -143,13 +164,13 @@ const KakaoMap = () => {
   const handleHeadquartersClick = () => {
     setSelectedCategory('본사');
 
-    const headquarters = tmplocationdata.find(
-      (location) => location.category === '본사'
+    const headquarters = company.find(
+      (location) => location.role === 'ROLE_MANAGER'
     );
     if (headquarters && mapRef.current) {
       const headquartersPosition = new window.kakao.maps.LatLng(
-        headquarters.lat,
-        headquarters.lon
+        headquarters.latitude,
+        headquarters.longitude
       );
       mapRef.current.setCenter(headquartersPosition);
       mapRef.current.setLevel(3); // 줌 인하여 본사 중심 보기
@@ -163,11 +184,21 @@ const KakaoMap = () => {
 
     if (mapRef.current) {
       const koreaCenter = new window.kakao.maps.LatLng(36.5, 127.5);
-      mapRef.current.relayout();
+      // mapRef.current.relayout();
       mapRef.current.setCenter(koreaCenter);
       mapRef.current.setLevel(13);
     }
   };
+
+  useEffect(() => {
+    if (selectedCompany && mapRef.current) {
+      const position = new window.kakao.maps.LatLng(
+        selectedCompany.latitude,
+        selectedCompany.longitude
+      );
+      mapRef.current.setCenter(position);
+    }
+  }, [selectedCompany]);
 
   return (
     <div className="relative w-full h-full">
@@ -186,7 +217,7 @@ const KakaoMap = () => {
           }`}
           onClick={handleHeadquartersClick}
         >
-          <img src={marker3} className="w-5 h-5" />
+          <img src={marker3} className="w-7 h-7" />
           <span>본사</span>
         </div>
         <div
@@ -195,7 +226,7 @@ const KakaoMap = () => {
           }`}
           onClick={handleDistributorClick}
         >
-          <img src={marker4} className="w-5 h-5" />
+          <img src={marker4} className="w-7 h-7" />
           <span>총판</span>
         </div>
       </div>

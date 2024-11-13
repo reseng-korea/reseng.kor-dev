@@ -14,12 +14,12 @@ public class KakaoResponse implements OAuth2Response{
     }
 
     @Override
-    public String getSocialId() {
+    public String getSocialProviderId() {
         return attribute.get("id").toString();
     }
 
     @Override
-    public String getRepresentativeName() {
+    public String getName() {
         return (String) ((Map) attribute.get("properties")).get("nickname");
     }
 
