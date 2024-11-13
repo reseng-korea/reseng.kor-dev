@@ -22,7 +22,7 @@ const Qna = () => {
   const { navigateTo, routes } = useNavigateTo();
 
   const [modalOpen, setModalOpen] = useState(false);
-  const { openModal, closeModal, RenderModal } = useModal();
+  const { openModal, openModalWithInput, closeModal, RenderModal } = useModal();
 
   const [qnaData, setQnaData] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
@@ -43,56 +43,96 @@ const Qna = () => {
   };
 
   const handleRowClick = async (index, id, isSecret) => {
+    // 비밀글일 때
     if (isSecret) {
-      try {
-        const response = await axios.get(
-          `${apiUrl}/api/v1/qna/questions/${id}?password=1234`,
-          {
-            headers: {
-              Authorization: accesstoken,
-              'Content-Type': 'application/json',
-            },
+      openModalWithInput({
+        primaryText: '비밀글 기능으로 보호된 글입니다.',
+        context: '작성자와 관리자만 열람하실 수 있습니다.',
+        subContext: '본인이라면 비밀번호를 입력해주세요.',
+        inputPlaceholder: '비밀번호 4자리',
+        type: 'warning',
+        onConfirm: async (inputValue) => {
+          console.log('입력된 비밀번호:', inputValue);
+          try {
+            const response = await axios.get(
+              `${apiUrl}/api/v1/qna/questions/${id}?password=${inputValue}`,
+              {
+                headers: {
+                  Authorization: accesstoken,
+                  'Content-Type': 'application/json',
+                },
+              }
+            );
+
+            if (response.data.code == 200) {
+              const {
+                questionId,
+                userId,
+                title,
+                content,
+                representativeName,
+                createdAt,
+                viewCount,
+                secret,
+              } = response.data.data;
+
+              navigateTo(routes.qnaDetail.replace(':pageNumber', index), {
+                activePage,
+                questionId,
+                userId,
+                title,
+                content,
+                representativeName,
+                createdAt: formatCreatedAt(createdAt),
+                viewCount,
+                secret,
+              });
+            }
+            console.log(response);
+          } catch (error) {
+            console.log(error);
+            console.log(error.response.data.code);
+            if (error.response.data.code == 4026) {
+              openModal({
+                primaryText: '비밀번호가 틀립니다.',
+                context: '확인 후 다시 입력해주세요.',
+                type: 'warning',
+                isAutoClose: false,
+                onConfirm: () => {
+                  closeModal();
+                },
+              });
+            } else {
+              // error.response.data.code == 4011
+              openModal({
+                primaryText: '해당 글은 작성자와 관리자만',
+                secondaryText: '열람 가능합니다.',
+                type: 'warning',
+                isAutoClose: false,
+                onConfirm: () => {
+                  closeModal();
+                },
+              });
+            }
           }
-        );
+        },
+        onCancel: () => {
+          closeModal();
+        },
+      });
 
-        if (response.data.code == 200) {
-          const {
-            questionId,
-            userId,
-            title,
-            content,
-            representativeName,
-            createdAt,
-            viewCount,
-            secret,
-          } = response.data.data;
-
-          navigateTo(routes.qnaDetail.replace(':pageNumber', index), {
-            activePage,
-            questionId,
-            userId,
-            title,
-            content,
-            representativeName,
-            createdAt: formatCreatedAt(createdAt),
-            viewCount,
-            secret,
-          });
-        }
-        console.log(response);
-      } catch (error) {
-        console.log(error);
-      }
+      //
+      // 비밀글이 아닐 때
     } else {
       try {
         const response = await axios.get(
-          `${apiUrl}/api/v1/qna/questions/${id}`,
-          {
-            headers: {
-              Authorization: accesstoken,
-              'Content-Type': 'application/json',
-            },
-          }
+          `${apiUrl}/api/v1/qna/questions/${id}`
+          // {
+          //   headers: {
+          //     Authorization: accesstoken,
+          //     'Content-Type': 'application/json',
+          //   },
+          // }
         );
         console.log(response);
 
@@ -262,6 +302,7 @@ const Qna = () => {
           </div>
         </div>
       </div>
+      <RenderModal />
     </Layout>
   );
 };

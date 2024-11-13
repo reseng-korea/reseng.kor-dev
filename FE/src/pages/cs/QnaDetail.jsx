@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 import useModal from '../../hooks/useModal';
@@ -10,6 +12,8 @@ import { IoTimeOutline } from 'react-icons/io5';
 import { IoEye } from 'react-icons/io5';
 
 const QnaDetail = () => {
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const accesstoken = localStorage.getItem('accessToken');
   const location = useLocation();
   const {
     activePage,
@@ -35,9 +39,27 @@ const QnaDetail = () => {
 
   const { id } = useParams();
 
+  const localUserId = localStorage.getItem('userId');
+  console.log(localUserId);
+
+  // 1:1 문의 글 수정 버튼 클릭 시
+  const handleModifyPost = () => {
+    navigateTo(routes.qnaRegist, {
+      isModify: true,
+      questionId,
+      userId,
+      title,
+      content,
+      representativeName,
+      secret,
+      // 비번
+    });
+  };
+
+  // 1:1 문의 글 삭제 버튼 클릭 시
   const handleDeletePost = () => {
     openModal({
-      title: '이 글을 삭제하시겠습니까?',
+      primaryText: '이 글을 삭제하시겠습니까?',
       context: '삭제된 글은 복구할 수 없습니다.',
       type: 'warning',
       isAutoClose: false,
@@ -45,11 +67,36 @@ const QnaDetail = () => {
       buttonName: '취소',
       cancleButtonName: '삭제',
       onConfirm: () => closeModal(),
-      onCancel: () => {
-        console.log(
-          '삭제 api 연결하고, 삭제 됐을 때 삭제 됐다는 모달창 띄우기'
-        );
-        closeModal();
+      onCancel: async () => {
+        try {
+          closeModal();
+          const response = await axios.delete(
+            `${apiUrl}/api/v1/qna/questions/${questionId}`,
+            {
+              headers: {
+                Authorization: accesstoken,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+
+          console.log(response);
+          console.log(response.data);
+
+          if (response.data.code == 201) {
+            openModal({
+              primaryText: '삭제가 완료되었습니다.',
+              type: 'success',
+              isAutoClose: false,
+              onConfirm: () => {
+                navigateTo(routes.qna);
+                closeModal();
+              },
+            });
+          }
+        } catch (error) {
+          console.log(error);
+        }
       },
     });
   };
@@ -105,22 +152,24 @@ const QnaDetail = () => {
               </div>
               <hr className="w-full mt-12 border-t border-gray2" />
             </div>
-            {/* 버튼 */}
+            {/* 1:1 문의 작성자가 상세 페이지에 들어왔을 때 */}
             <div className="flex flex-col w-4/5">
-              <div className="flex space-x-2 justify-end items-end">
-                {/* <button
-                  onClick={handleDeletePost}
-                  className="px-4 py-2 text-gray3 transition-colors duration-300 border border-gray3 text-xs sm:text-sm md:text-md rounded-lg hover:border-primary hover:text-primary"
-                >
-                  삭제
-                </button>
-                <button
-                  onClick={() => navigateTo(routes.qnaRegist)}
-                  className="px-4 py-2 text-gray3 transition-colors duration-300 border border-gray3 text-xs sm:text-sm md:text-md rounded-lg hover:border-primary hover:text-primary"
-                >
-                  수정
-                </button> */}
-              </div>
+              {userId == localUserId && (
+                <div className="flex space-x-2 justify-end items-end">
+                  <button
+                    onClick={handleModifyPost}
+                    className="px-4 py-2 text-gray3 transition-colors duration-300 border border-gray3 text-xs sm:text-sm md:text-md rounded-lg hover:border-primary hover:text-primary"
+                  >
+                    수정
+                  </button>
+                  <button
+                    onClick={handleDeletePost}
+                    className="px-4 py-2 text-gray3 transition-colors duration-300 border border-gray3 text-xs sm:text-sm md:text-md rounded-lg hover:border-warning hover:text-warning"
+                  >
+                    삭제
+                  </button>
+                </div>
+              )}
 
               <div className="flex flex-col w-full justify-center mt-4">
                 {/* 관리자 : 답변 등록 / 나머지 : 답변 목록 */}
@@ -149,10 +198,10 @@ const QnaDetail = () => {
                 </div>
                 <div className="flex space-x-2 justify-end items-end mt-2">
                   <button className="px-4 py-2 text-gray3 transition-colors duration-300 border border-gray3 text-xs sm:text-sm md:text-md rounded-lg hover:border-primary hover:text-primary">
-                    삭제
-                  </button>
-                  <button className="px-4 py-2 text-gray3 transition-colors duration-300 border border-gray3 text-xs sm:text-sm md:text-md rounded-lg hover:border-primary hover:text-primary">
                     수정
+                  </button>
+                  <button className="px-4 py-2 text-gray3 transition-colors duration-300 border border-gray3 text-xs sm:text-sm md:text-md rounded-lg hover:border-warning hover:text-warning">
+                    삭제
                   </button>
                 </div>
                 {/* 관리자만 보이는 답변 달기 기능 */}

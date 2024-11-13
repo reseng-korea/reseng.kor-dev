@@ -239,6 +239,7 @@ const PhoneNumberInfoForm = ({
               <input
                 type="text"
                 value={authCode}
+                maxLength="5"
                 className="flex-grow p-2 border rounded-lg"
                 placeholder="인증번호 5자리를 입력해주세요"
                 onChange={handleAuthInputChange}

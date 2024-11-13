@@ -1,20 +1,36 @@
 import { useState } from 'react';
+
 import CustomModal from '../components/CustomModal';
+import CustomModalWithInput from '../components/CustomModalWithInput';
 
 const useModal = () => {
-  // console.log('2.useModal에서 받았다.');
   const [isOpen, setIsOpen] = useState(false);
+  const [modalType, setModalType] = useState('default');
   const [modalProps, setModalProps] = useState({
     primaryText: '',
     secondaryText: '',
     context: '',
-    type: 'info', // success or warning
-    isAutoClose: false, // true이면 자동 닫힘
-    cancleButton: false, // 취소 버튼
+    type: 'info',
+    isAutoClose: false,
+    cancleButton: false,
     buttonName: '확인',
     cancleButtonName: '취소',
-    onConfirm: () => {}, // 첫 번째 버튼 클릭 핸들러
-    onCancel: null, // 두 번째 버튼 클릭 핸들러 (있을 경우)
+    onConfirm: () => {},
+    onCancel: null,
+  });
+
+  const [modalInputProps, setModalInputProps] = useState({
+    primaryText: '',
+    secondaryText: '',
+    context: '',
+    subContext: '',
+    inputPlaceholder: '',
+    type: 'info',
+    cancleButton: true,
+    buttonName: '확인',
+    cancleButtonName: '취소',
+    onConfirm: () => {},
+    onCancel: null,
   });
 
   const openModal = ({
@@ -29,6 +45,7 @@ const useModal = () => {
     onConfirm = () => {},
     onCancel = null,
   }) => {
+    setModalType('default');
     setModalProps({
       primaryText,
       secondaryText,
@@ -41,22 +58,65 @@ const useModal = () => {
       onConfirm,
       onCancel,
     });
-    // setTimeout(() => setIsOpen(true), 0);
     setIsOpen(true);
-    console.log('3. 받은 내용이다. primaryText : ', primaryText);
+  };
+
+  const openModalWithInput = ({
+    primaryText,
+    secondaryText = '',
+    context = '',
+    subContext = '',
+    inputPlaceholder = '',
+    type = 'info',
+    cancleButton = true,
+    buttonName = '확인',
+    cancleButtonName = '취소',
+    onConfirm = (inputValue) => {},
+    onCancel = null,
+  }) => {
+    setModalType('input');
+    setModalInputProps({
+      primaryText,
+      secondaryText,
+      context,
+      subContext,
+      inputPlaceholder,
+      type,
+      cancleButton,
+      buttonName,
+      cancleButtonName,
+      onConfirm,
+      onCancel,
+    });
+    setIsOpen(true);
   };
 
   const closeModal = () => setIsOpen(false);
 
   const RenderModal = () => {
-    console.log('4. RenderModal로 왔다.', isOpen);
-    // useEffect(() => {
-    //   if (isOpen) {
-    //     console.log('Modal is open with props:', modalProps);
-    //   }
-    // }, [isOpen, modalProps]);
+    if (!isOpen) return null;
 
-    return isOpen ? (
+    if (modalType === 'input') {
+      return (
+        <CustomModalWithInput
+          isOpen={isOpen}
+          closeModal={closeModal}
+          primaryText={modalInputProps.primaryText}
+          secondaryText={modalInputProps.secondaryText}
+          context={modalInputProps.context}
+          subContext={modalInputProps.subContext}
+          inputPlaceholder={modalInputProps.inputPlaceholder}
+          type={modalInputProps.type}
+          cancleButton={modalInputProps.cancleButton}
+          buttonName={modalInputProps.buttonName}
+          cancleButtonName={modalInputProps.cancleButtonName}
+          onConfirm={modalInputProps.onConfirm}
+          onCancel={modalInputProps.onCancel}
+        />
+      );
+    }
+
+    return (
       <CustomModal
         isOpen={isOpen}
         closeModal={closeModal}
@@ -71,10 +131,10 @@ const useModal = () => {
         onConfirm={modalProps.onConfirm}
         onCancel={modalProps.onCancel}
       />
-    ) : null;
+    );
   };
 
-  return { openModal, closeModal, RenderModal };
+  return { openModal, openModalWithInput, closeModal, RenderModal };
 };
 
 export default useModal;

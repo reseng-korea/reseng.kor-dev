@@ -1,5 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
+import { useParams } from 'react-router-dom';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
@@ -9,6 +11,9 @@ import { useNavigateTo } from '../../hooks/useNavigateTo';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
 
 const QnaRegister = () => {
+  const location = useLocation();
+  const data = location.state || {};
+
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
   const userId = localStorage.getItem('userId');
@@ -24,11 +29,25 @@ const QnaRegister = () => {
   // 새로고침 데이터 날라감 방지
   usePreventRefresh(openModal, closeModal, setModalOpen);
 
+  const { questionId } = useParams(); // URL에서 id 가져오기 (없으면 undefined)
+
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const maxLength = 1500;
   const [isSecret, setIsSecret] = useState(false);
   const [password, setPassword] = useState('');
+
+  // id가 존재하면 수정 모드로 인식하여 데이터를 불러옴
+  useEffect(() => {
+    if (data && data.isModify) {
+      console.log(data);
+      console.log(data.title);
+      console.log(data.isModify);
+      setTitle(data.title);
+      setContent(data.content);
+      setIsSecret(data.secret);
+    }
+  }, [data]);
 
   // 제목
   const handleTitle = (e) => {
@@ -92,39 +111,80 @@ const QnaRegister = () => {
         },
       });
     } else {
-      try {
-        const response = await axios.post(
-          `${apiUrl}/api/v1/qna/questions`,
-          {
-            title: title,
-            content: content,
-            isSecret: isSecret,
-            password: password,
-          },
-          {
-            headers: {
-              Authorization: accesstoken,
-              'Content-Type': 'application/json',
+      // 수정 로직이라면
+      if (data.isModify) {
+        console.log('퀘스쳔 아이디다 25여야함');
+        console.log(data.questionId);
+        try {
+          const response = await axios.put(
+            `${apiUrl}/api/v1/qna/questions/${data.questionId}`,
+            {
+              title: title,
+              content: content,
+              isSecret: isSecret,
+              password: password,
             },
-          }
-        );
-        console.log(response);
+            {
+              headers: {
+                Authorization: accesstoken,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          console.log(response);
 
-        if (response.data.code == 201) {
-          setModalOpen(true);
-          openModal({
-            primaryText: '문의가 등록되었습니다.',
-            type: 'success',
-            isAutoClose: true,
-            onConfirm: () => {
-              closeModal();
-              setModalOpen(false);
-              navigateTo(routes.qna);
-            },
-          });
+          if (response.data.code == 201) {
+            setModalOpen(true);
+            openModal({
+              primaryText: '문의가 수정되었습니다.',
+              type: 'success',
+              isAutoClose: true,
+              onConfirm: () => {
+                closeModal();
+                setModalOpen(false);
+                navigateTo(routes.qna);
+              },
+            });
+          }
+        } catch (error) {
+          console.log(error);
         }
-      } catch (error) {
-        console.log(error);
+        // 등록 로직이라면
+      } else {
+        try {
+          const response = await axios.post(
+            `${apiUrl}/api/v1/qna/questions`,
+            {
+              title: title,
+              content: content,
+              isSecret: isSecret,
+              password: password,
+            },
+            {
+              headers: {
+                Authorization: accesstoken,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          console.log(response);
+
+          if (response.data.code == 201) {
+            setModalOpen(true);
+            openModal({
+              primaryText: '문의가 등록되었습니다.',
+              type: 'success',
+              isAutoClose: true,
+              onConfirm: () => {
+                closeModal();
+                setModalOpen(false);
+                navigateTo(routes.qna);
+              },
+            });
+          }
+        } catch (error) {
+          console.log(error);
+        }
       }
     }
   };
@@ -230,7 +290,7 @@ const QnaRegister = () => {
               onClick={handleSubmit}
               className="px-4 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg w-1/6 hover:bg-hover"
             >
-              등록
+              {data.isModify ? '수정' : '등록'}
             </button>
             <button
               type="submit"
