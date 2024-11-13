@@ -13,7 +13,6 @@ import java.time.LocalDate;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-@Immutable
 public class OrderHistory {
 
     @Id
