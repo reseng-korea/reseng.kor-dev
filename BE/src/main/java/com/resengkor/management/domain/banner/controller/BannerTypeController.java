@@ -31,13 +31,13 @@ public class BannerTypeController {
     }
 
     // 현수막 길이 수정 API
-    @PatchMapping("/use-yards")
-    public ResponseEntity<String> useBannerYards(@RequestBody QrPageDataDTO qrPageDataDTO) {
-        try {
-            bannerTypeService.useBannerYards(qrPageDataDTO);
-            return ResponseEntity.ok("Banner length updated successfully.");
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+//    @PatchMapping("/use-yards")
+//    public ResponseEntity<String> useBannerYards(@RequestBody QrPageDataDTO qrPageDataDTO) {
+//        try {
+//            bannerTypeService.useBannerYards(qrPageDataDTO);
+//            return ResponseEntity.ok("Banner length updated successfully.");
+//        } catch (IllegalArgumentException e) {
+//            return ResponseEntity.badRequest().body(e.getMessage());
+//        }
+//    }
 }

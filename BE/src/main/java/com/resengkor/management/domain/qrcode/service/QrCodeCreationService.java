@@ -31,7 +31,6 @@ public class QrCodeCreationService {
     // repository
     private final UserRepository userRepository;
     private final BannerRequestRepository bannerRequestRepository;
-    private final BannerTypeRepository bannerTypeRepository;
     private final QrRepository qrRepository;
     // mapper
     private final BannerRequestMapper bannerRequestMapper;
@@ -39,7 +38,10 @@ public class QrCodeCreationService {
     private final BannerTypeService bannerTypeService;
 
     public byte[] generateQRCode(QrPageDataDTO qrPageDataDTO) {
-        User user = getUser();
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
 
         // qrPageDataDTO에 로그인 된 사용자의 companyName을 설정
         qrPageDataDTO = qrPageDataDTO.toBuilder()
@@ -92,13 +94,4 @@ public class QrCodeCreationService {
         return stream.toByteArray();
     }
 
-    private User getUser() {
-        // 현재 로그인된 사용자의 ID를 가져옴
-        Long userId = UserAuthorizationUtil.getLoginMemberId();
-
-        // ID를 기반으로 사용자 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자를 찾을 수 없습니다."));
-        return user;
-    }
 }

@@ -1,4 +1,4 @@
-package com.resengkor.management.domain.banner.controller;
+package com.resengkor.management.domain.banner.dto;
 
 import com.resengkor.management.domain.banner.entity.OrderStatus;
 import lombok.AllArgsConstructor;

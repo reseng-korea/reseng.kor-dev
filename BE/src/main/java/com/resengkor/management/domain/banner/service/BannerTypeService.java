@@ -130,24 +130,13 @@ public class BannerTypeService {
     // userId, horizontalLength, typeWidth이 일치하는 bannerType 반환
     public BannerType findMatchingBannerType(Long userId, SelectedBannerRequestDto selectedBannerRequestDto) {
         // 선택된 horizontalLength를 조정 (1.092 곱한 후 반올림하여 BigDecimal로 변환)
-//        BigDecimal adjustedHorizontalLength = BannerRequestMapper.INSTANCE.adjustAndRoundLength(qrPageDataDTO.getHorizontalLength());
+        BigDecimal adjustedHorizontalLength = BannerRequestMapper.INSTANCE.adjustAndRoundLength(selectedBannerRequestDto.getHorizontalLength());
 
-        // 선택된 horizontalLength를 1.092 곱한 후 정확한 BigDecimal로 변환
-        BigDecimal adjustedHorizontalLength = BigDecimal.valueOf(selectedBannerRequestDto.getHorizontalLength())
-                .multiply(BigDecimal.valueOf(1.092));
-
-//        return bannerTypeRepository.findClosestByUserIdAndTypeWidth(
-//                userId,
-//                qrPageDataDTO.getTypeWidth(),
-//                adjustedHorizontalLength,
-//                PageRequest.of(0, 1) // 가장 가까운 하나만 조회
-//        ).stream().findFirst().orElseThrow(() -> new RuntimeException("해당 조건에 맞는 BannerType이 없습니다."));
-
-        // 정확한 값으로 BannerType을 조회
-        return bannerTypeRepository.findByUserIdAndTypeWidthAndExactLength(
+        return bannerTypeRepository.findClosestByUserIdAndTypeWidth(
                 userId,
                 selectedBannerRequestDto.getTypeWidth(),
-                adjustedHorizontalLength
-        ).orElseThrow(() -> new RuntimeException("해당 조건에 맞는 정확한 BannerType이 없습니다."));
+                adjustedHorizontalLength,
+                PageRequest.of(0, 1) // 가장 가까운 하나만 조회
+        ).stream().findFirst().orElseThrow(() -> new RuntimeException("해당 조건에 맞는 BannerType이 없습니다."));
     }
 }
