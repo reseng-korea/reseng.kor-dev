@@ -40,26 +40,26 @@ public class DocumentController {
 
     //세부 사항 조회
     @GetMapping("/{documentType}/{documentId}")
-    public DataResponse<DocumentDetailResponse> getDocumentDetail(@PathVariable("documentType") String documentType, @PathVariable Long documentId) {
+    public DataResponse<DocumentDetailResponse> getDocumentDetail(@PathVariable("documentType") String documentType, @PathVariable("documentId") Long documentId) {
         return documentService.getDocumentDetail(documentType,documentId);
     }
 
     //수정
     @PutMapping("/{documentType}/{documentId}")
-    public CommonResponse updateDocument(@PathVariable("documentType") String documentType, @PathVariable Long documentId, @RequestBody DocumentRequest request) {
+    public CommonResponse updateDocument(@PathVariable("documentType") String documentType, @PathVariable("documentId") Long documentId, @RequestBody DocumentRequest request) {
         return documentService.updateDocument(documentType,documentId, request);
     }
 
     //삭제
     @DeleteMapping("/{documentType}/{documentId}")
-    public CommonResponse deleteDocument(@PathVariable("documentType") String documentType, @PathVariable Long documentId) {
+    public CommonResponse deleteDocument(@PathVariable("documentType") String documentType, @PathVariable("documentId") Long documentId) {
         new CommonResponse(ResponseStatus.DELETED_SUCCESS.getCode(), ResponseStatus.DELETED_SUCCESS.getMessage());
         return documentService.deleteDocument(documentType,documentId);
     }
 
     //다운로드
-    @GetMapping(path = "/download/{documentType}")
-    public ResponseEntity<byte[]> downloadDocumentFile(@PathVariable("documentType") String documentType, @RequestParam Long fileId){
+    @GetMapping(path = "/download/{documentType}/{fileId}")
+    public ResponseEntity<byte[]> downloadDocumentFile(@PathVariable("documentType") String documentType, @PathVariable("fileId") Long fileId){
         return documentService.downloadDocumentFile(documentType,fileId);
     }
 }

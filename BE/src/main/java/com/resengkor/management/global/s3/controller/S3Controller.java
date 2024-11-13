@@ -29,7 +29,7 @@ public class S3Controller {
     //실시간 파일 업로드
     @PostMapping(path = "/upload/{documentType}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public DataResponse<FileRequest> uploadToS3(
-            @PathVariable String documentType,
+            @PathVariable("documentType") String documentType,
             @RequestPart(value = "file", required = false) MultipartFile multipartFile
     ) {
         log.info("------------controller : 에디터 파일 업로드  start------------");
@@ -37,7 +37,7 @@ public class S3Controller {
     }
 
     //실시간 파일 삭제
-    @DeleteMapping(path ="/delete")
+    @DeleteMapping
     public CommonResponse deleteFromS3(@RequestParam("fileName") String fileName) {
         log.info("------------controller : 에디터 파일 삭제  start------------");
         return s3Service.deleteFileFromS3(fileName);
