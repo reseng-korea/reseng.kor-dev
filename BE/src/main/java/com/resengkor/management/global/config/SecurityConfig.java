@@ -57,7 +57,7 @@ public class SecurityConfig {
             "/api/v1/users/pagination",
             "/api/v1/regions/**", "/api/v1/companies/**",
             "/api/v1/faq/**",
-            "api/v1/qr-code"
+            "api/v1/qr-code",
             "/api/v1/qna/questions/**",
             "/api/v1/qualifications"
     );
