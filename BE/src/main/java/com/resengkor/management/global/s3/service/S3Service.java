@@ -97,6 +97,7 @@ public class S3Service {
             amazonS3.putObject(new PutObjectRequest(bucket, s3FileName, localFile) //버킷, 파일명, 서버저장한파일
                     .withCannedAcl(CannedAccessControlList.PublicRead));//보안 설정.외부에서 public으로 읽을 수 있음
         } catch (Exception e) {
+            e.printStackTrace();
             throw new CustomException(ExceptionStatus.S3_CONNECTION_ERROR);
         } finally{
             deleteLocalFile(localFile); // 로컬에 생성된 임시 파일 삭제
@@ -126,26 +127,18 @@ public class S3Service {
         // 업로드된 파일의 이름을 사용해 새 파일 생성
         File convertedFile = new File(file.getOriginalFilename());
         //1
-//        try {
-//            if (convertedFile.createNewFile()) {
-//                // 파일에 데이터를 씁니다.
-//                try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
-//                    fos.write(file.getBytes());
-//                }
-//                return Optional.of(convertedFile);
-//            }
-//        } catch (IOException e) {
-//            throw new CustomException(ExceptionStatus.FILE_CONVERSION_ERROR);
-//        }
-//        return Optional.empty();
-
-        //이게 더 성능이 좋다고 함
         try {
-            file.transferTo(convertedFile);
-            return Optional.of(convertedFile);
+            if (convertedFile.createNewFile()) {
+                // 파일에 데이터를 씁니다.
+                try (FileOutputStream fos = new FileOutputStream(convertedFile)) {
+                    fos.write(file.getBytes());
+                }
+                return Optional.of(convertedFile);
+            }
         } catch (IOException e) {
             throw new CustomException(ExceptionStatus.FILE_CONVERSION_ERROR);
         }
+        return Optional.empty();
     }
 
 

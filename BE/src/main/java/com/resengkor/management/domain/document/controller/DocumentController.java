@@ -25,40 +25,41 @@ public class DocumentController {
     private final DocumentService documentService;
 
     //생성
-    @PostMapping("/{type}")
-    public CommonResponse createDocument(@PathVariable String type, @RequestBody DocumentRequest dto) {
-        return documentService.createDocument(type,dto);
+    @PostMapping("/{documentType}")
+    public CommonResponse createDocument(@PathVariable("documentType") String documentType, @RequestBody DocumentRequest dto) {
+        return documentService.createDocument(documentType,dto);
     }
 
     //전체 목록 조회
-    @GetMapping("/{type}")
-    public DataResponse<Page<DocumentResponse>> getDocumentList(@PathVariable String type, @RequestParam(defaultValue = "0") int page,
+    @GetMapping("/{documentType}")
+    public DataResponse<Page<DocumentResponse>> getDocumentList(@PathVariable("documentType") String documentType,
+                                                                @RequestParam(defaultValue = "0") int page,
                                                                 @RequestParam(defaultValue = "10") int size) {
-        return documentService.getDocumentList(type,page, size);
+        return documentService.getDocumentList(documentType,page, size);
     }
 
     //세부 사항 조회
-    @GetMapping("/{type}/{documentId}")
-    public DataResponse<DocumentDetailResponse> getDocumentDetail(@PathVariable String type, @PathVariable Long documentId) {
-        return documentService.getDocumentDetail(type,documentId);
+    @GetMapping("/{documentType}/{documentId}")
+    public DataResponse<DocumentDetailResponse> getDocumentDetail(@PathVariable("documentType") String documentType, @PathVariable Long documentId) {
+        return documentService.getDocumentDetail(documentType,documentId);
     }
 
     //수정
-    @PutMapping("/{type}/{documentId}")
-    public CommonResponse updateDocument(@PathVariable String type, @PathVariable Long documentId, @RequestBody DocumentRequest request) {
-        return documentService.updateDocument(type,documentId, request);
+    @PutMapping("/{documentType}/{documentId}")
+    public CommonResponse updateDocument(@PathVariable("documentType") String documentType, @PathVariable Long documentId, @RequestBody DocumentRequest request) {
+        return documentService.updateDocument(documentType,documentId, request);
     }
 
     //삭제
-    @DeleteMapping("/{type}/{documentId}")
-    public CommonResponse deleteDocument(@PathVariable String type, @PathVariable Long documentId) {
+    @DeleteMapping("/{documentType}/{documentId}")
+    public CommonResponse deleteDocument(@PathVariable("documentType") String documentType, @PathVariable Long documentId) {
         new CommonResponse(ResponseStatus.DELETED_SUCCESS.getCode(), ResponseStatus.DELETED_SUCCESS.getMessage());
-        return documentService.deleteDocument(type,documentId);
+        return documentService.deleteDocument(documentType,documentId);
     }
 
     //다운로드
-    @GetMapping(path = "/download/{type}")
-    public ResponseEntity<byte[]> downloadDocumentFile(@PathVariable String type, @RequestParam Long fileId){
-        return documentService.downloadDocumentFile(type,fileId);
+    @GetMapping(path = "/download/{documentType}")
+    public ResponseEntity<byte[]> downloadDocumentFile(@PathVariable("documentType") String documentType, @RequestParam Long fileId){
+        return documentService.downloadDocumentFile(documentType,fileId);
     }
 }
