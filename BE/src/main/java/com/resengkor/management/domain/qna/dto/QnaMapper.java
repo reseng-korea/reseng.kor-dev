@@ -28,6 +28,7 @@ public class QnaMapper {
     // Question Entity -> QuestionResponse
     public QuestionResponse toQuestionResponse(Question question) {
         return QuestionResponse.builder()
+                .questionId(question.getId())
                 .title(question.getTitle())
                 .isSecret(question.isSecret())
                 .viewCount(question.getViewCount())
@@ -40,6 +41,7 @@ public class QnaMapper {
 
     public QuestionDetailResponse toQuestionDetailResponse(Question question) {
         return QuestionDetailResponse.builder()
+                .questionId(question.getId())
                 .title(question.getTitle())
                 .content(question.getContent())
                 .isSecret(question.isSecret())
@@ -59,6 +61,7 @@ public class QnaMapper {
         }
 
         return QuestionAnswerResponse.builder()
+                .questionId(question.getId())
                 .title(question.getTitle())
                 .content(question.getContent())
                 .isSecret(question.isSecret())
@@ -84,7 +87,7 @@ public class QnaMapper {
     // Answer Entity to Response
     public AnswerResponse toAnswerResponse(Answer answer) {
         return AnswerResponse.builder()
-                .id(answer.getId())
+                .answerId(answer.getId())
                 .content(answer.getContent())
                 .questionId(answer.getQuestion().getId())
                 .adminId(answer.getAdmin().getId())

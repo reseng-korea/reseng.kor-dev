@@ -65,19 +65,7 @@ public class UserService {
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), id);
     }
 
-    //유효성 검사
-    @Transactional(readOnly = true)
-    public Map<String, String> validateHandling(BindingResult bindingResult) {
-        Map<String, String> validatorResult = new HashMap<>();
-
-        for(FieldError error : bindingResult.getFieldErrors()) {
-            String validKeyName = String.format("valid_%s", error.getField());
-            validatorResult.put(validKeyName, error.getDefaultMessage());
-        }
-
-        return validatorResult;
-    }
-
+    //비활성화된 사용자인지 체크
     private void checkUserIsWithdrawed(User user){
         if (!user.isStatus()) {
             log.info("비활성 사용자입니다 (이메일 중복)");
@@ -132,7 +120,8 @@ public class UserService {
     @Transactional
     public DataResponse<UserDTO> registerUser(UserRegisterRequest request) {
         // 상황 : 핸드폰, 이메일 인증 완료한 상태
-        // 이메일이 존재하는지 확인하고 예외 던지기
+        log.info("----Service Start: 일반 회원 등록하기-----");
+        // 0. 이메일이 존재하는지 확인하고 예외 던지기
         validateUniqueEmailAndPhoneNumber(request.getEmail(), request.getPhoneNumber());
 
         // 1. User 생성 (일반 사용자이므로 ROLE_GUEST 설정)
@@ -148,13 +137,13 @@ public class UserService {
                 .loginType(LoginType.LOCAL)
                 .status(true)
                 .build();
-        log.info("유저 생성");
+        log.info("유저 생성 성공");
 
         // 2. Region 찾아오기
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
-                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND)); // 서울시 찾기
+                .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND)); // 서울시 찾기
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
-                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND)); // 강남구 찾기
+                .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND)); // 강남구 찾기
         log.info("region 조회 성공");
 
         // 3. UserProfile 생성 및 연결 (latitude, longitude 없이)
@@ -166,14 +155,16 @@ public class UserService {
                 .city(city)
                 .district(district)
                 .build();
+        log.info("userProfile 생성 성공");
 
         // 4. 양방향 관계 설정
         user.updateUserUserProfile(userProfile); // User의 userProfile 설정
         userProfileRepository.save(userProfile); // UserProfile 먼저 저장
-        log.info("프로파일 생성 성공");
+        log.info("userProfile 저장 성공");
 
         // 5. User 저장
         User savedUser = userRepository.save(user);
+        log.info("user 저장 성공");
 
         // 6. RoleHierarchy 생성 (상위 관계가 없는 일반 사용자는 자기 자신)
         RoleHierarchy roleHierarchy = RoleHierarchy.builder()
@@ -181,11 +172,14 @@ public class UserService {
                 .descendant(savedUser)  // 하위 관계: 자신
                 .depth(0)  // 자기 자신과의 관계는 depth 0
                 .build();
+        log.info("RoleHierarchy 생성 성공");
+        
         roleHierarchyRepository.save(roleHierarchy);
-        log.info("role 생성 성공");
-
+        log.info("RoleHierarchy 저장 성공");
+        
         // 7. 응답 생성
         UserDTO userDTO = userMapper.toUserDTO(savedUser);
+        log.info("응답 생성 성공");
 
         return new DataResponse<>(ResponseStatus.CREATED_SUCCESS.getCode(),
                 ResponseStatus.CREATED_SUCCESS.getMessage(), userDTO);
@@ -194,6 +188,7 @@ public class UserService {
     //이메일 찾기
     //로그인 x
     public DataResponse<FindEmailResponse> findEmail(FindEmailRequest request) {
+        log.info("----Service Start: 아이디(이메일) 찾기-----");
         //1. companyName과 phoneNumber로 사용자 차기 (없으면 에러 터뜨림)
         User user = userRepository.findByCompanyNameAndPhoneNumber(request.getCompanyName(), request.getPhoneNumber())
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
@@ -201,19 +196,22 @@ public class UserService {
 
         //2. 사용자는 찾은 상태. 그런데 비활성화된 이용자인지 확인
         checkUserIsWithdrawed(user);
+        log.info("비활성화된 회원 아님");
 
         //3. FindEmailResponse 객체 생성
         FindEmailResponse findEmailResponse = new FindEmailResponse();
         findEmailResponse.setEmail(user.getEmail()); // 이메일 설정
+        log.info("응답 생성 성공");
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), findEmailResponse);
     }
 
-    //비밀번호 찾기
+    //비밀번호 찾기(이메일, 핸드폰 번호)
     //로그인x
     @Transactional
     public DataResponse<String> findPassword(FindPasswordRequest request) {
+        log.info("----Service Start: 비밀번호 찾기-----");
         //1. Email이랑 PhoneNumber로 사용자 찾기
         User user = userRepository.findByEmailAndPhoneNumber(request.getEmail(), request.getPhoneNumber())
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
@@ -221,22 +219,28 @@ public class UserService {
 
         //2. 사용자는 찾은 상태. 그런데 비활성화된 이용자인지 확인하기
         checkUserIsWithdrawed(user);
+        log.info("비활성화된 회원 아님");
 
         //3. 임시 비밀번호 생성
-        String temporaryPassword = TmpCodeUtil.generateAlphanumericPassword();
-        log.info("임시 비밀번호 생성: {}", temporaryPassword);
+        String temporaryPassword = TmpCodeUtil.generateAlphanumericPasswordWithSpecialChars();
+        log.info("임시 비밀번호 생성 성공");
 
         //4. SMS 전송
         MessageDto messageDto = new MessageDto(user.getPhoneNumber());
         try {
             smsService.sendDetailSms(messageDto,"findPassword",temporaryPassword);
         } catch (Exception e) {
+            log.info("SMS 전송 실패");
             throw new CustomException(ExceptionStatus.SMS_SEND_FAIL);
         }
 
         // 5. 비밀번호 업데이트
         user.editPassword(passwordEncoder.encode(temporaryPassword));
+        user.editTemporaryPasswordStatus(true);//isTemporaryPassword true로 업뎃
+        log.info("임시 비번 업데이트 성공");
+
         userRepository.save(user);
+        log.info("임시 비번 저장 성공");
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(),"비밀번호 찾기 요청 성공");
@@ -245,58 +249,72 @@ public class UserService {
     //회원 탈퇴 로직
     //로그인O
     @Transactional
-    @PreAuthorize("#userId == principal.id")
-    public CommonResponse withdrawUser(String token) {
-        log.info("------------------------------------------------");
-        log.info("회원탈퇴 로직 시작");
-        log.info("------------------------------------------------");
+    public CommonResponse withdrawUser(String headerRefresh) {
+        log.info("----Service Start: 회원탈퇴-----");
         //1.JWT에서 사용자 이메일 추출
-        String userEmail = jwtUtil.getEmail(token);
+        String email = jwtUtil.getEmail(headerRefresh);
+        String sessionId = jwtUtil.getSessionId(headerRefresh);
+
         //2.사용자 찾기
-        User user = userRepository.findByEmail(userEmail)
+        User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
-        log.info("------------------------------------------------");
-        log.info("회원탈퇴:사용자 찾음");
-        log.info("------------------------------------------------");
+        log.info("회원탈퇴 요청한 사용자 찾음");
+
+        // Redis에서 refresh 토큰 유효성 검사
+        String redisKey = "refresh_token:" + email + ":" + sessionId;
+        Boolean isExist = redisUtil.existData(redisKey);
+        String redisRefresh;
+        if(isExist){//Redis에 존재한다면
+            //redis에 있는 value값 가져오기
+            redisRefresh = redisUtil.getData(redisKey);
+            if(!headerRefresh.equals(redisRefresh)){
+                throw new CustomException(ExceptionStatus.INVALID_REFRESH_TOKEN);
+            }
+        }
 
         //3.만약에 로그인을 social로 했다면 따로 api 처리
         if(user.getLoginType().equals(LoginType.SOCIAL)){
             if(user.getSocialProvider().equals(SocialProvider.KAKAO)){
-                String userId = user.getSocialId();
                 //만약에 카카오
+                String userId = user.getSocialId();
+                log.info("카카오 이용자");
                 kakaoUserWithdrawService.unlinkKakaoUser(userId);
             }
         }
         //4.사용자 상태를 비활성으로 변경
         user.editStatus(false);
         userRepository.save(user);
-        log.info("------------------------------------------------");
-        log.info("회원탈퇴:사용자 비활성화");
-        log.info("------------------------------------------------");
+        log.info("회원탈퇴 저장 성공");
 
         //5.해당 유저의 refresh토큰 전부 삭제
-        boolean isDeleted = redisUtil.deleteData("refresh:token:" + userEmail);
+        boolean isDeleted = redisUtil.deleteAllRefreshTokensByEmailUsingScan(email);
         if (!isDeleted) {
-            log.error("회원탈퇴: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
+            log.error("Refresh 토큰 삭제 실패 (Redis 연결 오류)");
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);
         }
 
-        return new CommonResponse(ResponseStatus.UPDATED_SUCCESS .getCode(),
-                ResponseStatus.UPDATED_SUCCESS .getMessage());
+        return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                "회원 탈퇴에 성공했습니다.");
     }
-
 
     //소셜 로그인 회원정보 추가(소셜 로그인 첫 회원가입시 바로 진행)
     //로그인O
     @Transactional
-    @PreAuthorize("#userId == principal.id")
-    public DataResponse<UserDTO> oauthUpdateUser(Long userId, OauthUserUpdateRequest request) {
-        // 1. 사용자 조회 (존재하지 않으면 예외 던지기)
-        User user = userRepository.findUserWithProfileAndRegionById(userId)
+    public DataResponse<UserDTO> oauthUpdateUser(Long pathVariableUserId, OauthUserUpdateRequest request) {
+        log.info("----Service Start: 소셜 회원 정보 추가하기-----");
+
+        //1. 로그인한 loginUserId 가져오기
+        Long loginUserId = UserAuthorizationUtil.getLoginMemberId();
+        //1-1. loginUserId랑 pathVariableUserId랑 같은지 체크
+        UserAuthorizationUtil.checkUserMatch(pathVariableUserId, loginUserId);
+        // 1-2. 사용자 조회 (존재하지 않으면 예외 던지기)
+        User user = userRepository.findById(loginUserId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+        log.info("사용자 조회 성공");
 
         // 2. 이메일 및 전화번호 중복 검사
-        validateUniqueEmailAndPhoneNumberWithId(userId, request.getEmail(), request.getPhoneNumber());
+        validateUniqueEmailAndPhoneNumberWithId(loginUserId, request.getEmail(), request.getPhoneNumber());
+        log.info("이메일 및 전화번호 중복 아님");
 
         // 3. 사용자 정보 추가
         user.updateUser(request.getEmail(), request.getCompanyName(),
@@ -307,9 +325,9 @@ public class UserService {
 
         // 5. 지역 조회 (UserProfile이 null일 경우나 업데이트 시 모두 사용됨)
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
-                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
-                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
 
         // 6. UserProfile 조회 및 초기화
         UserProfile userProfile = user.getUserProfile();
@@ -340,6 +358,7 @@ public class UserService {
 
         // 8. 응답 생성
         UserDTO userDTO = userMapper.toUserDTO(user);
+        log.info("응답 생성 성공");
 
         return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
                 ResponseStatus.UPDATED_SUCCESS.getMessage(), userDTO);
@@ -347,19 +366,26 @@ public class UserService {
 
     //소셜+일반 사용자 정보 수정
     //로그인O
-    @PreAuthorize("#userId == principal.id")
     @Transactional
-    public DataResponse<UserDTO> updateUser(Long userId, UserUpdateRequest request) {
-        //1.사용자 조회 (존재하지 않으면 예외 던지기)
-        User user = userRepository.findUserWithProfileAndRegionById(userId)
+    public DataResponse<UserDTO> updateUser(Long pathVariableUserId, UserUpdateRequest request) {
+        log.info("----Service Start: 회원(로컬,소셜) 정보 수정하기-----");
+
+        //1. 로그인한 loginUserId 가져오기
+        Long loginUserId = UserAuthorizationUtil.getLoginMemberId();
+        //1-1. loginUserId랑 pathVariableUserId랑 같은지 체크
+        UserAuthorizationUtil.checkUserMatch(pathVariableUserId, loginUserId);
+        // 1-2. 사용자 조회 (존재하지 않으면 예외 던지기)
+        User user = userRepository.findById(loginUserId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+        log.info("사용자 조회 성공");
 
         //2. 비밀번호 확인 후 설정
         String encodedPassword = passwordEncoder.encode(request.getPassword());
         user.editPassword(encodedPassword); // 비밀번호 수정
 
         //3. 이메일 및 전화번호 중복 검사
-        validateUniqueEmailAndPhoneNumberWithId(userId, request.getEmail(), request.getPhoneNumber());
+        validateUniqueEmailAndPhoneNumberWithId(loginUserId, request.getEmail(), request.getPhoneNumber());
+        log.info("이메일 및 전화번호 중복 아님");
 
         //4.사용자 정보 수정
         user.updateUser(request.getEmail(), request.getCompanyName(),
@@ -367,9 +393,9 @@ public class UserService {
 
         // 5. 지역 정보 조회
         Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
-                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
         Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
-                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
 
         // 6. UserProfile 정보 수정
         String companyPhoneNumber = request.getCompanyPhoneNumber();
@@ -388,20 +414,28 @@ public class UserService {
 
         //9. 응답 생성
         UserDTO userDTO = userMapper.toUserDTO(user);
+        log.info("응답 생성 성공");
+
         return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
                 ResponseStatus.UPDATED_SUCCESS.getMessage(), userDTO);
     }
 
     //사용자 정보 조회
     //로그인O
-    @PreAuthorize("#userId == principal.id")
-    public DataResponse<UserDTO> getUserInfo(Long userId) {
-        //1. 사용자 찾기
-        User user = userRepository.findUserWithProfileAndRegionById(userId)
+    public DataResponse<UserDTO> getUserInfo(Long pathVariableUserId) {
+        log.info("----Service Start: 개인 회원 정보 요청하기-----");
+        //1. 로그인한 loginUserId 가져오기
+        Long loginUserId = UserAuthorizationUtil.getLoginMemberId();
+        //1-1. loginUserId랑 pathVariableUserId랑 같은지 체크
+        UserAuthorizationUtil.checkUserMatch(pathVariableUserId, loginUserId);
+        // 1-2. 사용자 조회 (존재하지 않으면 예외 던지기)
+        User user = userRepository.findById(loginUserId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+        log.info("사용자 조회 성공");
 
         //2. 응답 생성
         UserDTO userDTO = userMapper.toUserDTO(user);
+        log.info("응답 생성 성공");
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(), userDTO);
@@ -409,21 +443,24 @@ public class UserService {
 
     //비밀번호 확인(정보 확인용)
     //로그인O
-    public DataResponse<String> verifyPassword(VerifyPasswordRequest verifyPasswordRequest) {
-        //1. 로그인한 사용자id를 가지고 로그인한 user 객체 가져오기
-        Long userId = UserAuthorizationUtil.getLoginMemberId();
-        User loginUser = userRepository.findById(userId)
+    public DataResponse<String> verifyPassword(Long pathVariableUserId, VerifyPasswordRequest verifyPasswordRequest) {
+        log.info("----Service Start: 비밀번호 확인하기(정보 확인용)-----");
+        //1. 로그인한 loginUserId 가져오기
+        Long loginUserId = UserAuthorizationUtil.getLoginMemberId();
+        //1-1. loginUserId랑 pathVariableUserId랑 같은지 체크
+        UserAuthorizationUtil.checkUserMatch(pathVariableUserId, loginUserId);
+        // 1-2. 사용자 조회 (존재하지 않으면 예외 던지기)
+        User user = userRepository.findById(loginUserId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+        log.info("사용자 조회 성공");
 
-        log.info("DTO 패스워드 = {}",verifyPasswordRequest.getPassword());
-        log.info("DB 패스워드 = {}",loginUser.getPassword());
         // 사용자가 입력한 비밀번호와 데이터베이스에 저장된 비밀번호 비교
-        if (!passwordEncoder.matches(verifyPasswordRequest.getPassword(), loginUser.getPassword())) {
+        if (!passwordEncoder.matches(verifyPasswordRequest.getPassword(), user.getPassword())) {
             log.info("비밀번호 불일치");
             throw new CustomException(ExceptionStatus.INVALID_PASSWORD); // 비밀번호 불일치 예외
         }
+        log.info("비밀번호 일치 성공");
 
-        log.info("비밀번호 확인 성공");
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(),
                 "비밀번호 확인이 완료되었습니다.");
@@ -433,21 +470,32 @@ public class UserService {
     //임시번호 발급받은 상태인데, 비밀번호 변경 & 새로운 비밀번호로 변경
     //로그인 O
     @Transactional
-    public DataResponse<String> resetPassword(ResetPasswordRequest resetPasswordRequest) {
-        //1. 로그인한 사용자id를 가지고 로그인한 user 객체 가져오기
-        Long userId = UserAuthorizationUtil.getLoginMemberId();
-        User loginUser = userRepository.findById(userId)
+    public DataResponse<String> resetPassword(Long pathVariableUserId, ResetPasswordRequest resetPasswordRequest) {
+        log.info("----Service Start: 비밀번호 변경하기-----");
+        //1. 로그인한 loginUserId 가져오기
+        Long loginUserId = UserAuthorizationUtil.getLoginMemberId();
+        //1-1. loginUserId랑 pathVariableUserId랑 같은지 체크
+        UserAuthorizationUtil.checkUserMatch(pathVariableUserId, loginUserId);
+        // 1-2. 사용자 조회 (존재하지 않으면 예외 던지기)
+        User user = userRepository.findById(loginUserId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
-
+        log.info("사용자 조회 성공");
+        
         //2. 기존 비밀번호 확인
-        if (!passwordEncoder.matches(resetPasswordRequest.getOldPassword(), loginUser.getPassword())) {
-            log.info("기존 비밀번호 불일치");
+        if (!passwordEncoder.matches(resetPasswordRequest.getOldPassword(), user.getPassword())) {
+            log.info("비밀번호 불일치");
             throw new CustomException(ExceptionStatus.INVALID_PASSWORD); // 비밀번호 불일치 예외
         }
+        log.info("비밀번호 일치 성공");
 
         //3. 새 비밀번호로 변경
-        loginUser.editPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword())); // 비밀번호 암호화
-        userRepository.save(loginUser); // 변경된 사용자 정보 저장
+        user.editPassword(passwordEncoder.encode(resetPasswordRequest.getNewPassword())); // 비밀번호 암호화
+        userRepository.save(user); // 변경된 사용자 정보 저장
+
+        //4. 만약에 임시 비번 바꾸는 경우
+        if(user.isTemporaryPasswordStatus()){//true면 임시 비번인 상태
+            user.editTemporaryPasswordStatus(false);
+        }
 
         log.info("비밀번호 변경 성공");
         return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
@@ -459,7 +507,13 @@ public class UserService {
     //이메일 중복 확인하기
     //로그인 x
     public DataResponse<String> emailDupCheck(String email) {
-        log.info("이메일 중복 확인하기");
+        log.info("----Service Start: 이메일 중복 확인하기-----");
+        //검색하기 전에 유효한 이메일인지 확인
+        if (!email.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
+        }
+        log.info("유효한 이메일 형식");
+
         // 입력된 이메일을 사용하여 데이터베이스에서 사용자 검색
         Optional<User> existingUserByEmail = userRepository.findByEmail(email);
         if (existingUserByEmail.isPresent()) {
@@ -469,11 +523,14 @@ public class UserService {
             throw new CustomException(ExceptionStatus.USER_EMAIL_ALREADY_EXIST); // 이미 존재하는 이메일 예외
         }
 
-        log.info("이메일 사용 가능: " + email);
+        log.info("이메일 사용 가능");
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(),
                 "사용 가능한 이메일입니다.");
     }
+    
+    
+    
 
     public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String status, String createdDate) {
 

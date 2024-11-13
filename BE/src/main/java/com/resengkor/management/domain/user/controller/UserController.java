@@ -8,6 +8,7 @@ import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.DataResponse;
+import com.resengkor.management.global.util.ValidatorUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,69 +33,80 @@ public class UserController {
         return userServiceImpl.tmp();
     }
 
-
     //회원정보 추가하기(oauth용)
     @PutMapping("/oauth/{userId}")
-    public DataResponse<UserDTO> oauthUpdateUser(@PathVariable Long userId, @Valid @RequestBody OauthUserUpdateRequest request, BindingResult bindingResult){
-        log.info("oauth 회원 정보 추가 요청이 들어옴: {}", request);
+    public DataResponse<UserDTO> oauthUpdateUser(@PathVariable("userId") Long userId, @Valid @RequestBody OauthUserUpdateRequest request, BindingResult bindingResult){
+        log.info("----Controller Start: OAuth 회원 정보 추가하기-----");
+
+        // 바인딩 에러가 있는지 확인
         if(bindingResult.hasErrors()) {
-            Map<String, String> validatorResult = userServiceImpl.validateHandling(bindingResult);
-            log.info("바인딩 에러");
+            Map<String, String> validatorResult = ValidatorUtil.validateHandling(bindingResult);
+            log.warn("바인딩 에러 발생: {}", validatorResult);
             throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
-        log.info("oauth 회원 정보 추가 서비스로 넘어감");
+
         return userServiceImpl.oauthUpdateUser(userId, request);
     }
 
     //회원정보 수정하기
     @PutMapping("/{userId}")
-    public DataResponse<UserDTO> updateUser(@PathVariable Long userId, @Valid @RequestBody UserUpdateRequest request, BindingResult bindingResult){
-        log.info("회원 정보 수정 요청이 들어옴: {}", request);
+    public DataResponse<UserDTO> updateUser(@PathVariable("userId") Long userId, @Valid @RequestBody UserUpdateRequest request, BindingResult bindingResult){
+        log.info("----Controller Start: 회원 정보(일반,소셜) 수정하기-----");
+
+        // 바인딩 에러가 있는지 확인
         if(bindingResult.hasErrors()) {
-            Map<String, String> validatorResult = userServiceImpl.validateHandling(bindingResult);
-            log.info("바인딩 에러");
+            Map<String, String> validatorResult = ValidatorUtil.validateHandling(bindingResult);
+            log.warn("바인딩 에러 발생: {}", validatorResult);
             throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
-        log.info("회원 정보 수정 서비스로 넘어감");
+
         return userServiceImpl.updateUser(userId, request);
     }
 
     //회원정보 요청
     @GetMapping("/{userId}")
-    public DataResponse<UserDTO> getUserInfo(@PathVariable Long userId){
-        log.info("회원 정보 요청 들어옴");
+    public DataResponse<UserDTO> getUserInfo(@PathVariable("userId") Long userId){
+        log.info("----Controller Start: 개인 회원정보 요청-----");
+
         return userServiceImpl.getUserInfo(userId);
     }
 
     //회원탈퇴
     @PutMapping("/withdrawal")
-    public CommonResponse withdrawUser(@RequestHeader("Authorization") String token) {
+    public CommonResponse withdrawUser(@RequestHeader("Refresh") String token) {
+        log.info("----Controller Start: 회원탈퇴 요청-----");
+
         return userServiceImpl.withdrawUser(token);
     }
 
     //비밀번호 확인(정보 확인용)
     @PostMapping("/{userId}/password/verify")
-    public DataResponse<String> verifyPassword(@PathVariable Long userId, @Valid @RequestBody VerifyPasswordRequest verifyPasswordRequest, BindingResult bindingResult) {
+    public DataResponse<String> verifyPassword(@PathVariable("userId") Long userId, @Valid @RequestBody VerifyPasswordRequest request, BindingResult bindingResult) {
+        log.info("----Controller Start: 비밀번호 재확인(정보 확인용)-----");
+
         // 바인딩 에러가 있는지 확인
-        if (bindingResult.hasErrors()) {
-            Map<String, String> validatorResult = userServiceImpl.validateHandling(bindingResult);
+        if(bindingResult.hasErrors()) {
+            Map<String, String> validatorResult = ValidatorUtil.validateHandling(bindingResult);
             log.warn("바인딩 에러 발생: {}", validatorResult);
             throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
-        return userServiceImpl.verifyPassword(verifyPasswordRequest);
+
+        return userServiceImpl.verifyPassword(userId, request);
     }
 
     //(두 경우 모두 로그인 완료한 상태)임시번호 발급받은 상태인데, 비밀번호 변경 & 새 비밀번호로 변경하기
     @PutMapping("/{userId}/password")
-    public DataResponse<String> resetPassword(@PathVariable Long userId, @Valid @RequestBody ResetPasswordRequest resetPasswordRequest, BindingResult bindingResult) {
-        log.info("새 비밀번호로 변경하기 : {}", resetPasswordRequest);
+    public DataResponse<String> resetPassword(@PathVariable("userId") Long userId, @Valid @RequestBody ResetPasswordRequest request, BindingResult bindingResult) {
+        log.info("----Controller Start: 비밀번호 변경하기-----");
+
         // 바인딩 에러가 있는지 확인
-        if (bindingResult.hasErrors()) {
-            Map<String, String> validatorResult = userServiceImpl.validateHandling(bindingResult);
+        if(bindingResult.hasErrors()) {
+            Map<String, String> validatorResult = ValidatorUtil.validateHandling(bindingResult);
             log.warn("바인딩 에러 발생: {}", validatorResult);
             throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
-        return userServiceImpl.resetPassword(resetPasswordRequest);
+
+        return userServiceImpl.resetPassword(userId, request);
     }
 
 

@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class AnswerResponse {
-    private Long id;
+    private Long answerId;
     private String content;
     private Long questionId;
     private Long adminId;

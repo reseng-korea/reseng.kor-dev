@@ -11,6 +11,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.UUID;
 
 @Component
 public class JWTUtil {
@@ -52,6 +53,11 @@ public class JWTUtil {
         return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("isAuto", Boolean.class);
     }
 
+    public String getSessionId(String token) {
+        //다중 로그인을 위해 한 번 로그인 할 때마다 session Id 발급
+        return Jwts.parser().verifyWith(secretKey).build().parseSignedClaims(token).getPayload().get("sessionId", String.class);
+    }
+
 
 
     public Boolean isExpired(String token) {
@@ -60,7 +66,8 @@ public class JWTUtil {
     }
 
     //일반 jwt
-    public String createJwt(String category, String loginType, String email, long userId, String role, Long expiredMs,boolean isAuto) {
+    public String createJwt(String category, String loginType, String email, long userId, String role, Long expiredMs,boolean isAuto,String sessionId) {
+
         return Jwts.builder()
                 .claim("category", category) //access인지, refresh인지 판단
                 .claim("loginType",loginType)
@@ -68,6 +75,7 @@ public class JWTUtil {
                 .claim("userId", userId)
                 .claim("role", role)
                 .claim("isAuto",isAuto) //로그인 유지인지 아닌지
+                .claim("sessionId", sessionId) // 외부에서 받은 sessionId 사용
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs)) //유효기간
                 .signWith(secretKey)
@@ -75,14 +83,14 @@ public class JWTUtil {
     }
 
     //oauth jwt
-    public String createOuathJwt(String category, String loginType, String email, long userId, String role, Long expiredMs) {
-
+    public String createOuathJwt(String category, String loginType, String email, long userId, String role, Long expiredMs, String sessionId) {
         return Jwts.builder()
                 .claim("category", category) //access인지, refresh인지 판단
                 .claim("loginType",loginType)
                 .claim("email", email)
                 .claim("userId", userId)
                 .claim("role", role)
+                .claim("sessionId", sessionId)
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + expiredMs)) //유효기간
                 .signWith(secretKey)

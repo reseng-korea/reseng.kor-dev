@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 
 @ControllerAdvice
@@ -42,6 +43,16 @@ public class ControllerAdvisor {
 
         response.setCode(ExceptionStatus.EXCEPTION.getCode());
         response.setMessage(ExceptionStatus.EXCEPTION.getMessage());
+
+        return response;
+    }
+
+    /* 파일 용량 제한 */
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public CommonResponse handleMaxSizeException(MaxUploadSizeExceededException e) {
+        CommonResponse response = new CommonResponse();
+        response.setCode(ExceptionStatus.FILE_SIZE_LIMIT_EXCEEDED.getCode());
+        response.setMessage(ExceptionStatus.FILE_SIZE_LIMIT_EXCEEDED.getMessage());
 
         return response;
     }
