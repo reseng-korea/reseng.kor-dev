@@ -146,6 +146,7 @@ public class QnaService {
 
 
     //질문 상세 조회
+    @Transactional
     public DataResponse<QuestionAnswerResponse> getQuestionDetails(Long questionId, String password) {
         log.info("---------Service : getQuestionDetails method start---------");
         // 1. 주어진 ID로 질문 엔티티 조회
@@ -180,6 +181,8 @@ public class QnaService {
 
         // 4. 조회수 증가
         question.incrementViewCount();
+        questionRepository.save(question);
+
         // 5. Question 엔티티를 QuestionResponse DTO로 변환
         QuestionAnswerResponse questionAnswerResponse = qnaMapper.toQuestionAnswerResponse(question);
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
