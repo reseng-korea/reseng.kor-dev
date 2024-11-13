@@ -257,6 +257,14 @@ public class QnaService {
 
         // 4. 답변 엔티티 삭제
         answerRepository.delete(answer);
+
+        // 5. 질문의 답변 여부 false 로 수정
+        Question question = answer.getQuestion();
+        if (question != null) {
+            question.updateAnswer(null);
+            questionRepository.save(question);
+        }
+
         return new DataResponse<>(ResponseStatus.DELETED_SUCCESS.getCode(),
                 ResponseStatus.DELETED_SUCCESS.getMessage(), null);
     }
