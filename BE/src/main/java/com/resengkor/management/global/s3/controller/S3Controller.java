@@ -19,26 +19,34 @@ import java.io.IOException;
 @RequestMapping("/api/v1/s3")
 @RequiredArgsConstructor
 public class S3Controller {
-
+    /**
+     * 에디터에서 실시간으로 동작하는 로직
+     * 아직 document 저장 안 한 상태
+     */
     private final S3Service s3Service;
 
-    /**
-     * 이미지 파일을 S3에 업로드하는 API
-     * @param multipartFile 업로드할 파일 데이터
-     * @return 업로드된 파일의 URL
-     * @throws IOException 파일 업로드 중 발생할 수 있는 예외
-     */
+
+    //실시간 파일 업로드
     @PostMapping(path = "/upload/{documentType}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public DataResponse<FileRequest> uploadToS3(
-            @PathVariable String documentType,
+            @PathVariable("documentType") String documentType,
             @RequestPart(value = "file", required = false) MultipartFile multipartFile
     ) {
+        log.info("------------controller : 에디터 파일 업로드  start------------");
         return s3Service.uploadFile(documentType, multipartFile);
     }
 
-    @DeleteMapping(path ="/delete")
+    //실시간 파일 삭제
+    @DeleteMapping
     public CommonResponse deleteFromS3(@RequestParam("fileName") String fileName) {
+        log.info("------------controller : 에디터 파일 삭제  start------------");
         return s3Service.deleteFileFromS3(fileName);
+    }
+
+    //실시간 다운로드
+    @GetMapping(path = "/download")
+    public ResponseEntity<byte[]> downloadFromS3(@RequestParam("fileName") String fileName) {
+        return s3Service.downloadFileFromS3(fileName);
     }
 
 

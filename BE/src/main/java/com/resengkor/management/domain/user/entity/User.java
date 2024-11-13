@@ -32,6 +32,12 @@ public class User extends BaseEntity {
     @Column(name = "password")
     private String password;
 
+    //임시 비밀번호 여부
+    //0:임시 비번X, 1: 임시 비번 사용중
+    @Builder.Default
+    @Column(name = "temporary_password")
+    private boolean temporaryPasswordStatus = false;
+
     @Column(name = "company_name", nullable = false)
     private String companyName; //아이디 찾기에 이용. 필수
 
@@ -80,6 +86,11 @@ public class User extends BaseEntity {
     //사용자 비밀번호 수정
     public void editPassword(String password){
         this.password = password;
+    }
+
+    //임시 비번 변경
+    public void editTemporaryPasswordStatus(boolean temporaryPasswordStatus){
+        this.temporaryPasswordStatus =  temporaryPasswordStatus;
     }
 
     //사용자 회원탈퇴 처리
