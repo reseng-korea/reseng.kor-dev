@@ -11,7 +11,7 @@ import java.util.List;
 public class DocumentRequest {
     private String title;
     private LocalDate date;
-    private String content;
+    private String content; // 이미지는 html로 같이 저장
     private List<FileRequest> files;  // 파일 정보를 담은 DTO 리스트
 
     @Builder

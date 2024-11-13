@@ -20,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -36,9 +37,9 @@ public class DocumentService {
 
     //생성
     @Transactional
-    public CommonResponse createDocument(String type,DocumentRequest dto) {
+    public CommonResponse createDocument(String documentType,DocumentRequest dto) {
         Document document = Document.builder()
-                .type(DocumentType.valueOf(type.toUpperCase()))
+                .type(DocumentType.valueOf(documentType.toUpperCase()))
                 .title(dto.getTitle())
                 .date(dto.getDate())
                 .content(dto.getContent())
@@ -58,9 +59,9 @@ public class DocumentService {
     }
 
     //조회
-    public DataResponse<Page<DocumentResponse>> getDocumentList(String type,int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<Document> documentPage = documentRepository.findByType(DocumentType.valueOf(type.toUpperCase()), pageRequest);
+    public DataResponse<Page<DocumentResponse>> getDocumentList(String documentType,int page, int size) {
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        Page<Document> documentPage = documentRepository.findByType(DocumentType.valueOf(documentType.toUpperCase()), pageRequest);
 
         Page<DocumentResponse> documentResponsePage = documentPage.map(DocumentResponse::fromEntity);
 
@@ -68,8 +69,8 @@ public class DocumentService {
     }
 
     //세부 사항 조회
-    public DataResponse<DocumentDetailResponse> getDocumentDetail(String type,Long documentId) {
-        Document document = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(type.toUpperCase()))
+    public DataResponse<DocumentDetailResponse> getDocumentDetail(String documentType,Long documentId) {
+        Document document = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(documentType.toUpperCase()))
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
         DocumentDetailResponse detailResponse = DocumentDetailResponse.fromEntity(document);
@@ -79,8 +80,8 @@ public class DocumentService {
 
     //수정
     @Transactional
-    public CommonResponse updateDocument(String type,Long documentId, DocumentRequest request) {
-        Document document = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(type.toUpperCase()))
+    public CommonResponse updateDocument(String documentType,Long documentId, DocumentRequest request) {
+        Document document = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(documentType.toUpperCase()))
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
         document.update(request.getTitle(), request.getDate(), request.getContent());
@@ -99,7 +100,7 @@ public class DocumentService {
 
     //삭제
     @Transactional
-    public CommonResponse deleteDocument(String type, Long documentId) {
+    public CommonResponse deleteDocument(String documentType, Long documentId) {
         // 파일 이름 목록 조회
         List<FileEntity> files = fileRepository.findByDocumentId(documentId);
 
@@ -116,7 +117,7 @@ public class DocumentService {
                 ResponseStatus.DELETED_SUCCESS.getMessage());
     }
 
-    public ResponseEntity<byte[]> downloadFileFromS3(String type, Long fileId) {
+    public ResponseEntity<byte[]> downloadDocumentFile(String documentType, Long fileId) {
         // 파일 ID를 통해 해당 파일 찾기
         FileEntity file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));

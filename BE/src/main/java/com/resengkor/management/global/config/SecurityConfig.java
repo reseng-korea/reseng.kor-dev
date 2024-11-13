@@ -1,14 +1,12 @@
 package com.resengkor.management.global.config;
 
-import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.security.jwt.filter.*;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
+import com.resengkor.management.global.security.oauth.customhandler.CustomOAuth2AuthenticationFailureHandler;
 import com.resengkor.management.global.security.oauth.customhandler.CustomOAuth2SuccessHandler;
 import com.resengkor.management.global.security.oauth.service.CustomOAuth2UserService;
 import com.resengkor.management.global.util.RedisUtil;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
@@ -22,9 +20,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AuthorizeHttpRequestsConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -32,10 +28,6 @@ import org.springframework.security.web.authentication.logout.LogoutFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
-
-import java.io.IOException;
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -55,12 +47,12 @@ public class SecurityConfig {
     // POST로 허용할 엔드포인트 목록(role 상관없이 전체 접근 가능한 endpoint만!)
     private static final List<String> POST_LIST = List.of(
             "/api/v1/register",
-            "/api/v1/oauth2-jwt-header"
+            "/api/v1/oauth2-jwt-header",
+            "/api/v1/find-email", "/api/v1/find-password", "/api/v1/reissue"
     );
 
     // GET으로 허용할 엔드포인트 목록(role 상관없이 전체 접근 가능한 endpoint만!)
     private static final List<String> GET_LIST = List.of(
-            "/api/v1/find-email", "/api/v1/find-password",
             "/api/v1/check-email",
             "/api/v1/users/pagination",
             "/api/v1/regions/**", "/api/v1/companies/**",
@@ -70,11 +62,14 @@ public class SecurityConfig {
             "/api/v1/qualifications"
     );
 
-
-
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
         return configuration.getAuthenticationManager();
+    }
+
+    @Bean
+    public AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler() {
+        return new CustomOAuth2AuthenticationFailureHandler();
     }
 
     @Bean
@@ -82,27 +77,6 @@ public class SecurityConfig {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AuthenticationFailureHandler authenticationFailureHandler() {
-        return new AuthenticationFailureHandler() {
-            @Override
-            public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
-                log.info("exception = " + exception.getMessage());
-
-                // 비활성화된 사용자 오류 메시지 확인
-                if (exception instanceof OAuth2AuthenticationException) {
-                    OAuth2AuthenticationException oauth2Exception = (OAuth2AuthenticationException) exception;
-                    if ("member_inactive".equals(oauth2Exception.getError().getErrorCode())) {
-                        // 비활성화된 사용자일 때 로그인 페이지로 리다이렉트
-                        response.sendRedirect("http://localhost:5173/login?error=true&message=" + URLEncoder.encode("사용자가 비활성화되었습니다. 관리자에게 문의하세요.", StandardCharsets.UTF_8));
-                        return; // 여기서 return 추가
-                    }
-                }
-                // 일반적인 인증 실패 시
-                response.sendRedirect("http://localhost:5173/login?error=true&message=" + URLEncoder.encode("인증에 실패했습니다.", StandardCharsets.UTF_8));
-            }
-        };
-    }
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         // cors
@@ -166,7 +140,7 @@ public class SecurityConfig {
                         .userInfoEndpoint((userinfo) -> userinfo
                                 .userService(customOAuth2UserService))
                         .successHandler(new CustomOAuth2SuccessHandler(jwtUtil, redisUtil))
-                        .failureHandler(authenticationFailureHandler())
+                        .failureHandler(customOAuth2AuthenticationFailureHandler())
                         .permitAll());
 
         return http.build();
@@ -175,7 +149,8 @@ public class SecurityConfig {
     private void configurePublicEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
         POST_LIST.forEach(url -> auth.requestMatchers(HttpMethod.POST, url).permitAll());
         GET_LIST.forEach(url -> auth.requestMatchers(HttpMethod.GET, url).permitAll());
-        auth.requestMatchers("/api/v1/login", "/api/v1/logout", "/api/v1/mail/**", "/api/v1/sms/**", "/api/v1/s3/**").permitAll();
+        auth.requestMatchers("/api/v1/login", "/api/v1/logout",
+                "/api/v1/mail/**", "/api/v1/sms/**", "/api/v1/s3/**", "/api/v1/users/withdrawal").permitAll();
     }
 
     private void configureManagerEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
@@ -186,12 +161,11 @@ public class SecurityConfig {
     }
 
     private void configureUserEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
-        auth.requestMatchers("/api/v1/users/**").hasAnyRole("GUEST");
-        auth.requestMatchers(HttpMethod.GET, "/api/v1/withdrawal").hasRole("GUEST");
+        auth.requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}").hasRole("PENDING");
+        auth.requestMatchers("/api/v1/users/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.POST, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.PUT, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.DELETE, "/api/v1/qna/questions/**").hasRole("GUEST");
-        auth.requestMatchers(HttpMethod.PUT, "/api/v1/users/oauth/{userId}","/api/v1/reissue").hasRole("PENDING");
     }
 
 
