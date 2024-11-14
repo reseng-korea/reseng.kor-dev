@@ -15,11 +15,9 @@ function OAuthRedirectHandler() {
         // 로그인 상태를 확인하는 API 호출 (쿠키 기반 인증)
         const response = await axios.post(
           `${apiUrl}/api/v1/oauth2-jwt-header`,
+          {},
           {
-            withCredentials: true,
-            // headers: {
-            //   Refresh: 'your-refresh-token', // 쿠키에서 자동으로 포함
-            // }, // 쿠키 포함
+            withCredentials: true, // 쿠키를 포함하도록 설정
           }
         );
 
