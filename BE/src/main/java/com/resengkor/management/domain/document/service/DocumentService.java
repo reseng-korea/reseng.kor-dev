@@ -71,7 +71,7 @@ public class DocumentService {
     //세부 사항 조회
     public DataResponse<DocumentDetailResponse> getDocumentDetail(String documentType,Long documentId) {
         Document document = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(documentType.toUpperCase()))
-                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE));
 
         DocumentDetailResponse detailResponse = DocumentDetailResponse.fromEntity(document);
 
@@ -82,7 +82,7 @@ public class DocumentService {
     @Transactional
     public CommonResponse updateDocument(String documentType,Long documentId, DocumentRequest request) {
         Document document = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(documentType.toUpperCase()))
-                .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE));
 
         document.update(request.getTitle(), request.getDate(), request.getContent());
 
@@ -101,6 +101,10 @@ public class DocumentService {
     //삭제
     @Transactional
     public CommonResponse deleteDocument(String documentType, Long documentId) {
+        // 해당 id와 documentType이 같은지 검증
+        documentRepository.findByIdAndType(documentId, DocumentType.valueOf(documentType.toUpperCase()))
+                .orElseThrow(() -> new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE));
+
         // 파일 이름 목록 조회
         List<FileEntity> files = fileRepository.findByDocumentId(documentId);
 
@@ -121,6 +125,9 @@ public class DocumentService {
         // 파일 ID를 통해 해당 파일 찾기
         FileEntity file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
+        if(!documentType.equals(file.getDocument().getType().toString().toLowerCase())){
+            throw new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE);
+        }
 
         // S3에서 파일 다운로드
         return s3Service.downloadFileFromS3(file.getFileName());
