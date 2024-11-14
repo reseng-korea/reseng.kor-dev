@@ -286,11 +286,10 @@ const LoginPage = () => {
             </div>
 
             <div className="flex items-center justify-center mb-4">
-              <a href="https://reseng.co.kr/oauth2/authorization/kakao">
+              <a href={`${apiUrl}/oauth2/authorization/kakao`}>
                 <img
                   src={kakao}
                   alt="카카오"
-                  // onClick={handleKakao}
                   className="object-cover w-12 h-12 mx-4"
                 />
               </a>
