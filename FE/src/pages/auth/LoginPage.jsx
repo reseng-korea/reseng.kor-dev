@@ -13,6 +13,14 @@ import { IoIosMail, IoIosLock } from 'react-icons/io';
 
 const LoginPage = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const apiUrlLocal = 'http://localhost:5173';
+  const K_REDIRECT_URI = import.meta.env.VITE_API_REDIRECT_URL;
+  const K_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
+  // const K_REST_API_KEY = import.meta.env.VITE_KAKAO_API_KEY;
+  const url = import.meta.env.VITE_API_BASE_URL_LOCAL;
+
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${K_REST_API_KEY}&redirect_uri=${K_REDIRECT_URI}&response_type=code`;
+
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
@@ -131,26 +139,40 @@ const LoginPage = () => {
     console.log(e.target.checked);
   };
 
-  const handleKaKao = async () => {
+  const handleKakao = async () => {
     try {
       const response = await axios.post(`${apiUrl}/oauth2/authorization/kakao`);
-
       console.log(response);
     } catch (error) {
       console.log(error);
     }
   };
 
-  const handleGoogle = async () => {
-    try {
-      const response = await axios.post(
-        `${apiUrl}/oauth2/authorization/google`
-      );
+  // const handleKaKao = async () => {
+  //   window.location.href = `${apiUrl}/oauth2/authorization/kakao`;
+  // };
 
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
+  // const handleKaKao = async () => {
+  //   try {
+  //     // 백엔드에 Kakao 로그인 URL 요청
+  //     const response = await axios.post(`${apiUrl}/oauth2/authorization/kakao`);
+
+  //     console.log(response);
+
+  //     // 백엔드에서 Kakao 로그인 URL을 반환하면, 해당 URL로 리다이렉트
+  //     window.location.href = response.data.kakaoLoginUrl;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const handleKaKaoLogin = () => {
+  //   const kakaoLoginUrl = `${apiUrl}/oauth2/authorization/kakao`;
+  //   window.location.href = kakaoLoginUrl;
+  // };
+
+  const handleGoogle = async () => {
+    window.location.href = kakaoURL;
   };
 
   return (
@@ -264,18 +286,21 @@ const LoginPage = () => {
             </div>
 
             <div className="flex items-center justify-center mb-4">
-              <img
-                src={kakao}
-                alt="카카오"
-                onClick={handleKaKao}
-                className="object-cover w-12 h-12 mx-4"
-              />
-              <img
-                src={google}
-                alt="구글"
-                onClick={handleGoogle}
-                className="object-cover w-12 h-12 mx-4"
-              />
+              <a href="https://reseng.co.kr/oauth2/authorization/kakao">
+                <img
+                  src={kakao}
+                  alt="카카오"
+                  // onClick={handleKakao}
+                  className="object-cover w-12 h-12 mx-4"
+                />
+              </a>
+              <a href={`${apiUrl}/oauth2/authorization/google`}>
+                <img
+                  src={google}
+                  alt="구글"
+                  className="object-cover w-12 h-12 mx-4"
+                />
+              </a>
             </div>
           </form>
         </div>
