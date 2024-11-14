@@ -87,7 +87,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
                         //앞 단 프론트 서버 주소
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","https://reseng.co.kr"));
                         //GET, POST, ... 모든 요청에 대해 허용
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         //Credentials값도 가져올 수 있도록 허용
