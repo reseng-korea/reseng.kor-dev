@@ -31,7 +31,7 @@ const AddSignupPage = () => {
           <div className="flex flex-col items-center px-3 py-2">
             <button
               type="submit"
-              className="w-full px-4 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-white hover:text-primary"
+              className="w-full px-4 py-3 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-hover"
             >
               가입하기
             </button>

@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 public class QuestionDetailResponse {
+    private Long questionId;
+
     private String title;
 
     private String content;
@@ -24,4 +26,6 @@ public class QuestionDetailResponse {
     private String representativeName;
 
     private LocalDateTime createdAt;
+
+    private boolean isAnswered;
 }

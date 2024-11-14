@@ -17,4 +17,7 @@ public interface RegionRepository extends JpaRepository<Region, Long> {
 
     // 지역 이름과 타입으로 조회하는 메서드
     Optional<Region> findByRegionNameAndRegionType(String regionName, String regionType);
+
+    // 지역id와 타입으로 조회하는 메서드
+    Optional<Region> findByIdAndRegionType(Long id, String regionType);
 }

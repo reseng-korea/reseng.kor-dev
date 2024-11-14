@@ -72,10 +72,9 @@ public class QnaController {
     // 질문 상세 조회 (작성자와 관리자만 비밀글 조회 가능)
     @GetMapping("/questions/{questionId}")
     public DataResponse<QuestionAnswerResponse> getQuestionDetails(@PathVariable Long questionId,
-                                                                   @RequestParam Long userId,
                                                                    @RequestParam(required = false) String password) {
         log.info("---------Controller : getQuestionDetails method start---------");
-        return qnaService.getQuestionDetails(questionId, userId, password);
+        return qnaService.getQuestionDetails(questionId, password);
     }
 
     // 답변 생성 (관리자만 가능)

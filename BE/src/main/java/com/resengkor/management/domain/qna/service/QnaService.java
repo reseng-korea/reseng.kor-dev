@@ -29,6 +29,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.data.domain.Sort;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -135,7 +136,7 @@ public class QnaService {
     public DataResponse<Page<QuestionResponse>> getAllQuestions(int page, int size) {
         log.info("---------Service : getAllQuestions method start---------");
         // 1. 페이지 요청 객체 생성
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page, size,  Sort.by(Sort.Direction.DESC, "id"));
         // 2. 모든 질문을 페이지 단위로 조회
         Page<Question> questions = questionRepository.findAll(pageRequest);
         // 3. 조회된 질문 목록을 QuestionResponse DTO로 변환
@@ -145,29 +146,34 @@ public class QnaService {
 
 
     //질문 상세 조회
-    public DataResponse<QuestionAnswerResponse> getQuestionDetails(Long questionId, Long userId, String password) {
+    @Transactional
+    public DataResponse<QuestionAnswerResponse> getQuestionDetails(Long questionId, String password) {
         log.info("---------Service : getQuestionDetails method start---------");
         // 1. 주어진 ID로 질문 엔티티 조회
         Question question = questionRepository.findById(questionId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
 
-        // 2. 현재 로그인한 사용자 정보 가져오기
-        User currentUser = getCurrentLoginUser();
-
-        // 3. 관리자인 경우 비밀글 접근 허용
-        if (currentUser.getRole().equals(Role.ROLE_MANAGER)) {
-            question.incrementViewCount();
-            QuestionAnswerResponse questionAnswerResponse = qnaMapper.toQuestionAnswerResponse(question);
-            return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
-                    ResponseStatus.RESPONSE_SUCCESS.getMessage(),
-                    questionAnswerResponse);
-        }
-
-        // 3. 비밀글일 경우, 작성자나 관리자가 아닌 경우 비밀번호 검증
+        //2. 비밀글인지 일단 확인
         if (question.isSecret()) {
-            if(!question.getUser().getId().equals(currentUser.getId())){
+            // 2-1. 현재 로그인한 사용자 정보 가져오기
+            //회원 아니면 여기서 오류 터짐
+            User currentUser = getCurrentLoginUser();
+
+            // 2-2. 관리자인 경우
+            if (currentUser.getRole().equals(Role.ROLE_MANAGER)) {
+                question.incrementViewCount();
+                QuestionAnswerResponse questionAnswerResponse = qnaMapper.toQuestionAnswerResponse(question);
+                return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                        ResponseStatus.RESPONSE_SUCCESS.getMessage(),
+                        questionAnswerResponse);
+            }
+
+            // 2-3. 작성자와 일치하지 않는 경우 접근 제한
+            if (!question.getUser().getId().equals(currentUser.getId())) {
                 throw new CustomException(ExceptionStatus.ACCESS_DENIED);
             }
+
+            // 2-4. 비밀번호가 틀린 경우
             if (password == null || !question.getPassword().equals(password)) {
                 throw new CustomException(ExceptionStatus.INVALID_PASSWORD);
             }
@@ -175,6 +181,8 @@ public class QnaService {
 
         // 4. 조회수 증가
         question.incrementViewCount();
+        questionRepository.save(question);
+
         // 5. Question 엔티티를 QuestionResponse DTO로 변환
         QuestionAnswerResponse questionAnswerResponse = qnaMapper.toQuestionAnswerResponse(question);
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(),
@@ -200,6 +208,8 @@ public class QnaService {
         Answer answer = qnaMapper.toAnswerEntity(answerRequest, question, admin);
         // 5. 변환된 Answer 엔티티를 데이터베이스에 저장
         answerRepository.save(answer);
+        // 6. 질문의 응답 상태 업데이트
+        question.updateAnswer(answer); // 응답 상태를 true로 업데이트
 
         return new DataResponse<>(ResponseStatus.CREATED_SUCCESS.getCode(),
                 ResponseStatus.CREATED_SUCCESS.getMessage(), qnaMapper.toAnswerResponse(answer));
@@ -247,6 +257,14 @@ public class QnaService {
 
         // 4. 답변 엔티티 삭제
         answerRepository.delete(answer);
+
+        // 5. 질문의 답변 여부 false 로 수정
+        Question question = answer.getQuestion();
+        if (question != null) {
+            question.updateAnswer(null);
+            questionRepository.save(question);
+        }
+
         return new DataResponse<>(ResponseStatus.DELETED_SUCCESS.getCode(),
                 ResponseStatus.DELETED_SUCCESS.getMessage(), null);
     }

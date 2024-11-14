@@ -1,5 +1,6 @@
 package com.resengkor.management.domain.user.dto.request;
 
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
@@ -12,19 +13,16 @@ public class OauthUserUpdateRequest {
 
     @NotBlank(message = "업체명은 필수 입력 값입니다.")
     private String companyName;
-
-    @NotBlank(message = "대표자명은 필수 입력 값입니다.")
     private String representativeName;
 
     @NotBlank(message = "핸드폰 번호는 필수 입력 값입니다.")
     private String phoneNumber;
+    private String companyPhoneNumber;
+    private String faxNumber;
 
-    @NotBlank(message = "광역자치구는 필수 입력 값입니다.")
     private String cityName;
-
-    @NotBlank(message = "지역자치구는 필수 입력 값입니다.")
     private String districtName;
+    private String streetAddress;
+    private String detailAddress;
 
-    @NotBlank(message = "주소는 필수 입력 값입니다.")
-    private String fullAddress;
 }

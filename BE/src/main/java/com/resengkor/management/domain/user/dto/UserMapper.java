@@ -1,6 +1,5 @@
 package com.resengkor.management.domain.user.dto;
 
-
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.entity.UserProfile;
 import org.springframework.stereotype.Component;
@@ -16,9 +15,15 @@ public class UserMapper {
         return UserDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
+                .emailStatus(user.isEmailStatus())
+                .temporaryPasswordStatus(user.isTemporaryPasswordStatus())
                 .companyName(user.getCompanyName())
+                .representativeName(user.getRepresentativeName())
                 .phoneNumber(user.getPhoneNumber())
+                .phoneNumberStatus(user.isPhoneNumberStatus())
                 .role(user.getRole())
+                .loginType(user.getLoginType().toString())
+                .status(user.isStatus())
                 .createdAt(user.getCreatedAt())
                 .userProfile(toUserProfileDTO(user.getUserProfile())) // UserProfile -> UserProfileDTO 변환
                 .build();
@@ -31,27 +36,12 @@ public class UserMapper {
         }
         return UserProfileDTO.builder()
                 .id(userProfile.getId())
-                .address(userProfile.getFullAddress())
+                .companyPhoneNumber(userProfile.getCompanyPhoneNumber())
+                .faxNumber(userProfile.getFaxNumber())
+                .streetAddress(userProfile.getStreetAddress())
+                .detailAddress(userProfile.getDetailAddress())
                 .city(userProfile.getCity())
                 .district(userProfile.getDistrict())
-                .latitude(userProfile.getLatitude())
-                .longitude(userProfile.getLongitude())
-                .build();
-    }
-
-    // 필요한 정보만 담은 CompanyInfoDTO 변환 메서드
-    public CompanyInfoDTO toCompanyInfoDTO(User user) {
-        if (user == null || user.getUserProfile() == null) {
-            return null;
-        }
-        UserProfile userProfile = user.getUserProfile();
-
-        return CompanyInfoDTO.builder()
-                .userId(user.getId())
-                .companyName(user.getCompanyName())
-                .phoneNumber(user.getPhoneNumber())
-                .userProfileId(userProfile.getId())
-                .address(userProfile.getFullAddress())
                 .latitude(userProfile.getLatitude())
                 .longitude(userProfile.getLongitude())
                 .build();

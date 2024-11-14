@@ -28,23 +28,27 @@ public class QnaMapper {
     // Question Entity -> QuestionResponse
     public QuestionResponse toQuestionResponse(Question question) {
         return QuestionResponse.builder()
+                .questionId(question.getId())
                 .title(question.getTitle())
                 .isSecret(question.isSecret())
                 .viewCount(question.getViewCount())
                 .userId(question.getUser().getId())
                 .representativeName(question.getUser().getRepresentativeName())
+                .isAnswered(question.isAnswered())
                 .createdAt(question.getCreatedAt())
                 .build();
     }
 
     public QuestionDetailResponse toQuestionDetailResponse(Question question) {
         return QuestionDetailResponse.builder()
+                .questionId(question.getId())
                 .title(question.getTitle())
                 .content(question.getContent())
                 .isSecret(question.isSecret())
                 .password(question.getPassword())
                 .viewCount(question.getViewCount())
                 .userId(question.getUser().getId())
+                .isAnswered(question.isAnswered())
                 .representativeName(question.getUser().getRepresentativeName())
                 .createdAt(question.getCreatedAt())
                 .build();
@@ -57,6 +61,7 @@ public class QnaMapper {
         }
 
         return QuestionAnswerResponse.builder()
+                .questionId(question.getId())
                 .title(question.getTitle())
                 .content(question.getContent())
                 .isSecret(question.isSecret())
@@ -65,6 +70,7 @@ public class QnaMapper {
                 .userId(question.getUser().getId())
                 .representativeName(question.getUser().getRepresentativeName())
                 .createdAt(question.getCreatedAt())
+                .isAnswered(question.isAnswered())
                 .answer(answerResponse)
                 .build();
     }
@@ -81,7 +87,7 @@ public class QnaMapper {
     // Answer Entity to Response
     public AnswerResponse toAnswerResponse(Answer answer) {
         return AnswerResponse.builder()
-                .id(answer.getId())
+                .answerId(answer.getId())
                 .content(answer.getContent())
                 .questionId(answer.getQuestion().getId())
                 .adminId(answer.getAdmin().getId())

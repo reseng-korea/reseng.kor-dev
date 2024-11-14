@@ -1,5 +1,6 @@
 package com.resengkor.management.global.security.jwt.filter;
 
+import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -43,6 +44,17 @@ public class ErrorHandler {
         else if (exception instanceof InsufficientAuthenticationException) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             exceptionStatus = ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER;
+        }
+        //valid 에러
+        else if (exception instanceof AuthenticationServiceException){
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            Throwable cause = exception.getCause();
+            if (cause instanceof CustomException) {
+                CustomException customException = (CustomException) cause;
+                exceptionStatus = customException.getExceptionStatus(); // CustomException에서 ExceptionStatus를 가져옴
+            } else {
+                exceptionStatus = ExceptionStatus.VALIDATION_ERROR; // 기본 Validation 에러 상태 설정
+            }
         }
         // 기타 인증 관련 예외
         else {

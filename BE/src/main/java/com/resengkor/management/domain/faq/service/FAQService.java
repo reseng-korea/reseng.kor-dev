@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -21,7 +22,7 @@ public class FAQService {
 
     // FAQ 목록 조회 (페이지네이션)
     public DataResponse<Page<FaqDTO>> getAllFaq(int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size);
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
         Page<Faq> faqPage = faqRepository.findAll(pageRequest);
 
         Page<FaqDTO> faqDTOPage = faqPage.map(faq -> FaqDTO.builder()

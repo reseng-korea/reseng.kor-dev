@@ -21,6 +21,7 @@ public class KakaoUserWithdrawService {
     private String adminKey;
 
     public void unlinkKakaoUser(String userId) {
+        log.info("------Service Start : 카카오 탈퇴하기---------");
         RestTemplate restTemplate = new RestTemplate();
 
         // HTTP Headers 설정
