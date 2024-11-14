@@ -9,38 +9,59 @@ Modal.setAppElement('#root'); // 접근성 설정
 function CustomModal({
   isOpen,
   closeModal,
-  title,
-  context,
-  type,
-  autoCloseMessage,
+  primaryText = '',
+  secondaryText = '',
+  context = '',
+  type = 'info',
+  isAutoClose = false,
+  cancleButton = false,
+  buttonName = '확인',
+  cancleButtonName = '취소',
+  onConfirm = () => {},
+  onCancel,
 }) {
-  const timerRef = useRef(null); // 타이머 참조 생성
-  //   useEffect(() => {
-  //     if (isOpen && !timerRef.current) {
-  //       console.log('5초 타이머 시작');
-  //       timerRef.current = setTimeout(() => {
-  //         console.log('모달 닫기 호출');
-  //         closeModal();
-  //         timerRef.current = null; // 타이머가 실행된 후 참조 초기화
-  //       }, 5000);
-  //     }
+  const timerRef = useRef(null);
 
-  //     return () => {
-  //       if (timerRef.current) {
-  //         clearTimeout(timerRef.current);
-  //         timerRef.current = null;
-  //       }
-  //     };
-  //   }, [isOpen]); // 빈 배열을 추가하여 최초로 한 번만 실행되도록 설정
+  useEffect(() => {
+    // openModal 함수 내부
+    console.log('5. CustomModal로 왔다.', {
+      primaryText,
+      secondaryText,
+      context,
+      type,
+      isAutoClose,
+      cancleButton,
+      buttonName,
+      cancleButtonName,
+      onConfirm,
+      onCancel,
+    });
+
+    if (isOpen && isAutoClose && !timerRef.current) {
+      timerRef.current = setTimeout(() => {
+        closeModal();
+        timerRef.current = null;
+      }, 10000);
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [isOpen, closeModal]);
 
   return (
     <Modal
       isOpen={isOpen}
       onRequestClose={closeModal}
-      contentLabel="Example Modal"
+      shouldCloseOnOverlayClick={false} // 모달 외부 클릭으로 닫히지 않음
+      contentLabel="Modal"
       style={{
         overlay: {
           backgroundColor: 'rgba(0, 0, 0, 0.7)',
+          zIndex: 9999, // 오버레이의 z-index를 높게 설정
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
@@ -49,17 +70,20 @@ function CustomModal({
           position: 'relative',
           width: '500px',
           minHeight: '300px',
-          padding: '20px',
+          padding: '40px',
+          // marginRight: '100px',
           background: 'white',
           borderRadius: '10px',
           outline: 'none',
           boxShadow: '0 4px 8px rgba(0, 0, 0, 0.2)',
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center', // 가로 중앙 정렬
-          justifyContent: 'center', // 세로 중앙 정렬
+          alignItems: 'center',
+          justifyContent: 'center',
+          // zIndex: 10000, // 모달 콘텐츠도 nav보다 높게 설정
         },
       }}
+      className="slide-up"
     >
       {type === 'success' && (
         <img src={success} alt="성공" className="w-16 h-16" />
@@ -67,21 +91,34 @@ function CustomModal({
       {type === 'warning' && (
         <img src={warning} alt="경고" className="w-16 h-16" />
       )}
-      <h2 className="mt-4 text-xl font-bold text-center">{title}</h2>
-      <p className="text-center">{context}</p>
-      <span className="text-gray3 text-xs mt-2">{autoCloseMessage}</span>
-      {/* <button
-        onClick={closeModal}
-        className="absolute top-2 right-2 text-gray-500 hover:text-black"
-      >
-        ×
-      </button> */}
-      <button
-        onClick={closeModal}
-        className="mt-6 px-4 py-2 bg-primary text-white rounded-lg hover:bg-hover"
-      >
-        확인
-      </button>
+
+      <h2 className="mt-4 text-xl font-bold text-center">{primaryText}</h2>
+      <h2 className="text-xl font-bold text-center">{secondaryText}</h2>
+
+      {context && <p className="mt-4 text-center">{context}</p>}
+
+      {isAutoClose && (
+        <span className="text-gray-500 text-xs mt-2">
+          (10초 뒤 창이 사라집니다.)
+        </span>
+      )}
+
+      <div className="flex space-x-2">
+        <button
+          onClick={onConfirm || closeModal}
+          className="mt-6 px-4 py-2 bg-primary text-white rounded-lg hover:bg-hover"
+        >
+          {buttonName}
+        </button>
+        {cancleButton && (
+          <button
+            onClick={onCancel || closeModal}
+            className="mt-6 px-4 py-2 border border-primary text-primary rounded-lg hover:border-hoverLight hover:bg-hoverLight"
+          >
+            {cancleButtonName}
+          </button>
+        )}
+      </div>
     </Modal>
   );
 }

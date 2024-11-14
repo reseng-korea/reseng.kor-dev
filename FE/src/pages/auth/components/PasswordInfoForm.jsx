@@ -1,12 +1,50 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-const PasswordInfoForm = () => {
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
+import {
+  validatePassword,
+  checkPasswordMatch,
+} from '../../../utils/PasswordValidation';
 
-  // 비밀번호 일치 여부
-  const isPasswordMatched =
-    password && confirmPassword && password === confirmPassword;
+const PasswordInfoForm = ({
+  password,
+  setPassword,
+  confirmPassword,
+  setConfirmPassword,
+  isValidPassword,
+  setIsValidPassword,
+  isPasswordMatched,
+  setIsPasswordMatched,
+}) => {
+  // 비밀번호 유효성 검사
+  // const validatePassword = (password) => {
+  //   const passwordRegex =
+  //     /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+  //   return passwordRegex.test(password);
+  // };
+  // // 비밀번호 일치 여부
+  // const checkPasswordMatch = (password, confirmPassword) => {
+  //   return password && confirmPassword && password === confirmPassword;
+  // };
+
+  const handlePasswordInputChange = (e) => {
+    const newPassword = e.target.value;
+    setPassword(newPassword);
+  };
+
+  const handleConfirmPasswordInputChange = (e) => {
+    const newConfirmPassword = e.target.value;
+    setConfirmPassword(newConfirmPassword);
+  };
+
+  useEffect(() => {
+    const isPasswordValid = validatePassword(password);
+    console.log(isPasswordValid);
+    const isConfirmPasswordValid = validatePassword(confirmPassword);
+    console.log(isConfirmPasswordValid);
+    const doesPasswordMatch = checkPasswordMatch(password, confirmPassword);
+    setIsValidPassword(isPasswordValid && isConfirmPasswordValid);
+    setIsPasswordMatched(doesPasswordMatch);
+  }, [password, confirmPassword]);
 
   return (
     <>
@@ -14,12 +52,13 @@ const PasswordInfoForm = () => {
       <div className="flex flex-col items-center px-3 py-2">
         <label className="self-start mb-1 text-lg">비밀번호</label>
         <span className="self-start mb-2 text-xs text-gray3">
-          영문, 숫자를 포함한 8자 이상의 비밀번호를 입력해주세요.
+          영문, 숫자, 특수문자를 포함한 8자 이상, 16자 이하의 비밀번호를
+          입력해주세요.
         </span>
         <input
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={handlePasswordInputChange}
           className="w-full p-2 mb-1 border rounded-lg"
           placeholder="비밀번호를 입력해주세요"
         />
@@ -31,7 +70,7 @@ const PasswordInfoForm = () => {
         <input
           type="password"
           value={confirmPassword}
-          onChange={(e) => setConfirmPassword(e.target.value)}
+          onChange={handleConfirmPasswordInputChange}
           className="w-full p-2 mb-1 border rounded-lg"
           placeholder="비밀번호를 한 번 더 입력해주세요"
         />

@@ -1,20 +1,99 @@
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useParams, useLocation } from 'react-router-dom';
+
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
+import useModal from '../../hooks/useModal';
+import usePreventRefresh from '../../hooks/usePreventRefresh';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { useParams } from 'react-router-dom';
 
-import { IoPersonSharp } from 'react-icons/io5';
+import QnaContent from './components/QnaContent';
+import QnaAnswer from './components/QnaAnswer';
+import QnaAnswerManager from './components/QnaAnswerManager';
 
 const QnaDetail = () => {
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const accesstoken = localStorage.getItem('accessToken');
+  const localUserId = localStorage.getItem('userId');
+  const role = localStorage.getItem('role');
+
   const navItems = [
     { label: '자주 묻는 질문', route: '/faq' },
     { label: '1:1 문의', route: '/qna' },
   ];
-  // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
+  const { openModal, closeModal, RenderModal } = useModal();
+  const [modalOpen, setModalOpen] = useState(false);
+  usePreventRefresh(openModal, closeModal, setModalOpen);
 
-  const { id } = useParams();
+  // const {
+  //   activePage, //현재 페이지
+  //   questionId, //글 번호
+  //   userId, //유저 번호
+  //   title, //제목
+  //   content, //내용
+  //   representativeName, //등록자
+  //   createdAt, //문의 날짜
+  //   viewCount, //조회수
+  //   secret, //비밀글 여부
+  //   password, //비밀번호
+  //   answered, //답글 등록 여부
+  //   answerContent,
+  //   answerCreatedAt,
+  // } = location.state || {};
+  const location = useLocation();
+  const initialData = location.state || {};
+  const [qnaData, setQnaData] = useState(initialData);
+
+  console.log(initialData);
+  console.log('날짜요', qnaData);
+
+  // 게시 작성 날짜 포맷
+  const formatCreatedAt = (createdAt) => {
+    const [date, time] = createdAt.split('T');
+    return `${date} ${time.slice(0, 8)}`;
+  };
+
+  // 새로고침
+  useEffect(() => {
+    console.log(qnaData);
+    fetchQnaData();
+  }, []);
+
+  console.log('데이터', qnaData);
+
+  // 댓글 등록 후 API를 다시 호출하여 qnaData를 업데이트하는 함수
+  const fetchQnaData = async () => {
+    try {
+      const response = await axios.get(
+        `${apiUrl}/api/v1/qna/questions/${qnaData.questionId}?password=${qnaData.password}`,
+        {
+          headers: {
+            Authorization: accesstoken,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log('댓글 등록 후 호출', response);
+      if (response.data.code === 200) {
+        const { answer, ...qnaDetails } = response.data.data;
+        setQnaData({
+          ...qnaDetails,
+          createdAt: qnaDetails.createdAt
+            ? formatCreatedAt(qnaDetails.createdAt)
+            : '',
+          answerId: answer ? answer.answerId : '',
+          answerContent: answer ? answer.content : '', // answer가 있으면 content 가져오기
+          answerCreatedAt: answer ? formatCreatedAt(answer.createdAt) : '', // answer가 있으면 createdAt 가져오기
+          answerUpdatedAt: answer ? formatCreatedAt(answer.updatedAt) : '',
+        });
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+  };
 
   return (
     <Layout>
@@ -25,64 +104,44 @@ const QnaDetail = () => {
             activePage="1:1 문의"
             mainCategory="고객 센터"
           />
-
           {/* 메인 */}
           <div
-            className="flex flex-col gap-x-6 items-center"
+            className="flex flex-col gap-x-6 items-center slide-up"
             // style={{ height: 'calc(100vh - 230px)' }}
           >
-            {/* 네모박스 */}
-            <div className="flex flex-col flex-grow w-4/5 bg-transition border border-black rounded-lg mb-4">
-              <div className="flex justify-between p-6 space-x-12 bg-placeHolder rounded-lg">
-                <span className="w-full text-left text-lg font-bold">
-                  제목입니다제목입니다
+            {/* 문의 내용 */}
+            <QnaContent {...qnaData} />
+            <div className="flex flex-col w-4/5">
+              <div className="flex flex-col w-full justify-center mt-4">
+                <span className="mb-4 font-bold text-left text-lg">
+                  답변 등록
                 </span>
-                <div className="flex items-center justify-end space-x-2 w-[30%]">
-                  <IoPersonSharp className="w-6 h-6 text-gray2 flex-shrink-0" />
-                  <span className="truncate text-xs sm:text-sm md:text-md">
-                    이름
-                  </span>
-                </div>
+                {/* <QnaAnswerManager {...qnaData} /> */}
+                {role === 'ROLE_MANAGER' ? (
+                  <QnaAnswerManager {...qnaData} />
+                ) : (
+                  <QnaAnswer {...qnaData} />
+                )}
+                <>{/* 여기에 답변 */}</>
               </div>
-              <hr className="w-full border-t border-black" />
-              <div className="flex justify-start space-x-4 p-6">
-                <span className="text-xs sm:text-sm md:text-md">
-                  2024.10.17
-                </span>
-                <span className="text-xs sm:text-sm md:text-md">|</span>
-                <span className="text-xs sm:text-sm md:text-md">조회수(1)</span>
-              </div>
-
-              <div className="flex justify-start p-10 min-h-[40vh]">
-                {/* <div className="flex justify-start p-12 bg-primary"> */}
-                <span className="text-left text-xs sm:text-sm md:text-md">
-                  내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다
-                  내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다내용입니다
-                  내용입니다
-                </span>
-              </div>
+              <hr className="w-full mt-12 mb-12 border-t border-gray2" />
             </div>
 
-            {/* 버튼들 */}
-            <div className="flex w-4/5 justify-between mt-4 mb-4">
-              <div className="flex space-x-2">
-                <button className="px-4 py-2 font-bold text-gray4 transition-colors duration-300 bg-white border border-gray4 text-xs sm:text-sm md:text-md rounded-lg hover:bg-white hover:text-primary">
-                  삭제
-                </button>
-                <button
-                  onClick={() => navigateTo(routes.qnaRegist)}
-                  className="px-4 py-2 font-bold text-gray4 transition-colors duration-300 bg-white border border-gray4 text-xs sm:text-sm md:text-md rounded-lg hover:bg-white hover:text-primary"
-                >
-                  수정
-                </button>
-              </div>
-              <button className=" px-4 py-2 font-bold text-white transition-colors duration-300 bg-primary text-xs sm:text-sm md:text-md rounded-lg hover:bg-white hover:text-primary">
+            {/* 목록 */}
+            <div className="flex w-full justify-center mt-4">
+              <button
+                onClick={() =>
+                  navigateTo(`${routes.qna}?page=${initialData.activePage}`)
+                }
+                className="w-1/6 px-4 py-3 justify-center font-bold text-white transition-colors duration-300 bg-primary hover:bg-hover text-xs sm:text-sm md:text-md rounded-lg"
+              >
                 목록
               </button>
             </div>
           </div>
         </div>
       </div>
+      <RenderModal />
     </Layout>
   );
 };

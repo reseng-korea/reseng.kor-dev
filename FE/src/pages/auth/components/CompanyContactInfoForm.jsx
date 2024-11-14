@@ -1,8 +1,20 @@
 import React, { useState } from 'react';
 
-const CompanyContactInfoForm = () => {
-  const [companyNumber, setCompanyNumber] = useState('');
-  const [companyFax, setcompanyFax] = useState('');
+const CompanyContactInfoForm = ({
+  companyPhoneNumber,
+  setCompanyPhoneNumber,
+  companyFaxNumber,
+  setCompanyFaxNumber,
+}) => {
+  const handleCompanyPhoneNumberInputChange = (e) => {
+    const newCompanyPhoneNumber = e.target.value;
+    setCompanyPhoneNumber(newCompanyPhoneNumber);
+  };
+
+  const handleCompanyFaxNumberInputChange = (e) => {
+    const newCompanyFaxNumber = e.target.value;
+    setCompanyFaxNumber(newCompanyFaxNumber);
+  };
 
   return (
     <>
@@ -13,8 +25,8 @@ const CompanyContactInfoForm = () => {
           <input
             type="tel"
             maxLength="11"
-            value={companyNumber}
-            onChange={(e) => setCompanyNumber(e.target.value)}
+            value={companyPhoneNumber}
+            onChange={handleCompanyPhoneNumberInputChange}
             className="flex-grow p-2 mb-1 border rounded-lg"
             placeholder="숫자만 입력해주세요"
           />
@@ -28,8 +40,8 @@ const CompanyContactInfoForm = () => {
           <input
             type="tel"
             maxLength="11"
-            value={companyFax}
-            onChange={(e) => setcompanyFax(e.target.value)}
+            value={companyFaxNumber}
+            onChange={handleCompanyFaxNumberInputChange}
             className="flex-grow p-2 mb-1 border rounded-lg"
             placeholder="숫자만 입력해주세요"
           />

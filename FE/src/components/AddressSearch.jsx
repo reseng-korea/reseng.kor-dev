@@ -2,10 +2,13 @@ import React, { useState, useEffect } from 'react';
 
 import { FaMagnifyingGlass } from 'react-icons/fa6';
 
-const AddressSearch = () => {
+const AddressSearch = ({
+  address,
+  setAddress,
+  detailAddress,
+  setDetailAddress,
+}) => {
   const [postcode, setPostcode] = useState('');
-  const [address, setAddress] = useState('');
-  const [detailAddress, setDetailAddress] = useState('');
   const [extraAddress, setExtraAddress] = useState('');
   const [isScriptLoaded, setIsScriptLoaded] = useState(false); // 스크립트 로드 상태 관리
 
@@ -70,6 +73,19 @@ const AddressSearch = () => {
     }).open();
   };
 
+  // 주소 입력
+  const handleAddressInputChange = (e) => {
+    const newAddress = e.target.value;
+    setAddress(newAddress);
+  };
+
+  const handleDetailAddressInputChange = (e) => {
+    const newDetailAddress = e.target.value;
+    setDetailAddress(newDetailAddress);
+  };
+
+  // 상세 주소 입력
+
   return (
     <div className="flex flex-col items-center px-3 py-2">
       {/* 도로명주소 입력 필드 */}
@@ -77,7 +93,7 @@ const AddressSearch = () => {
         <input
           type="text"
           value={address}
-          onChange={(e) => setAddress(e.target.value)}
+          onChange={handleAddressInputChange}
           placeholder="주소"
           id="sample6_address"
           className={`flex-grow border rounded-lg p-2 mb-1`}
@@ -102,7 +118,7 @@ const AddressSearch = () => {
       <input
         type="text"
         value={detailAddress}
-        onChange={(e) => setDetailAddress(e.target.value)}
+        onChange={handleDetailAddressInputChange}
         placeholder="상세주소"
         id="sample6_detailAddress"
         className={`w-full border rounded-lg p-2 mb-1`}
