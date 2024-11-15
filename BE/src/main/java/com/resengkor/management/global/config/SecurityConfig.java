@@ -87,7 +87,7 @@ public class SecurityConfig {
 
                         CorsConfiguration configuration = new CorsConfiguration();
                         //앞 단 프론트 서버 주소
-                        configuration.setAllowedOrigins(Collections.singletonList("http://localhost:5173"));
+                        configuration.setAllowedOrigins(Arrays.asList("http://localhost:5173","https://reseng.co.kr"));
                         //GET, POST, ... 모든 요청에 대해 허용
                         configuration.setAllowedMethods(Collections.singletonList("*"));
                         //Credentials값도 가져올 수 있도록 허용
@@ -113,6 +113,7 @@ public class SecurityConfig {
                     configurePublicEndpoints(auth);
                     configureManagerEndpoints(auth);
                     configureUserEndpoints(auth);
+                    configureDocumentsEndpoints(auth);
                     auth.anyRequest().authenticated(); // 나머지 모든 요청은 인증 필요
                 })
                 .exceptionHandling(exceptionHandling -> exceptionHandling
@@ -149,14 +150,14 @@ public class SecurityConfig {
         POST_LIST.forEach(url -> auth.requestMatchers(HttpMethod.POST, url).permitAll());
         GET_LIST.forEach(url -> auth.requestMatchers(HttpMethod.GET, url).permitAll());
         auth.requestMatchers("/api/v1/login", "/api/v1/logout",
-                "/api/v1/mail/**", "/api/v1/sms/**", "/api/v1/s3/**", "/api/v1/users/withdrawal").permitAll();
+                "/api/v1/mail/**", "/api/v1/sms/**", "/api/v1/users/withdrawal", "/api/v1/documents/**").permitAll();
     }
 
     private void configureManagerEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
         auth.requestMatchers(HttpMethod.POST, "/api/v1/qualifications/**").hasRole("MANAGER");
         auth.requestMatchers(HttpMethod.PUT, "/api/v1/qualifications/**").hasRole("MANAGER");
         auth.requestMatchers(HttpMethod.DELETE, "/api/v1/qualifications/**").hasRole("MANAGER");
-        auth.requestMatchers("/api/v1/admin/**", "/api/v1/qna/answers/**").hasRole("MANAGER");
+        auth.requestMatchers("/api/v1/admin/**", "/api/v1/qna/answers/**","/api/v1/s3/**").hasRole("MANAGER");
     }
 
     private void configureUserEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
@@ -165,6 +166,14 @@ public class SecurityConfig {
         auth.requestMatchers(HttpMethod.POST, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.PUT, "/api/v1/qna/questions/**").hasRole("GUEST");
         auth.requestMatchers(HttpMethod.DELETE, "/api/v1/qna/questions/**").hasRole("GUEST");
+    }
+
+    private void configureDocumentsEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
+        auth.requestMatchers(HttpMethod.GET, "/api/v1/documents/{documentType}", "/api/v1/documents/{documentType}/{documentId}").permitAll();
+        auth.requestMatchers(HttpMethod.POST, "/api/v1/documents/{documentType}").hasRole("MANAGER");
+        auth.requestMatchers(HttpMethod.PUT, "/api/v1/documents/{documentType}/{documentId}").hasRole("MANAGER");
+        auth.requestMatchers(HttpMethod.DELETE, "/api/v1/documents/{documentType}/{documentId}").hasRole("MANAGER");
+        auth.requestMatchers(HttpMethod.GET, "/api/v1/documents/download/{documentType}/{fileId}").hasRole("CUSTOMER");
     }
 
 

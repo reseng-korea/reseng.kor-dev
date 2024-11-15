@@ -59,6 +59,7 @@ public enum ExceptionStatus {
     S3_CONNECTION_ERROR(5005, "s3 연결 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
     FILE_CONVERSION_ERROR(5006, "MultipartFile을 로컬 파일로 변환할 수 없습니다."),
     REGION_NOT_FOUND(5007, "해당 지역 데이터가 존재하지 않습니다"),
+    INVALID_DOCUMENT_TYPE(5008, "문서 타입이 일치하지 않습니다."),
 
     // 6xx 등급 관련 오류
     ROLE_CHANGE_FAIL(6001, "해당 유저의 등급을 변경할 권리가 없습니다."),
