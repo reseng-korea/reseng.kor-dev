@@ -3,9 +3,9 @@ import { useNavigate } from 'react-router-dom';
 export const useNavigateTo = () => {
   const navigate = useNavigate();
 
-  // path를 인자로 받아서 해당 경로로 페이지 이동
-  const navigateTo = (path) => {
-    navigate(path);
+  // path와 state를 인자로 받아 페이지 이동 및 데이터 전달
+  const navigateTo = (path, state = {}) => {
+    navigate(path, { state });
   };
 
   // 객체로 관리

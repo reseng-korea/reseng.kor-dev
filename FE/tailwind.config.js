@@ -18,6 +18,7 @@ export default {
         gray4: '#373737',
         // hover color
         hover: '#2B8F3F',
+        hoverLight: '#D4ECD9',
       },
       rotate: {
         0: '0deg',
