@@ -16,8 +16,11 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class QRCodeValidationService {
 
+    // repository
     private final BannerRequestRepository bannerRequestRepository;
     private final QrRepository qrRepository;
+
+    // mapper
     private final BannerRequestMapper bannerRequestMapper;
 
     /**

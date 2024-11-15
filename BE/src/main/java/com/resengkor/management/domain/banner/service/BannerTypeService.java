@@ -6,11 +6,12 @@ import com.resengkor.management.domain.banner.entity.BannerType;
 import com.resengkor.management.domain.banner.mapper.BannerRequestMapper;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -119,10 +120,10 @@ public class BannerTypeService {
 
                 bannerTypeRepository.save(bannerType);
             } else {
-                throw new IllegalArgumentException("사용할 수 있는 갈이가 부족합니다.");
+                throw new CustomException(ExceptionStatus.INSUFFICIENT_BANNER_LENGTH);
             }
         } else {
-            throw new IllegalArgumentException("해당 조건에 맞는 현수막을 찾을 수 없습니다.");
+            throw new CustomException(ExceptionStatus.BANNER_NOT_MATCHING_CONDITION);
         }
     }
 
@@ -148,6 +149,6 @@ public class BannerTypeService {
                 userId,
                 selectedBannerRequestDto.getTypeWidth(),
                 adjustedHorizontalLength
-        ).orElseThrow(() -> new RuntimeException("해당 조건에 맞는 정확한 BannerType이 없습니다."));
+        ).orElseThrow(() -> new CustomException(ExceptionStatus.BANNER_NOT_FOUND));
     }
 }

@@ -33,6 +33,4 @@ public interface BannerTypeRepository extends JpaRepository<BannerType, Long> {
             Long userId,
             Integer typeWidth,
             BigDecimal horizontalLength);
-
-    Optional<BannerType> findByTypeWidthAndHorizontalLength(Integer typeWidth, BigDecimal horizontalLength);
 }
