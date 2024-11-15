@@ -7,23 +7,21 @@ function OAuthRedirectHandler() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
 
-  // console.log('여기에 들어오낭');
+  console.log('route가 성공적으로 되어 OAuthRedirectHandler로 들어옵니다요');
 
   useEffect(() => {
     async function checkLoginStatus() {
+      console.log('useEffect로 들어옵니당');
       try {
         // 로그인 상태를 확인하는 API 호출 (쿠키 기반 인증)
 
-        const response = await fetch(
-          'https://reseng.co.kr/api/v1/oauth2-jwt-header',
-          {
-            method: 'POST',
-            credentials: 'include', // 쿠키를 포함하도록 설정
-            headers: {
-              'Content-Type': 'application/json',
-            },
-          }
-        );
+        const response = await fetch(`${apiUrl}/api/v1/oauth2-jwt-header`, {
+          method: 'POST',
+          credentials: 'include', // 쿠키를 포함하도록 설정
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
 
         // const response = await axios.post(
         //   `${apiUrl}/api/v1/oauth2-jwt-header`,
@@ -31,7 +29,7 @@ function OAuthRedirectHandler() {
         //   {
         //     withCredentials: true,
         //     headers: {
-        //       'Content-Type': 'text/plain', // 서버 요구 사항에 맞춰 Content-Type 조정
+        //       'Content-Type': 'application/json', // 서버 요구 사항에 맞춰 Content-Type 조정
         //     }, // 쿠키를 포함하도록 설정
         //   }
         // );
