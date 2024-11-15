@@ -41,6 +41,16 @@ public class CustomOAuth2AuthenticationFailureHandler implements AuthenticationF
     private void redirectToErrorPage(HttpServletRequest request, HttpServletResponse response, String errorMessage) throws IOException {
         // 환경에 맞는 리다이렉트 URL 설정
         String redirectUrl;
+        String environment = request.getHeader("X-Frontend-Environment");
+
+        if ("production".equals(environment)) {
+            // 배포 환경일 때 처리 (리다이렉트 또는 쿠키 추가 등)
+            redirectUrl = "https://reseng.co.kr/signin?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+        } else {
+            // 로컬 환경일 때 처리
+            redirectUrl = "http://localhost:5173/signin?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+        }
+
 //        if (EnvironmentUtil.isLocalEnvironment(request)) {
 //            // 로컬 환경에서는 localhost로 리다이렉트
 //            redirectUrl = "http://localhost:5173/signin?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
@@ -48,7 +58,7 @@ public class CustomOAuth2AuthenticationFailureHandler implements AuthenticationF
 //            // 배포 환경에서는 실제 도메인으로 리다이렉트
 //            redirectUrl = "https://reseng.co.kr/signin?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
 //        }
-        redirectUrl = "https://reseng.co.kr/signin?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+//        redirectUrl = "https://reseng.co.kr/signin?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
 
         response.sendRedirect(redirectUrl);
     }
