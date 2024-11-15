@@ -14,20 +14,19 @@ public class EnvironmentUtil {
     public static boolean isLocalEnvironment(HttpServletRequest request) {
         String serverName = request.getServerName();  // 서버 이름 (localhost 또는 127.0.0.1)
         String scheme = request.getScheme();  // 프로토콜 (http 또는 https)
-        String forwardedHost = request.getHeader("X-Forwarded-Host");  // 프록시에서 전달한 원본 호스트
-        String forwardedFor = request.getHeader("X-Forwarded-For");  // 프록시에서 전달한 클라이언트 IP
+        String referer = request.getHeader("Referer");  // Referer 헤더 (도메인 정보)
 
         log.info("서버 이름 : {}", serverName);
         log.info("프로토콜 : {}", scheme);
-        log.info("X-Forwarded-Host : {}", forwardedHost);
-        log.info("X-Forwarded-For : {}", forwardedFor);
+        log.info("Referer : {}", referer);
 
-        // 로컬 환경을 구분할 때, X-Forwarded-Host를 활용하여 외부 도메인 여부를 판단
+        // 로컬 환경을 구분할 때 Referer 헤더를 활용하여 외부 도메인 여부를 판단
         boolean isLocal = ("localhost".equals(serverName) || "127.0.0.1".equals(serverName)) && "http".equals(scheme);
 
-        // 만약 X-Forwarded-Host 헤더가 있다면, 외부 도메인에서 들어온 것이라면 로컬 환경이 아님
-        if (forwardedHost != null && forwardedHost.contains("reseng.co.kr")) {
-            isLocal = false;
+        // Referer가 외부 도메인을 포함하는지 확인
+        if (referer != null && referer.contains("reseng.co.kr")) {
+            isLocal = false;  // 외부 도메인에서 들어온 경우 로컬 환경이 아님
+            log.info("도메인으로 들어온 요청입니다. isLocal = {}", isLocal);
         }
 
         log.info("로컬 환경 여부 : {}", isLocal);
