@@ -5,6 +5,7 @@ import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.dto.CustomOAuth2User;
 import com.resengkor.management.global.util.CookieUtil;
+import com.resengkor.management.global.util.EnvironmentUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -70,7 +71,18 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             // 처음 JWT 발급할 때 이름을 함께 넘긴 후, 로컬 스토리지에 저장한다.
 //        String encodedName = URLEncoder.encode(name, "UTF-8");
 //        response.sendRedirect("http://localhost:5173/oauth2-jwt-header?name=" + encodedName);
-            response.sendRedirect("http://localhost:5173/oauth2-jwt-header");
+            // 환경에 맞는 리다이렉트 URL 설정
+            String redirectUrl;
+            if (EnvironmentUtil.isLocalEnvironment(request)) {
+                // 로컬 환경에서는 localhost로 리다이렉트
+                log.info("로컬 환경으로 리다이렉트");
+                redirectUrl = "http://localhost:5173/oauth2-jwt-header";
+            } else {
+                // 배포 환경에서는 실제 도메인으로 리다이렉트
+                log.info("배포 환경으로 리다이렉트");
+                redirectUrl = "https://reseng.co.kr/oauth2-jwt-header";
+            }
+            response.sendRedirect(redirectUrl);
         } catch (Exception e) {
             log.error("OAuth 로그인 성공 후 토큰 생성 또는 저장 중 오류 발생: {}", e.getMessage());
             throw new CustomException(ExceptionStatus.EXCEPTION); // 일반 예외 처리

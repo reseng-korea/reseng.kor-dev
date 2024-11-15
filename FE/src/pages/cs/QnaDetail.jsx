@@ -57,10 +57,12 @@ const QnaDetail = () => {
   };
 
   // 새로고침
-  useEffect(() => {
-    console.log(qnaData);
-    fetchQnaData();
-  }, []);
+  // useEffect(() => {
+  //   console.log(qnaData);
+  //   if (!qnaData || !qnaData.questionId) {
+  //     fetchQnaData();
+  //   }
+  // }, []);
 
   console.log('데이터', qnaData);
 
