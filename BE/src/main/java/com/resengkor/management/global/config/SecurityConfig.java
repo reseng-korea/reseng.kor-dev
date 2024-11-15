@@ -39,7 +39,7 @@ import java.util.List;
 public class SecurityConfig {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
-    private final AuthenticatgiionConfiguration authenticationConfiguration;
+    private final AuthenticationConfiguration authenticationConfiguration;
     private final CustomOAuth2UserService customOAuth2UserService;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
