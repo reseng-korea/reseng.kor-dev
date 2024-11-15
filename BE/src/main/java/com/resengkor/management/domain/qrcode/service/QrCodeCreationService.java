@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.ByteArrayOutputStream;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
@@ -34,7 +35,10 @@ public class QrCodeCreationService {
     private final BannerRequestMapper bannerRequestMapper;
 
     public byte[] generateQRCode(QrPageDataDTO qrPageDataDTO) {
-        User user = getUser();
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(RuntimeException::new);
 
         // qrPageDataDTO에 로그인 된 사용자의 companyName을 설정
         qrPageDataDTO = qrPageDataDTO.toBuilder()
@@ -42,7 +46,7 @@ public class QrCodeCreationService {
                 .build();
 
         // 선택된 typeWidth로 BannerType 조회
-        BannerType bannerType = bannerTypeRepository.findByTypeWidthAndHorizontalLength(qrPageDataDTO.getTypeWidth(), qrPageDataDTO.getHorizontalLength())
+        BannerType bannerType = bannerTypeRepository.findByTypeWidthAndHorizontalLength(qrPageDataDTO.getTypeWidth(), BigDecimal.valueOf(qrPageDataDTO.getHorizontalLength()))
                 .orElseThrow(() -> new IllegalArgumentException("해당 폭의 현수막을 찾을 수 없습니다."));
 
         // MapStruct를 사용하여 DTO -> Entity 변환
@@ -79,15 +83,5 @@ public class QrCodeCreationService {
         qrRepository.save(qr);
 
         return stream.toByteArray();
-    }
-
-    private User getUser() {
-        // 현재 로그인된 사용자의 ID를 가져옴
-        Long userId = UserAuthorizationUtil.getLoginMemberId();
-
-        // ID를 기반으로 사용자 조회
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException("로그인한 사용자를 찾을 수 없습니다."));
-        return user;
     }
 }
