@@ -6,6 +6,8 @@ import main3_2 from './../../assets/main3_2.png';
 import main3_3 from './../../assets/main3_3.png';
 import main333 from './../../assets/main3_333.png';
 
+import { useNavigateTo } from './../../hooks/useNavigateTo';
+
 const MainThirdPage = () => {
   const thirdElement1Ref = useRef(null);
   const thirdElement2Ref = useRef(null);
@@ -13,6 +15,8 @@ const MainThirdPage = () => {
   const [showThirdElement1, setShowThirdElement1] = useState(false);
   const [showThirdElement2, setShowThirdElement2] = useState(false);
   const [showThirdElement3, setShowThirdElement3] = useState(false);
+
+  const { navigateTo, routes } = useNavigateTo();
 
   const handleScroll = () => {
     // 첫 번째 요소가 화면에 나타나면 애니메이션 시작
@@ -69,6 +73,9 @@ const MainThirdPage = () => {
             <br />
             사용한 현수막
           </span>
+          <button className="mt-3 top-4 right-4 border border-white text-white text-lg hidden md:block md:text-sm lg:text-lg py-2 px-4 bg-transparent hover:bg-white hover:text-black hover:border-none transition duration-300" onClick={() => navigateTo(routes.itemsBanner)}>
+            더보기
+          </button>
         </div>
 
         {/* B 영역 */}
@@ -93,6 +100,9 @@ const MainThirdPage = () => {
             <br />
             사용한 제품
           </span>
+          <button className="mt-3 top-4 right-4 border border-white text-white text-lg hidden md:block md:text-sm lg:text-lg py-2 px-4 bg-transparent hover:bg-white hover:text-black hover:border-none transition duration-300" onClick={() => navigateTo(routes.itemsBiodegradable)}>
+            더보기
+          </button>
         </div>
 
         {/* C 영역 */}
@@ -115,6 +125,9 @@ const MainThirdPage = () => {
             <br />
             원사로 태어난 제품
           </span>
+          <button className="mt-3 top-4 right-4 border border-white text-white text-lg hidden md:block md:text-sm lg:text-lg py-2 px-4 bg-transparent hover:bg-white hover:text-black hover:border-none transition duration-300" onClick={() => navigateTo(routes.itemsRecycle)}>
+            더보기
+          </button>
         </div>
       </div>
     </div>

@@ -4,6 +4,8 @@ import com.resengkor.management.domain.banner.mapper.BannerRequestMapper;
 import com.resengkor.management.domain.banner.repository.BannerRequestRepository;
 import com.resengkor.management.domain.qrcode.QrRepository.QrRepository;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,8 +16,11 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor(onConstructor_ = {@Autowired})
 public class QRCodeValidationService {
 
+    // repository
     private final BannerRequestRepository bannerRequestRepository;
     private final QrRepository qrRepository;
+
+    // mapper
     private final BannerRequestMapper bannerRequestMapper;
 
     /**
@@ -31,7 +36,7 @@ public class QRCodeValidationService {
                 .filter(qr -> qr.getExpiredAt().isAfter(LocalDateTime.now()))
                 .map(qr -> bannerRequestRepository.findById(qr.getBannerRequest().getId())
                         .map(bannerRequestMapper::toBannerRequestDTOWithoutHorizontalLengthAndPostedDuration)
-                        .orElseThrow(() -> new RuntimeException("BannerRequest not found for the QR code")))
-                .orElseThrow(() -> new RuntimeException("QR code is either invalid or expired"));
+                        .orElseThrow(() -> new CustomException(ExceptionStatus.BANNER_REQUEST_NOT_FOUND)))
+                .orElseThrow(() -> new CustomException(ExceptionStatus.INVALID_OR_EXPIRED_QR));
     }
 }

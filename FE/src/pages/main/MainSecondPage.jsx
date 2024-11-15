@@ -2,9 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 
 // 이미지
 import reseng from './../../assets/reandseng.png';
-import cycle from './../../assets/cycle.png';
-import Layout from '../../components/Layouts';
-import main2 from '../../assets/main2.png';
+import cyclegif from './../../assets/plastic_usage_cycle.gif';
 
 const MainSecondPage = () => {
   const secondPageRef = useRef(null);
@@ -35,18 +33,19 @@ const MainSecondPage = () => {
       }`}
       ref={secondPageRef}
     >
-      <div className="flex justify-center items-center mt-16">
+      <div className="flex justify-center items-center mt-16 mb-5">
         <img src={reseng} alt="리앤생" className="w-1/6 h-auto" />
         <span className="text-black sm:text-xs md:text-2xl lg:text-2xl font-bold text-center ml-4">
           의 플라스틱 사용의 폐쇄형 순환 구조
         </span>
       </div>
-      <span>수정 필요</span>
-      <img
-        src={main2}
-        alt="순환 구조"
-        className="mt-16 mb-16 w-full h-auto px-16"
-      />
+      <div className="flex items-center justify-center w-auto h-5/6">
+        <img
+          src={cyclegif}
+          alt="순환 구조"
+          className="h-[100.0%] px-16"
+        />
+      </div>
     </div>
   );
 };

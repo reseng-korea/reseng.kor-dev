@@ -6,6 +6,8 @@ import com.resengkor.management.domain.banner.entity.BannerType;
 import com.resengkor.management.domain.banner.mapper.BannerRequestMapper;
 import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -119,10 +121,10 @@ public class BannerTypeService {
 
                 bannerTypeRepository.save(bannerType);
             } else {
-                throw new IllegalArgumentException("사용할 수 있는 갈이가 부족합니다.");
+                throw new CustomException(ExceptionStatus.INSUFFICIENT_BANNER_LENGTH);
             }
         } else {
-            throw new IllegalArgumentException("해당 조건에 맞는 현수막을 찾을 수 없습니다.");
+            throw new CustomException(ExceptionStatus.BANNER_NOT_MATCHING_CONDITION);
         }
     }
 
@@ -137,6 +139,6 @@ public class BannerTypeService {
                 selectedBannerRequestDto.getTypeWidth(),
                 adjustedHorizontalLength,
                 PageRequest.of(0, 1) // 가장 가까운 하나만 조회
-        ).stream().findFirst().orElseThrow(() -> new RuntimeException("해당 조건에 맞는 BannerType이 없습니다."));
+        ).stream().findFirst().orElseThrow(() -> new CustomException(ExceptionStatus.BANNER_NOT_FOUND));
     }
 }

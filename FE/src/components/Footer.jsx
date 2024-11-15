@@ -8,7 +8,9 @@ const Footer = () => {
     <footer className="py-8 bg-gray4">
       <div className="container flex flex-col items-start justify-center mx-auto md:flex-row">
         <div className="text-left md:ml-8">
-          <h2 className="mb-2 text-sm font-bold text-gray1 mb-4">주식회사 리앤생</h2>
+          <h2 className="mb-2 text-sm font-bold text-gray1 mb-4">
+            주식회사 리앤생
+          </h2>
           <p className="mb-2 text-gray3 text-sm">
             사업자 등록번호 : 837-88-03260 | 대표 : 이승현
           </p>
