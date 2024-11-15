@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Autowired)
 public class BannerTypeService {
-
     // repository
     private final BannerTypeRepository bannerTypeRepository;
     // mapper
@@ -36,7 +35,6 @@ public class BannerTypeService {
         // 현재 로그인된 사용자의 ID를 가져옴
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         List<BannerType> banners = bannerTypeRepository.findByUserId(userId);
-
 
         // 각 typeWidth에 대한 정단 및 비정단 정보를 BannerInventoryDTO 형태로 변환
         Map<Integer, List<BannerType>> bannersByTypeWidth = banners.stream()
@@ -58,22 +56,17 @@ public class BannerTypeService {
                     standardCount++;
                 }
             }
-
             inventoryList.add(new BannerInventoryDto(typeWidth, standardCount, allLengths));
         });
-
         // typeWidth 기준으로 오름차순 정렬
         inventoryList.sort(Comparator.comparingInt(BannerInventoryDto::getTypeWidth));
-
         return inventoryList;
     }
 
     // 특정 typeWidth에 대한 배너 인벤토리를 horizontalLength 기준 오름차순으로 정렬하여 반환
     public BannerInventoryDto getBannerInventoryBySpecificWidth(Integer typeWidth) {
-        // 현재 로그인된 사용자의 ID를 가져옴
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         List<BannerType> banners = bannerTypeRepository.findByUserIdAndTypeWidth(userId, typeWidth);
-
         List<Integer> allLengths = new ArrayList<>();
 
         for (BannerType banner : banners) {
@@ -81,10 +74,8 @@ public class BannerTypeService {
             int roundedLength = bannerRequestMapper.INSTANCE.roundBigDecimalToInteger(banner.getHorizontalLength());
             allLengths.add(roundedLength);
         }
-
         // 중복 제거 후 horizontalLength 기준으로 오름차순 정렬
         allLengths = allLengths.stream().sorted().collect(Collectors.toList());
-
         // 정단 개수를 allLengths 리스트에서 계산
         int standardCount = (int) allLengths.stream().filter(length -> length == 120).count();
         return new BannerInventoryDto(typeWidth, standardCount, allLengths);
@@ -93,9 +84,7 @@ public class BannerTypeService {
     // 현수막 사용 요청을 처리하여 재고 업데이트
     @Transactional
     public void useBannerYards(QrPageDataDTO qrPageDataDTO) {
-        // 현재 로그인된 사용자의 ID를 가져옴
         Long userId = UserAuthorizationUtil.getLoginMemberId();
-
         // SelectedBannerRequestDto 생성
         SelectedBannerRequestDto selectedBannerRequestDto = new SelectedBannerRequestDto(
                 qrPageDataDTO.getTypeWidth(),
@@ -109,8 +98,7 @@ public class BannerTypeService {
             // 선택된 현수막 - 요청 현수막 길이 * 1.094
             BigDecimal remainingYards = bannerType.getHorizontalLength().subtract(BigDecimal.valueOf(qrPageDataDTO.getRequestedLength()).multiply(BigDecimal.valueOf(1.094)));
             if (remainingYards.compareTo(BigDecimal.ZERO) >= 0) {
-                // 재고 업데이트
-                // 기존 객체의 horizontalLength 값만 변경
+                // 재고 업데이트, 기존 객체의 horizontalLength 값만 변경
                 bannerType = BannerType.builder()
                         .id(bannerType.getId())
                         .typeWidth(bannerType.getTypeWidth())

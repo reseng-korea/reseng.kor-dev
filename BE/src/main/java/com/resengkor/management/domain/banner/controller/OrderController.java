@@ -29,7 +29,7 @@ public class OrderController {
         return ResponseEntity.ok(userOrders);
     }
 
-    // 특정 orderId로 발주 내역 조회
+    // 특정 orderId로 발주 내역 조회 엔드포인트
     @GetMapping("/{orderId}")
     public ResponseEntity<OrderResponseDto> getOrderById(@PathVariable Long orderId) {
         OrderResponseDto responseDto = orderService.getUserOrderHistoryById(orderId);
@@ -43,7 +43,7 @@ public class OrderController {
         return ResponseEntity.ok("Order - receiveStatus updated successfully");
     }
 
-    // 로그인한 사용자와 sellerId가 같은 발주내역 모두 조회
+    // 로그인한 사용자와 sellerId가 같은 발주내역 모두 조회 엔드포인트
     @GetMapping("/seller")
     public ResponseEntity<List<ReceivedOrderResponseDto>> getUserReceivedOrderHistories() {
         List<ReceivedOrderResponseDto> sellerOrders = orderService.getUserReceivedOrderHistories();
