@@ -43,10 +43,10 @@ public class CustomOAuth2AuthenticationFailureHandler implements AuthenticationF
         String redirectUrl;
         if (EnvironmentUtil.isLocalEnvironment(request)) {
             // 로컬 환경에서는 localhost로 리다이렉트
-            redirectUrl = "http://localhost:5173/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+            redirectUrl = "http://localhost:5173/fail-login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
         } else {
             // 배포 환경에서는 실제 도메인으로 리다이렉트
-            redirectUrl = "https://reseng.co.kr/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+            redirectUrl = "https://reseng.co.kr/fail-login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
         }
 
         response.sendRedirect(redirectUrl);
