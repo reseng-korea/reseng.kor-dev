@@ -6,7 +6,7 @@ const Withdraw = () => {
   const { navigateTo, routes } = useNavigateTo();
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen pt-16">
+    <div className="flex flex-col items-center justify-center min-h-screen pt-16 slide-up">
       <div className="flex flex-col items-center w-full max-w-2xl p-8 mx-auto text-center">
         <img
           src={withdraw_icon}
@@ -25,7 +25,7 @@ const Withdraw = () => {
         <button
           onClick={() => navigateTo(routes.home)}
           type="submit"
-          className="w-[25%] py-2 px-4 mb-20 font-bold text-white bg-primary rounded-lg hover:bg-white hover:text-primary"
+          className="w-[25%] py-3 px-4 mb-20 font-bold text-white bg-primary rounded-lg hover:bg-hover"
         >
           확인
         </button>

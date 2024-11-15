@@ -1,4 +1,7 @@
 import React, { useState } from 'react';
+import axios from 'axios';
+
+import useModal from '../../hooks/useModal';
 
 import login from './../../assets/login.png';
 import kakao from './../../assets/kakao_logo.png';
@@ -9,17 +12,167 @@ import { useNavigateTo } from '../../hooks/useNavigateTo';
 import { IoIosMail, IoIosLock } from 'react-icons/io';
 
 const LoginPage = () => {
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const apiUrlLocal = 'http://localhost:5173';
+  const K_REDIRECT_URI = import.meta.env.VITE_API_REDIRECT_URL;
+  const K_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
+  // const K_REST_API_KEY = import.meta.env.VITE_KAKAO_API_KEY;
+  const url = import.meta.env.VITE_API_BASE_URL_LOCAL;
+
+  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${K_REST_API_KEY}&redirect_uri=${K_REDIRECT_URI}&response_type=code`;
+
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
   // 사용자 입력 상태 관리
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [rememberLogin, setRememberLogin] = useState(false);
 
-  const handleSubmit = (e) => {
+  const [modalOpen, setModalOpen] = useState(false);
+  const { openModal, closeModal, RenderModal } = useModal();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // 로그인 처리 로직 (API 요청 등)
-    console.log('로그인 정보:', { email, password });
+    if (!email) {
+      setModalOpen(true);
+      openModal({
+        primaryText: '아이디를 입력해주세요.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
+        },
+      });
+    } else if (!password) {
+      setModalOpen(true);
+      openModal({
+        primaryText: '비밀번호를 입력해주세요.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
+        },
+      });
+    } else {
+      try {
+        const response = await axios.post(
+          `${apiUrl}/api/v1/login`,
+          {
+            email: email,
+            password: password,
+            isAuto: rememberLogin,
+          },
+          {
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        // 임시 비밀번호인지 판단 여부
+        if (response.data.temporaryPasswordStatus) {
+          navigateTo(routes.pwinquiryNew);
+        } else {
+          navigateTo(routes.home);
+        }
+
+        console.log(response);
+        console.log(response.headers.authorization);
+        const accessToken = response.headers.authorization;
+        localStorage.setItem('userId', response.data.id);
+        localStorage.setItem('role', response.data.role);
+        localStorage.setItem('accessToken', accessToken);
+        localStorage.setItem('refreshToken', response.headers.refresh);
+        console.log(response.headers.refresh);
+      } catch (error) {
+        const code = error.response.data.code;
+
+        if (code == 4024) {
+          setModalOpen(true);
+          openModal({
+            primaryText: '계정이 비활성화되었습니다.',
+            context: '관리자에게 문의하세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
+        } else if (code == 4012) {
+          setModalOpen(true);
+          openModal({
+            primaryText: '해당 정보로 등록된 회원이 없습니다.',
+            context: '아이디와 비밀번호를 다시 확인해 주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
+        } else {
+          setModalOpen(true);
+          openModal({
+            primaryText: '입력하신 정보가 유효하지 않습니다.',
+            context: '올바른 아이디와 비밀번호를 입력해주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
+        }
+      }
+    }
+  };
+
+  const handleEmailChange = (e) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e) => {
+    setPassword(e.target.value);
+  };
+
+  const handleRememberLogin = (e) => {
+    setRememberLogin(e.target.checked);
+    console.log(e.target.checked);
+  };
+
+  const handleKakao = async () => {
+    try {
+      const response = await axios.post(`${apiUrl}/oauth2/authorization/kakao`);
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  // const handleKaKao = async () => {
+  //   window.location.href = `${apiUrl}/oauth2/authorization/kakao`;
+  // };
+
+  // const handleKaKao = async () => {
+  //   try {
+  //     // 백엔드에 Kakao 로그인 URL 요청
+  //     const response = await axios.post(`${apiUrl}/oauth2/authorization/kakao`);
+
+  //     console.log(response);
+
+  //     // 백엔드에서 Kakao 로그인 URL을 반환하면, 해당 URL로 리다이렉트
+  //     window.location.href = response.data.kakaoLoginUrl;
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  // const handleKaKaoLogin = () => {
+  //   const kakaoLoginUrl = `${apiUrl}/oauth2/authorization/kakao`;
+  //   window.location.href = kakaoLoginUrl;
+  // };
+
+  const handleGoogle = async () => {
+    window.location.href = kakaoURL;
   };
 
   return (
@@ -48,6 +201,8 @@ const LoginPage = () => {
               <div className="flex items-center w-full px-3 py-2 border rounded-lg">
                 <input
                   type="email"
+                  value={email}
+                  onChange={handleEmailChange}
                   className="w-full text-xs outline-none sm:text-sm md:text-sm lg:text-base"
                   placeholder="이메일을 입력해주세요"
                 />
@@ -60,6 +215,8 @@ const LoginPage = () => {
               <div className="flex items-center w-full px-3 py-2 border rounded-lg">
                 <input
                   type="password"
+                  value={password}
+                  onChange={handlePasswordChange}
                   className="w-full text-[11px] outline-none sm:text-sm md:text-sm lg:text-base"
                   placeholder="비밀번호를 입력해주세요"
                 />
@@ -68,9 +225,14 @@ const LoginPage = () => {
 
             {/* 로그인 상태 유지 */}
             <div className="flex items-center px-3 py-2 mb-2">
-              <input type="checkbox" id="rememberMe" className="mr-2" />
+              <input
+                onChange={handleRememberLogin}
+                type="checkbox"
+                id="rememberLogin"
+                className="mr-2"
+              />
               <label
-                htmlFor="rememberMe"
+                htmlFor="rememberLogin"
                 className="text-xs text-gray-700 sm:text-sm md:text-sm lg:text-base"
               >
                 로그인 상태 유지
@@ -80,7 +242,8 @@ const LoginPage = () => {
             {/* 로그인 버튼 */}
             <button
               type="submit"
-              className="w-full px-4 py-2 font-bold text-white bg-primary rounded-lg hover:bg-white hover:text-primary"
+              onClick={handleSubmit}
+              className="w-full px-4 py-2 font-bold text-white bg-primary rounded-lg hover:bg-hover"
             >
               로그인
             </button>
@@ -89,7 +252,7 @@ const LoginPage = () => {
             <div className="flex items-center justify-between px-3 py-2 mt-2 mb-4">
               <span
                 onClick={() => navigateTo(routes.pwinquiry)}
-                className="text-[8px] cursor-pointer sm:text-xs md:text-sm lg:text-sm"
+                className="text-[8px] cursor-pointer sm:text-xs md:text-sm lg:text-sm hover:text-gray3"
               >
                 비밀번호 찾기
               </span>
@@ -98,7 +261,7 @@ const LoginPage = () => {
               </span>
               <span
                 onClick={() => navigateTo(routes.idinquiry)}
-                className="text-[8px] cursor-pointer sm:text-xs md:text-sm lg:text-sm"
+                className="text-[8px] cursor-pointer sm:text-xs md:text-sm lg:text-sm hover:text-gray3"
               >
                 아이디 찾기
               </span>
@@ -107,7 +270,7 @@ const LoginPage = () => {
               </span>
               <span
                 onClick={() => navigateTo(routes.signup)}
-                className="text-[8px] cursor-pointer sm:text-xs md:text-sm lg:text-sm"
+                className="text-[8px] cursor-pointer sm:text-xs md:text-sm lg:text-sm hover:text-gray3"
               >
                 회원가입
               </span>
@@ -123,20 +286,25 @@ const LoginPage = () => {
             </div>
 
             <div className="flex items-center justify-center mb-4">
-              <img
-                src={kakao}
-                alt="카카오"
-                className="object-cover w-12 h-12 mx-4"
-              />
-              <img
-                src={google}
-                alt="구글"
-                className="object-cover w-12 h-12 mx-4"
-              />
+              <a href={`${apiUrl}/oauth2/authorization/kakao`}>
+                <img
+                  src={kakao}
+                  alt="카카오"
+                  className="object-cover w-12 h-12 mx-4"
+                />
+              </a>
+              <a href={`${apiUrl}/oauth2/authorization/google`}>
+                <img
+                  src={google}
+                  alt="구글"
+                  className="object-cover w-12 h-12 mx-4"
+                />
+              </a>
             </div>
           </form>
         </div>
       </div>
+      {modalOpen && <RenderModal />}
     </div>
   );
 };
