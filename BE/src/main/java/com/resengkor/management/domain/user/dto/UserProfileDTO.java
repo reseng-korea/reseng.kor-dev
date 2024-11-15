@@ -17,6 +17,6 @@ public class UserProfileDTO {
     private String detailAddress;
     private Double latitude;
     private Double longitude;
-    private Region city;
-    private Region district;
+    private RegionDTO city;
+    private RegionDTO district;
 }
