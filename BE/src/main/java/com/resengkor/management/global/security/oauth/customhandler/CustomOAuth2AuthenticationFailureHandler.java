@@ -1,5 +1,6 @@
 package com.resengkor.management.global.security.oauth.customhandler;
 
+import com.resengkor.management.global.util.EnvironmentUtil;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -29,11 +30,25 @@ public class CustomOAuth2AuthenticationFailureHandler implements AuthenticationF
             // 이미 같은 이메일로 local로 회원가입함.
             if ("member_inactive".equals(errorCode) || "member_already_register_local".equals(errorCode) ) {
                 // 비활성화된 사용자일 때 로그인 페이지로 리다이렉트
-                response.sendRedirect("http://localhost:5173/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8));
+                redirectToErrorPage(request, response, errorMessage);
                 return;
             }
         }
         // 일반적인 인증 실패 시
-        response.sendRedirect("http://localhost:5173/login?error=true&message=" + URLEncoder.encode("인증에 실패했습니다.", StandardCharsets.UTF_8));
+        redirectToErrorPage(request, response, "인증에 실패했습니다.");
+    }
+
+    private void redirectToErrorPage(HttpServletRequest request, HttpServletResponse response, String errorMessage) throws IOException {
+        // 환경에 맞는 리다이렉트 URL 설정
+        String redirectUrl;
+        if (EnvironmentUtil.isLocalEnvironment(request)) {
+            // 로컬 환경에서는 localhost로 리다이렉트
+            redirectUrl = "http://localhost:5173/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+        } else {
+            // 배포 환경에서는 실제 도메인으로 리다이렉트
+            redirectUrl = "https://reseng.co.kr/login?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+        }
+
+        response.sendRedirect(redirectUrl);
     }
 }
