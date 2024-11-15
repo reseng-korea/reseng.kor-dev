@@ -10,6 +10,8 @@ import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
 import com.resengkor.management.domain.qrcode.entity.QR;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.UserRepository;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import lombok.RequiredArgsConstructor;
 import net.glxn.qrgen.javase.QRCode;
@@ -38,7 +40,7 @@ public class QrCodeCreationService {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
 
         User user = userRepository.findById(userId)
-                .orElseThrow(RuntimeException::new);
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         // qrPageDataDTO에 로그인 된 사용자의 companyName을 설정
         qrPageDataDTO = qrPageDataDTO.toBuilder()
@@ -47,7 +49,7 @@ public class QrCodeCreationService {
 
         // 선택된 typeWidth로 BannerType 조회
         BannerType bannerType = bannerTypeRepository.findByTypeWidthAndHorizontalLength(qrPageDataDTO.getTypeWidth(), BigDecimal.valueOf(qrPageDataDTO.getHorizontalLength()))
-                .orElseThrow(() -> new IllegalArgumentException("해당 폭의 현수막을 찾을 수 없습니다."));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.BANNER_NOT_FOUND));
 
         // MapStruct를 사용하여 DTO -> Entity 변환
         BannerRequest bannerRequest = bannerRequestMapper.toBannerRequest(qrPageDataDTO).toBuilder()

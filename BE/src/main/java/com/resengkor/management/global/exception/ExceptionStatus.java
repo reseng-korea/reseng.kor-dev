@@ -50,6 +50,12 @@ public enum ExceptionStatus {
     CODE_MISMATCH(4031, "인증 코드가 일치하지 않습니다. 올바른 코드를 입력해 주세요."),
     CODE_EXPIRED(4032, "인증 코드가 존재하지 않습니다. 새 코드를 요청해 주세요."),
 
+    // 현수막 기능 관련 오류
+    BANNER_NOT_FOUND(4033, "해당 폭의 현수막을 찾을 수가 없습니다. 올바른 현수막 타입을 입력해주세요."),
+
+    // QR 기능 관련 오류
+    BANNER_REQUEST_NOT_FOUND(4034, "해당 QR에 맞는 현수막 요청 기록을 찾을 수 없습니다."),
+    INVALID_OR_EXPIRED_QR(4035, "올바르지 않은 QR 코드 또는 만료된 QR 코드입니다."),
 
     // 5xx 서버 오류
     EMAIL_SEND_FAIL(5001, "메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
