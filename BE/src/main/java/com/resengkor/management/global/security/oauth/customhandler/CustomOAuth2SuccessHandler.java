@@ -75,9 +75,11 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             String redirectUrl;
             if (EnvironmentUtil.isLocalEnvironment(request)) {
                 // 로컬 환경에서는 localhost로 리다이렉트
+                log.info("로컬 환경으로 리다이렉트");
                 redirectUrl = "http://localhost:5173/oauth2-jwt-header";
             } else {
                 // 배포 환경에서는 실제 도메인으로 리다이렉트
+                log.info("배포 환경으로 리다이렉트");
                 redirectUrl = "https://reseng.co.kr/oauth2-jwt-header";
             }
             response.sendRedirect(redirectUrl);
