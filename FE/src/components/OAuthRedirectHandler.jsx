@@ -19,6 +19,9 @@ function OAuthRedirectHandler() {
           {
             method: 'POST',
             credentials: 'include', // 쿠키를 포함하도록 설정
+            headers: {
+              'Content-Type': 'application/json',
+            },
           }
         );
 

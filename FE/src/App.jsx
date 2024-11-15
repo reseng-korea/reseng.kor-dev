@@ -227,10 +227,10 @@ function App() {
           {/* QR 발생기 확인 실패 페이지 */}
           <Route path="/mypage/qr/failure" element={<QrFailure />} />
 
-          <Route
+          {/* <Route
             path="/login/oauth2/code/kakao" // 카카오 인증 후 돌아올 경로
             element={<OAuthRedirectHandler />}
-          />
+          /> */}
           {/* 임시  페이지(삭제 예정) */}
           <Route path="/tmp" element={<Tmp />} />
         </Routes>
