@@ -73,15 +73,16 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
 //        response.sendRedirect("http://localhost:5173/oauth2-jwt-header?name=" + encodedName);
             // 환경에 맞는 리다이렉트 URL 설정
             String redirectUrl;
-            if (EnvironmentUtil.isLocalEnvironment(request)) {
-                // 로컬 환경에서는 localhost로 리다이렉트
-                log.info("로컬 환경으로 리다이렉트");
-                redirectUrl = "http://localhost:5173/jwt-header-oauth2";
-            } else {
-                // 배포 환경에서는 실제 도메인으로 리다이렉트
-                log.info("배포 환경으로 리다이렉트");
-                redirectUrl = "https://reseng.co.kr/jwt-header-oauth2";
-            }
+//            if (EnvironmentUtil.isLocalEnvironment(request)) {
+//                // 로컬 환경에서는 localhost로 리다이렉트
+//                log.info("로컬 환경으로 리다이렉트");
+//                redirectUrl = "http://localhost:5173/jwt-header-oauth2";
+//            } else {
+//                // 배포 환경에서는 실제 도메인으로 리다이렉트
+//                log.info("배포 환경으로 리다이렉트");
+//                redirectUrl = "https://reseng.co.kr/jwt-header-oauth2";
+//            }
+            redirectUrl = "https://reseng.co.kr/jwt-header-oauth2";
             response.sendRedirect(redirectUrl);
         } catch (Exception e) {
             log.error("OAuth 로그인 성공 후 토큰 생성 또는 저장 중 오류 발생: {}", e.getMessage());
