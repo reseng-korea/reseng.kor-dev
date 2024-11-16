@@ -15,6 +15,9 @@ import java.nio.charset.StandardCharsets;
 
 @Slf4j
 public class CustomOAuth2AuthenticationFailureHandler implements AuthenticationFailureHandler {
+    private static final String LOCAL_REDIRECT_URL = "http://localhost:5173/signin?error=true&message=";
+    private static final String PRODUCTION_REDIRECT_URL = "https://reseng.co.kr/signin?error=true&message=";
+
     //CustomOAuth2UserService에서 에러 던짐
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
@@ -41,24 +44,38 @@ public class CustomOAuth2AuthenticationFailureHandler implements AuthenticationF
     private void redirectToErrorPage(HttpServletRequest request, HttpServletResponse response, String errorMessage) throws IOException {
         // 환경에 맞는 리다이렉트 URL 설정
         String redirectUrl;
+
+        //1. 첫 번째 테스트
+        log.info("--------------첫 번째 테스트-----------------------");
+        if (EnvironmentUtil.isLocalEnvironment(request)) {
+            // 로컬 환경에서는 localhost로 리다이렉트
+            log.info("로컬 환경으로 리다이렉트");
+//            redirectUrl = LOCAL_REDIRECT_URL + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+        } else {
+            // 배포 환경에서는 실제 도메인으로 리다이렉트
+//            redirectUrl = PRODUCTION_REDIRECT_URL + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+            log.info("배포 환경으로 리다이렉트");
+        }
+
+
+        // 2. 두 번째 테스트 : Nginx에서 추가한 헤더 정보 확인
+        log.info("--------------두 번째 테스트-----------------------");
         String environment = request.getHeader("X-Frontend-Environment");
+        log.info("nginx 헤더 정보  = {}", environment);
 
         if ("production".equals(environment)) {
             // 배포 환경일 때 처리 (리다이렉트 또는 쿠키 추가 등)
-            redirectUrl = "https://reseng.co.kr/signin?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
-        } else {
+            log.info("배포 환경으로 리다이렉트");
+            redirectUrl = PRODUCTION_REDIRECT_URL + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+        } else if ("local".equals(environment)) {
             // 로컬 환경일 때 처리
-            redirectUrl = "http://localhost:5173/signin?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+            log.info("로컬 환경으로 리다이렉트");
+            redirectUrl = LOCAL_REDIRECT_URL + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
+        }else {
+            log.error("X-Frontend-Environment 값이 비어있거나 알 수 없는 값입니다. 기본값으로 처리.");
+            redirectUrl = PRODUCTION_REDIRECT_URL;
         }
 
-//        if (EnvironmentUtil.isLocalEnvironment(request)) {
-//            // 로컬 환경에서는 localhost로 리다이렉트
-//            redirectUrl = "http://localhost:5173/signin?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
-//        } else {
-//            // 배포 환경에서는 실제 도메인으로 리다이렉트
-//            redirectUrl = "https://reseng.co.kr/signin?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
-//        }
-//        redirectUrl = "https://reseng.co.kr/signin?error=true&message=" + URLEncoder.encode(errorMessage, StandardCharsets.UTF_8);
 
         response.sendRedirect(redirectUrl);
     }

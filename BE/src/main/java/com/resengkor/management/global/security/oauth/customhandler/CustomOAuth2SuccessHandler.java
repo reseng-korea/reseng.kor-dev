@@ -30,6 +30,8 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
     private final Integer ACCESS_TOKEN_EXPIRATION = 60 * 60; //1시간
+    private final String LOCAL_REDIRECT_URL = "http://localhost:5173/jwt-header-oauth2";
+    private final String PRODUCTION_REDIRECT_URL = "https://reseng.co.kr/jwt-header-oauth2";
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
@@ -66,34 +68,46 @@ public class CustomOAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHa
             response.addCookie(CookieUtil.createCookie("Refresh", refresh, expireS));
 
             // 리다이렉트 처리
-            // redirect query param 인코딩 후 전달
-            // 이후에 JWT 를 읽어서 데이터를 가져올 수도 있지만, JWT 파싱 비용이 많이 들기 때문에
-            // 처음 JWT 발급할 때 이름을 함께 넘긴 후, 로컬 스토리지에 저장한다.
+            /*
+            redirect query param 인코딩 후 전달
+            이후에 JWT 를 읽어서 데이터를 가져올 수도 있지만, JWT 파싱 비용이 많이 들기 때문에
+            처음 JWT 발급할 때 이름을 함께 넘긴 후, 로컬 스토리지에 저장한다.
+             */
 //        String encodedName = URLEncoder.encode(name, "UTF-8");
 //        response.sendRedirect("http://localhost:5173/oauth2-jwt-header?name=" + encodedName);
+
+
             // 환경에 맞는 리다이렉트 URL 설정
             String redirectUrl;
-//            if (EnvironmentUtil.isLocalEnvironment(request)) {
-//                // 로컬 환경에서는 localhost로 리다이렉트
-//                log.info("로컬 환경으로 리다이렉트");
-//                redirectUrl = "http://localhost:5173/jwt-header-oauth2";
-//            } else {
-//                // 배포 환경에서는 실제 도메인으로 리다이렉트
-//                log.info("배포 환경으로 리다이렉트");
-//                redirectUrl = "https://reseng.co.kr/jwt-header-oauth2";
-//            }
-            // Nginx에서 추가한 헤더 정보 확인
-            String environment = request.getHeader("X-Frontend-Environment");
-
-            if ("production".equals(environment)) {
-                // 배포 환경일 때 처리 (리다이렉트 또는 쿠키 추가 등)
-                redirectUrl = "https://reseng.co.kr/jwt-header-oauth2";
+            //1. 첫 번째 테스트
+            log.info("--------------첫 번째 테스트-----------------------");
+            if (EnvironmentUtil.isLocalEnvironment(request)) { //로컬
+                log.info("로컬 환경으로 리다이렉트");
+//                redirectUrl = LOCAL_REDIRECT_URL;
             } else {
-                // 로컬 환경일 때 처리
-                redirectUrl = "http://localhost:5173/jwt-header-oauth2";
+                // 배포 환경에서는 실제 도메인으로 리다이렉트
+                log.info("배포 환경으로 리다이렉트");
+//                redirectUrl = SERVER_REDIRECT_URL;
             }
-//            redirectUrl = "https://reseng.co.kr/jwt-header-oauth2";
+
+            // 2. 두 번째 테스트 : Nginx에서 추가한 헤더 정보 확인
+            log.info("--------------두 번째 테스트-----------------------");
+            String environment = request.getHeader("X-Frontend-Environment");
+            log.info("nginx 헤더 정보  = {}", environment);
+
+            if ("production".equals(environment)) {//배포
+                log.info("배포 환경으로 리다이렉트");
+                redirectUrl = PRODUCTION_REDIRECT_URL;
+
+            } else if ("local".equals(environment)) {
+                log.info("로컬 환경으로 리다이렉트");
+                redirectUrl = LOCAL_REDIRECT_URL;
+            } else {
+                log.error("X-Frontend-Environment 값이 비어있거나 알 수 없는 값입니다. 기본값으로 처리.");
+                redirectUrl = PRODUCTION_REDIRECT_URL;
+            }
             response.sendRedirect(redirectUrl);
+
         } catch (Exception e) {
             log.error("OAuth 로그인 성공 후 토큰 생성 또는 저장 중 오류 발생: {}", e.getMessage());
             throw new CustomException(ExceptionStatus.EXCEPTION); // 일반 예외 처리
