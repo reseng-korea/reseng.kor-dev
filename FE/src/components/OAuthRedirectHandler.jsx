@@ -4,6 +4,7 @@ import axios from 'axios';
 import { useNavigateTo } from '../hooks/useNavigateTo';
 
 function OAuthRedirectHandler() {
+
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
 
