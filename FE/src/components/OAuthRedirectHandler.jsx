@@ -35,6 +35,25 @@ function OAuthRedirectHandler() {
         // );
 
         console.log(response);
+
+        // 응답 헤더에서 토큰 추출
+        const accessToken = response.headers.get('authorization'); // accessToken
+        const refreshToken = response.headers.get('refresh'); // refreshToken
+
+        console.log('Access Token:', accessToken);
+        console.log('Refresh Token:', refreshToken);
+
+        if (accessToken && refreshToken) {
+          // 로컬 스토리지에 저장
+          localStorage.setItem('accessToken', accessToken);
+          localStorage.setItem('refreshToken', refreshToken);
+
+          // 대시보드로 리디렉트
+          navigateTo(routes.home);
+        } else {
+          console.error('Tokens are missing in the response headers.');
+          navigateTo(routes.home);
+        }
         // 로그인 성공 시 대시보드로 리디렉트
         if (response.status === 200) {
           // navigate('/dashboard');
