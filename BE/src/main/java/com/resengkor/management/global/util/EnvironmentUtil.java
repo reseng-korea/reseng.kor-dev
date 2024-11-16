@@ -25,6 +25,7 @@ public class EnvironmentUtil {
         String userAgent = request.getHeader("User-Agent");  // User-Agent 헤더 (브라우저 정보)
         String acceptLanguage = request.getHeader("Accept-Language");  // Accept-Language 헤더
         String authorization = request.getHeader("Authorization");  // Authorization 헤더 (인증 정보)
+        String origin = request.getHeader("Origin"); //요청의 출발 도메인을 확인하는 데 사용
 
         // X-Forwarded-For 헤더 (프록시 서버가 있을 경우 클라이언트 IP 추적)
         String xForwardedFor = request.getHeader("X-Forwarded-For");
@@ -42,6 +43,7 @@ public class EnvironmentUtil {
         log.info("User-Agent : {}", userAgent);
         log.info("Accept-Language : {}", acceptLanguage);
         log.info("Authorization : {}", authorization);
+        log.info("Origin : {}", origin);
         log.info("X-Forwarded-For : {}", xForwardedFor);
 
         // 로컬 환경을 구분할 때 Referer 헤더를 활용하여 외부 도메인 여부를 판단
