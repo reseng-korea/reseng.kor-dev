@@ -14,12 +14,8 @@ import { IoIosMail, IoIosLock } from 'react-icons/io';
 const LoginPage = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const apiUrlLocal = 'http://localhost:5173';
-  const K_REDIRECT_URI = import.meta.env.VITE_API_REDIRECT_URL;
-  const K_REST_API_KEY = import.meta.env.VITE_KAKAO_REST_API_KEY;
-  // const K_REST_API_KEY = import.meta.env.VITE_KAKAO_API_KEY;
-  const url = import.meta.env.VITE_API_BASE_URL_LOCAL;
 
-  const kakaoURL = `https://kauth.kakao.com/oauth/authorize?client_id=${K_REST_API_KEY}&redirect_uri=${K_REDIRECT_URI}&response_type=code`;
+  const url = import.meta.env.VITE_API_BASE_URL_LOCAL;
 
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
@@ -139,15 +135,6 @@ const LoginPage = () => {
     console.log(e.target.checked);
   };
 
-  const handleKakao = async () => {
-    try {
-      const response = await axios.post(`${apiUrl}/oauth2/authorization/kakao`);
-      console.log(response);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   // const handleKaKao = async () => {
   //   window.location.href = `${apiUrl}/oauth2/authorization/kakao`;
   // };
@@ -171,9 +158,9 @@ const LoginPage = () => {
   //   window.location.href = kakaoLoginUrl;
   // };
 
-  const handleGoogle = async () => {
-    window.location.href = kakaoURL;
-  };
+  // const handleGoogle = async () => {
+
+  // };
 
   return (
     <div className="flex min-h-screen">
