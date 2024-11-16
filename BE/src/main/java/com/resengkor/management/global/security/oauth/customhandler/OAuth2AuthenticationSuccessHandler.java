@@ -62,11 +62,11 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             // Redis에 새로운 Refresh Token 저장
             String redisKey = "refresh_token:" + email + ":" + sessionId;
-//            boolean isSaved = redisUtil.setData(redisKey, refresh, expireS * 1000L, TimeUnit.MILLISECONDS);
-//            if (!isSaved) {
-//                log.error("OAuth 로그인 성공 후: Refresh 토큰 저장 실패 (Redis 연결 오류)");
-//                throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR); // Redis 저장 실패 에러 던지기
-//            }
+            boolean isSaved = redisUtil.setData(redisKey, refresh, expireS * 1000L, TimeUnit.MILLISECONDS);
+            if (!isSaved) {
+                log.error("OAuth 로그인 성공 후: Refresh 토큰 저장 실패 (Redis 연결 오류)");
+                throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR); // Redis 저장 실패 에러 던지기
+            }
 
             // 쿠키에 JWT 토큰 추가
             response.addCookie(CookieUtil.createCookie("Authorization", access, ACCESS_TOKEN_EXPIRATION));
