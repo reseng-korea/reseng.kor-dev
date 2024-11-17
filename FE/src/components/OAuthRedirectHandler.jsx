@@ -4,7 +4,6 @@ import axios from 'axios';
 import { useNavigateTo } from '../hooks/useNavigateTo';
 
 function OAuthRedirectHandler() {
-
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
 
@@ -49,20 +48,19 @@ function OAuthRedirectHandler() {
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
 
-          // 대시보드로 리디렉트
-          navigateTo(routes.home);
+          console.log('이거 뭔데', response.statusText);
+
+          if (!response.statusText) {
+            navigateTo(routes.socialinfo);
+          } else {
+            navigateTo(routes.home);
+          }
         } else {
           console.error('Tokens are missing in the response headers.');
           navigateTo(routes.home);
         }
-        // 로그인 성공 시 대시보드로 리디렉트
-        if (response.status === 200) {
-          // navigate('/dashboard');
-        }
       } catch (error) {
         console.error(error);
-        // 로그인 실패 시 홈 페이지로 리디렉트
-        // navigate('/');
       }
     }
 
