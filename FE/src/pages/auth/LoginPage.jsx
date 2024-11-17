@@ -28,6 +28,11 @@ const LoginPage = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
 
+  const ENVIRONMENT = window.location.origin.includes('localhost')
+    ? 'local'
+    : 'production';
+  const oauthUrl = `${apiUrlLocal}/oauth2/authorization/google?frontend=${ENVIRONMENT}`;
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!email) {
@@ -274,6 +279,9 @@ const LoginPage = () => {
 
             <div className="flex items-center justify-center mb-4">
               <a href={`${apiUrl}/oauth2/authorization/kakao`}>
+                {/* <a
+                href={`${apiUrl}/oauth2/authorization/kakao?frontend=${ENVIRONMENT}`}
+              > */}
                 <img
                   src={kakao}
                   alt="카카오"
@@ -281,6 +289,9 @@ const LoginPage = () => {
                 />
               </a>
               <a href={`${apiUrl}/oauth2/authorization/google`}>
+                {/* <a
+                href={`${apiUrl}/oauth2/authorization/google?frontend=${ENVIRONMENT}`}
+              > */}
                 <img
                   src={google}
                   alt="구글"
