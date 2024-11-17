@@ -21,6 +21,9 @@ function OAuthRedirectHandler() {
           headers: {
             'Content-Type': 'application/json',
           },
+          body: JSON.stringify({
+            // 필요한 데이터, 예: { userId: 'exampleUserId' }
+          }),
         });
 
         // const response = await axios.post(
