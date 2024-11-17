@@ -9,14 +9,17 @@ import java.util.Base64;
 import java.util.Optional;
 
 public class CookieUtil {
+    //프엔이랑 주고 받는 쿠키
     public static Cookie createCookie(String key, String value, Integer expiredS) {
         Cookie cookie = new Cookie(key, value);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(expiredS);
+        cookie.setAttribute("SameSite", "None");
         return cookie;
     }
 
+    //내부에서 repository에 저장하는 쿠키(외부로 보내지 않음)
     /**
      * 요청에서 특정 이름의 쿠키를 가져옵니다.
      *
