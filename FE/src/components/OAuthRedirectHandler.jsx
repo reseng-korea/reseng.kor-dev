@@ -29,8 +29,8 @@ function OAuthRedirectHandler() {
         // console.log('응답 데이터 (텍스트):', responseText);
 
         // JSON 응답 처리
-        // const data = await response.json(); // 안전하게 호출
-        // console.log('데이터:', data);
+        const data = await response.json(); // 안전하게 호출
+        console.log('데이터:', data);
         // console.log('회사 이름:', data.companyName);
 
         // 응답 헤더에서 토큰 추출
