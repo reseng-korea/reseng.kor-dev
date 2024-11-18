@@ -23,10 +23,13 @@ public class Document extends BaseEntity {
     @Column(nullable = false)
     private DocumentType type;
 
+    @Column
     private String title;
 
+    @Column
     private LocalDate date;
 
+    @Column(nullable = false)
     private String content;
 
     @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)

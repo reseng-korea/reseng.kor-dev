@@ -5,7 +5,7 @@ import useModal from '../../../hooks/useModal';
 import usePreventRefresh from '../../../hooks/usePreventRefresh';
 import { useNavigateTo } from '../../../hooks/useNavigateTo';
 
-const QnaAnswerManager = (qnaDatas) => {
+const QnaAnswerManager = ({ qnaData, setQnaData }) => {
   //   userId, questionId, title, content, representativeName, viewCount, createdAt, secret,
   //   password, answered, answerId, answerContent, answerCreatedAt, answerUpdatedAt,
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -16,7 +16,7 @@ const QnaAnswerManager = (qnaDatas) => {
   const [modalOpen, setModalOpen] = useState(false);
   usePreventRefresh(openModal, closeModal, setModalOpen);
 
-  const [qnaData, setQnaData] = useState(qnaDatas);
+  // const [qnaData, setQnaData] = useState(qnaDatas);
   console.log(qnaData);
 
   const [answerContentInput, setAnswerContentInput] = useState('');
@@ -54,6 +54,8 @@ const QnaAnswerManager = (qnaDatas) => {
         );
         console.log(response);
 
+        console.log('조회수 - 수정될 때 호출');
+
         if (response.data.code == 201) {
           openModal({
             primaryText: '답변이 수정되었습니다.',
@@ -79,6 +81,10 @@ const QnaAnswerManager = (qnaDatas) => {
         });
       }
       setIsModify(false);
+      setQnaData((prevData) => ({
+        ...prevData, // 기존 qnaData의 내용을 복사
+        answered: false, // answered 값을 true로 변경
+      }));
       // 처음 답변 등록이라면
     } else {
       try {
@@ -96,6 +102,7 @@ const QnaAnswerManager = (qnaDatas) => {
           }
         );
         console.log(response);
+        console.log('조회수 - 처음 답변 시 호출');
 
         if (response.data.code == 201) {
           openModal({
@@ -117,7 +124,9 @@ const QnaAnswerManager = (qnaDatas) => {
   // 새로고침 시 사라짐 방지
   useEffect(() => {
     console.log(qnaData);
-    fetchQnaData();
+    if (!qnaData || !qnaData.questionId) {
+      fetchQnaData();
+    }
   }, []);
 
   // 댓글 등록 후 API를 다시 호출하여 qnaData를 업데이트하는 함수
@@ -133,8 +142,13 @@ const QnaAnswerManager = (qnaDatas) => {
         }
       );
       console.log('댓글 등록 후 호출', response);
+      console.log('조회수 - 댓글 등록 후');
       if (response.data.code === 200) {
         const { answer, ...qnaDetails } = response.data.data;
+        setQnaData((prevData) => ({
+          ...prevData,
+          answered: true,
+        }));
         setQnaData({
           ...qnaDetails,
           createdAt: qnaDetails.createdAt
@@ -155,7 +169,7 @@ const QnaAnswerManager = (qnaDatas) => {
   const handleModifyComment = async () => {
     setQnaData((prevData) => ({
       ...prevData,
-      answered: false,
+      answered: true,
     }));
     setAnswerContentInput(qnaData.answerContent);
     setIsModify(true); //수정임을 알리기
@@ -185,6 +199,7 @@ const QnaAnswerManager = (qnaDatas) => {
             }
           );
           console.log(response);
+          console.log('조회수 - 댓글 삭제');
 
           if (response.data.code == 201) {
             openModal({

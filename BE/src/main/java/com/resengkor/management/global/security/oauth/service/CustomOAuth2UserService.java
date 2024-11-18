@@ -65,10 +65,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
             else{
                 soialProvider = null;
             }
-            //email과 phone status는 추가 정보에서 false에서 인증받고 true로 바꾸는 걸로
+            //phone status는 추가 정보에서 false에서 인증받고 true로 바꾸는 걸로(이메일은 true)
             //일단 기본값 false
             user = User.builder()
                     .email(response.getEmail())
+                    .emailStatus(true)
                     .representativeName(response.getName())
                     .phoneNumber(response.getPhoneNumber())
                     .role(Role.ROLE_PENDING)
