@@ -57,12 +57,12 @@ const QnaDetail = () => {
   };
 
   // 새로고침
-  // useEffect(() => {
-  //   console.log(qnaData);
-  //   if (!qnaData || !qnaData.questionId) {
-  //     fetchQnaData();
-  //   }
-  // }, []);
+  useEffect(() => {
+    console.log(qnaData);
+    // if (!qnaData || !qnaData.questionId) {
+    fetchQnaData();
+    // }
+  }, []);
 
   console.log('데이터', qnaData);
 
@@ -112,7 +112,10 @@ const QnaDetail = () => {
             // style={{ height: 'calc(100vh - 230px)' }}
           >
             {/* 문의 내용 */}
-            <QnaContent {...qnaData} />
+            <QnaContent
+              qnaData={qnaData} // 상태 전달
+              setQnaData={setQnaData}
+            />
             <div className="flex flex-col w-4/5">
               <div className="flex flex-col w-full justify-center mt-4">
                 <span className="mb-4 font-bold text-left text-lg">
@@ -120,7 +123,10 @@ const QnaDetail = () => {
                 </span>
                 {/* <QnaAnswerManager {...qnaData} /> */}
                 {role === 'ROLE_MANAGER' ? (
-                  <QnaAnswerManager {...qnaData} />
+                  <QnaAnswerManager
+                    qnaData={qnaData} // 상태 전달
+                    setQnaData={setQnaData} // 상태 업데이트 함수 전달
+                  />
                 ) : (
                   <QnaAnswer {...qnaData} />
                 )}

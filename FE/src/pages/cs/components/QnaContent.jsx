@@ -9,7 +9,7 @@ import { IoTimeOutline } from 'react-icons/io5';
 import { IoEye } from 'react-icons/io5';
 
 const QnaContent = (
-  qnaData
+  { qnaData, setQnaData }
   //   userId, questionId, title, content, representativeName, viewCount, createdAt, secret,
   //   password, answered, answerId, answerContent, answerCreatedAt, answerUpdatedAt,
 ) => {
