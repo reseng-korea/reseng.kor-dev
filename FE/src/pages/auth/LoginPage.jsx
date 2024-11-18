@@ -13,7 +13,6 @@ import { IoIosMail, IoIosLock } from 'react-icons/io';
 
 const LoginPage = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const apiUrlLocal = 'http://localhost:5173';
 
   const url = import.meta.env.VITE_API_BASE_URL_LOCAL;
 
@@ -31,7 +30,7 @@ const LoginPage = () => {
   const ENVIRONMENT = window.location.origin.includes('localhost')
     ? 'local'
     : 'production';
-  const oauthUrl = `${apiUrlLocal}/oauth2/authorization/google?frontend=${ENVIRONMENT}`;
+  const oauthUrl = `${apiUrl}/oauth2/authorization/google?frontend=${ENVIRONMENT}`;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -278,20 +277,20 @@ const LoginPage = () => {
             </div>
 
             <div className="flex items-center justify-center mb-4">
-              <a href={`${apiUrl}/oauth2/authorization/kakao`}>
-                {/* <a
+              {/* <a href={`${apiUrl}/oauth2/authorization/kakao`}> */}
+              <a
                 href={`${apiUrl}/oauth2/authorization/kakao?frontend=${ENVIRONMENT}`}
-              > */}
+              >
                 <img
                   src={kakao}
                   alt="카카오"
                   className="object-cover w-12 h-12 mx-4"
                 />
               </a>
-              <a href={`${apiUrl}/oauth2/authorization/google`}>
-                {/* <a
+              {/* <a href={`${apiUrl}/oauth2/authorization/google`}> */}
+              <a
                 href={`${apiUrl}/oauth2/authorization/google?frontend=${ENVIRONMENT}`}
-              > */}
+              >
                 <img
                   src={google}
                   alt="구글"
