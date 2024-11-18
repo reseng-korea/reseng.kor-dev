@@ -31,7 +31,6 @@ function OAuthRedirectHandler() {
         // JSON 응답 처리
         const data = await response.json(); // 안전하게 호출
         console.log('데이터:', data);
-        // console.log('회사 이름:', data.companyName);
 
         // 응답 헤더에서 토큰 추출
         const accessToken = response.headers.get('authorization'); // accessToken
@@ -47,11 +46,11 @@ function OAuthRedirectHandler() {
 
           console.log('이거 뭔데', response.statusText);
 
-          // if (!data.companyName) {
-          // navigateTo(routes.socialinfo);
-          // } else {
-          navigateTo(routes.home);
-          // }
+          if (!data.companyName) {
+            navigateTo(routes.socialinfo);
+          } else {
+            navigateTo(routes.home);
+          }
         } else {
           console.error('Tokens are missing in the response headers.');
           navigateTo(routes.home);
