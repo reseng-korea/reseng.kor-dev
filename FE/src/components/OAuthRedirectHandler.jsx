@@ -25,8 +25,8 @@ function OAuthRedirectHandler() {
         });
         console.log(response);
 
-        const responseText = await response.text();
-        console.log('응답 데이터 (텍스트):', responseText);
+        // const responseText = await response.text();
+        // console.log('응답 데이터 (텍스트):', responseText);
 
         // JSON 응답 처리
         // const data = await response.json(); // 안전하게 호출
@@ -47,11 +47,11 @@ function OAuthRedirectHandler() {
 
           console.log('이거 뭔데', response.statusText);
 
-          if (!data.companyName) {
-            navigateTo(routes.socialinfo);
-          } else {
-            navigateTo(routes.home);
-          }
+          // if (!data.companyName) {
+          // navigateTo(routes.socialinfo);
+          // } else {
+          navigateTo(routes.home);
+          // }
         } else {
           console.error('Tokens are missing in the response headers.');
           navigateTo(routes.home);
