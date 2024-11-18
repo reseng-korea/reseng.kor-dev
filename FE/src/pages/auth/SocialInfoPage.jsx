@@ -20,13 +20,12 @@ const AddSignupPage = () => {
   const data = location.state?.data;
   console.log(data);
 
-  // 새로고침 데이터 날라감 방지
-  usePreventRefresh(openModal, closeModal, setModalOpen);
-
   const accesstoken = localStorage.getItem('accessToken');
   const { navigateTo, routes } = useNavigateTo();
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, openModalWithInput, closeModal, RenderModal } = useModal();
+  // 새로고침 데이터 날라감 방지
+  usePreventRefresh(openModal, closeModal, setModalOpen);
 
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(true);
