@@ -40,8 +40,8 @@ public class UserMapper {
                 .faxNumber(userProfile.getFaxNumber())
                 .streetAddress(userProfile.getStreetAddress())
                 .detailAddress(userProfile.getDetailAddress())
-                .city(userProfile.getCity())
-                .district(userProfile.getDistrict())
+                .city(RegionDTO.fromEntity(userProfile.getCity()))
+                .district(RegionDTO.fromEntity(userProfile.getDistrict()))
                 .latitude(userProfile.getLatitude())
                 .longitude(userProfile.getLongitude())
                 .build();

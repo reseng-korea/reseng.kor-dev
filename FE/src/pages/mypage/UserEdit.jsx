@@ -61,6 +61,7 @@ const UserEdit = () => {
   const [detailAddress, setDetailAddress] = useState('');
 
   useEffect(() => {
+    const userId = localStorage.getItem('userId');
     const fetchData = async () => {
       try {
         const response = await axios.get(`${apiUrl}/api/v1/users/${userId}`, {
@@ -69,6 +70,8 @@ const UserEdit = () => {
             'Content-Type': 'application/json',
           },
         });
+
+        console.log(response);
 
         setEmail(response.data.data.email);
         setPhoneNumber(response.data.data.phoneNumber);
@@ -83,7 +86,6 @@ const UserEdit = () => {
         setAddress(response.data.data.userProfile.streetAddress);
         setDetailAddress(response.data.data.userProfile.detailAddress);
 
-        console.log(response);
         console.log(response.data.data.email); //이메일
         console.log(response.data.data.phoneNumber); //휴대폰 번호
         // 대표자명
