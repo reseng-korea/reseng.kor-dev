@@ -5,6 +5,7 @@ import { useNavigateTo } from '../hooks/useNavigateTo';
 
 function OAuthRedirectHandler() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const apiUrlLocal = 'http://localhost:5173';
   const { navigateTo, routes } = useNavigateTo();
 
   console.log('route가 성공적으로 되어 OAuthRedirectHandler로 들어옵니다요');
@@ -21,23 +22,11 @@ function OAuthRedirectHandler() {
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            // 필요한 데이터, 예: { userId: 'exampleUserId' }
-          }),
         });
-
-        // const response = await axios.post(
-        //   `${apiUrl}/api/v1/oauth2-jwt-header`,
-        //   {},
-        //   {
-        //     withCredentials: true,
-        //     headers: {
-        //       'Content-Type': 'application/json', // 서버 요구 사항에 맞춰 Content-Type 조정
-        //     }, // 쿠키를 포함하도록 설정
-        //   }
-        // );
-
         console.log(response);
+
+        console.log('데이터', response.json());
+        console.log('회사 이름', response.json().companyName);
 
         // 응답 헤더에서 토큰 추출
         const accessToken = response.headers.get('authorization'); // accessToken
@@ -53,7 +42,7 @@ function OAuthRedirectHandler() {
 
           console.log('이거 뭔데', response.statusText);
 
-          if (!response.statusText) {
+          if (!response.json().companyName) {
             navigateTo(routes.socialinfo);
           } else {
             navigateTo(routes.home);

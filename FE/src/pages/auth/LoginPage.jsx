@@ -278,20 +278,20 @@ const LoginPage = () => {
             </div>
 
             <div className="flex items-center justify-center mb-4">
-              <a href={`${apiUrl}/oauth2/authorization/kakao`}>
-                {/* <a
+              {/* <a href={`${apiUrlLocal}/oauth2/authorization/kakao`}> */}
+              <a
                 href={`${apiUrl}/oauth2/authorization/kakao?frontend=${ENVIRONMENT}`}
-              > */}
+              >
                 <img
                   src={kakao}
                   alt="카카오"
                   className="object-cover w-12 h-12 mx-4"
                 />
               </a>
-              <a href={`${apiUrl}/oauth2/authorization/google`}>
-                {/* <a
+              {/* <a href={`${apiUrl}/oauth2/authorization/google`}> */}
+              <a
                 href={`${apiUrl}/oauth2/authorization/google?frontend=${ENVIRONMENT}`}
-              > */}
+              >
                 <img
                   src={google}
                   alt="구글"
