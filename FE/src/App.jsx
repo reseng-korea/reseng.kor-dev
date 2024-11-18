@@ -228,7 +228,7 @@ function App() {
           <Route path="/mypage/qr/failure" element={<QrFailure />} />
 
           <Route
-            path="/login/oauth2/code/kakao" // 카카오 인증 후 돌아올 경로
+            path="/jwt-header-oauth2" // 카카오 인증 후 돌아올 경로
             element={<OAuthRedirectHandler />}
           />
           {/* 임시  페이지(삭제 예정) */}

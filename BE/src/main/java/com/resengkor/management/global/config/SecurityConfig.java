@@ -2,8 +2,9 @@ package com.resengkor.management.global.config;
 
 import com.resengkor.management.global.security.jwt.filter.*;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
-import com.resengkor.management.global.security.oauth.customhandler.CustomOAuth2AuthenticationFailureHandler;
-import com.resengkor.management.global.security.oauth.customhandler.CustomOAuth2SuccessHandler;
+import com.resengkor.management.global.security.oauth.customhandler.OAuth2AuthenticationFailureHandler;
+import com.resengkor.management.global.security.oauth.customhandler.OAuth2AuthenticationSuccessHandler;
+import com.resengkor.management.global.security.oauth.repository.HttpCookieOAuth2AuthorizationRequestRepository;
 import com.resengkor.management.global.security.oauth.service.CustomOAuth2UserService;
 import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -44,6 +45,10 @@ public class SecurityConfig {
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
 
+    private final HttpCookieOAuth2AuthorizationRequestRepository httpCookieOAuth2AuthorizationRequestRepository;
+    private final OAuth2AuthenticationSuccessHandler oAuth2AuthenticationSuccessHandler;
+    private final OAuth2AuthenticationFailureHandler oAuth2AuthenticationFailureHandler;
+
     // POST로 허용할 엔드포인트 목록(role 상관없이 전체 접근 가능한 endpoint만!)
     private static final List<String> POST_LIST = List.of(
             "/api/v1/register",
@@ -68,14 +73,10 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationFailureHandler customOAuth2AuthenticationFailureHandler() {
-        return new CustomOAuth2AuthenticationFailureHandler();
-    }
-
-    @Bean
     public BCryptPasswordEncoder bCryptPasswordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -138,10 +139,13 @@ public class SecurityConfig {
         // oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
-                        .userInfoEndpoint((userinfo) -> userinfo
+                        .authorizationEndpoint(authorization -> authorization
+                                .authorizationRequestRepository(httpCookieOAuth2AuthorizationRequestRepository)
+                        )
+                        .userInfoEndpoint(userinfo -> userinfo
                                 .userService(customOAuth2UserService))
-                        .successHandler(new CustomOAuth2SuccessHandler(jwtUtil, redisUtil))
-                        .failureHandler(customOAuth2AuthenticationFailureHandler())
+                        .successHandler(oAuth2AuthenticationSuccessHandler)
+                        .failureHandler(oAuth2AuthenticationFailureHandler)
                         .permitAll());
 
         return http.build();
