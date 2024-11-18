@@ -21,6 +21,7 @@ const AddSignupPage = () => {
   console.log(data);
 
   const accesstoken = localStorage.getItem('accessToken');
+
   const { navigateTo, routes } = useNavigateTo();
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, openModalWithInput, closeModal, RenderModal } = useModal();
@@ -31,7 +32,7 @@ const AddSignupPage = () => {
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [isConfirmEmail, setIsConfirmEmail] = useState(true);
   const [isAuthVerified, setIsAuthVerified] = useState(true);
-  const [isClicked, setIsClicked] = useState(false);
+  const [isClicked, setIsClicked] = useState(true);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(false);
   const [isPhoneNumberVerified, setIsPhoneNumberVerified] = useState(false);
@@ -190,6 +191,8 @@ const AddSignupPage = () => {
         console.log(response);
 
         if (response.data.code == 201) {
+          localStorage.setItem('userId', response.data.data.id);
+          localStorage.setItem('role', response.data.data.role);
           setModalOpen(true);
           openModal({
             primaryText: '회원가입이 완료되었습니다.',
@@ -201,7 +204,6 @@ const AddSignupPage = () => {
             },
           });
         }
-        console.log(response);
       } catch (error) {
         console.log(error);
       }
