@@ -42,6 +42,8 @@ function OAuthRedirectHandler() {
           // 로컬 스토리지에 저장
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem('userId', data.id);
+          localStorage.setItem('role', data.role);
 
           console.log('이거 뭔데', response.statusText);
 
