@@ -25,7 +25,23 @@ function OAuthRedirectHandler() {
         });
         console.log(response);
 
-        const data = await response.json(); // 한 번만 호출 가능
+        // 응답 상태 확인
+        if (!response.ok) {
+          console.error(`HTTP error! status: ${response.status}`);
+          const errorText = await response.text(); // 텍스트 에러 확인
+          console.error('Error response:', errorText);
+          return;
+        }
+
+        // 응답 Content-Type 확인
+        const contentType = response.headers.get('Content-Type');
+        if (!contentType || !contentType.includes('application/json')) {
+          console.error('Response is not JSON:', contentType);
+          return;
+        }
+
+        // JSON 응답 처리
+        const data = await response.json(); // 안전하게 호출
         console.log('데이터:', data);
         console.log('회사 이름:', data.companyName);
 
