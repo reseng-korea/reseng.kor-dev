@@ -2,8 +2,6 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import useModal from '../../../hooks/useModal';
-import usePreventRefresh from '../../../hooks/usePreventRefresh';
-import { useNavigateTo } from '../../../hooks/useNavigateTo';
 
 const QnaAnswerManager = ({ qnaData, setQnaData }) => {
   //   userId, questionId, title, content, representativeName, viewCount, createdAt, secret,
@@ -11,13 +9,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
 
-  const { navigateTo, routes } = useNavigateTo();
   const { openModal, closeModal, RenderModal } = useModal();
-  const [modalOpen, setModalOpen] = useState(false);
-  usePreventRefresh(openModal, closeModal, setModalOpen);
-
-  // const [qnaData, setQnaData] = useState(qnaDatas);
-  console.log(qnaData);
 
   const [answerContentInput, setAnswerContentInput] = useState('');
   const [isModify, setIsModify] = useState(false);
@@ -28,14 +20,13 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
     return `${date} ${time.slice(0, 8)}`;
   };
 
+  // 답변 등록 핸들러
   const handleAnswerInputContent = (e) => {
     setAnswerContentInput(e.target.value);
   };
 
   // 답변 등록 버튼 클릭 시
   const handleSubmit = async () => {
-    console.log('답변', answerContentInput);
-    console.log('질문아이디', qnaData.questionId);
     // 수정된 답변 등록이라면
     if (isModify) {
       try {
@@ -52,9 +43,6 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
             },
           }
         );
-        console.log(response);
-
-        console.log('조회수 - 수정될 때 호출');
 
         if (response.data.code == 201) {
           openModal({
@@ -63,7 +51,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
             isAutoClose: true,
             onConfirm: () => {
               closeModal();
-              fetchQnaData();
+              updateQnaData();
             },
           });
         }
@@ -76,16 +64,17 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
           isAutoClose: true,
           onConfirm: () => {
             closeModal();
-            fetchQnaData();
+            // updateQnaData();
           },
         });
       }
       setIsModify(false);
       setQnaData((prevData) => ({
         ...prevData, // 기존 qnaData의 내용을 복사
-        answered: false, // answered 값을 true로 변경
+        answered: true, // answered 값을 true로 변경
       }));
-      // 처음 답변 등록이라면
+
+      // 처음 답변을 등록하는 거라면
     } else {
       try {
         const response = await axios.post(
@@ -101,17 +90,21 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
             },
           }
         );
-        console.log(response);
-        console.log('조회수 - 처음 답변 시 호출');
 
         if (response.data.code == 201) {
+          // 답변 등록 변수인 answered를 true로 바꾸기
+          const updatedQnaData = {
+            ...qnaData, // 기존 데이터를 유지
+            answered: true, // answered만 업데이트
+          };
+          setQnaData(updatedQnaData);
           openModal({
             primaryText: '답변이 등록되었습니다.',
             type: 'success',
             isAutoClose: true,
             onConfirm: () => {
               closeModal();
-              fetchQnaData();
+              updateQnaData();
             },
           });
         }
@@ -121,19 +114,11 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
     }
   };
 
-  // 새로고침 시 사라짐 방지
-  useEffect(() => {
-    console.log(qnaData);
-    if (!qnaData || !qnaData.questionId) {
-      fetchQnaData();
-    }
-  }, []);
-
   // 댓글 등록 후 API를 다시 호출하여 qnaData를 업데이트하는 함수
-  const fetchQnaData = async () => {
+  const updateQnaData = async () => {
     try {
       const response = await axios.get(
-        `${apiUrl}/api/v1/qna/questions/${qnaData.questionId}?password=${qnaData.password}`,
+        `${apiUrl}/api/v1/qna/questions/${qnaData.questionId}`,
         {
           headers: {
             Authorization: accesstoken,
@@ -141,41 +126,32 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
           },
         }
       );
-      console.log('댓글 등록 후 호출', response);
-      console.log('조회수 - 댓글 등록 후');
       if (response.data.code === 200) {
         const { answer, ...qnaDetails } = response.data.data;
-        setQnaData((prevData) => ({
-          ...prevData,
-          answered: true,
-        }));
         setQnaData({
           ...qnaDetails,
-          createdAt: qnaDetails.createdAt
-            ? formatCreatedAt(qnaDetails.createdAt)
-            : '',
           answerId: answer ? answer.answerId : '',
-          answerContent: answer ? answer.content : '', // answer가 있으면 content 가져오기
-          answerCreatedAt: answer ? formatCreatedAt(answer.createdAt) : '', // answer가 있으면 createdAt 가져오기
+          answerContent: answer ? answer.content : '',
+          answerCreatedAt: answer ? formatCreatedAt(answer.createdAt) : '',
           answerUpdatedAt: answer ? formatCreatedAt(answer.updatedAt) : '',
         });
       }
     } catch (error) {
-      console.error('Error fetching data:', error);
+      console.log(error);
     }
   };
 
-  // 댓글 수정
+  // 답변 수정 버튼 클릭 시
   const handleModifyComment = async () => {
     setQnaData((prevData) => ({
       ...prevData,
-      answered: true,
+      answered: false,
     }));
-    setAnswerContentInput(qnaData.answerContent);
+    setAnswerContentInput(qnaData.answerContent); //답변 가져오기
     setIsModify(true); //수정임을 알리기
   };
 
-  // 댓글 삭제
+  // 답변 삭제 버튼 클릭 시
   const handleDeleteComment = async () => {
     openModal({
       primaryText: '답변을 삭제하시겠습니까?',
@@ -198,8 +174,6 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
               },
             }
           );
-          console.log(response);
-          console.log('조회수 - 댓글 삭제');
 
           if (response.data.code == 201) {
             openModal({
@@ -208,7 +182,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
               isAutoClose: false,
               onConfirm: () => {
                 closeModal();
-                fetchQnaData();
+                updateQnaData();
               },
             });
           }
@@ -221,7 +195,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
             isAutoClose: true,
             onConfirm: () => {
               closeModal();
-              fetchQnaData();
+              // updateQnaData();
             },
           });
         }

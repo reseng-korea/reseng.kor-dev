@@ -43,6 +43,8 @@ const Qna = () => {
     setSearchParams({ page: pageNumber }); // 페이지 번호를 URL 쿼리 파라미터에 설정
   };
 
+  sessionStorage.setItem('isFromNavigation', 'true');
+
   // detail 페이지로 데이터 보내는 함수
   const handleResponse = (data, index) => {
     const {
@@ -81,6 +83,7 @@ const Qna = () => {
       answerContent,
       answerCreatedAt: answerCreatedAt ? formatCreatedAt(answerCreatedAt) : '',
       answerUpdatedAt: answerUpdatedAt ? formatCreatedAt(answerUpdatedAt) : '',
+      isFromNavigation: true, //페이지 이동 표시
     });
   };
 
