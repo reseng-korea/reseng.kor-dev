@@ -25,8 +25,9 @@ function OAuthRedirectHandler() {
         });
         console.log(response);
 
-        console.log('데이터', response.json());
-        console.log('회사 이름', response.json().companyName);
+        const data = await response.json(); // 한 번만 호출 가능
+        console.log('데이터:', data);
+        console.log('회사 이름:', data.companyName);
 
         // 응답 헤더에서 토큰 추출
         const accessToken = response.headers.get('authorization'); // accessToken
@@ -42,7 +43,7 @@ function OAuthRedirectHandler() {
 
           console.log('이거 뭔데', response.statusText);
 
-          if (!response.json().companyName) {
+          if (!data.companyName) {
             navigateTo(routes.socialinfo);
           } else {
             navigateTo(routes.home);
