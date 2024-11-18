@@ -89,7 +89,7 @@ const Qna = () => {
     if (role === 'ROLE_MANAGER') {
       try {
         const response = await axios.get(
-          `${apiUrl}/api/v1/qna/questions/${id}?password=`,
+          `${apiUrl}/api/v1/qna/questions/${id}`,
           {
             headers: {
               Authorization: accesstoken,
@@ -97,6 +97,8 @@ const Qna = () => {
             },
           }
         );
+
+        console.log('조회수 - 게시물 들어갈 때 ');
 
         // 데이터 처리
         if (response.data.code == 200) {
