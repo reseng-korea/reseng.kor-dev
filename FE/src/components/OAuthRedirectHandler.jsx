@@ -5,7 +5,6 @@ import { useNavigateTo } from '../hooks/useNavigateTo';
 
 function OAuthRedirectHandler() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const apiUrlLocal = 'http://localhost:5173';
   const { navigateTo, routes } = useNavigateTo();
 
   console.log('route가 성공적으로 되어 OAuthRedirectHandler로 들어옵니다요');
