@@ -1,5 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useLocation } from 'react-router-dom';
 import Layout from '../../components/Layouts';
+
+import { useNavigateTo } from '../../hooks/useNavigateTo';
+import useModal from '../../hooks/useModal';
+import usePreventRefresh from '../../hooks/usePreventRefresh';
 
 import EmailInfoForm from './components/EmailInfoForm';
 import PhoneNumberInfoForm from './components/PhoneNumberInfoForm';
@@ -9,10 +15,23 @@ import CompanyContactInfoForm from './components/CompanyContactInfoForm';
 import AddressInfoForm from './components/AddressInfoForm';
 
 const AddSignupPage = () => {
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const location = useLocation();
+  const data = location.state?.data;
+  console.log(data);
+
+  // 새로고침 데이터 날라감 방지
+  usePreventRefresh(openModal, closeModal, setModalOpen);
+
+  const accesstoken = localStorage.getItem('accessToken');
+  const { navigateTo, routes } = useNavigateTo();
+  const [modalOpen, setModalOpen] = useState(false);
+  const { openModal, openModalWithInput, closeModal, RenderModal } = useModal();
+
   const [email, setEmail] = useState('');
-  const [isValidEmail, setIsValidEmail] = useState(false);
-  const [isConfirmEmail, setIsConfirmEmail] = useState(false);
-  const [isAuthVerified, setIsAuthVerified] = useState(false);
+  const [isValidEmail, setIsValidEmail] = useState(true);
+  const [isConfirmEmail, setIsConfirmEmail] = useState(true);
+  const [isAuthVerified, setIsAuthVerified] = useState(true);
   const [isClicked, setIsClicked] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('');
   const [isValidPhoneNumber, setIsValidPhoneNumber] = useState(false);
@@ -26,38 +45,15 @@ const AddSignupPage = () => {
   const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
 
+  useEffect(() => {
+    if (data?.email) {
+      setEmail(data.email); // 전달받은 이메일을 상태로 설정
+    }
+    console.log('이메일', email);
+  }, [data]);
+
   const handleSubmit = async () => {
-    if (!email) {
-      setModalOpen(true);
-      openModal({
-        primaryText: '이메일을 입력해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
-    } else if (!isValidEmail) {
-      setModalOpen(true);
-      openModal({
-        primaryText: '올바른 이메일을 입력해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
-    } else if (!isConfirmEmail) {
-      setModalOpen(true);
-      openModal({
-        primaryText: '이메일 중복 확인을 해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
-    } else if (!phoneNumber) {
+    if (!phoneNumber) {
       setModalOpen(true);
       openModal({
         primaryText: '휴대폰 번호를 입력해주세요.',
@@ -169,11 +165,11 @@ const AddSignupPage = () => {
       });
     } else {
       try {
-        const response = await axios.post(
-          `${apiUrl}/api/v1/register`,
+        console.log(data?.id);
+        const response = await axios.put(
+          `${apiUrl}/api/v1/users/oauth/${data.id}`,
           {
             email: email,
-            password: password,
             companyName: companyName,
             representativeName: ownerName,
             phoneNumber: phoneNumber,
@@ -186,6 +182,7 @@ const AddSignupPage = () => {
           },
           {
             headers: {
+              Authorization: accesstoken,
               'Content-Type': 'application/json',
             },
           }
@@ -203,7 +200,7 @@ const AddSignupPage = () => {
             isAutoClose: false,
             onConfirm: () => {
               closeModal(), setModalOpen(false);
-              navigateTo(routes.signin);
+              navigateTo(routes.home);
             },
           });
         }
@@ -284,6 +281,7 @@ const AddSignupPage = () => {
           </div>
         </div>
       </div>
+      {modalOpen && <RenderModal />}
     </Layout>
   );
 };
