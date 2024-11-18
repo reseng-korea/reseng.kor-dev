@@ -145,6 +145,10 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
       console.log('조회수 - 댓글 등록 후');
       if (response.data.code === 200) {
         const { answer, ...qnaDetails } = response.data.data;
+        setQnaData((prevData) => ({
+          ...prevData,
+          answered: true,
+        }));
         setQnaData({
           ...qnaDetails,
           createdAt: qnaDetails.createdAt
@@ -165,7 +169,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
   const handleModifyComment = async () => {
     setQnaData((prevData) => ({
       ...prevData,
-      answered: false,
+      answered: true,
     }));
     setAnswerContentInput(qnaData.answerContent);
     setIsModify(true); //수정임을 알리기

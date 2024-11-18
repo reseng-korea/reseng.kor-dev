@@ -31,6 +31,7 @@ const LoginPage = () => {
     ? 'local'
     : 'production';
   const oauthUrl = `${apiUrl}/oauth2/authorization/google?frontend=${ENVIRONMENT}`;
+  console.log('로컬인지', ENVIRONMENT);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
