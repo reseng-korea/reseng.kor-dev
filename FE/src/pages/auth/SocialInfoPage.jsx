@@ -189,9 +189,7 @@ const AddSignupPage = () => {
 
         console.log(response);
 
-        if (
-          response.data.message == '요청에 성공되어 데이터가 생성되었습니다'
-        ) {
+        if (response.data.code == 201) {
           setModalOpen(true);
           openModal({
             primaryText: '회원가입이 완료되었습니다.',
