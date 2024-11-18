@@ -59,9 +59,10 @@ const QnaDetail = () => {
   // 새로고침
   useEffect(() => {
     console.log(qnaData);
-    // if (!qnaData || !qnaData.questionId) {
-    fetchQnaData();
-    // }
+    if (!qnaData || !qnaData.questionId) {
+      fetchQnaData();
+      console.log('조회수 증가 ?  - 새로고침');
+    }
   }, []);
 
   console.log('데이터', qnaData);
