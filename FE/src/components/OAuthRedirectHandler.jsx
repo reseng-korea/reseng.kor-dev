@@ -24,9 +24,6 @@ function OAuthRedirectHandler() {
         });
         console.log(response);
 
-        // const responseText = await response.text();
-        // console.log('응답 데이터 (텍스트):', responseText);
-
         // JSON 응답 처리
         const data = await response.json(); // 안전하게 호출
         console.log('데이터:', data);
@@ -44,8 +41,6 @@ function OAuthRedirectHandler() {
           localStorage.setItem('refreshToken', refreshToken);
           localStorage.setItem('userId', data.id);
           localStorage.setItem('role', data.role);
-
-          console.log('이거 뭔데', response.statusText);
 
           if (!data.companyName) {
             navigateTo(routes.socialinfo, {
