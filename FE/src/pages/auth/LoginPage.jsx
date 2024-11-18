@@ -278,7 +278,7 @@ const LoginPage = () => {
             </div>
 
             <div className="flex items-center justify-center mb-4">
-              <a href={`${apiUrlLocal}/oauth2/authorization/kakao`}>
+              <a href={`${apiUrl}/oauth2/authorization/kakao`}>
                 {/* <a
                 href={`${apiUrl}/oauth2/authorization/kakao?frontend=${ENVIRONMENT}`}
               > */}
