@@ -16,7 +16,7 @@ public class CookieUtil {
         cookie.setPath("/");
         cookie.setMaxAge(expiredS);
         cookie.setAttribute("SameSite", "None");
-        cookie.setSecure(false);
+        cookie.setSecure(true);
         return cookie;
     }
 
