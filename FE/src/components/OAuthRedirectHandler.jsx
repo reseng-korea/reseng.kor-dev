@@ -47,7 +47,9 @@ function OAuthRedirectHandler() {
           console.log('이거 뭔데', response.statusText);
 
           if (!data.companyName) {
-            navigateTo(routes.socialinfo);
+            navigateTo(routes.socialinfo, {
+              data,
+            });
           } else {
             navigateTo(routes.home);
           }
