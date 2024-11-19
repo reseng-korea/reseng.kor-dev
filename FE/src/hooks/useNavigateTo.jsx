@@ -50,6 +50,10 @@ export const useNavigateTo = () => {
     qrSuccess: '/mypage/qr/success',
     qrFailure: '/mypage/qr/failure',
     tmp: '/tmp',
+    termsAndPolicyNonSocial: '/signup/termsAndPolicyNonSocial',
+    termsAndPolicySocial: '/signup/termsAndPolicySocial',
+    privacyPolicy: '/privacyPolicy',
+    termsOfUse: '/termsOfUse'
   };
 
   return { navigateTo, routes };
