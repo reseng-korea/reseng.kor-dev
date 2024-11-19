@@ -17,6 +17,7 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long>,
         UserCustomRepository, QuerydslPredicateExecutor<User> {
 
+
     Optional<User> findByEmail(String email);
 
     // 업체명과 휴대폰 번호로 User를 찾는 메서드

@@ -100,10 +100,10 @@ public class SmsServiceWithRedis {
         if (existingUserByPhoneNumber.isPresent()) {
             User user = existingUserByPhoneNumber.get();
             if (!user.isStatus()) {
-                log.info("비활성 사용자입니다 (이메일 중복)");
+                log.info("비활성 사용자입니다");
                 throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
             }
-            log.info("사용자입니다 (전화번호 중복)");
+            log.info("사용자입니다 (핸드폰 번호 중복)");
             throw new CustomException(ExceptionStatus.USER_PHONE_NUMBER_ALREADY_EXIST); // 이미 존재하는 전화번호 예외
         }
         else{
