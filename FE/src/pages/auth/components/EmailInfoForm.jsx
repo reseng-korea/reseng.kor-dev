@@ -67,10 +67,22 @@ const EmailInfoForm = ({
         },
       });
     } else {
+      // try {
+      //   const response = await axios.get(
+      //     `${apiUrl}/api/v1/check-email`,
+      //     { params: { email } },
+      //     {
+      //       headers: {
+      //         'Content-Type': 'application/json',
+      //       },
+      //     }
+      //   );
+
+      // if (response.data.data == '사용 가능한 이메일입니다.') {
       try {
-        const response = await axios.get(
-          `${apiUrl}/api/v1/check-email`,
-          { params: { email } },
+        const response = await axios.post(
+          `${apiUrl}/api/v1/mail/send-verification`,
+          { email: email },
           {
             headers: {
               'Content-Type': 'application/json',
@@ -78,73 +90,61 @@ const EmailInfoForm = ({
           }
         );
 
-        if (response.data.data == '사용 가능한 이메일입니다.') {
-          try {
-            const response = await axios.post(
-              `${apiUrl}/api/v1/mail/send-verification`,
-              { email: email },
-              {
-                headers: {
-                  'Content-Type': 'application/json',
-                },
-              }
-            );
+        console.log(response);
 
-            console.log(response);
+        if (
+          response.data.message == '요청에 성공되어 데이터가 생성되었습니다'
+        ) {
+          setModalOpen(true);
 
-            if (
-              response.data.message == '요청에 성공되어 데이터가 생성되었습니다'
-            ) {
-              setModalOpen(true);
-
-              openModal({
-                primaryText: `${email} (으)로`,
-                secondaryText: ' 인증번호가 발송되었습니다.',
-                type: 'success',
-                isAutoClose: true,
-                onConfirm: () => {
-                  closeModal();
-                  setModalOpen(false);
-                  setIsClicked(true);
-                  setTimeLeft(300);
-                  // 기존 타이머 있을 경우 초기화
-                  if (timerRef.current) clearInterval(timerRef.current);
-                  timerRef.current = setInterval(() => {
-                    setTimeLeft((prev) => prev - 1);
-                  }, 1000);
-                },
-              });
-            }
-          } catch (error) {
-            console.log(error);
-          }
+          openModal({
+            primaryText: `${email} (으)로`,
+            secondaryText: ' 인증번호가 발송되었습니다.',
+            type: 'success',
+            isAutoClose: true,
+            onConfirm: () => {
+              closeModal();
+              setModalOpen(false);
+              setIsClicked(true);
+              setTimeLeft(300);
+              // 기존 타이머 있을 경우 초기화
+              if (timerRef.current) clearInterval(timerRef.current);
+              timerRef.current = setInterval(() => {
+                setTimeLeft((prev) => prev - 1);
+              }, 1000);
+            },
+          });
         }
       } catch (error) {
-        const code = error.response.data.code;
-        if (code == 4024) {
-          setModalOpen(true);
-          openModal({
-            primaryText: '비활성화된 이메일입니다.',
-            context: '관리자에게 문의해주세요.',
-            type: 'warning',
-            isAutoClose: false,
-            onConfirm: () => {
-              closeModal(), setModalOpen(false);
-            },
-          });
-        } else {
-          //code == 4022
-          setModalOpen(true);
-          openModal({
-            primaryText: '이미 존재하는 이메일입니다.',
-            type: 'warning',
-            isAutoClose: false,
-            onConfirm: () => {
-              closeModal(), setModalOpen(false);
-            },
-          });
-        }
+        console.log(error);
       }
+      // }
+      // } catch (error) {
+      //   const code = error.response.data.code;
+      //   if (code == 4024) {
+      //     setModalOpen(true);
+      //     openModal({
+      //       primaryText: '비활성화된 이메일입니다.',
+      //       context: '관리자에게 문의해주세요.',
+      //       type: 'warning',
+      //       isAutoClose: false,
+      //       onConfirm: () => {
+      //         closeModal(), setModalOpen(false);
+      //       },
+      //     });
+      //   } else {
+      //     //code == 4022
+      //     setModalOpen(true);
+      //     openModal({
+      //       primaryText: '이미 존재하는 이메일입니다.',
+      //       type: 'warning',
+      //       isAutoClose: false,
+      //       onConfirm: () => {
+      //         closeModal(), setModalOpen(false);
+      //       },
+      //     });
+      //   }
+      // }
     }
   };
 
