@@ -203,7 +203,10 @@ const PhoneNumberInfoForm = ({
     <>
       {/* 휴대폰 번호 */}
       <div className="flex flex-col items-center px-3 py-2">
-        <label className="self-start mb-2 text-lg">휴대폰 번호</label>
+        <div className="flex self-start space-x-1">
+          <label className="mb-2 text-lg">휴대폰 번호</label>
+          <span className="text-warning font-bold text-lg">*</span>
+        </div>
         <form className="flex items-center justify-center w-full mb-1 space-x-2">
           <input
             type="tel"

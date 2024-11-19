@@ -55,8 +55,8 @@ const UserEdit = () => {
   const [ownerName, setOwnerName] = useState('');
   const [companyPhoneNumber, setCompanyPhoneNumber] = useState('');
   const [companyFaxNumber, setCompanyFaxNumber] = useState('');
-  const [region, setRegion] = useState('');
-  const [subRegion, setSubRegion] = useState('');
+  const [region, setRegion] = useState({ id: null, name: '' });
+  const [subRegion, setSubRegion] = useState({ id: null, name: '' });
   const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
 
@@ -81,8 +81,14 @@ const UserEdit = () => {
           response.data.data.userProfile.companyPhoneNumber
         );
         setCompanyFaxNumber(response.data.data.userProfile.faxNumber);
-        setRegion(response.data.data.userProfile.city.regionName);
-        setSubRegion(response.data.data.userProfile.district.regionName);
+        setRegion({
+          id: response.data.data.userProfile.city.id,
+          name: response.data.data.userProfile.city.regionName,
+        });
+        setSubRegion({
+          id: response.data.data.userProfile.district.id,
+          name: response.data.data.userProfile.district.regionName,
+        });
         setAddress(response.data.data.userProfile.streetAddress);
         setDetailAddress(response.data.data.userProfile.detailAddress);
 
@@ -157,27 +163,7 @@ const UserEdit = () => {
           closeModal(), setModalOpen(false);
         },
       });
-    } else if (!companyPhoneNumber) {
-      setModalOpen(true);
-      openModal({
-        primaryText: '회사 번호를 입력해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
-    } else if (!companyFaxNumber) {
-      setModalOpen(true);
-      openModal({
-        primaryText: '팩스 번호를 입력해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
-    } else if (!region) {
+    } else if (!region.id) {
       setModalOpen(true);
       openModal({
         primaryText: '광역자치구를 선택해주세요.',
@@ -187,7 +173,7 @@ const UserEdit = () => {
           closeModal(), setModalOpen(false);
         },
       });
-    } else if (!subRegion) {
+    } else if (!subRegion.id) {
       setModalOpen(true);
       openModal({
         primaryText: '지역자치구를 선택해주세요.',
@@ -229,8 +215,8 @@ const UserEdit = () => {
             phoneNumber: phoneNumber,
             companyPhoneNumber: companyPhoneNumber,
             faxNumber: companyFaxNumber,
-            cityName: region,
-            districtName: subRegion,
+            cityId: region.id,
+            districtId: subRegion.id,
             streetAddress: address,
             detailAddress: detailAddress,
           },
@@ -339,9 +325,15 @@ const UserEdit = () => {
           />
           {/* 메인 */}
           <div className="flex flex-col w-full max-w-2xl px-8 pt-4 pb-8 mx-auto">
-            <span className="mb-4 text-left">
+            <span className="mb-2 text-left">
               안전한 서비스 이용을 위해 회원 정보를 최신 상태로 유지해 주세요.
             </span>
+            <div className="flex space-x-1">
+              <div className="flex items-start">
+                <span className="text-warning font-bold text-lg">*</span>
+              </div>
+              <span>필수 입력 사항</span>
+            </div>
             <hr className="w-full mb-6 border-t border-gray-300" />
 
             <EmailInfoForm
