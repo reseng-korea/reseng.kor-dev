@@ -27,25 +27,19 @@ function OAuthRedirectHandler() {
         // JSON 응답 처리
         const data = await response.json(); // 안전하게 호출
         console.log('데이터:', data);
-
-        // 응답 헤더에서 토큰 추출
-        const accessToken = response.headers.get('authorization'); // accessToken
-        const refreshToken = response.headers.get('refresh'); // refreshToken
-
         console.log('Access Token:', accessToken);
-        console.log('Refresh Token:', refreshToken);
 
         if (accessToken && refreshToken) {
           // 로컬 스토리지에 저장
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('refreshToken', refreshToken);
+          localStorage.setItem(
+            'accessToken',
+            response.headers.get('authorization')
+          );
           localStorage.setItem('userId', data.id);
           localStorage.setItem('role', data.role);
 
           if (!data.companyName) {
-            navigateTo(routes.termsAndPolicySocial, {
-              data,
-            });
+            navigateTo(routes.termsAndPolicySocial, { data });
           } else {
             navigateTo(routes.home);
           }

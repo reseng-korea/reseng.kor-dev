@@ -17,9 +17,6 @@ import java.util.Optional;
 public interface UserRepository extends JpaRepository<User, Long>,
         UserCustomRepository, QuerydslPredicateExecutor<User> {
 
-    // 이메일이 존재하는지 확인하는 메소드
-    boolean existsByEmail(String email);
-
     Optional<User> findByEmail(String email);
 
     // 업체명과 휴대폰 번호로 User를 찾는 메서드
@@ -33,20 +30,17 @@ public interface UserRepository extends JpaRepository<User, Long>,
     // 이메일과 전화번호가 모두 일치하는 사용자 찾기
     Optional<User> findByEmailAndPhoneNumber(String email, String phoneNumber);
 
-
-    @Query("SELECT u FROM User u " +
-            "JOIN FETCH u.userProfile up " +
-            "JOIN FETCH up.city " + // city와 district를 명확히 지정
-            "JOIN FETCH up.district " +
-            "WHERE u.id = :userId")
-    Optional<User> findUserWithProfileAndRegionById(@Param("userId") Long userId);
-
-    @Query("SELECT u FROM User u " +
-            "JOIN FETCH u.userProfile up " +
-            "LEFT JOIN FETCH up.city " +
-            "LEFT JOIN FETCH up.district " +
-            "WHERE u.role IN (:roles)")
-    Page<User> findAllWithProfileAndRegion(@Param("roles") List<Role> roles, Pageable pageable);
-
-
+//    @Query("SELECT u FROM User u " +
+//            "JOIN FETCH u.userProfile up " +
+//            "JOIN FETCH up.city " + // city와 district를 명확히 지정
+//            "JOIN FETCH up.district " +
+//            "WHERE u.id = :userId")
+//    Optional<User> findUserWithProfileAndRegionById(@Param("userId") Long userId);
+//
+//    @Query("SELECT u FROM User u " +
+//            "JOIN FETCH u.userProfile up " +
+//            "LEFT JOIN FETCH up.city " +
+//            "LEFT JOIN FETCH up.district " +
+//            "WHERE u.role IN (:roles)")
+//    Page<User> findAllWithProfileAndRegion(@Param("roles") List<Role> roles, Pageable pageable);
 }
