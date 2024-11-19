@@ -5,11 +5,13 @@ import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
+import com.resengkor.management.global.util.CookieUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -63,14 +65,24 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
+        //쿠키 가져오기
+        Cookie[] cookies = request.getCookies();
         String refresh = null;
-        refresh = request.getHeader("Refresh");
 
-        // refresh token null
-        if(refresh == null){
-            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER, HttpServletResponse.SC_BAD_REQUEST);
+        if(cookies == null){
+            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("Refresh")){
+                refresh = cookie.getValue();
+            }
+        }
+        if(refresh == null){
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE, HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(refresh);
 
@@ -112,7 +124,8 @@ public class CustomLogoutFilter extends GenericFilterBean {
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);
-
+        //refresh 만료 처리
+        response.addCookie(CookieUtil.createCookie("Refresh", null, 0));
         CommonResponse commonResponse = new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 "로그아웃에 성공했습니다");
 
