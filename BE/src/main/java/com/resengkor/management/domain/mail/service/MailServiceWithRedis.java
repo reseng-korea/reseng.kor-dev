@@ -37,9 +37,12 @@ public class MailServiceWithRedis {
     private final UserRepository userRepository;
     private final JavaMailSender javaMailSender;
     private final RedisUtil redisUtil; // RedisUtil 주입
+    private final EmailSenderService emailSenderService;  // 비동기 메소드를 호출하는 별도 서비스
 
     //메세지 발송
     public CommonResponse sendMail(MailDTO mailDTO) throws MessagingException, UnsupportedEncodingException {
+        long startTime = System.currentTimeMillis(); // 메일 발송 시작 시간 기록
+
         //핸드폰 인증(만약 이미 존재하는 핸드폰이라면)
         String sendEmail = mailDTO.getEmail();
 
@@ -69,7 +72,12 @@ public class MailServiceWithRedis {
         MimeMessage message = createMail(sendEmail, number);
 
         log.info("이메일 사용 가능: " + mailDTO.getEmail());
-        return sendDetailMail(message);
+        long endTime = System.currentTimeMillis(); // 메일 발송 완료 시간 기록
+        long duration = endTime - startTime; // 시간 차이 계산
+
+        log.info("메일 발송 전 로직 : {} ms", duration); // 발송 시간 로그로 출력
+        emailSenderService.sendDetailMail(message);
+        return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(), ResponseStatus.CREATED_SUCCESS.getMessage());
     }
 
     //메일 생성
@@ -99,23 +107,28 @@ public class MailServiceWithRedis {
     }
 
     // 이메일 및 인증 코드를 redis에 저장
-    private void saveVerificationCode(String email, String verificationCode) {
-        redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
+    public void saveVerificationCode(String email, String verificationCode) {
+//        redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
     }
 
-    // 메일 발송
-    @Async("emailAsyncExecutor")
-    public CommonResponse sendDetailMail(MimeMessage message) throws MessagingException, UnsupportedEncodingException {
-        try {
-            javaMailSender.send(message); // 메일 발송
-        } catch (MailException e) {
-            e.printStackTrace();
-            throw new CustomException(ExceptionStatus.EMAIL_SEND_FAIL);
-        }
-
-        return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(),
-                ResponseStatus.CREATED_SUCCESS.getMessage());
-    }
+//    // 메일 발송
+//    @Async("emailAsyncExecutor")
+//    public CommonResponse sendDetailMail(MimeMessage message) {
+//        long startTime = System.currentTimeMillis(); // 메일 발송 시작 시간 기록
+//        try {
+//            javaMailSender.send(message); // 메일 발송
+//        } catch (MailException e) {
+//            e.printStackTrace();
+//            throw new CustomException(ExceptionStatus.EMAIL_SEND_FAIL);
+//        }
+//        long endTime = System.currentTimeMillis(); // 메일 발송 완료 시간 기록
+//        long duration = endTime - startTime; // 시간 차이 계산
+//
+//        log.info("메일 발송 시간: {} ms", duration); // 발송 시간 로그로 출력
+//
+//        return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(),
+//                ResponseStatus.CREATED_SUCCESS.getMessage());
+//    }
 
     //이메일 인증
     public CommonResponse checkEmail(MailAuthDTO dto) {
