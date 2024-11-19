@@ -118,7 +118,7 @@ const Qna = () => {
           primaryText: '비밀글 기능으로 보호된 글입니다.',
           context: '작성자와 관리자만 열람하실 수 있습니다.',
           subContext: '본인이라면 비밀번호를 입력해주세요.',
-          inputPlaceholder: '비밀번호 4자리',
+          inputPlaceholder: '비밀번호 숫자 4자리',
           type: 'warning',
           onConfirm: async (password) => {
             console.log('입력된 비밀번호:', password);

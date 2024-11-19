@@ -302,9 +302,7 @@ const UserEdit = () => {
             `${apiUrl}/api/v1/users/withdrawal`,
             {},
             {
-              headers: {
-                Refresh: refreshtoken,
-              },
+              withCredentials: true, // httpOnly 쿠키를 요청에 포함
             }
           );
 

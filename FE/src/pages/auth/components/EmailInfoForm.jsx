@@ -45,7 +45,8 @@ const EmailInfoForm = ({
   };
 
   // 중복 확인 클릭 시
-  const handleEmailCheckClick = async () => {
+  const handleEmailCheckClick = async (e) => {
+    e.preventDefault();
     if (!email) {
       setModalOpen(true);
       openModal({
@@ -67,18 +68,6 @@ const EmailInfoForm = ({
         },
       });
     } else {
-      // try {
-      //   const response = await axios.get(
-      //     `${apiUrl}/api/v1/check-email`,
-      //     { params: { email } },
-      //     {
-      //       headers: {
-      //         'Content-Type': 'application/json',
-      //       },
-      //     }
-      //   );
-
-      // if (response.data.data == '사용 가능한 이메일입니다.') {
       try {
         const response = await axios.post(
           `${apiUrl}/api/v1/mail/send-verification`,
@@ -92,11 +81,8 @@ const EmailInfoForm = ({
 
         console.log(response);
 
-        if (
-          response.data.message == '요청에 성공되어 데이터가 생성되었습니다'
-        ) {
+        if (response.data.code == 201) {
           setModalOpen(true);
-
           openModal({
             primaryText: `${email} (으)로`,
             secondaryText: ' 인증번호가 발송되었습니다.',
@@ -117,34 +103,31 @@ const EmailInfoForm = ({
         }
       } catch (error) {
         console.log(error);
+        const code = error.response.data.code;
+        if (code == 4022) {
+          setModalOpen(true);
+          openModal({
+            primaryText: '이미 존재하는 이메일입니다.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
+        } else {
+          //code == 4024 비활성화된 이메일
+          setModalOpen(true);
+          openModal({
+            primaryText: '비활성화된 이메일입니다.',
+            context: '관리자에게 문의해주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal(), setModalOpen(false);
+            },
+          });
+        }
       }
-      // }
-      // } catch (error) {
-      //   const code = error.response.data.code;
-      //   if (code == 4024) {
-      //     setModalOpen(true);
-      //     openModal({
-      //       primaryText: '비활성화된 이메일입니다.',
-      //       context: '관리자에게 문의해주세요.',
-      //       type: 'warning',
-      //       isAutoClose: false,
-      //       onConfirm: () => {
-      //         closeModal(), setModalOpen(false);
-      //       },
-      //     });
-      //   } else {
-      //     //code == 4022
-      //     setModalOpen(true);
-      //     openModal({
-      //       primaryText: '이미 존재하는 이메일입니다.',
-      //       type: 'warning',
-      //       isAutoClose: false,
-      //       onConfirm: () => {
-      //         closeModal(), setModalOpen(false);
-      //       },
-      //     });
-      //   }
-      // }
     }
   };
 
@@ -226,20 +209,17 @@ const EmailInfoForm = ({
     }
   };
 
-  // 타이머 로직
-  // useEffect(() => {
-  //   if (timeLeft > 0) {
-  //     const timerId = setInterval(() => {
-  //       setTimeLeft((prev) => prev - 1);
-  //     }, 1000);
-  //     return () => clearInterval(timerId);
-  //   }
-  // }, [timeLeft]);
   useEffect(() => {
     if (timeLeft === 0 && timerRef.current) {
       clearInterval(timerRef.current);
       timerRef.current = null;
     }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+      }
+    };
   }, [timeLeft]);
 
   // 남은 시간을 MM:SS 형식으로 변환
@@ -254,19 +234,13 @@ const EmailInfoForm = ({
       {/* 이메일 */}
       <div className="flex flex-col items-center px-3 py-2">
         <label className="self-start mb-2 text-lg">이메일</label>
-        <div className="flex items-center justify-center w-full mb-1 space-x-2">
+        <form className="flex items-center justify-center w-full mb-1 space-x-2">
           <input
             type="email"
             value={email}
             className="flex-grow p-2 mb-1 border rounded-lg"
             placeholder="이메일을 입력해주세요"
             onChange={handleEmailInputChange}
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !isAuthVerified) {
-                // Enter 키를 눌렀을 때만 실행
-                handleEmailCheckClick(e);
-              }
-            }}
             disabled={isClicked}
           />
           <button
@@ -284,7 +258,7 @@ const EmailInfoForm = ({
           >
             {isAuthVerified ? '인증 완료' : isClicked ? '재전송' : '중복 확인'}
           </button>
-        </div>
+        </form>
 
         {/* 인증 번호 */}
         {isClicked && !isAuthVerified && (
