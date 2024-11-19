@@ -232,6 +232,8 @@ const SignupPage = () => {
       });
     } else {
       try {
+        console.log('광역자치구 id로 들어가는지 ?', region.id);
+        console.log('지역자치구 id로 들어가는지', subRegion.id);
         const response = await axios.post(
           `${apiUrl}/api/v1/register`,
           {
