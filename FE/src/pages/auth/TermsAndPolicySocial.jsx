@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 
 import Layout from '../../components/Layouts';
 import useModal from '../../hooks/useModal';
@@ -7,6 +8,9 @@ import { useNavigateTo } from '../../hooks/useNavigateTo';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
 
 const TermsAndPolicySocial = () => {
+  const location = useLocation();
+  const data = location.state?.data;
+
   const { navigateTo, routes } = useNavigateTo();
   const [isAllChecked, setIsAllChecked] = useState(false);
   const [isTermsOfUseChecked, setIsTermsOfUseChecked] = useState(false);
@@ -76,7 +80,7 @@ const TermsAndPolicySocial = () => {
         },
       });
     } else {
-      navigateTo(routes.socialinfo);
+      navigateTo(routes.socialinfo, { data });
     }
   };
 
