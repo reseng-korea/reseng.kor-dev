@@ -15,7 +15,7 @@ function CustomModalWithInput({
   cancleButtonName = '취소',
   onConfirm = () => {},
   onCancel,
-  inputPlaceholder = '비밀번호 4자리',
+  inputPlaceholder = '비밀번호 숫자 4자리',
 }) {
   const [inputValue, setInputValue] = useState(''); // 입력 값 상태 관리
 
@@ -29,6 +29,23 @@ function CustomModalWithInput({
     onConfirm(inputValue); // 입력 값을 onConfirm 콜백에 전달
     closeModal();
   };
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (isOpen && e.key === 'Enter') {
+        e.preventDefault(); // 기본 동작 방지
+        handleConfirm(); // 확인 버튼 동작 실행
+      }
+    };
+
+    // 이벤트 리스너 추가
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      // 이벤트 리스너 제거
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, handleConfirm]);
 
   return (
     <Modal
@@ -70,7 +87,7 @@ function CustomModalWithInput({
       <div className="flex mt-8 space-x-2 justify-center items-center">
         <span>비밀번호</span>
         <input
-          type="text"
+          type="tel"
           value={inputValue}
           maxLength="4"
           onChange={handleInputChange}
