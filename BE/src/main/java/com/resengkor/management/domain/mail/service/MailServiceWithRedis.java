@@ -58,16 +58,6 @@ public class MailServiceWithRedis {
             log.info("이미 존재하는 사용자입니다.");
             throw new CustomException(ExceptionStatus.USER_EMAIL_ALREADY_EXIST); // 이미 존재하는 이메일 예외
         }
-        else{
-            log.info("이메일 사용 가능: " + mailDTO.getEmail());
-            return sendDetailMail(sendEmail);
-        }
-    }
-
-    // 메일 발송
-    @Async("emailAsyncExecutor")
-    public CommonResponse sendDetailMail(String sendEmail) throws MessagingException, UnsupportedEncodingException {
-        log.info("enter send-verification service");
 
         //1. 랜덤 인증번호 생성
         String number = TmpCodeUtil.generateAlphanumericPassword();
@@ -77,15 +67,9 @@ public class MailServiceWithRedis {
 
         //3. 메일 생성
         MimeMessage message = createMail(sendEmail, number);
-        try {
-            javaMailSender.send(message); // 메일 발송
-        } catch (MailException e) {
-            e.printStackTrace();
-            throw new CustomException(ExceptionStatus.EMAIL_SEND_FAIL);
-        }
 
-        return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(),
-                ResponseStatus.CREATED_SUCCESS.getMessage());
+        log.info("이메일 사용 가능: " + mailDTO.getEmail());
+        return sendDetailMail(message);
     }
 
     //메일 생성
@@ -119,6 +103,19 @@ public class MailServiceWithRedis {
         redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
     }
 
+    // 메일 발송
+    @Async("emailAsyncExecutor")
+    public CommonResponse sendDetailMail(MimeMessage message) throws MessagingException, UnsupportedEncodingException {
+        try {
+            javaMailSender.send(message); // 메일 발송
+        } catch (MailException e) {
+            e.printStackTrace();
+            throw new CustomException(ExceptionStatus.EMAIL_SEND_FAIL);
+        }
+
+        return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(),
+                ResponseStatus.CREATED_SUCCESS.getMessage());
+    }
 
     //이메일 인증
     public CommonResponse checkEmail(MailAuthDTO dto) {
