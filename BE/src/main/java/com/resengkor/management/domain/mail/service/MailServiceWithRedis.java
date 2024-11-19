@@ -1,6 +1,9 @@
 package com.resengkor.management.domain.mail.service;
 
 import com.resengkor.management.domain.mail.dto.MailAuthDTO;
+import com.resengkor.management.domain.mail.dto.MailDTO;
+import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
@@ -19,6 +22,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
+import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -30,16 +34,41 @@ public class MailServiceWithRedis {
     @Value("${spring.mail.personal}") //"인증코드를 발송하는 송신인명"
     private String personal;
 
+    private final UserRepository userRepository;
     private final JavaMailSender javaMailSender;
     private final RedisUtil redisUtil; // RedisUtil 주입
 
-    // 메일 발송
+    //메세지 발송
     @Transactional
-    public CommonResponse sendMail(String sendEmail) throws MessagingException, UnsupportedEncodingException {
-        log.info("enter send-verification service");
+    public CommonResponse sendMail(MailDTO mailDTO) throws MessagingException, UnsupportedEncodingException {
+        //핸드폰 인증(만약 이미 존재하는 핸드폰이라면)
+        String sendEmail = mailDTO.getEmail();
+
         if (!sendEmail.matches("^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$")) {
+            log.info("이메일 유효한지 체크");
             throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
+
+        Optional<User> existingUserByPhoneNumber = userRepository.findByEmail(sendEmail);
+        if (existingUserByPhoneNumber.isPresent()) {
+            User user = existingUserByPhoneNumber.get();
+            if (!user.isStatus()) {
+                log.info("비활성 사용자입니다.");
+                throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
+            }
+            log.info("이미 존재하는 사용자입니다.");
+            throw new CustomException(ExceptionStatus.USER_EMAIL_ALREADY_EXIST); // 이미 존재하는 이메일 예외
+        }
+        else{
+            log.info("이메일 사용 가능: " + mailDTO.getEmail());
+            return sendDetailMail(sendEmail);
+        }
+    }
+
+    // 메일 발송
+    @Transactional
+    public CommonResponse sendDetailMail(String sendEmail) throws MessagingException, UnsupportedEncodingException {
+        log.info("enter send-verification service");
 
         //1. 랜덤 인증번호 생성
         String number = TmpCodeUtil.generateAlphanumericPassword();
