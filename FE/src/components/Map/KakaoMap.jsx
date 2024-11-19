@@ -67,7 +67,7 @@ const KakaoMap = ({ company, selectedCompany, setSelectedCompany }) => {
 
         setTimeout(() => {
           mapRef.current.setLevel(2);
-          mapRef.current.panTo(position); // 강제로 줌 인
+          mapRef.current.panTo(position);
         }, 200);
       }
     }
