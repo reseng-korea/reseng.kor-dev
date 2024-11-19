@@ -40,8 +40,8 @@ const AddSignupPage = () => {
   const [ownerName, setOwnerName] = useState('');
   const [companyPhoneNumber, setCompanyPhoneNumber] = useState('');
   const [companyFaxNumber, setCompanyFaxNumber] = useState('');
-  const [region, setRegion] = useState('');
-  const [subRegion, setSubRegion] = useState('');
+  const [region, setRegion] = useState({ id: null, name: '' });
+  const [subRegion, setSubRegion] = useState({ id: null, name: '' });
   const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
 
