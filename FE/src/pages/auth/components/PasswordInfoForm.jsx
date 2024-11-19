@@ -50,7 +50,10 @@ const PasswordInfoForm = ({
     <>
       {/* 비밀번호 */}
       <div className="flex flex-col items-center px-3 py-2">
-        <label className="self-start mb-1 text-lg">비밀번호</label>
+        <div className="flex self-start space-x-1">
+          <label className="mb-2 text-lg">비밀번호</label>
+          <span className="text-warning font-bold text-lg">*</span>
+        </div>
         <span className="self-start mb-2 text-xs text-gray3">
           영문, 숫자, 특수문자를 포함한 8자 이상, 16자 이하의 비밀번호를
           입력해주세요.
@@ -66,7 +69,10 @@ const PasswordInfoForm = ({
 
       {/* 비밀번호 확인 */}
       <div className="flex flex-col items-center px-3 py-2">
-        <label className="self-start mb-2 text-lg">비밀번호 확인</label>
+        <div className="flex self-start space-x-1">
+          <label className="mb-2 text-lg">비밀번호 확인</label>
+          <span className="text-warning font-bold text-lg">*</span>
+        </div>
         <input
           type="password"
           value={confirmPassword}

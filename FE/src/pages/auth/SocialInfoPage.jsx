@@ -103,26 +103,6 @@ const AddSignupPage = () => {
           closeModal(), setModalOpen(false);
         },
       });
-    } else if (!companyPhoneNumber) {
-      setModalOpen(true);
-      openModal({
-        primaryText: '회사 번호를 입력해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
-    } else if (!companyFaxNumber) {
-      setModalOpen(true);
-      openModal({
-        primaryText: '팩스 번호를 입력해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
     } else if (!region) {
       setModalOpen(true);
       openModal({
@@ -220,8 +200,9 @@ const AddSignupPage = () => {
             회원 정보 추가 입력
           </h1>
           <span className="text-xs text-gray4 sm:text-sm">
-            원활한 사용을 위해 추가 정보가 필요합니다. 필수 항목을 입력해
-            주세요. 감사합니다 :)
+            원활한 사용을 위해 추가 정보가 필요합니다.{' '}
+            <span className="text-warning text-md font-bold">*</span>필수 항목을
+            입력해 주세요. 감사합니다 :)
           </span>
           <hr className="w-full mt-2 mb-6 border-t-2 border-primary" />
 

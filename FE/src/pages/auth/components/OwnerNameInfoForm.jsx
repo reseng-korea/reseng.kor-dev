@@ -7,7 +7,10 @@ const OwnerNameInfoForm = ({ ownerName, setOwnerName }) => {
   };
   return (
     <div className="flex flex-col items-center px-3 py-2">
-      <label className="self-start mb-2 text-lg">대표자명</label>
+      <div className="flex self-start space-x-1">
+        <label className="mb-2 text-lg">대표자명</label>
+        <span className="text-warning font-bold text-lg">*</span>
+      </div>
       <input
         type="text"
         value={ownerName}

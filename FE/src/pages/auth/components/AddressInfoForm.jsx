@@ -81,7 +81,10 @@ const AddressInfoForm = ({
     <>
       {/* 광역자치구 */}
       <div className="flex flex-col items-center px-3 py-2">
-        <label className="self-start mb-2 text-lg">광역자치구</label>
+        <div className="flex self-start space-x-1">
+          <label className="mb-2 text-lg">광역자치구</label>
+          <span className="text-warning font-bold text-lg">*</span>
+        </div>
         <select
           className="w-full p-2 mb-1 border rounded-lg"
           value={region.name || ''}
@@ -98,7 +101,10 @@ const AddressInfoForm = ({
 
       {/* 지역자치구 */}
       <div className="flex flex-col items-center px-3 py-2">
-        <label className="self-start mb-2 text-lg">지역자치구</label>
+        <div className="flex self-start space-x-1">
+          <label className="mb-2 text-lg">지역자치구</label>
+          <span className="text-warning font-bold text-lg">*</span>
+        </div>
         <select
           className="w-full p-2 mb-1 border rounded-lg"
           value={subRegion.name || ''}
