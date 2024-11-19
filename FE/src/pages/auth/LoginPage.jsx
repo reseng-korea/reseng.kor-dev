@@ -31,7 +31,6 @@ const LoginPage = () => {
     ? 'local'
     : 'production';
   const oauthUrl = `${apiUrl}/oauth2/authorization/google?frontend=${ENVIRONMENT}`;
-  console.log('로컬인지', ENVIRONMENT);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -84,8 +83,6 @@ const LoginPage = () => {
         localStorage.setItem('userId', response.data.id);
         localStorage.setItem('role', response.data.role);
         localStorage.setItem('accessToken', response.headers.authorization);
-        localStorage.setItem('refreshToken', response.headers.refresh);
-        console.log(response.headers.refresh);
       } catch (error) {
         const code = error.response.data.code;
 
