@@ -261,7 +261,7 @@ const LoginPage = () => {
                 |
               </span>
               <span
-                onClick={() => navigateTo(routes.signup)}
+                onClick={() => navigateTo(routes.termsAndPolicyNonSocial)}
                 className="text-[8px] cursor-pointer sm:text-xs md:text-sm lg:text-sm hover:text-gray3"
               >
                 회원가입
