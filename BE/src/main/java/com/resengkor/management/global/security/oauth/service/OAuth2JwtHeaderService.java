@@ -34,7 +34,6 @@ public class OAuth2JwtHeaderService {
 
         Cookie[] cookies = request.getCookies();
         String access = null;
-        String refresh = null;
 
         if(cookies == null){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -45,13 +44,8 @@ public class OAuth2JwtHeaderService {
                 access = cookie.getValue();
             }
         }
-        for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("Refresh")){
-                refresh = cookie.getValue();
-            }
-        }
 
-        if(access == null || refresh == null){
+        if(access == null){
             response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -61,10 +55,8 @@ public class OAuth2JwtHeaderService {
         response.addCookie(CookieUtil.createCookie("Refresh", null, 0));
         log.info("------------------------------------------------");
         log.info("OAuth2JwtHeaderService - Authorization : {}",access);
-        log.info("OAuth2JwtHeaderService - Refresh : {}",refresh);
         log.info("------------------------------------------------");
         response.addHeader("Authorization", "Bearer " + access);
-        response.addHeader("Refresh", refresh);
         response.setStatus(HttpServletResponse.SC_OK);
 
         Long userId = jwtUtil.getUserId(access);
