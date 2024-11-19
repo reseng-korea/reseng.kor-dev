@@ -54,15 +54,21 @@ const KakaoMap = ({ company, selectedCompany, setSelectedCompany }) => {
   useEffect(() => {
     if (isMapLoaded) {
       updateMarkers();
-
-      // 선택된 회사가 있는 경우 지도 중심 이동
+      // 선택된 회사가 있는 경우 지도 중심 이동 및 줌 레벨 설정
       if (selectedCompany) {
-        const adjustedPosition = new window.kakao.maps.LatLng(
-          selectedCompany.latitude - 0.002, // 약간 위로 보정
+        setSelectedCategory('전체');
+        const position = new window.kakao.maps.LatLng(
+          selectedCompany.latitude,
           selectedCompany.longitude
         );
-        mapRef.current.panTo(adjustedPosition); // 지도 부드럽게 이동
-        mapRef.current.setLevel(2); // 줌 레벨 설정
+
+        // 지도 중심 이동 및 줌 인
+        mapRef.current.panTo(position);
+
+        setTimeout(() => {
+          mapRef.current.setLevel(2);
+          mapRef.current.panTo(position); // 강제로 줌 인
+        }, 200);
       }
     }
   }, [selectedCategory, selectedCompany, company, isMapLoaded]);
