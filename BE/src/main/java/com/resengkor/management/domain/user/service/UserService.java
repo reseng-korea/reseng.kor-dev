@@ -145,9 +145,9 @@ public class UserService {
         log.info("유저 생성 성공");
 
         // 2. Region 찾아오기
-        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
+        Region city = regionRepository.findByIdAndRegionType(request.getCityId(), "CITY")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND)); // 서울시 찾기
-        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
+        Region district = regionRepository.findByIdAndRegionType(request.getDistrictId(), "DISTRICT")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND)); // 강남구 찾기
         log.info("region 조회 성공");
 
@@ -364,9 +364,9 @@ public class UserService {
         user.updateStatusAndRole(true, Role.ROLE_GUEST);
 
         // 5. 지역 조회 (UserProfile이 null일 경우나 업데이트 시 모두 사용됨)
-        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
+        Region city = regionRepository.findByIdAndRegionType(request.getCityId(), "CITY")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
-        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
+        Region district = regionRepository.findByIdAndRegionType(request.getDistrictId(), "DISTRICT")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
 
         // 6. UserProfile 조회 및 초기화
@@ -432,9 +432,9 @@ public class UserService {
                 request.getRepresentativeName(), request.getPhoneNumber());
 
         // 5. 지역 정보 조회
-        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
+        Region city = regionRepository.findByIdAndRegionType(request.getCityId(), "CITY")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
-        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
+        Region district = regionRepository.findByIdAndRegionType(request.getDistrictId(), "DISTRICT")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
 
         // 6. UserProfile 정보 수정

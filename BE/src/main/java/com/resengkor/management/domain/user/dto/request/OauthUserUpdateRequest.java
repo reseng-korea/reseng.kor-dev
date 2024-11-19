@@ -20,8 +20,8 @@ public class OauthUserUpdateRequest {
     private String companyPhoneNumber;
     private String faxNumber;
 
-    private String cityName;
-    private String districtName;
+    private Long cityId;
+    private Long districtId;
     private String streetAddress;
     private String detailAddress;
 
