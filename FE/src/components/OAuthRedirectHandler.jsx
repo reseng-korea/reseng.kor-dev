@@ -43,9 +43,7 @@ function OAuthRedirectHandler() {
           localStorage.setItem('role', data.role);
 
           if (!data.companyName) {
-            navigateTo(routes.termsAndPolicySocial, {
-              data,
-            });
+            navigateTo(routes.termsAndPolicySocial, { data });
           } else {
             navigateTo(routes.home);
           }
