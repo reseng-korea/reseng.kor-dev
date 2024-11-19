@@ -27,14 +27,12 @@ function OAuthRedirectHandler() {
         // JSON 응답 처리
         const data = await response.json(); // 안전하게 호출
         console.log('데이터:', data);
-        console.log('Access Token:', accessToken);
+        // 응답 헤더에서 토큰 추출
+        const accessToken = response.headers.get('authorization');
 
         if (accessToken && refreshToken) {
           // 로컬 스토리지에 저장
-          localStorage.setItem(
-            'accessToken',
-            response.headers.get('authorization')
-          );
+          localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('userId', data.id);
           localStorage.setItem('role', data.role);
 
