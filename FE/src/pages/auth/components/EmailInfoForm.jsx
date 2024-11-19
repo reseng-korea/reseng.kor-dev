@@ -3,6 +3,8 @@ import axios from 'axios';
 
 import useModal from '../../../hooks/useModal';
 
+import CustomLoadingModal from '../../../components/CustomLoadingModal';
+
 const EmailInfoForm = ({
   email,
   setEmail,
@@ -29,6 +31,8 @@ const EmailInfoForm = ({
   const { openModal, closeModal, RenderModal } = useModal();
   // 인증 완료
   // const [isAuthVerified, setIsAuthVerified] = useState(false);
+
+  const [isLoading, setIsLoading] = useState(false);
 
   // 이메일 입력 감지
   const handleEmailInputChange = (e) => {
@@ -68,6 +72,8 @@ const EmailInfoForm = ({
         },
       });
     } else {
+      setIsLoading(true);
+
       try {
         const response = await axios.post(
           `${apiUrl}/api/v1/mail/send-verification`,
@@ -80,8 +86,8 @@ const EmailInfoForm = ({
         );
 
         console.log(response);
-
         if (response.data.code == 201) {
+          setIsLoading(false);
           setModalOpen(true);
           openModal({
             primaryText: `${email} (으)로`,
@@ -102,6 +108,7 @@ const EmailInfoForm = ({
           });
         }
       } catch (error) {
+        setIsLoading(false);
         console.log(error);
         const code = error.response.data.code;
         if (code == 4022) {
@@ -293,6 +300,7 @@ const EmailInfoForm = ({
           </div>
         )}
       </div>
+      <CustomLoadingModal isOpen={isLoading} />
       {modalOpen && <RenderModal />}
     </>
   );
