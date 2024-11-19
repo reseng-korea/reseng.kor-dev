@@ -22,6 +22,24 @@ function CustomModal({
 }) {
   const timerRef = useRef(null);
 
+  // 모달 열렸을 때 Enter 키 감지
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (isOpen && e.key === 'Enter') {
+        e.preventDefault(); // 기본 동작 방지
+        closeModal(); // 모달 닫기
+      }
+    };
+
+    // 이벤트 리스너 추가
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      // 이벤트 리스너 제거
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isOpen, onConfirm]);
+
   useEffect(() => {
     // openModal 함수 내부
     console.log('5. CustomModal로 왔다.', {
