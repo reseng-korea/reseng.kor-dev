@@ -13,12 +13,12 @@ import com.resengkor.management.global.util.TmpCodeUtil;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.MailException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 import java.io.UnsupportedEncodingException;
@@ -39,7 +39,6 @@ public class MailServiceWithRedis {
     private final RedisUtil redisUtil; // RedisUtil 주입
 
     //메세지 발송
-    @Transactional
     public CommonResponse sendMail(MailDTO mailDTO) throws MessagingException, UnsupportedEncodingException {
         //핸드폰 인증(만약 이미 존재하는 핸드폰이라면)
         String sendEmail = mailDTO.getEmail();
@@ -66,7 +65,7 @@ public class MailServiceWithRedis {
     }
 
     // 메일 발송
-    @Transactional
+    @Async("emailAsyncExecutor")
     public CommonResponse sendDetailMail(String sendEmail) throws MessagingException, UnsupportedEncodingException {
         log.info("enter send-verification service");
 
@@ -115,14 +114,13 @@ public class MailServiceWithRedis {
         return message;
     }
 
-    // 이메일 및 인증 코드를 RDS에 저장
+    // 이메일 및 인증 코드를 redis에 저장
     private void saveVerificationCode(String email, String verificationCode) {
         redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
     }
 
 
     //이메일 인증
-    @Transactional
     public CommonResponse checkEmail(MailAuthDTO dto) {
         // Redis에서 인증 코드 조회
         String storedCode = redisUtil.getData("email:verification:" + dto.getEmail());
