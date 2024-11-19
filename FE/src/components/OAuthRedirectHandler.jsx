@@ -30,7 +30,7 @@ function OAuthRedirectHandler() {
         // 응답 헤더에서 토큰 추출
         const accessToken = response.headers.get('authorization');
 
-        if (accessToken && refreshToken) {
+        if (accessToken) {
           // 로컬 스토리지에 저장
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('userId', data.id);
