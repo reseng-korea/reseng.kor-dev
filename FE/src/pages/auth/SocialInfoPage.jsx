@@ -166,6 +166,8 @@ const AddSignupPage = () => {
     } else {
       try {
         console.log(data?.id);
+        console.log('광역자치구 id로 들어가는지 ?', region.id);
+        console.log('지역자치구 id로 들어가는지', subRegion.id);
         const response = await axios.put(
           `${apiUrl}/api/v1/users/oauth/${data.id}`,
           {
@@ -175,8 +177,8 @@ const AddSignupPage = () => {
             phoneNumber: phoneNumber,
             companyPhoneNumber: companyPhoneNumber,
             faxNumber: companyFaxNumber,
-            cityName: region,
-            districtName: subRegion,
+            cityId: region.id,
+            districtId: subRegion.id,
             streetAddress: address,
             detailAddress: detailAddress,
           },
