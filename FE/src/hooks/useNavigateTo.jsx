@@ -27,6 +27,7 @@ export const useNavigateTo = () => {
     qnaRegist: '/qna/register',
     qnaDetail: '/qna/:pageNumber',
     certificate: '/certificate',
+    documentRegister: '/document/register',
     coa: '/coa',
     coaRegister: '/coa/register',
     coaDetail: '/coa/1',
@@ -53,7 +54,7 @@ export const useNavigateTo = () => {
     termsAndPolicyNonSocial: '/signup/termsAndPolicyNonSocial',
     termsAndPolicySocial: '/signup/termsAndPolicySocial',
     privacyPolicy: '/privacyPolicy',
-    termsOfUse: '/termsOfUse'
+    termsOfUse: '/termsOfUse',
   };
 
   return { navigateTo, routes };
