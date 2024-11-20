@@ -162,11 +162,9 @@ public class S3Service {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType(contentType));
             headers.setContentLength(fileBytes.length);
-            headers.setContentDisposition(
-                    ContentDisposition.builder("attachment")
-                            .filename(fileName, StandardCharsets.UTF_8) // UTF-8 지원 파일 이름
-                            .build()
-            );
+            String encodedFileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8).replace("+", "%20");
+            headers.add("Content-Disposition", "attachment; filename*=UTF-8''" + encodedFileName);
+
 
             return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
         } catch (IOException e) {
