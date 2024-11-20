@@ -18,6 +18,7 @@ import com.resengkor.management.global.s3.service.S3Service;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -149,7 +150,7 @@ public class DocumentService {
                 ResponseStatus.DELETED_SUCCESS.getMessage());
     }
 
-    public ResponseEntity<byte[]> downloadDocumentFile(String documentType, Long fileId) {
+    public ResponseEntity<UrlResource> downloadDocumentFile(String documentType, Long fileId) {
         // 파일 ID를 통해 해당 파일 찾기
         FileEntity file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
