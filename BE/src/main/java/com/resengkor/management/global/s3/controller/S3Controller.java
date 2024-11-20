@@ -6,6 +6,7 @@ import com.resengkor.management.global.response.DataResponse;
 import com.resengkor.management.global.s3.service.S3Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,7 @@ public class S3Controller {
 
     //실시간 다운로드
     @GetMapping(path = "/download")
-    public ResponseEntity<byte[]> downloadFromS3(@RequestParam("fileName") String fileName) {
+    public ResponseEntity<UrlResource> downloadFromS3(@RequestParam("fileName") String fileName) {
         return s3Service.downloadFileFromS3(fileName);
     }
 
