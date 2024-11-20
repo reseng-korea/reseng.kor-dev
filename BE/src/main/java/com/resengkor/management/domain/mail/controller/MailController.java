@@ -22,7 +22,7 @@ public class MailController {
     @PostMapping("/send-verification")
     public CommonResponse sendEmail(@RequestBody MailDTO mailDTO) throws MessagingException, UnsupportedEncodingException {
         log.info("enter send-verification controller");
-        return mailService.sendMail(mailDTO.getEmail()); // Response body에 값을 반환
+        return mailService.sendMail(mailDTO); // Response body에 값을 반환
     }
 
     @PostMapping("/verify")

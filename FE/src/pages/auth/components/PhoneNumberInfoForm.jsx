@@ -38,7 +38,8 @@ const PhoneNumberInfoForm = ({
   };
 
   // 중복 확인 클릭 시
-  const handlePhoneNumberCheckClick = async () => {
+  const handlePhoneNumberCheckClick = async (e) => {
+    e.preventDefault();
     if (!phoneNumber) {
       setModalOpen(true);
       openModal({
@@ -202,8 +203,11 @@ const PhoneNumberInfoForm = ({
     <>
       {/* 휴대폰 번호 */}
       <div className="flex flex-col items-center px-3 py-2">
-        <label className="self-start mb-2 text-lg">휴대폰 번호</label>
-        <div className="flex items-center justify-center w-full mb-1 space-x-2">
+        <div className="flex self-start space-x-1">
+          <label className="mb-2 text-lg">휴대폰 번호</label>
+          <span className="text-warning font-bold text-lg">*</span>
+        </div>
+        <form className="flex items-center justify-center w-full mb-1 space-x-2">
           <input
             type="tel"
             pattern="[0-9]+"
@@ -217,7 +221,7 @@ const PhoneNumberInfoForm = ({
           <button
             type="submit"
             onClick={handlePhoneNumberCheckClick}
-            className={`flex-grow-0 px-4 py-2 mb-2 font-bold transition-colors duration-300 rounded-lg  ${
+            className={`flex-grow-0 px-4 py-2 mb-2 font-bold transition-colors duration-300 rounded-lg ${
               isPhoneNumberVerified
                 ? 'bg-gray3 text-white'
                 : isClicked
@@ -231,7 +235,7 @@ const PhoneNumberInfoForm = ({
                 ? '재전송'
                 : '중복 확인'}
           </button>
-        </div>
+        </form>
 
         {isClicked && !isPhoneNumberVerified && (
           <div className="flex flex-col w-full">

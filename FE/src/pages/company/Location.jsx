@@ -18,11 +18,10 @@ const Location = () => {
 
   const [company, setCompany] = useState([]);
   const [loading, setLoading] = useState(true);
-
   const [selectedCompany, setSelectedCompany] = useState(null);
   // 선택한 업체의 정보를 저장
-  const handleCompanySelect = (company) => {
-    setSelectedCompany(company);
+  const handleCompanySelect = (selecteditem) => {
+    setSelectedCompany(selecteditem);
   };
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -142,7 +141,11 @@ const Location = () => {
               {/* 본사, 총판, 대리점의 마커 색을 다르게 해야할까 고민 */}
               {/* 마커 띄울 때 이름도 띄워야할 지에 대해서도 고민 */}
               <div className="w-2/3 move-left">
-                <KakaoMap company={company} selectedCompany={selectedCompany} />
+                <KakaoMap
+                  company={company}
+                  selectedCompany={selectedCompany}
+                  setSelectedCompany={setSelectedCompany}
+                />
               </div>
             </div>
           </div>

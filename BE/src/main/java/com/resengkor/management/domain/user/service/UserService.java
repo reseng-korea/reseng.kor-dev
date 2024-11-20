@@ -20,8 +20,13 @@ import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.service.KakaoUserWithdrawService;
+import com.resengkor.management.global.util.CookieUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import com.resengkor.management.global.util.TmpCodeUtil;
+import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -140,9 +145,9 @@ public class UserService {
         log.info("유저 생성 성공");
 
         // 2. Region 찾아오기
-        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
+        Region city = regionRepository.findByIdAndRegionType(request.getCityId(), "CITY")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND)); // 서울시 찾기
-        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
+        Region district = regionRepository.findByIdAndRegionType(request.getDistrictId(), "DISTRICT")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND)); // 강남구 찾기
         log.info("region 조회 성공");
 
@@ -249,11 +254,45 @@ public class UserService {
     //회원 탈퇴 로직
     //로그인O
     @Transactional
-    public CommonResponse withdrawUser(String headerRefresh) {
+    public CommonResponse withdrawUser(HttpServletRequest request, HttpServletResponse response) {
         log.info("----Service Start: 회원탈퇴-----");
+        // 1. 쿠키 꺼내기
+        // 쿠키에서 refresh키에 담긴 토큰을 꺼냄
+        Cookie[] cookies = request.getCookies();
+        if(cookies == null){
+            throw  new CustomException(ExceptionStatus.COOKIE_NOT_FOUND);
+        }
+
+        //쿠키에 담긴 oldRefresh 꺼냄
+        String refresh = null;
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("Refresh")){
+                refresh = cookie.getValue();
+            }
+        }
+        if(refresh == null){
+            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE);
+        }
+
+        //2. refresh 검증
+        // 만료된 토큰은 payload 읽을 수 없음 -> ExpiredJwtException 발생
+        try {
+            jwtUtil.isExpired(refresh);
+        } catch(ExpiredJwtException e){
+            throw new CustomException(ExceptionStatus.REFRESH_TOKEN_EXPIRED);
+        }
+
+        // refresh 토큰이 아님
+        String category = jwtUtil.getCategory(refresh);
+        if(!category.equals("Refresh")) {
+            throw new CustomException(ExceptionStatus.TOKEN_IS_NOT_REFRESH);
+        }
+
+
+
         //1.JWT에서 사용자 이메일 추출
-        String email = jwtUtil.getEmail(headerRefresh);
-        String sessionId = jwtUtil.getSessionId(headerRefresh);
+        String email = jwtUtil.getEmail(refresh);
+        String sessionId = jwtUtil.getSessionId(refresh);
 
         //2.사용자 찾기
         User user = userRepository.findByEmail(email)
@@ -267,7 +306,7 @@ public class UserService {
         if(isExist){//Redis에 존재한다면
             //redis에 있는 value값 가져오기
             redisRefresh = redisUtil.getData(redisKey);
-            if(!headerRefresh.equals(redisRefresh)){
+            if(!refresh.equals(redisRefresh)){
                 throw new CustomException(ExceptionStatus.INVALID_REFRESH_TOKEN);
             }
         }
@@ -292,6 +331,7 @@ public class UserService {
             log.error("Refresh 토큰 삭제 실패 (Redis 연결 오류)");
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);
         }
+        response.addCookie(CookieUtil.createCookie("Refresh", null, 0));
 
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 "회원 탈퇴에 성공했습니다.");
@@ -324,9 +364,9 @@ public class UserService {
         user.updateStatusAndRole(true, Role.ROLE_GUEST);
 
         // 5. 지역 조회 (UserProfile이 null일 경우나 업데이트 시 모두 사용됨)
-        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
+        Region city = regionRepository.findByIdAndRegionType(request.getCityId(), "CITY")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
-        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
+        Region district = regionRepository.findByIdAndRegionType(request.getDistrictId(), "DISTRICT")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
 
         // 6. UserProfile 조회 및 초기화
@@ -392,9 +432,9 @@ public class UserService {
                 request.getRepresentativeName(), request.getPhoneNumber());
 
         // 5. 지역 정보 조회
-        Region city = regionRepository.findByRegionNameAndRegionType(request.getCityName(), "CITY")
+        Region city = regionRepository.findByIdAndRegionType(request.getCityId(), "CITY")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
-        Region district = regionRepository.findByRegionNameAndRegionType(request.getDistrictName(), "DISTRICT")
+        Region district = regionRepository.findByIdAndRegionType(request.getDistrictId(), "DISTRICT")
                 .orElseThrow(() -> new CustomException(ExceptionStatus.REGION_NOT_FOUND));
 
         // 6. UserProfile 정보 수정

@@ -31,7 +31,6 @@ const LoginPage = () => {
     ? 'local'
     : 'production';
   const oauthUrl = `${apiUrl}/oauth2/authorization/google?frontend=${ENVIRONMENT}`;
-  console.log('로컬인지', ENVIRONMENT);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -65,6 +64,7 @@ const LoginPage = () => {
             isAuto: rememberLogin,
           },
           {
+            withCredentials: true, // 쿠키 포함
             headers: {
               'Content-Type': 'application/json',
             },
@@ -80,12 +80,9 @@ const LoginPage = () => {
 
         console.log(response);
         console.log(response.headers.authorization);
-        const accessToken = response.headers.authorization;
         localStorage.setItem('userId', response.data.id);
         localStorage.setItem('role', response.data.role);
-        localStorage.setItem('accessToken', accessToken);
-        localStorage.setItem('refreshToken', response.headers.refresh);
-        console.log(response.headers.refresh);
+        localStorage.setItem('accessToken', response.headers.authorization);
       } catch (error) {
         const code = error.response.data.code;
 
@@ -261,7 +258,7 @@ const LoginPage = () => {
                 |
               </span>
               <span
-                onClick={() => navigateTo(routes.signup)}
+                onClick={() => navigateTo(routes.termsAndPolicyNonSocial)}
                 className="text-[8px] cursor-pointer sm:text-xs md:text-sm lg:text-sm hover:text-gray3"
               >
                 회원가입
