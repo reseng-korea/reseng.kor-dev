@@ -10,10 +10,9 @@ import java.util.Optional;
 
 
 public interface DocumentRepository extends JpaRepository<Document, Long> {
-
+    //카테고리에 따른 목록 조회
     Page<Document> findByType(DocumentType type, Pageable pageable);
 
-    // Document ID와 Type을 기준으로 문서 조회
+    // Document ID와 Type을 기준으로 문서 조회(세부)
     Optional<Document> findByIdAndType(Long documentId, DocumentType type);
-
 }
