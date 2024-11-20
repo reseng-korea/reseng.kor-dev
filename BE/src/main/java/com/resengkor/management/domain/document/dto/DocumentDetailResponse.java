@@ -1,6 +1,6 @@
 package com.resengkor.management.domain.document.dto;
 
-import com.resengkor.management.domain.document.entity.Document;
+import com.resengkor.management.domain.document.entity.DocumentEntity;
 import com.resengkor.management.domain.file.dto.FileResponse;
 import lombok.Builder;
 import lombok.Data;
@@ -28,14 +28,14 @@ public class DocumentDetailResponse {
         this.files = files;
     }
 
-    public static DocumentDetailResponse fromEntity(Document document) {
+    public static DocumentDetailResponse fromEntity(DocumentEntity documentEntity) {
         return DocumentDetailResponse.builder()
-                .id(document.getId())
-                .type(document.getType().toString())
-                .title(document.getTitle())
-                .date(document.getDate())
-                .content(document.getContent())
-                .files(document.getFiles().stream()
+                .id(documentEntity.getId())
+                .type(documentEntity.getType().toString())
+                .title(documentEntity.getTitle())
+                .date(documentEntity.getDate())
+                .content(documentEntity.getContent())
+                .files(documentEntity.getFiles().stream()
                         .map(file -> FileResponse.builder()
                                 .fileId(file.getId())
                                 .fileName(file.getFileName())
