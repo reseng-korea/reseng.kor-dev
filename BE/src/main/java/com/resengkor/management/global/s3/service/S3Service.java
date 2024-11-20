@@ -12,10 +12,7 @@ import com.resengkor.management.global.response.ResponseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +21,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -155,16 +153,20 @@ public class S3Service {
             byte[] fileBytes = inputStream.readAllBytes();
 
             // MIME 타입을 파일 확장자에 따라 동적으로 설정
-            String contentType = Files.probeContentType(new File(fileName).toPath());
-            if (contentType == null) {
-                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
+            String contentType = s3Object.getObjectMetadata().getContentType();
+            if (contentType == null || contentType.isEmpty()) {
+                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE; // 기본값
             }
 
-            String encodedFileName = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
+//            String encodedFileName = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.parseMediaType(contentType));
             headers.setContentLength(fileBytes.length);
-            headers.setContentDispositionFormData("attachment", encodedFileName);
+            headers.setContentDisposition(
+                    ContentDisposition.builder("attachment")
+                            .filename(fileName, StandardCharsets.UTF_8) // UTF-8 지원 파일 이름
+                            .build()
+            );
 
             return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
         } catch (IOException e) {
