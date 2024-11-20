@@ -112,6 +112,7 @@ const AddressSearch = ({
             </span>
           </div>
         </button>
+        <span className="text-warning self-start font-bold text-lg">*</span>
       </div>
 
       {/* 상세주소 입력 필드 */}

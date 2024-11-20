@@ -28,27 +28,42 @@ const QnaDetail = () => {
   const [modalOpen, setModalOpen] = useState(false);
   usePreventRefresh(openModal, closeModal, setModalOpen);
 
-  // const {
-  //   activePage, //현재 페이지
-  //   questionId, //글 번호
-  //   userId, //유저 번호
-  //   title, //제목
-  //   content, //내용
-  //   representativeName, //등록자
-  //   createdAt, //문의 날짜
-  //   viewCount, //조회수
-  //   secret, //비밀글 여부
-  //   password, //비밀번호
-  //   answered, //답글 등록 여부
-  //   answerContent,
-  //   answerCreatedAt,
-  // } = location.state || {};
   const location = useLocation();
   const initialData = location.state || {};
   const [qnaData, setQnaData] = useState(initialData);
+  const [visitCount, setVisitCount] = useState(0); // 방문 횟수 관리
 
   console.log(initialData);
-  console.log('날짜요', qnaData);
+  console.log(qnaData);
+
+  // 방문 횟수 증가
+  // useEffect(() => {
+  //   setVisitCount((prevCount) => prevCount + 1); // 초기 로드 시 1로 설정
+  // }, []);
+
+  // // 새로고침
+  // useEffect(() => {
+  //   if (visitCount === 1) {
+  //     // 첫 번째 방문 (페이지 이동)
+  //     console.log('페이지 이동으로 접근');
+  //   } else if (visitCount > 1) {
+  //     // 방문 횟수가 2 이상인 경우 (새로고침)
+  //     console.log('새로고침으로 접근');
+  //     updateQnaData(); // 새로고침 시 API 호출
+  //   }
+  // }, [visitCount]);
+
+  useEffect(() => {
+    let isFromNavigation = sessionStorage.getItem('isFromNavigation');
+    if (isFromNavigation === 'false') {
+      console.log('새로고침 시 들어와야돼');
+      updateQnaData();
+    } else {
+      console.log('처음에만 들어와');
+      isFromNavigation = 'false';
+      sessionStorage.setItem('isFromNavigation', isFromNavigation);
+    }
+  }, []);
 
   // 게시 작성 날짜 포맷
   const formatCreatedAt = (createdAt) => {
@@ -56,22 +71,11 @@ const QnaDetail = () => {
     return `${date} ${time.slice(0, 8)}`;
   };
 
-  // 새로고침
-  useEffect(() => {
-    console.log(qnaData);
-    if (!qnaData || !qnaData.questionId) {
-      fetchQnaData();
-      console.log('조회수 증가 ?  - 새로고침');
-    }
-  }, []);
-
-  console.log('데이터', qnaData);
-
   // 댓글 등록 후 API를 다시 호출하여 qnaData를 업데이트하는 함수
-  const fetchQnaData = async () => {
+  const updateQnaData = async () => {
     try {
       const response = await axios.get(
-        `${apiUrl}/api/v1/qna/questions/${qnaData.questionId}?password=${qnaData.password}`,
+        `${apiUrl}/api/v1/qna/questions/${qnaData.questionId}`,
         {
           headers: {
             Authorization: accesstoken,
@@ -79,8 +83,8 @@ const QnaDetail = () => {
           },
         }
       );
-      console.log('댓글 등록 후 호출', response);
-      if (response.data.code === 200) {
+      console.log('api 재 호출 - QnaDetail', response);
+      if (response.data.code == 200) {
         const { answer, ...qnaDetails } = response.data.data;
         setQnaData({
           ...qnaDetails,
@@ -88,8 +92,8 @@ const QnaDetail = () => {
             ? formatCreatedAt(qnaDetails.createdAt)
             : '',
           answerId: answer ? answer.answerId : '',
-          answerContent: answer ? answer.content : '', // answer가 있으면 content 가져오기
-          answerCreatedAt: answer ? formatCreatedAt(answer.createdAt) : '', // answer가 있으면 createdAt 가져오기
+          answerContent: answer ? answer.content : '',
+          answerCreatedAt: answer ? formatCreatedAt(answer.createdAt) : '',
           answerUpdatedAt: answer ? formatCreatedAt(answer.updatedAt) : '',
         });
       }
@@ -113,25 +117,18 @@ const QnaDetail = () => {
             // style={{ height: 'calc(100vh - 230px)' }}
           >
             {/* 문의 내용 */}
-            <QnaContent
-              qnaData={qnaData} // 상태 전달
-              setQnaData={setQnaData}
-            />
+            <QnaContent qnaData={qnaData} setQnaData={setQnaData} />
+            {/* 관리자인지 아닌지에 따른 답변 페이지 */}
             <div className="flex flex-col w-4/5">
               <div className="flex flex-col w-full justify-center mt-4">
                 <span className="mb-4 font-bold text-left text-lg">
                   답변 등록
                 </span>
-                {/* <QnaAnswerManager {...qnaData} /> */}
                 {role === 'ROLE_MANAGER' ? (
-                  <QnaAnswerManager
-                    qnaData={qnaData} // 상태 전달
-                    setQnaData={setQnaData} // 상태 업데이트 함수 전달
-                  />
+                  <QnaAnswerManager qnaData={qnaData} setQnaData={setQnaData} />
                 ) : (
                   <QnaAnswer {...qnaData} />
                 )}
-                <>{/* 여기에 답변 */}</>
               </div>
               <hr className="w-full mt-12 mb-12 border-t border-gray2" />
             </div>

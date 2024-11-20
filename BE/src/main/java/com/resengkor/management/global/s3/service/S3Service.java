@@ -12,10 +12,8 @@ import com.resengkor.management.global.response.ResponseStatus;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.multipart.MultipartFile;
@@ -24,6 +22,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -147,29 +146,16 @@ public class S3Service {
      * @param fileName S3에 저장된 파일 이름 (전체 키)
      * @return 파일 데이터를 포함한 ResponseEntity
      */
-    public ResponseEntity<byte[]> downloadFileFromS3(String fileName) {
+    public ResponseEntity<UrlResource> downloadFileFromS3(String fileName) {
         log.info("------------Service : 파일 다운로드 start------------");
-        try {
-            S3Object s3Object = amazonS3.getObject(new GetObjectRequest(bucket, fileName));
-            S3ObjectInputStream inputStream = s3Object.getObjectContent();
-            byte[] fileBytes = inputStream.readAllBytes();
+        UrlResource urlResource = new UrlResource(amazonS3.getUrl(bucket, fileName));
 
-            // MIME 타입을 파일 확장자에 따라 동적으로 설정
-            String contentType = Files.probeContentType(new File(fileName).toPath());
-            if (contentType == null) {
-                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE;
-            }
+        String contentDisposition = "attachment; filename=\"" +  fileName + "\"";
 
-            String encodedFileName = URLEncoder.encode(fileName, "UTF-8").replace("+", "%20");
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.parseMediaType(contentType));
-            headers.setContentLength(fileBytes.length);
-            headers.setContentDispositionFormData("attachment", encodedFileName);
-
-            return new ResponseEntity<>(fileBytes, headers, HttpStatus.OK);
-        } catch (IOException e) {
-            throw new CustomException(ExceptionStatus.DATA_NOT_FOUND);
-        }
+        // header에 CONTENT_DISPOSITION 설정을 통해 클릭 시 다운로드 진행
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, contentDisposition)
+                .body(urlResource);
     }
 
 

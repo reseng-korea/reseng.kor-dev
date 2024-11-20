@@ -10,6 +10,8 @@ import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.DataResponse;
 import com.resengkor.management.global.util.ValidatorUtil;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,10 +75,10 @@ public class UserController {
 
     //회원탈퇴
     @PutMapping("/withdrawal")
-    public CommonResponse withdrawUser(@RequestHeader("Refresh") String token) {
+    public CommonResponse withdrawUser(HttpServletRequest request, HttpServletResponse response) {
         log.info("----Controller Start: 회원탈퇴 요청-----");
 
-        return userServiceImpl.withdrawUser(token);
+        return userServiceImpl.withdrawUser(request, response);
     }
 
     //비밀번호 확인(정보 확인용)

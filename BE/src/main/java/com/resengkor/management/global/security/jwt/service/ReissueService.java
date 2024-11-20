@@ -7,8 +7,10 @@ import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
+import com.resengkor.management.global.util.CookieUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,28 +30,41 @@ public class ReissueService {
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
         log.info("----Service Start: refresh 재발급 요청-----");
 
-        // 헤더에서 refresh키에 담긴 토큰을 꺼냄
-        String headerRefresh = request.getHeader("Refresh");
-        if (headerRefresh == null) {
-            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER);
+        // 1. 쿠키 꺼내기
+        // 쿠키에서 refresh키에 담긴 토큰을 꺼냄
+        Cookie[] cookies = request.getCookies();
+        if(cookies == null){
+            throw  new CustomException(ExceptionStatus.COOKIE_NOT_FOUND);
         }
 
+        //쿠키에 담긴 oldRefresh 꺼냄
+        String oldRefresh = null;
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("Refresh")){
+                oldRefresh = cookie.getValue();
+            }
+        }
+        if(oldRefresh == null){
+            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE);
+        }
+
+        //2. refresh 검증
         // 만료된 토큰은 payload 읽을 수 없음 -> ExpiredJwtException 발생
         try {
-            jwtUtil.isExpired(headerRefresh);
+            jwtUtil.isExpired(oldRefresh);
         } catch(ExpiredJwtException e){
             throw new CustomException(ExceptionStatus.REFRESH_TOKEN_EXPIRED);
         }
 
         // refresh 토큰이 아님
-        String category = jwtUtil.getCategory(headerRefresh);
+        String category = jwtUtil.getCategory(oldRefresh);
         if(!category.equals("Refresh")) {
             throw new CustomException(ExceptionStatus.TOKEN_IS_NOT_REFRESH);
         }
 
 
-        String email = jwtUtil.getEmail(headerRefresh);
-        String sessionId = jwtUtil.getSessionId(headerRefresh);
+        String email = jwtUtil.getEmail(oldRefresh);
+        String sessionId = jwtUtil.getSessionId(oldRefresh);
         String redisKey = "refresh_token:" + email + ":" + sessionId;
 
         // Redis에서 refresh 토큰 유효성 검사
@@ -58,7 +73,7 @@ public class ReissueService {
         if(isExist){//Redis에 존재한다면
             //redis에 있는 value값 가져오기
             redisRefresh = redisUtil.getData(redisKey);
-            if(!headerRefresh.equals(redisRefresh)){
+            if(!oldRefresh.equals(redisRefresh)){
                 throw new CustomException(ExceptionStatus.INVALID_REFRESH_TOKEN);
             }
         }
@@ -73,8 +88,8 @@ public class ReissueService {
         }
 
         long userId = user.getId();
-        String role = jwtUtil.getRole(headerRefresh);
-        String loginType = jwtUtil.getLoginType(headerRefresh);
+        String role = jwtUtil.getRole(oldRefresh);
+        String loginType = jwtUtil.getLoginType(oldRefresh);
 
         long refreshTokenExpiration;
         String newAccess;
@@ -82,7 +97,7 @@ public class ReissueService {
 
 
         if(loginType.equals("local")){
-            boolean isAuto = jwtUtil.getIsAuto(headerRefresh);
+            boolean isAuto = jwtUtil.getIsAuto(oldRefresh);
             Long remainingTTL = redisUtil.getRemainingTTL(redisKey);
 
             // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
@@ -128,9 +143,10 @@ public class ReissueService {
         }
 
 
-        //헤더로 전해줌
+        //access는 헤더로 전해줌
         response.setHeader("Authorization", "Bearer " + newAccess);
-        response.setHeader("Refresh", newRefresh);
+        //refresh는 쿠키로 전해줌
+        response.addCookie(CookieUtil.createCookie("Refresh", newRefresh, (int)refreshTokenExpiration/1000));
 
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS .getCode(),
                 ResponseStatus.RESPONSE_SUCCESS .getMessage());

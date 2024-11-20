@@ -35,8 +35,9 @@ const SignupPage = () => {
   const [ownerName, setOwnerName] = useState('');
   const [companyPhoneNumber, setCompanyPhoneNumber] = useState('');
   const [companyFaxNumber, setCompanyFaxNumber] = useState('');
-  const [region, setRegion] = useState('');
-  const [subRegion, setSubRegion] = useState('');
+  const [region, setRegion] = useState({ id: null, name: '' });
+  const [subRegion, setSubRegion] = useState({ id: null, name: '' });
+
   const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
 
@@ -169,27 +170,7 @@ const SignupPage = () => {
           closeModal(), setModalOpen(false);
         },
       });
-    } else if (!companyPhoneNumber) {
-      setModalOpen(true);
-      openModal({
-        primaryText: '회사 번호를 입력해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
-    } else if (!companyFaxNumber) {
-      setModalOpen(true);
-      openModal({
-        primaryText: '팩스 번호를 입력해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
-    } else if (!region) {
+    } else if (!region.id) {
       setModalOpen(true);
       openModal({
         primaryText: '광역자치구를 선택해주세요.',
@@ -199,7 +180,7 @@ const SignupPage = () => {
           closeModal(), setModalOpen(false);
         },
       });
-    } else if (!subRegion) {
+    } else if (!subRegion.id) {
       setModalOpen(true);
       openModal({
         primaryText: '지역자치구를 선택해주세요.',
@@ -220,6 +201,8 @@ const SignupPage = () => {
         },
       });
     } else if (!detailAddress) {
+      console.log(region.id);
+      console.log(subRegion.id);
       setModalOpen(true);
       openModal({
         primaryText: '상세 주소를 입력해주세요.',
@@ -241,8 +224,8 @@ const SignupPage = () => {
             phoneNumber: phoneNumber,
             companyPhoneNumber: companyPhoneNumber,
             faxNumber: companyFaxNumber,
-            cityName: region,
-            districtName: subRegion,
+            cityId: region.id,
+            districtId: subRegion.id,
             streetAddress: address,
             detailAddress: detailAddress,
           },
@@ -281,7 +264,12 @@ const SignupPage = () => {
       <div className="flex flex-col items-center justify-start">
         <div className="w-full max-w-2xl p-8">
           <h1 className="mt-28 mb-12 text-3xl font-bold">회원가입</h1>
-
+          <div className="flex justify-end space-x-1">
+            <div className="flex items-start">
+              <span className="text-warning font-bold text-lg">*</span>
+            </div>
+            <span>필수 입력 사항</span>
+          </div>
           <hr className="w-full mb-6 border-t-2 border-primary" />
 
           <EmailInfoForm
