@@ -8,6 +8,7 @@ import com.resengkor.management.global.response.CommonResponse;
 import com.resengkor.management.global.response.DataResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -59,7 +60,7 @@ public class DocumentController {
 
     //다운로드
     @GetMapping(path = "/download/{documentType}/{fileId}")
-    public ResponseEntity<byte[]> downloadDocumentFile(@PathVariable("documentType") String documentType, @PathVariable("fileId") Long fileId){
+    public ResponseEntity<UrlResource> downloadDocumentFile(@PathVariable("documentType") String documentType, @PathVariable("fileId") Long fileId){
         return documentService.downloadDocumentFile(documentType,fileId);
     }
 }
