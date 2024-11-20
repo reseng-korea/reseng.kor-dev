@@ -32,6 +32,10 @@ import FindIdSuccessPage from './pages/auth/FindIdSuccessPage';
 import FindIdFailurePage from './pages/auth/FindIdFailurePage';
 import FindPasswordPage from './pages/auth/FindPasswordPage';
 import ChangePasswordPage from './pages/auth/ChangePasswordPage';
+import TermsAndPolicyNonSocial from './pages/auth/TermsAndPolicyNonSocial';
+import TermsAndPolicySocial from './pages/auth/TermsAndPolicySocial';
+import PrivacyPolicy from './pages/auth/PrivacyPolicy';
+import TermsOfUse from './pages/auth/TermsOfUse';
 
 //company
 import Company from './pages/company/Company';
@@ -45,6 +49,7 @@ import QnaRegister from './pages/cs/QnaRegister';
 import QnaDetail from './pages/cs/QnaDetail';
 
 //reference Room
+import DocumentCreate from './pages/referenceRoom/DocumentCreate';
 import Certificate from './pages/referenceRoom/Certificate';
 import Coa from './pages/referenceRoom/Coa';
 import CoaDetail from './pages/referenceRoom/CoaDetail';
@@ -150,6 +155,20 @@ function App() {
           <Route path="/pwinquiry" element={<FindPasswordPage />} />
           {/* 새로운 비밀번호 변경 페이지 */}
           <Route path="/pwinquiry/new" element={<ChangePasswordPage />} />
+          {/* 소셜로그인 제외 개인정보처리방침 페이지 */}
+          <Route
+            path="/signup/termsAndPolicyNonSocial"
+            element={<TermsAndPolicyNonSocial />}
+          />
+          {/* 소셜로그인 개인정보처리방침 페이지 */}
+          <Route
+            path="/signup/termsAndPolicySocial"
+            element={<TermsAndPolicySocial />}
+          />
+          {/* 개인정보처리방침 페이지 */}
+          <Route path="/privacyPolicy" element={<PrivacyPolicy />} />
+          {/* 이용약관 페이지 */}
+          <Route path="/termsOfUse" element={<TermsOfUse />} />
 
           {/* company */}
           {/* 회사 소개 페이지 */}
@@ -175,6 +194,7 @@ function App() {
           <Route path="/qna/:pageNumber" element={<QnaDetail />} />
 
           {/* reference Room */}
+          <Route path="/document/register" element={<DocumentCreate />} />
           {/* 인증서 페이지 */}
           <Route path="/certificate" element={<Certificate />} />
           {/* 성적서 페이지 */}

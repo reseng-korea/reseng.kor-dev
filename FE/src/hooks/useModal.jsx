@@ -2,6 +2,7 @@ import { useState } from 'react';
 
 import CustomModal from '../components/CustomModal';
 import CustomModalWithInput from '../components/CustomModalWithInput';
+import CustomLoadingModal from '../components/CustomLoadingModal';
 
 const useModal = () => {
   const [isOpen, setIsOpen] = useState(false);

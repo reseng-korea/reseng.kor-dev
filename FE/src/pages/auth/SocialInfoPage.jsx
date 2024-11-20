@@ -40,8 +40,8 @@ const AddSignupPage = () => {
   const [ownerName, setOwnerName] = useState('');
   const [companyPhoneNumber, setCompanyPhoneNumber] = useState('');
   const [companyFaxNumber, setCompanyFaxNumber] = useState('');
-  const [region, setRegion] = useState('');
-  const [subRegion, setSubRegion] = useState('');
+  const [region, setRegion] = useState({ id: null, name: '' });
+  const [subRegion, setSubRegion] = useState({ id: null, name: '' });
   const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
 
@@ -103,26 +103,6 @@ const AddSignupPage = () => {
           closeModal(), setModalOpen(false);
         },
       });
-    } else if (!companyPhoneNumber) {
-      setModalOpen(true);
-      openModal({
-        primaryText: '회사 번호를 입력해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
-    } else if (!companyFaxNumber) {
-      setModalOpen(true);
-      openModal({
-        primaryText: '팩스 번호를 입력해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal(), setModalOpen(false);
-        },
-      });
     } else if (!region) {
       setModalOpen(true);
       openModal({
@@ -166,6 +146,8 @@ const AddSignupPage = () => {
     } else {
       try {
         console.log(data?.id);
+        console.log('광역자치구 id로 들어가는지 ?', region.id);
+        console.log('지역자치구 id로 들어가는지', subRegion.id);
         const response = await axios.put(
           `${apiUrl}/api/v1/users/oauth/${data.id}`,
           {
@@ -175,8 +157,8 @@ const AddSignupPage = () => {
             phoneNumber: phoneNumber,
             companyPhoneNumber: companyPhoneNumber,
             faxNumber: companyFaxNumber,
-            cityName: region,
-            districtName: subRegion,
+            cityId: region.id,
+            districtId: subRegion.id,
             streetAddress: address,
             detailAddress: detailAddress,
           },
@@ -218,8 +200,9 @@ const AddSignupPage = () => {
             회원 정보 추가 입력
           </h1>
           <span className="text-xs text-gray4 sm:text-sm">
-            원활한 사용을 위해 추가 정보가 필요합니다. 필수 항목을 입력해
-            주세요. 감사합니다 :)
+            원활한 사용을 위해 추가 정보가 필요합니다.{' '}
+            <span className="text-warning text-md font-bold">*</span>필수 항목을
+            입력해 주세요. 감사합니다 :)
           </span>
           <hr className="w-full mt-2 mb-6 border-t-2 border-primary" />
 

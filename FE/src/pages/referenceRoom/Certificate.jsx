@@ -85,7 +85,8 @@ const Cerificate = () => {
             <div className="flex justify-end mt-12">
               <button
                 type="submit"
-                className="px-8 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-white hover:text-primary"
+                onClick={() => navigateTo(routes.documentRegister)}
+                className="px-8 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-hover"
               >
                 글쓰기
               </button>
