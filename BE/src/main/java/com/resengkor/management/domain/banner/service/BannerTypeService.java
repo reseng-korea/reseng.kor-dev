@@ -8,6 +8,8 @@ import com.resengkor.management.domain.banner.repository.BannerTypeRepository;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
+import com.resengkor.management.global.response.DataResponse;
+import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -31,7 +33,7 @@ public class BannerTypeService {
     private final BannerRequestMapper bannerRequestMapper;
 
     // 보유 현수막 전체 재고 조회
-    public List<BannerInventoryDto> getBannerInventory() {
+    public DataResponse<List<BannerInventoryDto>> getBannerInventory() {
         // 현재 로그인된 사용자의 ID를 가져옴
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         List<BannerType> banners = bannerTypeRepository.findByUserId(userId);
@@ -60,11 +62,11 @@ public class BannerTypeService {
         });
         // typeWidth 기준으로 오름차순 정렬
         inventoryList.sort(Comparator.comparingInt(BannerInventoryDto::getTypeWidth));
-        return inventoryList;
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), inventoryList);
     }
 
     // 특정 typeWidth에 대한 배너 인벤토리를 horizontalLength 기준 오름차순으로 정렬하여 반환
-    public BannerInventoryDto getBannerInventoryBySpecificWidth(Integer typeWidth) {
+    public DataResponse<BannerInventoryDto> getBannerInventoryBySpecificWidth(Integer typeWidth) {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         List<BannerType> banners = bannerTypeRepository.findByUserIdAndTypeWidth(userId, typeWidth);
         List<Integer> allLengths = new ArrayList<>();
@@ -78,7 +80,7 @@ public class BannerTypeService {
         allLengths = allLengths.stream().sorted().collect(Collectors.toList());
         // 정단 개수를 allLengths 리스트에서 계산
         int standardCount = (int) allLengths.stream().filter(length -> length == 120).count();
-        return new BannerInventoryDto(typeWidth, standardCount, allLengths);
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), new BannerInventoryDto(typeWidth, standardCount, allLengths));
     }
 
     // 현수막 사용 요청을 처리하여 재고 업데이트

@@ -3,6 +3,8 @@ package com.resengkor.management.domain.banner.controller;
 import com.resengkor.management.domain.banner.dto.BannerInventoryDto;
 import com.resengkor.management.domain.banner.service.BannerTypeService;
 import com.resengkor.management.domain.qrcode.dto.QrPageDataDTO;
+import com.resengkor.management.global.response.DataResponse;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -17,16 +19,15 @@ public class BannerTypeController {
 
     private final BannerTypeService bannerTypeService;
 
-    // 보유 현수막 전체 재고 조회 API
+    @Operation(description = "보유 현수막 전체 재고 조회 API")
     @GetMapping
-    public ResponseEntity<List<BannerInventoryDto>> getBannerInventory() {
-        List<BannerInventoryDto> inventoryList = bannerTypeService.getBannerInventory();
-        return ResponseEntity.ok(inventoryList);
+    public DataResponse<?> getBannerInventory() {
+        return bannerTypeService.getBannerInventory();
     }
 
-    // 보유 현수막 특정 폭(width) 재고 조회 API
+    @Operation(description = "보유 현수막 특정 폭(width) 재고 조회 API")
     @GetMapping("/{typeWidth}")
-    public BannerInventoryDto getBannerInventoryBySpecificWidth(@PathVariable Integer typeWidth) {
+    public DataResponse<BannerInventoryDto> getBannerInventoryBySpecificWidth(@PathVariable Integer typeWidth) {
         return bannerTypeService.getBannerInventoryBySpecificWidth(typeWidth);
     }
 
