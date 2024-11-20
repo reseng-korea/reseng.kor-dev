@@ -4,17 +4,20 @@ import {
   DisclosurePanel,
 } from '@headlessui/react';
 import { useState, useEffect } from 'react';
-import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
-import logo from '../assets/logo.png';
-
 import { useNavigateTo } from '../hooks/useNavigateTo';
+import useModal from '../hooks/useModal';
+import { logoutService } from '../services/auth/logoutService';
+
+import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { IoPersonSharp } from 'react-icons/io5';
+import logo from '../assets/logo.png';
 
 const navigation = [
   { name: '회사소개', current: false },
   { name: '고객센터', current: false },
   { name: '자료실', current: false },
   { name: '로그인', current: false },
-  { name: '임시', current: false },
+  { name: '마이페이지', current: false },
 ];
 
 function classNames(...classes) {
@@ -25,11 +28,26 @@ export default function Example() {
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+
   const [isMenuOpen, setIsMenuOpen] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const { openModal, closeModal, RenderModal } = useModal();
+
   const handleMouseEnter = (menu) => setIsMenuOpen(menu);
   const handleMouseLeave = () => setIsMenuOpen(null);
+
+  const [isLoggedIn, setIsLoggedIn] = useState(null);
+
+  useEffect(() => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -43,6 +61,20 @@ export default function Example() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // 로그아웃
+  const handleLogout = async () => {
+    try {
+      await logoutService(apiUrl, {
+        openModal,
+        closeModal,
+        navigateTo,
+        routes,
+      });
+    } catch (error) {
+      console.error('로그아웃 중 오류 발생:', error);
+    }
+  };
 
   return (
     <header>
@@ -190,23 +222,59 @@ export default function Example() {
                 )}
               </div>
 
-              {/* 로그인 */}
-              <div
-                className="relative ml-3"
-                onMouseEnter={() => handleMouseEnter('login')}
-                onMouseLeave={handleMouseLeave}
-              >
-                <button
-                  onClick={() => navigateTo(routes.signin)}
-                  className="relative flex text-sm bg-transparent hover:border-2"
+              {/* 로그인 여부에 따라 */}
+              {isLoggedIn ? (
+                <div
+                  className="relative py-3 ml-3"
+                  onMouseEnter={() => handleMouseEnter('mypage')}
+                  onMouseLeave={handleMouseLeave}
                 >
-                  <span className="sr-only">Open login menu</span>
-                  <p className="text-gray4 font-bold">로그인</p>
-                </button>
-              </div>
+                  <button
+                    // onClick={() => navigateTo(routes.mypageMember)}
+                    className="relative flex text-sm bg-transparent hover:border-2"
+                  >
+                    <IoPersonSharp className="text-gray4" />
+                  </button>
+
+                  {isMenuOpen === 'mypage' && (
+                    <div className="absolute z-20 w-32 py-1 mt-1 origin-top-center bg-white rounded-md shadow-lg left-1/2 transform -translate-x-1/2 ring-1 ring-black ring-opacity-5">
+                      <a className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary">
+                        {localStorage.getItem('name')}님
+                      </a>
+                      <hr />
+                      <a
+                        onClick={() => navigateTo(routes.mypageMember)}
+                        className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
+                      >
+                        마이페이지
+                      </a>
+                      <a
+                        onClick={handleLogout}
+                        className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
+                      >
+                        로그아웃
+                      </a>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                <div
+                  className="relative ml-3"
+                  onMouseEnter={() => handleMouseEnter('login')}
+                  onMouseLeave={handleMouseLeave}
+                >
+                  <button
+                    onClick={() => navigateTo(routes.signin)}
+                    className="relative flex text-sm bg-transparent hover:border-2"
+                  >
+                    <span className="sr-only">Open login menu</span>
+                    <p className="text-gray4 font-bold">로그인</p>
+                  </button>
+                </div>
+              )}
 
               {/* 임시페이지(삭제 예정) */}
-              <div
+              {/* <div
                 className="relative ml-3"
                 onMouseEnter={() => handleMouseEnter('login')}
                 onMouseLeave={handleMouseLeave}
@@ -217,7 +285,7 @@ export default function Example() {
                 >
                   <p className="text-gray4 font-bold">임시</p>
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -243,6 +311,7 @@ export default function Example() {
           </div>
         </DisclosurePanel>
       </Disclosure>
+      <RenderModal />
     </header>
   );
 }
