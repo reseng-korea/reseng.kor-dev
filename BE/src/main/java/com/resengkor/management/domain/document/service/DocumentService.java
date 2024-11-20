@@ -24,6 +24,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+
 import java.util.List;
 
 @Service
@@ -38,6 +39,10 @@ public class DocumentService {
     //생성
     @Transactional
     public CommonResponse createDocument(String documentType,DocumentRequest dto) {
+        // HTML에서 썸네일 URL 추출
+//        String thumbnailUrl = extractThumbnailUrl(dto.getContent());
+
+        //Document 엔티티 생성
         Document document = Document.builder()
                 .type(DocumentType.valueOf(documentType.toUpperCase()))
                 .title(dto.getTitle())
@@ -57,6 +62,29 @@ public class DocumentService {
 
         return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(), ResponseStatus.CREATED_SUCCESS.getMessage());
     }
+
+    /**
+     * HTML에서 첫 번째 이미지 태그의 src 속성을 추출
+     */
+//    private String extractThumbnailUrl(String content) {
+//        if (content == null || content.isEmpty()) {
+//            return null;
+//        }
+//
+//        try {
+//            // HTML 파싱
+//            JsoupDocument doc = Jsoup.parse(content);
+//
+//            // 첫 번째 <img> 태그의 src 속성 추출
+//            return doc.select("img").stream()
+//                    .map(element -> element.attr("src"))
+//                    .findFirst()
+//                    .orElse(null); // 이미지가 없으면 null 반환
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    }
 
     //조회
     public DataResponse<Page<DocumentResponse>> getDocumentList(String documentType,int page, int size) {
@@ -111,11 +139,11 @@ public class DocumentService {
         // S3에서 파일 삭제
         files.forEach(file -> s3Service.deleteFileFromS3(file.getFileName()));
 
-        // 게시물 삭제
-        documentRepository.deleteById(documentId);
-
         // DB에서 파일 삭제
         fileRepository.deleteAll(files);
+
+        // 게시물 삭제
+        documentRepository.deleteById(documentId);
 
         return new CommonResponse(ResponseStatus.DELETED_SUCCESS.getCode(),
                 ResponseStatus.DELETED_SUCCESS.getMessage());
