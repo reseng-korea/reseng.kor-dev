@@ -8,7 +8,6 @@ const Tmp = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
-  const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
 
   const handleLogout = async () => {
@@ -22,14 +21,11 @@ const Tmp = () => {
         `${apiUrl}/api/v1/logout`,
         {},
         {
-          headers: {
-            Refresh: refreshToken,
-          },
+          withCredentials: true, // 쿠키를 포함하도록 설정
         }
       );
 
       if (response.data.code == 200) {
-        setModalOpen(true);
         openModal({
           primaryText: '로그아웃되었습니다.',
           context: '이용해 주셔서 감사합니다.',
@@ -37,7 +33,7 @@ const Tmp = () => {
           isAutoClose: false,
           onConfirm: () => {
             navigateTo(routes.home);
-            closeModal(), setModalOpen(false);
+            closeModal();
           },
         });
       }
@@ -53,13 +49,8 @@ const Tmp = () => {
         <button onClick={() => navigateTo(routes.itemsBanner)}>
           아이템 페이지
         </button>
-        <button onClick={() => navigateTo(routes.mypageMember)}>
-          마이페이지
-        </button>
-
-        <button onClick={handleLogout}>로그아웃</button>
       </div>
-      {modalOpen && <RenderModal />}
+      <RenderModal />
     </div>
   );
 };
