@@ -61,31 +61,34 @@ public class OrderService {
         User parentAgency = roleHierarchyRepository.findAncestorRole(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.PARENT_AGENCY_NOT_FOUND));
 
-        // OrderHistory 생성
-        OrderHistory orderHistory = OrderHistory.builder()
-                .orderDate(LocalDate.now())
-                .seller(parentAgency)  // 부모 대리점
-                .buyer(loginedUser)    // 현재 로그인한 사용자
-                .orderStatus(OrderStatus.UNCONFIRMED)    // 초기 상태는 UNCONFIRMED(미확인)
-                .receiveStatus(false)  // receiveStatus 기본값은 false
-                .user(loginedUser)
-                .build();
-
-        // OrderHistoryBannerType 리스트 생성 후 연관 설정
-        orderRequestDto.getBannerRequests().forEach(bannerOrderItem -> {
-            // 새로운 TemporaryBannerType 생성
-            TemporaryBannerType temporaryBannerType = new TemporaryBannerType().toBuilder()
-                    .temporaryTypeWidth(bannerOrderItem.getTemporaryTypeWidth())
-                    .quantity(bannerOrderItem.getQuantity())
-                    .orderHistory(orderHistory)
+        try {
+            // OrderHistory 생성
+            OrderHistory orderHistory = OrderHistory.builder()
+                    .orderDate(LocalDate.now())
+                    .seller(parentAgency)  // 부모 대리점
+                    .buyer(loginedUser)    // 현재 로그인한 사용자
+                    .orderStatus(OrderStatus.UNCONFIRMED)    // 초기 상태는 UNCONFIRMED(미확인)
+                    .receiveStatus(false)  // receiveStatus 기본값은 false
+                    .user(loginedUser)
                     .build();
 
-            temporaryBannerTypeRepository.save(temporaryBannerType);
-        });
+            // OrderHistoryBannerType 리스트 생성 후 연관 설정
+            orderRequestDto.getBannerRequests().forEach(bannerOrderItem -> {
+                // 새로운 TemporaryBannerType 생성
+                TemporaryBannerType temporaryBannerType = new TemporaryBannerType().toBuilder()
+                        .temporaryTypeWidth(bannerOrderItem.getTemporaryTypeWidth())
+                        .quantity(bannerOrderItem.getQuantity())
+                        .orderHistory(orderHistory)
+                        .build();
 
-        // OrderHistory 저장
-        orderHistoryRepository.save(orderHistory);
-        return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(), ResponseStatus.CREATED_SUCCESS.getMessage());
+                temporaryBannerTypeRepository.save(temporaryBannerType);
+            });
+            // OrderHistory 저장
+            orderHistoryRepository.save(orderHistory);
+            return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(), ResponseStatus.CREATED_SUCCESS.getMessage());
+        } catch (Exception e) {
+            throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
+        }
     }
 
     // 로그인한 사용자의 모든 발주 내역 조회

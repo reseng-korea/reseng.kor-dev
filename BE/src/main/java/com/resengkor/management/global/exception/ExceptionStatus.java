@@ -66,6 +66,7 @@ public enum ExceptionStatus {
     // 주문내역 관련 오류
     ORDER_NOT_FOUND(4040, "해당 주문내역을 찾을 수 없습니다. 다시 확인해주세요."),
     ORDER_STATUS_SAME(4041, "해당 주문상태가 현재의 주문 상태와 같습니다. 다시 확인해주세요"),
+    ORDER_HISTORY_NOT_GENERATED(4042, "해당 주문내역을 저장할 수 없습니다. 다시 확인해 주세요."),
 
     // 5xx 서버 오류
     EMAIL_SEND_FAIL(5001, "메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
