@@ -30,7 +30,7 @@ public class DocumentEntity extends BaseEntity {
     @Column
     private LocalDate date;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
     private String thumbnailUrl;
