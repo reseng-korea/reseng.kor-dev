@@ -12,8 +12,9 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 @Entity
-@AllArgsConstructor
-public class Document extends BaseEntity {
+@Builder(toBuilder = true)
+@AllArgsConstructor  // 모든 필드를 포함하는 생성자 생성
+public class DocumentEntity extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,16 +30,19 @@ public class Document extends BaseEntity {
     @Column
     private LocalDate date;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
-    @OneToMany(mappedBy = "document", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FileEntity> files = new ArrayList<>();  // 파일 목록 (일대다 관계)
+    private String thumbnailUrl;
+
+    @OneToMany(mappedBy = "documentEntity", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default  // 기본값 설정
+    private List<FileEntity> files = new ArrayList<>();// 파일 목록 (일대다 관계)
 
     // 파일 추가 메서드
     public void addFile(FileEntity file) {
         files.add(file);
-        file.setDocument(this); // 양방향 연관 관계 설정
+        file.setDocumentEntity(this); // 양방향 연관 관계 설정
     }
 
     public void update(String title,LocalDate date, String content) {
@@ -46,15 +50,4 @@ public class Document extends BaseEntity {
         this.date = date;
         this.content = content;
     }
-
-
-
-    @Builder
-    public Document(DocumentType type, String title, LocalDate date, String content) {
-        this.type = type;
-        this.title = title;
-        this.date = date;
-        this.content = content;
-    }
-
 }

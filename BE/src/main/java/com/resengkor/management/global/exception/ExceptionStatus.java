@@ -45,12 +45,28 @@ public enum ExceptionStatus {
     USER_PROFILE_NOT_FOUND(4025, "사용자의 상세 정보가 존재하지 않습니다."),
     INVALID_PASSWORD(4026, "비밀번호가 불일치합니다. 다시 입력해 주세요."),
     USER_NOT_MATCH(4027, "로그인한 사용자와 요청된 사용자가 일치하지 않습니다."), //loginUserId와 pathVariableId가 다름
+    PARENT_AGENCY_NOT_FOUND(4028, "부모 대리점을 찾을 수 없습니다. 다시 확인해 주세요."),
 
     /* 이메일 및 인증 코드 오류 */
     EMAIL_NOT_FOUND(4030, "존재하지 않는 이메일입니다. 이메일 주소를 확인해 주세요."),
     CODE_MISMATCH(4031, "인증 코드가 일치하지 않습니다. 올바른 코드를 입력해 주세요."),
     CODE_EXPIRED(4032, "인증 코드가 존재하지 않습니다. 새 코드를 요청해 주세요."),
 
+    // 현수막 기능 관련 오류
+    BANNER_NOT_FOUND(4033, "해당 폭의 현수막을 찾을 수가 없습니다. 올바른 현수막 타입을 입력해주세요."),
+    INSUFFICIENT_BANNER_LENGTH(4034, "사용할 수 있는 갈이가 부족합니다."),
+    BANNER_NOT_MATCHING_CONDITION(4035, "해당 조건에 맞는 현수막을 찾을 수 없습니다."),
+    BANNER_SAVE_FAILED(4036, "임시 현수막 정보를 DB에 저장할 수 없습니다."),
+    RECEIVE_STATUS_ALREADY_TRUE(4037, "이미 수령 상태가 완료로 설정되어 있습니다."),
+
+    // QR 기능 관련 오류
+    BANNER_REQUEST_NOT_FOUND(4038, "해당 QR에 맞는 현수막 요청 기록을 찾을 수 없습니다."),
+    INVALID_OR_EXPIRED_QR(4039, "올바르지 않은 QR 코드 또는 만료된 QR 코드입니다."),
+
+    // 주문내역 관련 오류
+    ORDER_NOT_FOUND(4040, "해당 주문내역을 찾을 수 없습니다. 다시 확인해주세요."),
+    ORDER_STATUS_SAME(4041, "해당 주문상태가 현재의 주문 상태와 같습니다. 다시 확인해주세요"),
+    ORDER_HISTORY_NOT_GENERATED(4042, "해당 주문내역을 저장할 수 없습니다. 다시 확인해 주세요."),
 
     // 5xx 서버 오류
     EMAIL_SEND_FAIL(5001, "메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),

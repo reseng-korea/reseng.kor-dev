@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 import useModal from '../../../hooks/useModal';
+import { formatCreatedAt } from '../../../utils/dateUtils';
 
 const QnaAnswerManager = ({ qnaData, setQnaData }) => {
   //   userId, questionId, title, content, representativeName, viewCount, createdAt, secret,
@@ -13,12 +14,6 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
 
   const [answerContentInput, setAnswerContentInput] = useState('');
   const [isModify, setIsModify] = useState(false);
-
-  // 게시 작성 날짜 포맷
-  const formatCreatedAt = (createdAt) => {
-    const [date, time] = createdAt.split('T');
-    return `${date} ${time.slice(0, 8)}`;
-  };
 
   // 답변 등록 핸들러
   const handleAnswerInputContent = (e) => {

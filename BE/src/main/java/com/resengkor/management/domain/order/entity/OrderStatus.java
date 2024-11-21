@@ -1,4 +1,4 @@
-package com.resengkor.management.domain.banner.entity;
+package com.resengkor.management.domain.order.entity;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

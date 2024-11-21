@@ -4,7 +4,7 @@ package com.resengkor.management.domain.document.service;
 import com.resengkor.management.domain.document.dto.DocumentDetailResponse;
 import com.resengkor.management.domain.document.dto.DocumentRequest;
 import com.resengkor.management.domain.document.dto.DocumentResponse;
-import com.resengkor.management.domain.document.entity.Document;
+import com.resengkor.management.domain.document.entity.DocumentEntity;
 import com.resengkor.management.domain.document.entity.DocumentType;
 import com.resengkor.management.domain.document.repository.DocumentRepository;
 import com.resengkor.management.domain.file.entity.FileEntity;
@@ -25,6 +25,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+
 
 import java.util.List;
 
@@ -41,14 +45,15 @@ public class DocumentService {
     @Transactional
     public CommonResponse createDocument(String documentType,DocumentRequest dto) {
         // HTML에서 썸네일 URL 추출
-//        String thumbnailUrl = extractThumbnailUrl(dto.getContent());
+        String thumbnailUrl = extractThumbnailUrl(dto.getContent());
 
         //Document 엔티티 생성
-        Document document = Document.builder()
+        DocumentEntity documentEntity = DocumentEntity.builder()
                 .type(DocumentType.valueOf(documentType.toUpperCase()))
                 .title(dto.getTitle())
                 .date(dto.getDate())
                 .content(dto.getContent())
+                .thumbnailUrl(thumbnailUrl)
                 .build();
 
         dto.getFiles().forEach(fileRequest -> {
@@ -57,40 +62,41 @@ public class DocumentService {
                     .fileType(fileRequest.getFileType())
                     .fileUrl(fileRequest.getFileUrl())
                     .build();
-            document.addFile(fileEntity);
+            documentEntity.addFile(fileEntity);
         });
-        documentRepository.save(document);
+        documentRepository.save(documentEntity);
 
         return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(), ResponseStatus.CREATED_SUCCESS.getMessage());
     }
 
     /**
-     * HTML에서 첫 번째 이미지 태그의 src 속성을 추출
+     * HTML에서 첫 번째 이미지의 URL을 추출하는 메서드
+     *
+     * @param htmlContent HTML 문자열
+     * @return 첫 번째 이미지의 URL (없으면 null 반환)
      */
-//    private String extractThumbnailUrl(String content) {
-//        if (content == null || content.isEmpty()) {
-//            return null;
-//        }
-//
-//        try {
-//            // HTML 파싱
-//            JsoupDocument doc = Jsoup.parse(content);
-//
-//            // 첫 번째 <img> 태그의 src 속성 추출
-//            return doc.select("img").stream()
-//                    .map(element -> element.attr("src"))
-//                    .findFirst()
-//                    .orElse(null); // 이미지가 없으면 null 반환
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//            return null;
-//        }
-//    }
+    public static String extractThumbnailUrl(String htmlContent) {
+        // HTML 파싱
+        Document document = Jsoup.parse(htmlContent);
+
+        // 첫 번째 <img> 태그 선택
+        Element imgElement = document.selectFirst("img");
+
+        // <img> 태그가 존재하면 src 속성 반환
+        if (imgElement != null) {
+            return imgElement.attr("src");
+        }
+
+        // 이미지 태그가 없으면 null 반환
+        return null;
+    }
+
+
 
     //조회
     public DataResponse<Page<DocumentResponse>> getDocumentList(String documentType,int page, int size) {
         PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
-        Page<Document> documentPage = documentRepository.findByType(DocumentType.valueOf(documentType.toUpperCase()), pageRequest);
+        Page<DocumentEntity> documentPage = documentRepository.findByType(DocumentType.valueOf(documentType.toUpperCase()), pageRequest);
 
         Page<DocumentResponse> documentResponsePage = documentPage.map(DocumentResponse::fromEntity);
 
@@ -99,10 +105,10 @@ public class DocumentService {
 
     //세부 사항 조회
     public DataResponse<DocumentDetailResponse> getDocumentDetail(String documentType,Long documentId) {
-        Document document = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(documentType.toUpperCase()))
+        DocumentEntity documentEntity = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(documentType.toUpperCase()))
                 .orElseThrow(() -> new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE));
 
-        DocumentDetailResponse detailResponse = DocumentDetailResponse.fromEntity(document);
+        DocumentDetailResponse detailResponse = DocumentDetailResponse.fromEntity(documentEntity);
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), detailResponse);
     }
@@ -110,19 +116,19 @@ public class DocumentService {
     //수정
     @Transactional
     public CommonResponse updateDocument(String documentType,Long documentId, DocumentRequest request) {
-        Document document = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(documentType.toUpperCase()))
+        DocumentEntity documentEntity = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(documentType.toUpperCase()))
                 .orElseThrow(() -> new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE));
 
-        document.update(request.getTitle(), request.getDate(), request.getContent());
+        documentEntity.update(request.getTitle(), request.getDate(), request.getContent());
 
-        document.getFiles().clear();  // 기존 파일 제거
+        documentEntity.getFiles().clear();  // 기존 파일 제거
         request.getFiles().forEach(fileRequest -> {
             FileEntity newFile = FileEntity.builder()
                     .fileName(fileRequest.getFileName())
                     .fileType(fileRequest.getFileType())
                     .fileUrl(fileRequest.getFileUrl())
                     .build();
-            document.addFile(newFile);  // 연관관계 편의 메서드 사용
+            documentEntity.addFile(newFile);  // 연관관계 편의 메서드 사용
         });
         return new CommonResponse(ResponseStatus.UPDATED_SUCCESS.getCode(), ResponseStatus.UPDATED_SUCCESS.getMessage());
     }
@@ -135,7 +141,7 @@ public class DocumentService {
                 .orElseThrow(() -> new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE));
 
         // 파일 이름 목록 조회
-        List<FileEntity> files = fileRepository.findByDocumentId(documentId);
+        List<FileEntity> files = fileRepository.findByDocumentEntityId(documentId);
 
         // S3에서 파일 삭제
         files.forEach(file -> s3Service.deleteFileFromS3(file.getFileName()));
@@ -154,7 +160,7 @@ public class DocumentService {
         // 파일 ID를 통해 해당 파일 찾기
         FileEntity file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
-        if(!documentType.equals(file.getDocument().getType().toString().toLowerCase())){
+        if(!documentType.equals(file.getDocumentEntity().getType().toString().toLowerCase())){
             throw new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE);
         }
 
