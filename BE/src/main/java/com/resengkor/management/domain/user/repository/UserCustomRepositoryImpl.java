@@ -2,10 +2,13 @@ package com.resengkor.management.domain.user.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.resengkor.management.domain.user.dto.QUserListDTO;
 import com.resengkor.management.domain.user.dto.UserListDTO;
 import com.resengkor.management.domain.user.dto.UserListPaginationDTO;
 import com.resengkor.management.domain.user.entity.QUser;
+import com.resengkor.management.domain.user.entity.QUserProfile;
 import com.resengkor.management.domain.user.entity.Role;
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
@@ -21,6 +24,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     }
 
     QUser user = QUser.user;
+    QUserProfile userProfile = QUserProfile.userProfile;
 
     @Override
     public UserListPaginationDTO getAllUserByManager(Pageable pageable, String role, String status, LocalDateTime createdAt, List<Role> accessibleRoles) {
@@ -38,15 +42,15 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         if(createdAt != null)
             builder.and(user.createdAt.after(createdAt));
 
-        List<UserListDTO> resultList = jpaQueryFactory.selectFrom(user)
+        List<UserListDTO> resultList = jpaQueryFactory
+                .select(new QUserListDTO(user))
+                .from(user)
+                .join(user.userProfile, userProfile) // Join User with UserProfile
                 .where(builder)
-                .offset(pageable.getOffset())     // 페이징 처리 (offset)
-                .limit(pageable.getPageSize())    // 페이징 처리 (limit)
-                .orderBy(user.id.asc())   // 정렬 기준
-                .fetch()
-                .stream()
-                .map(UserListDTO::new)
-                .toList();
+                .offset(pageable.getOffset()) // 페이징 처리 (offset)
+                .limit(pageable.getPageSize()) // 페이징 처리 (limit)
+                .orderBy(user.id.asc()) // 정렬 기준
+                .fetch();
 
         Long totalCount = Optional.ofNullable(
             jpaQueryFactory
