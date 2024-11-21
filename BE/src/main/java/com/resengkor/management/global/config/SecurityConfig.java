@@ -62,6 +62,7 @@ public class SecurityConfig {
             "/api/v1/users/pagination",
             "/api/v1/regions/**", "/api/v1/companies/**",
             "/api/v1/faq/**",
+            "api/v1/qr-code",
             "/api/v1/qna/questions/**",
             "/api/v1/qualifications"
     );
@@ -189,7 +190,6 @@ public class SecurityConfig {
                 .role("DISTRIBUTOR").implies("AGENCY")
                 .role("AGENCY").implies("CUSTOMER")
                 .role("CUSTOMER").implies("GUEST")
-                .role("GUEST").implies("PENDING")
                 .build();
     }
 }

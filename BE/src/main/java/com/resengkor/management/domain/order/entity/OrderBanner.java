@@ -1,15 +1,20 @@
-package com.resengkor.management.domain.banner.entity;
+package com.resengkor.management.domain.order.entity;
 
+import com.resengkor.management.domain.banner.entity.BannerType;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @NoArgsConstructor
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class)
 @Table(name = "Order_Banner")
 @Entity
+@Builder(toBuilder = true)
 public class OrderBanner {
 
     @Id
@@ -28,4 +33,3 @@ public class OrderBanner {
     @JoinColumn(name = "banner_type_id")
     private BannerType bannerType;
 }
-
