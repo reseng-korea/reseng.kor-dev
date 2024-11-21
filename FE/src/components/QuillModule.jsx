@@ -1,3 +1,5 @@
+import { FaFile } from 'react-icons/fa';
+
 const QuillModule = () => {
   return (
     <>
@@ -42,6 +44,9 @@ const QuillModule = () => {
         <button className="ql-code-block" />
         <button className="ql-link" />
         <button className="ql-image" />
+        {/* <button className="ql-attach-file text-[11px] text-gray4 ml-1">
+          <FaFile />
+        </button> */}
       </div>
     </>
   );

@@ -10,12 +10,39 @@ import dompurify from 'dompurify';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import useModal from '../../hooks/useModal';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
+import { handleFileUpload } from '../../utils/QuillHander';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 import QuillModule from '../../components/QuillModule';
 
-const DocumentCreate = () => {
+import { MdCancel } from 'react-icons/md';
+import { GiConsoleController } from 'react-icons/gi';
+
+const DocumentRegister = () => {
+  const location = useLocation();
+  const documentData = location.state?.data || {};
+  const documentType = documentData.isModify
+    ? location.state?.data?.type // Detail 페이지에서 전달된 데이터
+    : location.state?.documentType || ''; // Certificate 페이지에서 전달된 데이터
+
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState('');
+  const [uploadedFiles, setUploadedFiles] = useState([]); // 이미지, 파일 정보 저장
+  const [displayFiles, setDisplayFiles] = useState([]); //파일 정보만 저장
+
+  const [selectedDate, setSelectedDate] = useState(''); //보도자료 기사 작성 날짜
+  const quillRef = useRef(null);
+
+  // id가 존재하면 수정 모드로 인식하여 데이터를 불러옴
+  useEffect(() => {
+    if (documentData && documentData.isModify) {
+      setTitle(documentData.title);
+      setContent(documentData.content);
+      setUploadedFiles(documentData.files);
+    }
+  }, [documentData]);
+
   const navItems = [
     { label: '인증서', route: '/certificate' },
     { label: '성적서', route: '/coa' },
@@ -29,16 +56,7 @@ const DocumentCreate = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
 
-  const location = useLocation();
-  const { documentType } = location.state || {}; // NEWS CERTIFICATE GRADE
-
   const sanitizer = dompurify.sanitize;
-
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const quillRef = useRef(null);
-
-  const [uploadedFiles, setUploadedFiles] = useState([]); // 파일 정보 저장
 
   // 새로고침 데이터 날라감 방지
   usePreventRefresh(openModal, closeModal, setModalOpen);
@@ -96,6 +114,7 @@ const DocumentCreate = () => {
         formData.append('file', file);
 
         try {
+          console.log(documentType);
           const response = await axios.post(
             `${apiUrl}/api/v1/s3/upload/${documentType}`,
             formData,
@@ -136,11 +155,13 @@ const DocumentCreate = () => {
         container: '#toolBar',
         handlers: {
           image: ImageHandler,
+          // 'attach-file': () =>
+          //   handleFileUpload(quillRef, apiUrl, documentType, accesstoken),
         },
       },
       ImageResize: {
         parchment: Quill.import('parchment'),
-        modules: ['Resize', 'DisplaySize'],
+        // modules: ['Resize', 'DisplaySize'],
       },
     }),
     []
@@ -169,24 +190,22 @@ const DocumentCreate = () => {
     // console.log(value);
   };
 
+  // 날짜 입력
+  const handleDateChange = (event) => {
+    setSelectedDate(event.target.value);
+    console.log('Selected Date:', event.target.value);
+  };
+
   // 글 등록
   const handleSubmit = async () => {
     console.log('제목', title);
     console.log('내용', content);
+
     const data = {
       title: title,
-      date: '2024-11-21',
+      date: selectedDate,
       content: content,
       files: uploadedFiles,
-      // files: [
-      //   {
-      //     fileUrl:
-      //       'https://s3.ap-northeast-2.amazonaws.com/resengs3bucket/certificate/455909d1-4afd-4a66-9005-e7f72bd1c1b6Landscape%20desktop%20wallpaper%20laptop%20computer%20background%204k%20full%20HD%20mountain%20nature%20home.jpeg',
-      //     fileType: 'image/jpeg',
-      //     fileName:
-      //       'certificate/455909d1-4afd-4a66-9005-e7f72bd1c1b6Landscape desktop wallpaper laptop computer background 4k full HD mountain nature home.jpeg',
-      //   },
-      // ],
     };
 
     if (!title) {
@@ -209,25 +228,52 @@ const DocumentCreate = () => {
           closeModal(), setModalOpen(false);
         },
       });
+    } else if (documentType === 'NEWS' && !selectedDate) {
+      setModalOpen(true);
+      openModal({
+        primaryText: '게시 날짜를 선택해주세요.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal(), setModalOpen(false);
+        },
+      });
     } else {
-      try {
-        const response = await axios.post(
-          `${apiUrl}/api/v1/documents/${documentType}`,
-          data,
-          {
-            headers: {
-              Authorization: accesstoken,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-        console.log(response);
+      // 수정 로직이라면
+      console.log('수정일 때, 데이터 확인', data);
+      if (documentData.isModify) {
+        try {
+          const response = await axios.put(
+            `${apiUrl}/api/v1/documents/${documentType}/${documentData.id}`,
+            data,
+            {
+              headers: {
+                Authorization: accesstoken,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          console.log(response);
 
-        if (response.data.code == 201) {
+          if (response.data.code == 201) {
+            setModalOpen(true);
+            openModal({
+              primaryText: '글이 성공적으로 수정되었습니다.',
+              type: 'success',
+              isAutoClose: false,
+              onConfirm: () => {
+                closeModal();
+                setModalOpen(false);
+                handleNavigate();
+              },
+            });
+          }
+        } catch (error) {
           setModalOpen(true);
           openModal({
-            primaryText: '인증서가 성공적으로 등록되었습니다.',
-            type: 'success',
+            primaryText: '글 수정에 실패했습니다.',
+            context: '잠시 후 다시 시도해주세요.',
+            type: 'warning',
             isAutoClose: false,
             onConfirm: () => {
               closeModal();
@@ -236,8 +282,49 @@ const DocumentCreate = () => {
             },
           });
         }
-      } catch (error) {
-        console.log(error);
+
+        // 등록 로직이라면
+      } else {
+        try {
+          const response = await axios.post(
+            `${apiUrl}/api/v1/documents/${documentType}`,
+            data,
+            {
+              headers: {
+                Authorization: accesstoken,
+                'Content-Type': 'application/json',
+              },
+            }
+          );
+          console.log(response);
+
+          if (response.data.code == 201) {
+            setModalOpen(true);
+            openModal({
+              primaryText: '글이 성공적으로 등록되었습니다.',
+              type: 'success',
+              isAutoClose: false,
+              onConfirm: () => {
+                closeModal();
+                setModalOpen(false);
+                handleNavigate();
+              },
+            });
+          }
+        } catch (error) {
+          setModalOpen(true);
+          openModal({
+            primaryText: '글 등록에 실패했습니다.',
+            context: '잠시 후 다시 시도해주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal();
+              setModalOpen(false);
+              handleNavigate();
+            },
+          });
+        }
       }
     }
   };
@@ -298,10 +385,7 @@ const DocumentCreate = () => {
   };
 
   // 파일 삭제
-  const handleDelete = async () => {
-    const fileName =
-      'certificate/63aa6bd7-526e-4927-a225-d3fc3126e0b3tree.jpeg';
-
+  const handleDelete = async (fileName) => {
     try {
       const response = await axios.delete(
         `${apiUrl}/api/v1/s3?fileName=${fileName}`,
@@ -309,11 +393,19 @@ const DocumentCreate = () => {
           headers: {
             Authorization: accesstoken,
           },
-          responseType: 'blob',
+          // responseType: 'blob',
         }
       );
 
       console.log(response);
+
+      setUploadedFiles((prevFiles) =>
+        prevFiles.filter((file) => file.fileName !== fileName)
+      );
+
+      setDisplayFiles((prevFiles) =>
+        prevFiles.filter((file) => file.fileName !== fileName)
+      );
     } catch (error) {
       console.log(error);
     }
@@ -368,6 +460,8 @@ const DocumentCreate = () => {
   //   }
   // };
 
+  console.log(uploadedFiles.length);
+
   return (
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
@@ -387,6 +481,20 @@ const DocumentCreate = () => {
             />
           </div>
           <hr className="w-full mb-4 border-t border-gray1" />
+          {documentType === 'NEWS' && (
+            <div className="text-left mb-4">
+              <label className="font-bold" htmlFor="date-input">
+                보도 자료 발행 날짜 :{' '}
+              </label>
+              <input
+                type="date"
+                id="date-input"
+                value={selectedDate}
+                onChange={handleDateChange}
+              />
+            </div>
+          )}
+
           <div>
             <div id="toolBar">
               <QuillModule />
@@ -400,6 +508,44 @@ const DocumentCreate = () => {
               style={{ height: '600px' }}
               ref={quillRef}
             />
+            <div className="flex flex-col">
+              <div className="mt-4 mb-2 text-left text-lg font-bold w-fit">
+                파일 첨부
+              </div>
+              <span className="text-gray3 text-left">
+                XXX MB 이하의 파일만 업로드 가능합니다.
+              </span>
+              <div
+                onClick={() =>
+                  handleFileUpload(
+                    apiUrl,
+                    documentType,
+                    accesstoken,
+                    setUploadedFiles,
+                    setDisplayFiles
+                  )
+                }
+                className="bg-white mt-4 mb-4 p-3 rounded-lg border border-primary text-primary hover:bg-hoverLight w-fit"
+              >
+                파일 선택
+              </div>
+
+              {displayFiles.length > 0 && (
+                <div className="flex flex-col space-y-2">
+                  {displayFiles.map((file, index) => (
+                    <div className="flex px-4 py-2 space-x-2 justify-center items-center bg-white border border-gray2 w-fit rounded-full">
+                      <span className="text-xs text-gray3">
+                        {file.fileName}
+                      </span>
+                      <MdCancel
+                        onClick={() => handleDelete(file.fileName)}
+                        className="text-gray3 text-2xl"
+                      />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
 
             <div className="w-full flex justify-between" id="content">
               <div className="w-1/2">{content}</div>
@@ -416,7 +562,7 @@ const DocumentCreate = () => {
               onClick={handleSubmit}
               className="px-4 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg w-1/6 hover:bg-hover"
             >
-              등록
+              {documentData.isModify ? '수정' : '등록'}
             </button>
             <button
               type="submit"
@@ -447,4 +593,4 @@ const DocumentCreate = () => {
   );
 };
 
-export default DocumentCreate;
+export default DocumentRegister;

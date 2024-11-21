@@ -150,6 +150,18 @@ const QnaRegister = () => {
           }
         } catch (error) {
           console.log(error);
+          setModalOpen(true);
+          openModal({
+            primaryText: '문의 수정에 실패했습니다.',
+            context: '잠시 후 다시 시도해주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal();
+              setModalOpen(false);
+              handleNavigate();
+            },
+          });
         }
         // 등록 로직이라면
       } else {
@@ -186,6 +198,18 @@ const QnaRegister = () => {
           }
         } catch (error) {
           console.log(error);
+          setModalOpen(true);
+          openModal({
+            primaryText: '문의 등록에 실패했습니다.',
+            context: '잠시 후 다시 시도해주세요.',
+            type: 'warning',
+            isAutoClose: false,
+            onConfirm: () => {
+              closeModal();
+              setModalOpen(false);
+              handleNavigate();
+            },
+          });
         }
       }
     }

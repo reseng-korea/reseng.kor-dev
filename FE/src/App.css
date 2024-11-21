@@ -389,3 +389,15 @@ select {
     transform: rotate(360deg);
   }
 }
+
+.ql-align-center {
+  text-align: center;
+}
+
+.ql-align-right {
+  text-align: right;
+}
+
+.ql-align-left {
+  text-align: left;
+}
