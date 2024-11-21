@@ -42,6 +42,7 @@ public class DocumentDetailResponse {
                         .map(file -> FileResponse.builder()
                                 .fileId(file.getId())
                                 .fileName(file.getFileName())
+                                .fileUrl(file.getFileUrl())
                                 .fileType(file.getFileType())
                                 .build())
                         .collect(Collectors.toList()))
