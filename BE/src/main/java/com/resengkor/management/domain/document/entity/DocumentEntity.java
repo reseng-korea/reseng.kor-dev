@@ -36,7 +36,8 @@ public class DocumentEntity extends BaseEntity {
     private String thumbnailUrl;
 
     @OneToMany(mappedBy = "documentEntity", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<FileEntity> files;  // 파일 목록 (일대다 관계)
+    @Builder.Default  // 기본값 설정
+    private List<FileEntity> files = new ArrayList<>();// 파일 목록 (일대다 관계)
 
     // 파일 추가 메서드
     public void addFile(FileEntity file) {
