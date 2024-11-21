@@ -1,10 +1,12 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 import axios from 'axios';
-import ReactQuill, { Quill } from 'react-quill';
+import ReactQuill, { Quill } from 'react-quill-new';
+import 'react-quill-new/dist/quill.snow.css';
+
 import ImageResize from 'quill-image-resize-module-react';
-import 'react-quill/dist/quill.snow.css';
-Quill.register('modules/ImageResize', ImageResize);
+Quill.register('modules/imageResize', ImageResize);
+
 import dompurify from 'dompurify';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
@@ -40,6 +42,7 @@ const DocumentRegister = () => {
       setTitle(documentData.title);
       setContent(documentData.content);
       setUploadedFiles(documentData.files);
+      setSelectedDate(documentData.date);
     }
   }, [documentData]);
 
@@ -85,7 +88,7 @@ const DocumentRegister = () => {
       'strike',
       'blockquote',
       'list',
-      'bullet',
+      // 'bullet',
       'indent',
       'link',
       'image',
@@ -94,7 +97,7 @@ const DocumentRegister = () => {
       'align',
       'script',
       'code-block',
-      'clean',
+      // 'clean',
     ],
     []
   );
@@ -155,13 +158,11 @@ const DocumentRegister = () => {
         container: '#toolBar',
         handlers: {
           image: ImageHandler,
-          // 'attach-file': () =>
-          //   handleFileUpload(quillRef, apiUrl, documentType, accesstoken),
         },
       },
-      ImageResize: {
+      imageResize: {
         parchment: Quill.import('parchment'),
-        // modules: ['Resize', 'DisplaySize'],
+        modules: ['Resize', 'DisplaySize'],
       },
     }),
     []
@@ -194,6 +195,13 @@ const DocumentRegister = () => {
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
     console.log('Selected Date:', event.target.value);
+  };
+
+  const wrapContentWithDiv = (htmlContent) => {
+    return `<div className="w-full"><div
+                className="relative bg-white p-4 rounded-md max-w-full overflow-hidden"
+                style={{ minHeight: '600px' }} // 최소 높이 설정
+              >${htmlContent}</div></div>`;
   };
 
   // 글 등록
@@ -231,7 +239,7 @@ const DocumentRegister = () => {
     } else if (documentType === 'NEWS' && !selectedDate) {
       setModalOpen(true);
       openModal({
-        primaryText: '게시 날짜를 선택해주세요.',
+        primaryText: '날짜를 선택해주세요.',
         type: 'warning',
         isAutoClose: false,
         onConfirm: () => {
@@ -269,6 +277,7 @@ const DocumentRegister = () => {
             });
           }
         } catch (error) {
+          console.log(error);
           setModalOpen(true);
           openModal({
             primaryText: '글 수정에 실패했습니다.',
@@ -547,12 +556,15 @@ const DocumentRegister = () => {
               )}
             </div>
 
-            <div className="w-full flex justify-between" id="content">
-              <div className="w-1/2">{content}</div>
-              <div
-                className="w-1/2"
-                dangerouslySetInnerHTML={{ __html: sanitizer(`${content}`) }}
-              />
+            <div className="w-full flex flex-col justify-between" id="content">
+              <div>{content}</div>
+              <div className="flex flex-col mt-8">
+                <div className="text-2xl font-bold mb-4">미리보기</div>
+                <div
+                  className="w-full overflow-auto border border-gray2 rounded-lg p-5"
+                  dangerouslySetInnerHTML={{ __html: sanitizer(`${content}`) }}
+                />
+              </div>
             </div>
           </div>
 

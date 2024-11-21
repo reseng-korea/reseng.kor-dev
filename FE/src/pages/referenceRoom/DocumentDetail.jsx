@@ -6,7 +6,6 @@ import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
 import useModal from '../../hooks/useModal';
-import usePreventRefresh from '../../hooks/usePreventRefresh';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const DocumentDetail = () => {
@@ -19,7 +18,6 @@ const DocumentDetail = () => {
   const { navigateTo, routes } = useNavigateTo();
   const { openModal, closeModal, RenderModal } = useModal();
   const [modalOpen, setModalOpen] = useState(false);
-  usePreventRefresh(openModal, closeModal, setModalOpen);
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
@@ -130,7 +128,7 @@ const DocumentDetail = () => {
             )}
             <hr className="w-full mt-6 mb-6 border border-gray3" />
             {/* 내용 */}
-            <div>
+            <div class="parent-container">
               <div dangerouslySetInnerHTML={{ __html: documentData.content }} />
             </div>
           </div>
