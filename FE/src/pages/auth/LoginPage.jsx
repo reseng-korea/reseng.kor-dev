@@ -71,18 +71,20 @@ const LoginPage = () => {
           }
         );
 
+        console.log(response);
+        console.log(response.headers.authorization);
+        localStorage.setItem('userId', response.data.id);
+        localStorage.setItem('role', response.data.role);
+        localStorage.setItem('name', response.data.representativeName);
+        localStorage.setItem('accessToken', response.headers.authorization);
+
         // 임시 비밀번호인지 판단 여부
         if (response.data.temporaryPasswordStatus) {
           navigateTo(routes.pwinquiryNew);
         } else {
           navigateTo(routes.home);
+          window.location.reload();
         }
-
-        console.log(response);
-        console.log(response.headers.authorization);
-        localStorage.setItem('userId', response.data.id);
-        localStorage.setItem('role', response.data.role);
-        localStorage.setItem('accessToken', response.headers.authorization);
       } catch (error) {
         const code = error.response.data.code;
 

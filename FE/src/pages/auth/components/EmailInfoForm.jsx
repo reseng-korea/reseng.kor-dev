@@ -92,6 +92,7 @@ const EmailInfoForm = ({
           openModal({
             primaryText: `${email} (으)로`,
             secondaryText: ' 인증번호가 발송되었습니다.',
+            context: '5분이 지나도 이메일이 오지 않으면 다시 요청해주세요.',
             type: 'success',
             isAutoClose: true,
             onConfirm: () => {
