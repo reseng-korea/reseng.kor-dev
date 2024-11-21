@@ -1,5 +1,6 @@
-package com.resengkor.management.domain.banner.dto;
+package com.resengkor.management.domain.order.dto;
 
+import com.resengkor.management.domain.banner.dto.BannerOrderItemDto;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

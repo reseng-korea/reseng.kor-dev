@@ -1,8 +1,9 @@
-package com.resengkor.management.domain.banner.dto;
+package com.resengkor.management.domain.order.dto;
 
-import com.resengkor.management.domain.banner.entity.OrderHistory;
-import com.resengkor.management.domain.banner.entity.OrderStatus;
-import com.resengkor.management.domain.banner.mapper.ReceivedOrderHistoryMapper;
+import com.resengkor.management.domain.banner.dto.TemporaryBannerTypeResponseDto;
+import com.resengkor.management.domain.order.entity.OrderHistory;
+import com.resengkor.management.domain.order.entity.OrderStatus;
+import com.resengkor.management.domain.order.mapper.OrderHistoryMapper;
 import com.resengkor.management.domain.user.dto.response.UserResponseDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,21 +18,23 @@ import java.util.List;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @RequiredArgsConstructor
-public class ReceivedOrderResponseDto {
+public class OrderResponseDto {
 
     private UserResponseDto userResponseDto;        // 대리점 이름
     private LocalDate orderDate;                    // 발주 날짜
     private OrderStatus orderStatus;                // 발주 상태 확인 정보
+    private boolean receiveStatus;                  // 수령 상태 확인 정보
     private List<TemporaryBannerTypeResponseDto> temporaryBannerTypeResponseDtoList; // 해당 주문에 요청한 현수막 타입 리스트
 
     // OrderHistoryMapper 인스턴스 생성
-    private static final ReceivedOrderHistoryMapper mapper = Mappers.getMapper(ReceivedOrderHistoryMapper.class);
+    private static final OrderHistoryMapper mapper = Mappers.getMapper(OrderHistoryMapper.class);
 
-    public static ReceivedOrderResponseDto of(OrderHistory orderHistory) {
+    public static OrderResponseDto of(OrderHistory orderHistory) {
 
-        return new ReceivedOrderResponseDto(UserResponseDto.of(orderHistory.getBuyer()),
+        return new OrderResponseDto(UserResponseDto.of(orderHistory.getSeller()),
                 orderHistory.getOrderDate(),
                 orderHistory.getOrderStatus(),
+                orderHistory.getReceiveStatus() != null ? orderHistory.getReceiveStatus() : false,
                 mapper.toTemporaryBannerTypeResponseDtoList(orderHistory.getTemporaryBannerTypes())
                 );
     }

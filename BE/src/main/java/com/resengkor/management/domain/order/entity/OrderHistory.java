@@ -1,5 +1,6 @@
-package com.resengkor.management.domain.banner.entity;
+package com.resengkor.management.domain.order.entity;
 
+import com.resengkor.management.domain.banner.entity.TemporaryBannerType;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;

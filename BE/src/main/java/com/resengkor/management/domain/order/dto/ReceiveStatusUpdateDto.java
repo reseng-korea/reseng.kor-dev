@@ -1,4 +1,4 @@
-package com.resengkor.management.domain.banner.dto;
+package com.resengkor.management.domain.order.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

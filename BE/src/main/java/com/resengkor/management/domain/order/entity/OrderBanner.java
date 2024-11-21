@@ -1,5 +1,6 @@
-package com.resengkor.management.domain.banner.entity;
+package com.resengkor.management.domain.order.entity;
 
+import com.resengkor.management.domain.banner.entity.BannerType;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

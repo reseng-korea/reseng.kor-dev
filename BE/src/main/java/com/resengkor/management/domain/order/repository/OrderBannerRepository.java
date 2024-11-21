@@ -1,6 +1,6 @@
-package com.resengkor.management.domain.banner.repository;
+package com.resengkor.management.domain.order.repository;
 
-import com.resengkor.management.domain.banner.entity.OrderBanner;
+import com.resengkor.management.domain.order.entity.OrderBanner;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
