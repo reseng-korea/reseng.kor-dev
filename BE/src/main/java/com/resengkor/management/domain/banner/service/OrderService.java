@@ -15,6 +15,9 @@ import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
+import com.resengkor.management.global.response.CommonResponse;
+import com.resengkor.management.global.response.DataResponse;
+import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -43,7 +46,7 @@ public class OrderService {
 
     // 발주 요청
     @Transactional
-    public void createOrder(OrderRequestDto orderRequestDto) {
+    public CommonResponse createOrder(OrderRequestDto orderRequestDto) {
         // 현재 로그인된 사용자의 ID를 가져옴
         Long userId = UserAuthorizationUtil.getLoginMemberId();
 
@@ -53,7 +56,7 @@ public class OrderService {
 
         // 부모 대리점(= seller) 조회
         User parentAgency = roleHierarchyRepository.findAncestorRole(userId)
-                .orElseThrow(()-> new CustomException(ExceptionStatus.PARENT_AGENCY_NOT_FOUND));
+                .orElseThrow(() -> new CustomException(ExceptionStatus.PARENT_AGENCY_NOT_FOUND));
 
         // OrderHistory 생성
         OrderHistory orderHistory = OrderHistory.builder()
@@ -67,7 +70,6 @@ public class OrderService {
 
         // OrderHistoryBannerType 리스트 생성 후 연관 설정
         orderRequestDto.getBannerRequests().forEach(bannerOrderItem -> {
-
             // 새로운 TemporaryBannerType 생성
             TemporaryBannerType temporaryBannerType = new TemporaryBannerType().toBuilder()
                     .temporaryTypeWidth(bannerOrderItem.getTemporaryTypeWidth())
@@ -80,25 +82,26 @@ public class OrderService {
 
         // OrderHistory 저장
         orderHistoryRepository.save(orderHistory);
+        return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(), ResponseStatus.CREATED_SUCCESS.getMessage());
     }
 
     // 로그인한 사용자의 모든 발주 내역 조회
-    public List<OrderResponseDto> getUserOrderHistories() {
+    public DataResponse<List<OrderResponseDto>> getUserOrderHistories() {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         List<OrderHistory> orderHistories = orderHistoryRepository.findByUserIdOrderByOrderDateDesc(userId);
-        return orderHistoryMapper.toDtoList(orderHistories);
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), orderHistoryMapper.toDtoList(orderHistories));
     }
 
     // 특정 orderId로 발주 내역 조회
-    public OrderResponseDto getUserOrderHistoryById(Long orderId) {
+    public DataResponse<OrderResponseDto> getUserOrderHistoryById(Long orderId) {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         OrderHistory orderHistory = getOrderHistory(orderId, userId);
-        return orderHistoryMapper.toDto(orderHistory);
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), orderHistoryMapper.toDto(orderHistory));
     }
 
     // 수령 상태 업데이트 메서드
     @Transactional
-    public void updateReceiveStatus(Long orderId, boolean receiveStatus) {
+    public CommonResponse updateReceiveStatus(Long orderId, boolean receiveStatus) {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         OrderHistory orderHistory = getOrderHistory(orderId, userId);
         // 수령 상태가 true로 변경되면, BannerType을 DB에 저장
@@ -106,6 +109,7 @@ public class OrderService {
             saveOrderAndBannerTypes(orderHistory);
             orderHistory.updateReceiveStatus(true);
         }
+        return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage());
     }
 
     // BannerType을 실제 DB에 저장하는 메서드
@@ -114,50 +118,56 @@ public class OrderService {
         List<TemporaryBannerType> temporaryBannerTypes = new ArrayList<>(orderHistory.getTemporaryBannerTypes());
 
         // Iterator 사용하여 안전하게 순회하면서 수정
-        for (TemporaryBannerType tempBanner : temporaryBannerTypes) {
-            // quantity 개수만큼 BannerType 생성 및 저장
-            List<BannerType> createdBannerTypes = new ArrayList<>();
-            for (int i = 0; i < tempBanner.getQuantity(); i++) {
-                BannerType bannerType = BannerType.builder()
-                        .user(orderHistory.getBuyer())
-                        .typeWidth(tempBanner.getTemporaryTypeWidth())
-                        .horizontalLength(BigDecimal.valueOf(120)) // 항상 120로 설정
-                        .isStandard(true) // 항상 true로 설정
-                        .build();
-                bannerTypeRepository.save(bannerType);
-                createdBannerTypes.add(bannerType);
-            }
+        try {
+            for (TemporaryBannerType tempBanner : temporaryBannerTypes) {
+                // quantity 개수만큼 BannerType 생성 및 저장
+                List<BannerType> createdBannerTypes = new ArrayList<>();
+                for (int i = 0; i < tempBanner.getQuantity(); i++) {
+                    BannerType bannerType = BannerType.builder()
+                            .user(orderHistory.getBuyer())
+                            .typeWidth(tempBanner.getTemporaryTypeWidth())
+                            .horizontalLength(BigDecimal.valueOf(120)) // 항상 120로 설정
+                            .isStandard(true) // 항상 true로 설정
+                            .build();
+                    bannerTypeRepository.save(bannerType);
+                    createdBannerTypes.add(bannerType);
+                }
 
-            // 모든 BannerType 이 생성된 후, OrderBanner 를 딱 한 번 생성
-            if (!createdBannerTypes.isEmpty()) {
-                BannerType representativeBannerType = createdBannerTypes.getFirst();
+                // 모든 BannerType 이 생성된 후, OrderBanner 를 딱 한 번 생성
+                if (!createdBannerTypes.isEmpty()) {
+                    BannerType representativeBannerType = createdBannerTypes.getFirst();
 
-                OrderBanner orderBanner = OrderBanner.builder()
-                        .orderHistory(orderHistory)
-                        .bannerType(representativeBannerType)
-                        .quantity(tempBanner.getQuantity()) // TemporaryBannerType의 quantity 사용
-                        .build();
-                orderBannerRepository.save(orderBanner);
+                    OrderBanner orderBanner = OrderBanner.builder()
+                            .orderHistory(orderHistory)
+                            .bannerType(representativeBannerType)
+                            .quantity(tempBanner.getQuantity()) // TemporaryBannerType의 quantity 사용
+                            .build();
+                    orderBannerRepository.save(orderBanner);
+                }
             }
+        } catch(Exception e){
+            throw new CustomException(ExceptionStatus.BANNER_SAVE_FAILED);
         }
     }
 
     // 로그인한 사용자의 모든 발주 내역 조회
-    public List<ReceivedOrderResponseDto> getUserReceivedOrderHistories() {
+    public DataResponse<List<ReceivedOrderResponseDto>> getUserReceivedOrderHistories() {
         Long sellerId = UserAuthorizationUtil.getLoginMemberId();
         List<OrderHistory> orderHistories = orderHistoryRepository.findBySellerIdOrderByOrderDateDesc(sellerId);
-        return receivedOrderHistoryMapper.toReceivedDtoList(orderHistories);
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), receivedOrderHistoryMapper.toReceivedDtoList(orderHistories));
     }
 
     // 배송상태 업데이트 기능
     @Transactional
-    public void updateOrderStatus(Long orderId, OrderStatus newStatus) {
+    public CommonResponse updateOrderStatus(Long orderId, OrderStatus newStatus) {
         // 현재 로그인된 사용자의 ID를 가져옴
         Long sellerId = UserAuthorizationUtil.getLoginMemberId();
         OrderHistory orderHistory = getOrderHistory(orderId, sellerId);
 
         orderHistory.updateOrderStatus(newStatus);
         orderHistoryRepository.save(orderHistory);
+
+        return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage());
     }
 
     private OrderHistory getOrderHistory(Long orderId, Long userId) {

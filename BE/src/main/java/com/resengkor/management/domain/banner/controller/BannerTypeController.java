@@ -19,13 +19,13 @@ public class BannerTypeController {
 
     private final BannerTypeService bannerTypeService;
 
-    @Operation(description = "보유 현수막 전체 재고 조회 API")
+    @Operation(description = "보유 현수막 전체 재고 조회")
     @GetMapping
     public DataResponse<?> getBannerInventory() {
         return bannerTypeService.getBannerInventory();
     }
 
-    @Operation(description = "보유 현수막 특정 폭(width) 재고 조회 API")
+    @Operation(description = "보유 현수막 특정 폭(width) 재고 조회")
     @GetMapping("/{typeWidth}")
     public DataResponse<BannerInventoryDto> getBannerInventoryBySpecificWidth(@PathVariable Integer typeWidth) {
         return bannerTypeService.getBannerInventoryBySpecificWidth(typeWidth);

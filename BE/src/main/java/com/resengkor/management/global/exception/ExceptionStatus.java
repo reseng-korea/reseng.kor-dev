@@ -56,13 +56,16 @@ public enum ExceptionStatus {
     BANNER_NOT_FOUND(4033, "해당 폭의 현수막을 찾을 수가 없습니다. 올바른 현수막 타입을 입력해주세요."),
     INSUFFICIENT_BANNER_LENGTH(4034, "사용할 수 있는 갈이가 부족합니다."),
     BANNER_NOT_MATCHING_CONDITION(4035, "해당 조건에 맞는 현수막을 찾을 수 없습니다."),
+    BANNER_SAVE_FAILED(4036, "임시 현수막 정보를 DB에 저장할 수 없습니다."),
+    RECEIVE_STATUS_ALREADY_TRUE(4037, "이미 수령 상태가 완료로 설정되어 있습니다."),
 
     // QR 기능 관련 오류
-    BANNER_REQUEST_NOT_FOUND(4036, "해당 QR에 맞는 현수막 요청 기록을 찾을 수 없습니다."),
-    INVALID_OR_EXPIRED_QR(4037, "올바르지 않은 QR 코드 또는 만료된 QR 코드입니다."),
+    BANNER_REQUEST_NOT_FOUND(4038, "해당 QR에 맞는 현수막 요청 기록을 찾을 수 없습니다."),
+    INVALID_OR_EXPIRED_QR(4039, "올바르지 않은 QR 코드 또는 만료된 QR 코드입니다."),
 
     // 주문내역 관련 오류
-    ORDER_NOT_FOUND(4038, "해당 주문내역을 찾을 수 없습니다. 다시 확인해주세요."),
+    ORDER_NOT_FOUND(4040, "해당 주문내역을 찾을 수 없습니다. 다시 확인해주세요."),
+    ORDER_STATUS_SAME(4041, "해당 주문상태가 현재의 주문 상태와 같습니다. 다시 확인해주세요"),
 
     // 5xx 서버 오류
     EMAIL_SEND_FAIL(5001, "메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),

@@ -1,6 +1,8 @@
 package com.resengkor.management.domain.banner.entity;
 
 import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -52,11 +54,18 @@ public class OrderHistory {
 
     // 수령 상태를 업데이트하는 비즈니스 메서드
     public void updateReceiveStatus(boolean newReceiveStatus) {
+        // 이미 true로 설정된 상태에서 다시 true로 변경하려고 할 때 예외 발생
+        if (this.receiveStatus && newReceiveStatus) {
+            throw new CustomException(ExceptionStatus.RECEIVE_STATUS_ALREADY_TRUE);
+        }
         this.receiveStatus = newReceiveStatus;
     }
 
     // 상태 업데이트 메서드
     public void updateOrderStatus(OrderStatus newStatus) {
+        if (this.orderStatus == newStatus) {
+            throw new CustomException(ExceptionStatus.ORDER_STATUS_SAME);
+        }
         this.orderStatus = newStatus;
     }
 
