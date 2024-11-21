@@ -1,11 +1,12 @@
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
-import tmp5 from '../../assets/tmp_5.png';
-import tmp6 from '../../assets/tmp_6.png';
-import tmp7 from '../../assets/tmp_7.png';
+import resengLogo from '../../assets/reseng_logo.png';
 
 const Press = () => {
   const navItems = [
@@ -14,7 +15,31 @@ const Press = () => {
     { label: '보도 자료', route: '/press' },
   ];
 
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
+
+  const role = localStorage.getItem('role');
+
+  const [press, setPress] = useState([]);
+
+  useEffect(() => {
+    const fetchFaqData = async () => {
+      try {
+        const response = await axios.get(
+          `${apiUrl}/api/v1/documents/NEWS?page=0&size=10`
+        );
+
+        console.log(response);
+        console.log(response.data.data.content);
+
+        const data = response.data.data.content;
+        setPress(data);
+      } catch (error) {
+        console.log(error);
+      }
+    };
+    fetchFaqData();
+  }, []);
 
   return (
     <Layout>
@@ -26,43 +51,26 @@ const Press = () => {
             mainCategory="자료실"
           />
           {/* 메인 */}
-          <div className="flex flex-col">
-            <div className="flex flex-wrap w-full justify-center items-start">
-              {/* 반복되는 이미지 카드 */}
-              {[
-                {
-                  img: tmp5,
-                  title: '리앤생, 연매출 10억 달성',
-                  date: '2024.10.18',
-                },
-                {
-                  img: tmp6,
-                  title:
-                    '리앤생, 한국 산업의 고객만족도(KCSI) 10년 연속 1위 달성',
-                  date: '2024.10.18',
-                },
-                {
-                  img: tmp7,
-                  title:
-                    '리앤생, 추석 연휴에도 동남아, 일본, 중국 3강구도 형성',
-                  date: '2024.10.08',
-                },
-              ].map((item, index) => (
+          <div className="flex flex-col mb-12">
+            <div className="flex flex-wrap w-full justify-center">
+              {press.map((item) => (
                 <div
-                  onClick={() => navigateTo(routes.pressDetail)}
-                  key={index}
-                  className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-1/4 justify-center items-center mx-8"
+                  // onClick={() => navigateTo(routes.pressDetail)}
+                  key={item.id}
+                  className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-1/4 justify-center items-center mx-2 my-4"
                 >
-                  <div className="flex justify-center items-center rounded-lg mt-4">
+                  {/* 이미지 영역 */}
+                  <div className="flex justify-center items-center mt-4 h-48 w-5/6 overflow-hidden">
                     <img
-                      className="h-full object-contain"
-                      src={item.img}
-                      alt={`인증서 ${index + 1}`}
+                      className="h-full w-full object-cover rounded-lg"
+                      src={item.thumbnailUrl || resengLogo}
+                      alt={item.title}
                     />
                   </div>
 
                   {/* 텍스트 영역 */}
-                  <div className="flex flex-col items-start w-full px-2 mt-4">
+                  <div className="flex flex-col items-start mt-4 w-5/6 overflow-hidden">
+                    {/* <div className="flex flex-col items-start w-full px-2 mt-4"> */}
                     <span className="text-left text-lg font-bold flex-grow">
                       {item.title}
                     </span>
@@ -71,14 +79,21 @@ const Press = () => {
                 </div>
               ))}
             </div>
-            <div className="flex justify-end mt-12">
-              <button
-                type="submit"
-                className="px-8 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-white hover:text-primary"
-              >
-                글쓰기
-              </button>
-            </div>
+            {role === 'ROLE_MANAGER' && (
+              <div className="flex justify-end mt-12 mb-12">
+                <button
+                  type="submit"
+                  onClick={() =>
+                    navigateTo(routes.documentRegister, {
+                      documentType: 'NEWS',
+                    })
+                  }
+                  className="px-8 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-hover"
+                >
+                  글쓰기
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
