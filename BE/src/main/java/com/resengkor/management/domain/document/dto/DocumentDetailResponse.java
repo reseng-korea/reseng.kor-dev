@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -17,15 +18,17 @@ public class DocumentDetailResponse {
     private LocalDate date;
     private String content;
     private List<FileResponse> files;
+    private LocalDateTime createdAt;
 
     @Builder
-    public DocumentDetailResponse(Long id, String type, String title, LocalDate date, String content, List<FileResponse> files) {
+    public DocumentDetailResponse(Long id, String type, String title, LocalDate date, String content, List<FileResponse> files,LocalDateTime createdAt) {
         this.id = id;
         this.type = type;
         this.title = title;
         this.date = date;
         this.content = content;
         this.files = files;
+        this.createdAt = createdAt;
     }
 
     public static DocumentDetailResponse fromEntity(DocumentEntity documentEntity) {
@@ -42,6 +45,7 @@ public class DocumentDetailResponse {
                                 .fileType(file.getFileType())
                                 .build())
                         .collect(Collectors.toList()))
+                .createdAt(documentEntity.getCreatedAt())
                 .build();
     }
 }
