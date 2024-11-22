@@ -64,8 +64,8 @@ public class DocumentDetailResponse {
                 .title(documentEntity.getTitle())
                 .date(documentEntity.getDate())
                 .content(documentEntity.getContent())
-//                .files(allFiles)  // 이미지 제외한 파일들을 files 리스트에 할당
-//                .images(imageFiles)  // 이미지 파일을 images 리스트에 할당
+                .files(allFiles)  // 이미지 제외한 파일들을 files 리스트에 할당
+                .images(imageFiles)  // 이미지 파일을 images 리스트에 할당
                 .createdAt(documentEntity.getCreatedAt())
                 .build();
     }
