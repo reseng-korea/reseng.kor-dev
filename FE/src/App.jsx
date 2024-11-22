@@ -49,12 +49,13 @@ import QnaRegister from './pages/cs/QnaRegister';
 import QnaDetail from './pages/cs/QnaDetail';
 
 //reference Room
-import DocumentCreate from './pages/referenceRoom/DocumentCreate';
+import DocumentRegister from './pages/referenceRoom/DocumentRegister';
 import Certificate from './pages/referenceRoom/Certificate';
 import Coa from './pages/referenceRoom/Coa';
 import CoaDetail from './pages/referenceRoom/CoaDetail';
 import Press from './pages/referenceRoom/Press';
 import PressDetail from './pages/referenceRoom/PressDetail';
+import DocumentDetail from './pages/referenceRoom/DocumentDetail';
 
 //items
 import Banner from './pages/items/Banner';
@@ -194,7 +195,7 @@ function App() {
           <Route path="/qna/:pageNumber" element={<QnaDetail />} />
 
           {/* reference Room */}
-          <Route path="/document/register" element={<DocumentCreate />} />
+          <Route path="/document/register" element={<DocumentRegister />} />
           {/* 인증서 페이지 */}
           <Route path="/certificate" element={<Certificate />} />
           {/* 성적서 페이지 */}
@@ -205,6 +206,10 @@ function App() {
           <Route path="/press" element={<Press />} />
           {/* 보도 자료 상세 페이지 */}
           <Route path="/press/1" element={<PressDetail />} />
+          {/* 자료실 상세 페이지 */}
+          <Route path="/certificate/:pageNumber" element={<DocumentDetail />} />
+
+          <Route path="/:type/:id" element={<DocumentDetail />} />
 
           {/* items */}
           {/* (아이템) 친환경 현수막 페이지 */}
