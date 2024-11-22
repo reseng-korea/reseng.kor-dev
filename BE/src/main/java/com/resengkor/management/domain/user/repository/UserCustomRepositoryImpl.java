@@ -27,20 +27,31 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     QUserProfile userProfile = QUserProfile.userProfile;
 
     @Override
-    public UserListPaginationDTO getAllUserByManager(Pageable pageable, String role, String status, LocalDateTime createdAt, List<Role> accessibleRoles) {
+    public UserListPaginationDTO getAllUserByManager(Pageable pageable, String role, String status, LocalDateTime createdAt, List<Role> accessibleRoles, String companyName, String city, String district) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
-        if(role != null)
+        if(role != null && !role.trim().isEmpty())
             builder.and(user.role.eq(Role.valueOf(role)));
         else
             builder.and(user.role.in(accessibleRoles));
 
-        if(status != null)
+        if(status != null && !status.trim().isEmpty())
             builder.and(user.status.eq(Boolean.parseBoolean(status)));
 
         if(createdAt != null)
             builder.and(user.createdAt.after(createdAt));
+
+        if(companyName != null && !companyName.trim().isEmpty())
+            builder.and(user.companyName.contains(companyName));
+
+        if(city != null && !city.trim().isEmpty())
+            builder.and(userProfile.city.regionName.eq(city.trim()))
+                    .and(userProfile.city.regionType.trim().eq("city")); // exact match가 아닌 경우만 추가
+
+        if(district != null && !district.trim().isEmpty())
+            builder.and(userProfile.district.regionName.eq(district.trim()))
+                    .and(userProfile.district.regionType.trim().eq("DISTRICT")); // exact match가 아닌 경우만 추가
 
         List<UserListDTO> resultList = jpaQueryFactory
                 .select(new QUserListDTO(user))
