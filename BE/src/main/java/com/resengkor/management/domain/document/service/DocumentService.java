@@ -57,7 +57,7 @@ public class DocumentService {
                 .content(dto.getContent())
                 .thumbnailUrl(thumbnailUrl)
                 .build();
-        List<FileRequest> imageFiles = dto.getFiles().stream()
+        List<FileRequest> imageFiles = dto.getImages().stream()
                 .filter(file -> file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 파일 필터링
                 .collect(Collectors.toList());
 
@@ -144,7 +144,7 @@ public class DocumentService {
 
         documentEntity.getFiles().clear();  // 기존 파일 제거
         // 파일들을 이미지와 일반 파일로 구분
-        List<FileRequest> imageFiles = request.getFiles().stream()
+        List<FileRequest> imageFiles = request.getImages().stream()
                 .filter(file -> file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 파일 필터링
                 .collect(Collectors.toList());
 
