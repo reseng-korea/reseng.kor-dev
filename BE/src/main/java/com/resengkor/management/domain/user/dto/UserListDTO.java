@@ -21,6 +21,8 @@ public class UserListDTO {
     private Role role;
     private boolean status;
     private LocalDateTime createdAt;
+    private String companyPhoneNumber;
+    private String faxNumber;
     private String streetAddress;
     private String detailAddress;
     private String city; // String으로 변경
@@ -35,6 +37,8 @@ public class UserListDTO {
         this.role = user.getRole();
         this.status = user.isStatus();
         this.createdAt = user.getCreatedAt();
+        this.companyPhoneNumber = user.getUserProfile().getCompanyPhoneNumber();
+        this.faxNumber = user.getUserProfile().getFaxNumber();
         this.streetAddress = user.getUserProfile().getStreetAddress();
         this.detailAddress = user.getUserProfile().getDetailAddress();
 
