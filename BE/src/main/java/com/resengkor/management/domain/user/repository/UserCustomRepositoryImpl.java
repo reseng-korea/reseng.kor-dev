@@ -43,18 +43,15 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             builder.and(user.createdAt.after(createdAt));
 
         if(companyName != null && !companyName.trim().isEmpty())
-            builder.and(user.companyName.startsWith(companyName));
+            builder.and(user.companyName.contains(companyName));
 
         if(city != null && !city.trim().isEmpty())
-            builder.and(userProfile.city.regionName.startsWith(city.trim()))
-                    .and(userProfile.city.regionType.trim().eq("city"))
-                    .and(userProfile.city.regionName.ne(city.trim())
-                    ); // exact match가 아닌 경우만 추가
+            builder.and(userProfile.city.regionName.eq(city.trim()))
+                    .and(userProfile.city.regionType.trim().eq("city")); // exact match가 아닌 경우만 추가
 
         if(district != null && !district.trim().isEmpty())
-            builder.and(userProfile.district.regionName.startsWith(district.trim()))
-                    .and(userProfile.district.regionType.trim().eq("DISTRICT"))
-                    .and(userProfile.district.regionName.ne(district.trim())); // exact match가 아닌 경우만 추가
+            builder.and(userProfile.district.regionName.eq(district.trim()))
+                    .and(userProfile.district.regionType.trim().eq("DISTRICT")); // exact match가 아닌 경우만 추가
 
         List<UserListDTO> resultList = jpaQueryFactory
                 .select(new QUserListDTO(user))
