@@ -7,6 +7,7 @@ import com.resengkor.management.domain.document.dto.DocumentResponse;
 import com.resengkor.management.domain.document.entity.DocumentEntity;
 import com.resengkor.management.domain.document.entity.DocumentType;
 import com.resengkor.management.domain.document.repository.DocumentRepository;
+import com.resengkor.management.domain.file.dto.FileRequest;
 import com.resengkor.management.domain.file.entity.FileEntity;
 import com.resengkor.management.domain.file.repository.FileRepository;
 import com.resengkor.management.global.exception.CustomException;
@@ -31,6 +32,7 @@ import org.jsoup.nodes.Element;
 
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -55,15 +57,34 @@ public class DocumentService {
                 .content(dto.getContent())
                 .thumbnailUrl(thumbnailUrl)
                 .build();
+        List<FileRequest> imageFiles = dto.getFiles().stream()
+                .filter(file -> file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 파일 필터링
+                .collect(Collectors.toList());
 
-        dto.getFiles().forEach(fileRequest -> {
-            FileEntity fileEntity = FileEntity.builder()
+        List<FileRequest> nonImageFiles = dto.getFiles().stream()
+                .filter(file -> !file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하지 않는 파일 필터링
+                .collect(Collectors.toList());
+
+        // 이미지 파일을 처리 (images)
+        imageFiles.forEach(fileRequest -> {
+            FileEntity newImageFile = FileEntity.builder()
                     .fileName(fileRequest.getFileName())
                     .fileType(fileRequest.getFileType())
                     .fileUrl(fileRequest.getFileUrl())
                     .build();
-            documentEntity.addFile(fileEntity);
+            documentEntity.addFile(newImageFile);  // 연관관계 편의 메서드 사용
         });
+
+        // 이미지가 아닌 파일을 처리 (files)
+        nonImageFiles.forEach(fileRequest -> {
+            FileEntity newFile = FileEntity.builder()
+                    .fileName(fileRequest.getFileName())
+                    .fileType(fileRequest.getFileType())
+                    .fileUrl(fileRequest.getFileUrl())
+                    .build();
+            documentEntity.addFile(newFile);  // 연관관계 편의 메서드 사용
+        });
+
         documentRepository.save(documentEntity);
 
         return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(), ResponseStatus.CREATED_SUCCESS.getMessage());
@@ -122,7 +143,27 @@ public class DocumentService {
         documentEntity.update(request.getTitle(), request.getDate(), request.getContent());
 
         documentEntity.getFiles().clear();  // 기존 파일 제거
-        request.getFiles().forEach(fileRequest -> {
+        // 파일들을 이미지와 일반 파일로 구분
+        List<FileRequest> imageFiles = request.getFiles().stream()
+                .filter(file -> file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 파일 필터링
+                .collect(Collectors.toList());
+
+        List<FileRequest> nonImageFiles = request.getFiles().stream()
+                .filter(file -> !file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하지 않는 파일 필터링
+                .collect(Collectors.toList());
+
+        // 이미지 파일을 처리 (images)
+        imageFiles.forEach(fileRequest -> {
+            FileEntity newImageFile = FileEntity.builder()
+                    .fileName(fileRequest.getFileName())
+                    .fileType(fileRequest.getFileType())
+                    .fileUrl(fileRequest.getFileUrl())
+                    .build();
+            documentEntity.addFile(newImageFile);  // 연관관계 편의 메서드 사용
+        });
+
+        // 이미지가 아닌 파일을 처리 (files)
+        nonImageFiles.forEach(fileRequest -> {
             FileEntity newFile = FileEntity.builder()
                     .fileName(fileRequest.getFileName())
                     .fileType(fileRequest.getFileType())
@@ -130,6 +171,7 @@ public class DocumentService {
                     .build();
             documentEntity.addFile(newFile);  // 연관관계 편의 메서드 사용
         });
+
         return new CommonResponse(ResponseStatus.UPDATED_SUCCESS.getCode(), ResponseStatus.UPDATED_SUCCESS.getMessage());
     }
 
