@@ -57,12 +57,9 @@ public class DocumentService {
                 .content(dto.getContent())
                 .thumbnailUrl(thumbnailUrl)
                 .build();
+
         List<FileRequest> imageFiles = dto.getImages().stream()
                 .filter(file -> file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 파일 필터링
-                .collect(Collectors.toList());
-
-        List<FileRequest> nonImageFiles = dto.getFiles().stream()
-                .filter(file -> !file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하지 않는 파일 필터링
                 .collect(Collectors.toList());
 
         // 이미지 파일을 처리 (images)
@@ -71,16 +68,19 @@ public class DocumentService {
                     .fileName(fileRequest.getFileName())
                     .fileType(fileRequest.getFileType())
                     .fileUrl(fileRequest.getFileUrl())
+                    .isFileImage(false)
                     .build();
             documentEntity.addFile(newImageFile);  // 연관관계 편의 메서드 사용
         });
 
         // 이미지가 아닌 파일을 처리 (files)
-        nonImageFiles.forEach(fileRequest -> {
+        dto.getFiles().forEach(fileRequest -> {
+            boolean isImage = fileRequest.getFileType().startsWith("image/"); //이미지면 true
             FileEntity newFile = FileEntity.builder()
                     .fileName(fileRequest.getFileName())
                     .fileType(fileRequest.getFileType())
                     .fileUrl(fileRequest.getFileUrl())
+                    .isFileImage(isImage)
                     .build();
             documentEntity.addFile(newFile);  // 연관관계 편의 메서드 사용
         });
@@ -136,20 +136,18 @@ public class DocumentService {
 
     //수정
     @Transactional
-    public CommonResponse updateDocument(String documentType,Long documentId, DocumentRequest request) {
+    public CommonResponse updateDocument(String documentType,Long documentId, DocumentRequest dto) {
         DocumentEntity documentEntity = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(documentType.toUpperCase()))
                 .orElseThrow(() -> new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE));
 
-        documentEntity.update(request.getTitle(), request.getDate(), request.getContent());
+        documentEntity.update(dto.getTitle(), dto.getDate(), dto.getContent());
 
         documentEntity.getFiles().clear();  // 기존 파일 제거
-        // 파일들을 이미지와 일반 파일로 구분
-        List<FileRequest> imageFiles = request.getImages().stream()
-                .filter(file -> file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 파일 필터링
-                .collect(Collectors.toList());
 
-        List<FileRequest> nonImageFiles = request.getFiles().stream()
-                .filter(file -> !file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하지 않는 파일 필터링
+
+        // 파일들을 이미지와 일반 파일로 구분
+        List<FileRequest> imageFiles = dto.getImages().stream()
+                .filter(file -> file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 파일 필터링
                 .collect(Collectors.toList());
 
         // 이미지 파일을 처리 (images)
@@ -158,16 +156,19 @@ public class DocumentService {
                     .fileName(fileRequest.getFileName())
                     .fileType(fileRequest.getFileType())
                     .fileUrl(fileRequest.getFileUrl())
+                    .isFileImage(false)
                     .build();
             documentEntity.addFile(newImageFile);  // 연관관계 편의 메서드 사용
         });
 
         // 이미지가 아닌 파일을 처리 (files)
-        nonImageFiles.forEach(fileRequest -> {
+        dto.getFiles().forEach(fileRequest -> {
+            boolean isImage = fileRequest.getFileType().startsWith("image/"); //이미지면 true
             FileEntity newFile = FileEntity.builder()
                     .fileName(fileRequest.getFileName())
                     .fileType(fileRequest.getFileType())
                     .fileUrl(fileRequest.getFileUrl())
+                    .isFileImage(isImage)
                     .build();
             documentEntity.addFile(newFile);  // 연관관계 편의 메서드 사용
         });
