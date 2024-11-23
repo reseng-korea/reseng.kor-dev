@@ -8,6 +8,7 @@ import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -35,27 +36,29 @@ public class DocumentDetailResponse {
     }
 
     public static DocumentDetailResponse fromEntity(DocumentEntity documentEntity) {
-        // 이미지 파일 리스트 생성 (MIME 타입이 "image/"로 시작하는 파일을 이미지로 간주)
-        List<FileResponse> imageFiles = documentEntity.getFiles().stream()
-                .filter(file -> file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 경우 필터링
-                .map(file -> FileResponse.builder()
-                        .fileId(file.getId())
-                        .fileName(file.getFileName())
-                        .fileUrl(file.getFileUrl())
-                        .fileType(file.getFileType())
-                        .build())
-                .collect(Collectors.toList());
+        // 이미지와 파일 리스트 생성
+        List<FileResponse> imageFiles = new ArrayList<>();
+        List<FileResponse> allFiles = new ArrayList<>();
 
-        // 이미지 파일을 제외한 나머지 파일들만 담은 리스트
-        List<FileResponse> allFiles = documentEntity.getFiles().stream()
-                .filter(file -> !file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 파일 제외
-                .map(file -> FileResponse.builder()
-                        .fileId(file.getId())
-                        .fileName(file.getFileName())
-                        .fileUrl(file.getFileUrl())
-                        .fileType(file.getFileType())
-                        .build())
-                .collect(Collectors.toList());
+        // 모든 파일 순회하며 조건에 따라 분류
+        documentEntity.getFiles().forEach(file -> {
+            FileResponse fileResponse = FileResponse.builder()
+                    .fileId(file.getId())
+                    .fileName(file.getFileName())
+                    .fileUrl(file.getFileUrl())
+                    .fileType(file.getFileType())
+                    .build();
+
+            if (file.getFileType().startsWith("image/")) {
+                if (file.isFileImage()) {
+                    allFiles.add(fileResponse); // isFileImage가 false인 경우 files 리스트에 추가
+                } else {
+                    imageFiles.add(fileResponse); // isFileImage가 true인 경우 image 리스트에 추가
+                }
+            } else {
+                allFiles.add(fileResponse); // image/가 아닌 파일은 files 리스트에 추가
+            }
+        });
 
         // DocumentDetailResponse 반환
         return DocumentDetailResponse.builder()

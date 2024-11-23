@@ -25,6 +25,9 @@ public class FileEntity  extends BaseEntity {
     @Column(nullable = false)
     private String fileType; // 이미지 또는 첨부파일
 
+    @Column(nullable = false)
+    private boolean isFileImage; //첨부파일용 이미지인지
+
     @ManyToOne
     @JoinColumn(name = "document_entity_id")
     private DocumentEntity documentEntity;  // 파일이 속한 문서
@@ -35,9 +38,10 @@ public class FileEntity  extends BaseEntity {
     }
 
     @Builder
-    public FileEntity(String fileUrl, String fileName, String fileType) {
+    public FileEntity(String fileUrl, String fileName, String fileType,boolean isFileImage) {
         this.fileUrl = fileUrl;
         this.fileName = fileName;
         this.fileType = fileType;
+        this.isFileImage = false;
     }
 }
