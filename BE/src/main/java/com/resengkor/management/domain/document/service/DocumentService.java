@@ -200,9 +200,10 @@ public class DocumentService {
 
     public ResponseEntity<UrlResource> downloadDocumentFile(String documentType, Long fileId) {
         // 파일 ID를 통해 해당 파일 찾기
+        String upperDocumentType = documentType.toUpperCase();
         FileEntity file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
-        if(!documentType.equals(file.getDocumentEntity().getType().toString().toLowerCase())){
+        if(!upperDocumentType.equals(file.getDocumentEntity().getType().toString())){
             throw new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE);
         }
 
