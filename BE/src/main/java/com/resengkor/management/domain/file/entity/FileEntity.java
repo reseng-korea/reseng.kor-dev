@@ -11,6 +11,7 @@ import jakarta.persistence.Entity;
 @Getter
 @Entity
 @AllArgsConstructor
+@Builder
 public class FileEntity  extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +27,8 @@ public class FileEntity  extends BaseEntity {
     private String fileType; // 이미지 또는 첨부파일
 
     @Column(nullable = false)
-    private boolean isFileImage; //첨부파일용 이미지인지
+    @Builder.Default
+    private boolean isFileImage = false; //첨부파일용 이미지인지
 
     @ManyToOne
     @JoinColumn(name = "document_entity_id")
@@ -35,13 +37,5 @@ public class FileEntity  extends BaseEntity {
     // Document 설정 메서드
     public void setDocumentEntity(DocumentEntity documentEntity) {
         this.documentEntity = documentEntity;
-    }
-
-    @Builder
-    public FileEntity(String fileUrl, String fileName, String fileType,boolean isFileImage) {
-        this.fileUrl = fileUrl;
-        this.fileName = fileName;
-        this.fileType = fileType;
-        this.isFileImage = false;
     }
 }

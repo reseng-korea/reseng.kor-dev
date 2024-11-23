@@ -49,11 +49,12 @@ public class DocumentDetailResponse {
                     .fileType(file.getFileType())
                     .build();
 
+            System.out.println(file.getId() + ","+file.isFileImage());
             if (file.getFileType().startsWith("image/")) {
                 if (file.isFileImage()) {
-                    allFiles.add(fileResponse); // isFileImage가 false인 경우 files 리스트에 추가
+                    allFiles.add(fileResponse); // isFileImage가 true인 경우 files 리스트에 추가
                 } else {
-                    imageFiles.add(fileResponse); // isFileImage가 true인 경우 image 리스트에 추가
+                    imageFiles.add(fileResponse); // isFileImage가 false인 경우 image 리스트에 추가
                 }
             } else {
                 allFiles.add(fileResponse); // image/가 아닌 파일은 files 리스트에 추가

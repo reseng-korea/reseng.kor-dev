@@ -57,6 +57,7 @@ public class DocumentService {
                 .content(dto.getContent())
                 .thumbnailUrl(thumbnailUrl)
                 .build();
+
         List<FileRequest> imageFiles = dto.getImages().stream()
                 .filter(file -> file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 파일 필터링
                 .collect(Collectors.toList());
