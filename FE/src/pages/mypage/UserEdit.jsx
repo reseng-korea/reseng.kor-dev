@@ -293,6 +293,9 @@ const UserEdit = () => {
           );
 
           if (response.data.code == 200) {
+            localStorage.removeItem('accessToken');
+            localStorage.removeItem('role');
+            localStorage.removeItem('userId');
             navigateTo(routes.mypageWithdraw);
           }
           console.log(response);

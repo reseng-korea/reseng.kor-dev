@@ -44,7 +44,7 @@ const Faq = () => {
   return (
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
-        <div className="flex flex-col w-full slide-up">
+        <div className="flex flex-col w-full">
           <SubNavbar
             items={navItems}
             activePage="자주 묻는 질문"
@@ -52,7 +52,7 @@ const Faq = () => {
           />
 
           {/* 메인 */}
-          <div className="flex justify-center w-full">
+          <div className="flex justify-center w-full slide-down">
             <div className="w-full p-5">
               {faqs.map((faq, index) => (
                 <div key={index} className="mb-6">
