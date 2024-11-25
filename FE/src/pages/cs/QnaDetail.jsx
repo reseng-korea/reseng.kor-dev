@@ -8,6 +8,7 @@ import SubNavbar from '../../components/SubNavbar';
 import useModal from '../../hooks/useModal';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import { formatCreatedAt } from '../../utils/dateUtils';
 
 import QnaContent from './components/QnaContent';
 import QnaAnswer from './components/QnaAnswer';
@@ -65,12 +66,6 @@ const QnaDetail = () => {
     }
   }, []);
 
-  // 게시 작성 날짜 포맷
-  const formatCreatedAt = (createdAt) => {
-    const [date, time] = createdAt.split('T');
-    return `${date} ${time.slice(0, 8)}`;
-  };
-
   // 댓글 등록 후 API를 다시 호출하여 qnaData를 업데이트하는 함수
   const updateQnaData = async () => {
     try {
@@ -113,7 +108,7 @@ const QnaDetail = () => {
           />
           {/* 메인 */}
           <div
-            className="flex flex-col gap-x-6 items-center slide-up"
+            className="flex flex-col gap-x-6 items-center slide-up mb-12"
             // style={{ height: 'calc(100vh - 230px)' }}
           >
             {/* 문의 내용 */}
@@ -139,10 +134,19 @@ const QnaDetail = () => {
                 onClick={() =>
                   navigateTo(`${routes.qna}?page=${initialData.activePage}`)
                 }
-                className="w-1/6 px-4 py-3 justify-center font-bold text-white transition-colors duration-300 bg-primary hover:bg-hover text-xs sm:text-sm md:text-md rounded-lg"
+                type="submit"
+                className="px-8 py-2 font-bold border border-primary transition-colors duration-300 rounded-3xl hover:bg-white hover:text-primary"
               >
                 목록
               </button>
+              {/* <button
+                onClick={() =>
+                  navigateTo(`${routes.qna}?page=${initialData.activePage}`)
+                }
+                className="w-1/6 px-4 py-3 justify-center font-bold text-white transition-colors duration-300 bg-primary hover:bg-hover text-xs sm:text-sm md:text-md rounded-lg"
+              >
+                목록
+              </button> */}
             </div>
           </div>
         </div>
