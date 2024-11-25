@@ -13,14 +13,12 @@ public class DocumentRequest {
     private LocalDate date;
     private String content; // 이미지는 html로 같이 저장
     private List<FileRequest> files;  // 파일 정보를 담은 DTO 리스트
-    private List<FileRequest> images;
 
     @Builder
-    public DocumentRequest(String title, LocalDate date, String content, List<FileRequest> files, List<FileRequest> images) {
+    public DocumentRequest(String title, LocalDate date, String content, List<FileRequest> files) {
         this.title = title;
         this.date = date;
         this.content = content;
         this.files = files;
-        this.images = images;
     }
 }

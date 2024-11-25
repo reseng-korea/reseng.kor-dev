@@ -572,10 +572,9 @@ public class UserService {
     
     
 
-    public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String status, String createdDate, String companyName, String city, String district) {
+    public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String status, String createdDate) {
 
         Long userId = UserAuthorizationUtil.getLoginMemberId();
-
         User loginUser = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
 
@@ -593,7 +592,7 @@ public class UserService {
 
         PageRequest pageRequest = PageRequest.of(page, 10);
 
-        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, role, status, createdAt, accessibleRoles, companyName, city, district);
+        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, role, status, createdAt, accessibleRoles );
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), userListPaginationDTO);
     }

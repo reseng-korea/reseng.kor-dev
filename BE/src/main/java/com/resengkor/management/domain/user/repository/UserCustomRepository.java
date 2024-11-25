@@ -10,5 +10,5 @@ import java.util.List;
 
 public interface UserCustomRepository {
 
-    UserListPaginationDTO getAllUserByManager(Pageable pageable, String role, String status, LocalDateTime createdDate, List<Role> accessibleRoles, String companyName, String city, String district);
+    UserListPaginationDTO getAllUserByManager(Pageable pageable, String role, String status, LocalDateTime createdDate, List<Role> accessibleRoles);
 }

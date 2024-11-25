@@ -28,7 +28,6 @@ export const useNavigateTo = () => {
     qnaDetail: '/qna/:pageNumber',
     certificate: '/certificate',
     documentRegister: '/document/register',
-    documentDetail: '/:type/:id',
     coa: '/coa',
     coaRegister: '/coa/register',
     coaDetail: '/coa/1',

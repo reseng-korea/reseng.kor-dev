@@ -1,5 +1,3 @@
-import { FaFile } from 'react-icons/fa';
-
 const QuillModule = () => {
   return (
     <>
@@ -38,20 +36,12 @@ const QuillModule = () => {
       <div className="ql-formats">
         <select className="ql-color" />
         <select className="ql-background" />
-        <select className="ql-align">
-          <option value="" /> {/* 기본: 왼쪽 정렬 */}
-          <option value="center" /> {/* 가운데 정렬 */}
-          <option value="right" /> {/* 오른쪽 정렬 */}
-          <option value="justify" /> {/* 양쪽 정렬 */}
-        </select>
+        <select className="ql-align" />
       </div>
       <div className="ql-formats">
         <button className="ql-code-block" />
         <button className="ql-link" />
         <button className="ql-image" />
-        {/* <button className="ql-attach-file text-[11px] text-gray4 ml-1">
-          <FaFile />
-        </button> */}
       </div>
     </>
   );

@@ -7,7 +7,6 @@ import com.resengkor.management.domain.document.dto.DocumentResponse;
 import com.resengkor.management.domain.document.entity.DocumentEntity;
 import com.resengkor.management.domain.document.entity.DocumentType;
 import com.resengkor.management.domain.document.repository.DocumentRepository;
-import com.resengkor.management.domain.file.dto.FileRequest;
 import com.resengkor.management.domain.file.entity.FileEntity;
 import com.resengkor.management.domain.file.repository.FileRepository;
 import com.resengkor.management.global.exception.CustomException;
@@ -32,7 +31,6 @@ import org.jsoup.nodes.Element;
 
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -58,33 +56,14 @@ public class DocumentService {
                 .thumbnailUrl(thumbnailUrl)
                 .build();
 
-        List<FileRequest> imageFiles = dto.getImages().stream()
-                .filter(file -> file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 파일 필터링
-                .collect(Collectors.toList());
-
-        // 이미지 파일을 처리 (images)
-        imageFiles.forEach(fileRequest -> {
-            FileEntity newImageFile = FileEntity.builder()
-                    .fileName(fileRequest.getFileName())
-                    .fileType(fileRequest.getFileType())
-                    .fileUrl(fileRequest.getFileUrl())
-                    .isFileImage(false)
-                    .build();
-            documentEntity.addFile(newImageFile);  // 연관관계 편의 메서드 사용
-        });
-
-        // 이미지가 아닌 파일을 처리 (files)
         dto.getFiles().forEach(fileRequest -> {
-            boolean isImage = fileRequest.getFileType().startsWith("image/"); //이미지면 true
-            FileEntity newFile = FileEntity.builder()
+            FileEntity fileEntity = FileEntity.builder()
                     .fileName(fileRequest.getFileName())
                     .fileType(fileRequest.getFileType())
                     .fileUrl(fileRequest.getFileUrl())
-                    .isFileImage(isImage)
                     .build();
-            documentEntity.addFile(newFile);  // 연관관계 편의 메서드 사용
+            documentEntity.addFile(fileEntity);
         });
-
         documentRepository.save(documentEntity);
 
         return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(), ResponseStatus.CREATED_SUCCESS.getMessage());
@@ -136,43 +115,21 @@ public class DocumentService {
 
     //수정
     @Transactional
-    public CommonResponse updateDocument(String documentType,Long documentId, DocumentRequest dto) {
+    public CommonResponse updateDocument(String documentType,Long documentId, DocumentRequest request) {
         DocumentEntity documentEntity = documentRepository.findByIdAndType(documentId, DocumentType.valueOf(documentType.toUpperCase()))
                 .orElseThrow(() -> new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE));
 
-        documentEntity.update(dto.getTitle(), dto.getDate(), dto.getContent());
+        documentEntity.update(request.getTitle(), request.getDate(), request.getContent());
 
         documentEntity.getFiles().clear();  // 기존 파일 제거
-
-
-        // 파일들을 이미지와 일반 파일로 구분
-        List<FileRequest> imageFiles = dto.getImages().stream()
-                .filter(file -> file.getFileType().startsWith("image/"))  // MIME 타입이 "image/"로 시작하는 파일 필터링
-                .collect(Collectors.toList());
-
-        // 이미지 파일을 처리 (images)
-        imageFiles.forEach(fileRequest -> {
-            FileEntity newImageFile = FileEntity.builder()
-                    .fileName(fileRequest.getFileName())
-                    .fileType(fileRequest.getFileType())
-                    .fileUrl(fileRequest.getFileUrl())
-                    .isFileImage(false)
-                    .build();
-            documentEntity.addFile(newImageFile);  // 연관관계 편의 메서드 사용
-        });
-
-        // 이미지가 아닌 파일을 처리 (files)
-        dto.getFiles().forEach(fileRequest -> {
-            boolean isImage = fileRequest.getFileType().startsWith("image/"); //이미지면 true
+        request.getFiles().forEach(fileRequest -> {
             FileEntity newFile = FileEntity.builder()
                     .fileName(fileRequest.getFileName())
                     .fileType(fileRequest.getFileType())
                     .fileUrl(fileRequest.getFileUrl())
-                    .isFileImage(isImage)
                     .build();
             documentEntity.addFile(newFile);  // 연관관계 편의 메서드 사용
         });
-
         return new CommonResponse(ResponseStatus.UPDATED_SUCCESS.getCode(), ResponseStatus.UPDATED_SUCCESS.getMessage());
     }
 
@@ -201,10 +158,9 @@ public class DocumentService {
 
     public ResponseEntity<UrlResource> downloadDocumentFile(String documentType, Long fileId) {
         // 파일 ID를 통해 해당 파일 찾기
-        String upperDocumentType = documentType.toUpperCase();
         FileEntity file = fileRepository.findById(fileId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.DATA_NOT_FOUND));
-        if(!upperDocumentType.equals(file.getDocumentEntity().getType().toString())){
+        if(!documentType.equals(file.getDocumentEntity().getType().toString().toLowerCase())){
             throw new CustomException(ExceptionStatus.INVALID_DOCUMENT_TYPE);
         }
 

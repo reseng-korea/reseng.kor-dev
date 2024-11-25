@@ -1,16 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
-import Pagination from 'react-js-pagination';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import useModal from '../../hooks/useModal';
-import { formatCreatedAt } from '../../utils/dateUtils';
 
 import qnaIsSecret from '../../assets/qna_isSecret.png';
+import Pagination from 'react-js-pagination';
 
 const Qna = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -29,10 +28,16 @@ const Qna = () => {
   const [qnaData, setQnaData] = useState([]);
   const [totalElements, setTotalElements] = useState(0);
   // const [activePage, setActivePage] = useState(1);
+  const itemsCountPerPage = 10;
+
+  // 게시 작성 날짜 포맷
+  const formatCreatedAt = (createdAt) => {
+    const [date, time] = createdAt.split('T');
+    return `${date} ${time.slice(0, 8)}`;
+  };
 
   const [searchParams, setSearchParams] = useSearchParams();
   const activePage = parseInt(searchParams.get('page')) || 1;
-  const itemsCountPerPage = 10;
 
   const handlePageChange = (pageNumber) => {
     setSearchParams({ page: pageNumber }); // 페이지 번호를 URL 쿼리 파라미터에 설정
@@ -223,7 +228,7 @@ const Qna = () => {
             mainCategory="고객 센터"
           />
           {/* 메인 */}
-          <div className="flex flex-col w-full slide-down">
+          <div className="flex flex-col w-full slide-up">
             <table className="min-w-full bg-white border-b mt-4">
               <thead>
                 <tr className="bg-placeHolder text-gray4 text-lg">
