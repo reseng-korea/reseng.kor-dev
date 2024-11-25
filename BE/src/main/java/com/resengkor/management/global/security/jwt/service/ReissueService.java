@@ -115,7 +115,7 @@ public class ReissueService {
 
             // new tokens
             newAccess = jwtUtil.createJwt("Authorization", "local",email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto,sessionId);
-            newRefresh = jwtUtil.createJwt("Refresh", email, "local", userId, role, refreshTokenExpiration,isAuto,sessionId);
+            newRefresh = jwtUtil.createJwt("Refresh", "local", email, userId, role, refreshTokenExpiration,isAuto,sessionId);
 
 
         }
