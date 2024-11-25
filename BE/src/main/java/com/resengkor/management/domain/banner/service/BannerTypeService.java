@@ -42,23 +42,27 @@ public class BannerTypeService {
         Map<Integer, List<BannerType>> bannersByTypeWidth = banners.stream()
                 .collect(Collectors.groupingBy(BannerType::getTypeWidth));
 
+        // 비정단 길이 리스트 생성
         List<BannerInventoryDto> inventoryList = new ArrayList<>();
         bannersByTypeWidth.forEach((typeWidth, bannerList) -> {
-            int standardCount = 0;
             // 각 배너의 길이를 정수로 변환하고 오름차순으로 정렬된 리스트 생성
             List<Integer> allLengths = bannerList.stream()
                     .map(banner -> bannerRequestMapper.INSTANCE.roundBigDecimalToInteger(banner.getHorizontalLength()))
                     .sorted()
-                    .distinct() // 중복 제거
-                    .collect(Collectors.toList());
+                    .toList();
 
             // 정단 현수막인 경우 standardCount 증가
-            for (int length : allLengths) {
-                if (length == 120) {
-                    standardCount++;
-                }
-            }
-            inventoryList.add(new BannerInventoryDto(typeWidth, standardCount, allLengths));
+            int standardCount = (int) allLengths.stream()
+                    .filter(length -> length == 120)
+                    .count();
+
+            // 비정단 리스트 생성 (120 제외)
+            List<Integer> nonStandardLengths = allLengths.stream()
+                    .filter(length -> length != 120)
+                    .sorted()
+                    .toList();
+
+            inventoryList.add(new BannerInventoryDto(typeWidth, standardCount, nonStandardLengths));
         });
         // typeWidth 기준으로 오름차순 정렬
         inventoryList.sort(Comparator.comparingInt(BannerInventoryDto::getTypeWidth));
@@ -105,7 +109,7 @@ public class BannerTypeService {
                         .id(bannerType.getId())
                         .typeWidth(bannerType.getTypeWidth())
                         .horizontalLength(remainingYards) // 업데이트된 horizontalLength 값 설정
-                        .isStandard(bannerType.getIsStandard())
+                        .isStandard(false)
                         .user(bannerType.getUser())
                         .build();
 
