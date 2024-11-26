@@ -29,17 +29,12 @@ const Faq = () => {
         const fetchedFaqs = response.data.data.content; // response 데이터 구조에 맞게 data를 가져옴
         setFaqs(fetchedFaqs);
         console.log(response);
-        console.log(response.data.data.content);
       } catch (error) {
         console.log(error);
       }
     };
     fetchFaqData();
   }, []);
-
-  useEffect(() => {
-    console.log('Updated faqs:', faqs[0]);
-  }, [faqs]);
 
   return (
     <Layout>

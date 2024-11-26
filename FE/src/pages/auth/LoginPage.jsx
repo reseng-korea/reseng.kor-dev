@@ -8,6 +8,7 @@ import kakao from './../../assets/kakao_logo.png';
 import google from './../../assets/google_logo.png';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import { handleLogin } from '../../services/auth/authService';
 
 import { IoIosMail, IoIosLock } from 'react-icons/io';
 
@@ -72,11 +73,12 @@ const LoginPage = () => {
         );
 
         console.log(response);
-        console.log(response.headers.authorization);
-        localStorage.setItem('userId', response.data.id);
-        localStorage.setItem('role', response.data.role);
-        localStorage.setItem('name', response.data.representativeName);
-        localStorage.setItem('accessToken', response.headers.authorization);
+
+        // localStorage.setItem('accessToken', response.headers.authorization);
+        // localStorage.setItem('userId', response.data.id);
+        // localStorage.setItem('role', response.data.role);
+        // localStorage.setItem('name', response.data.representativeName);
+        handleLogin(response.data, response.headers.authorization);
 
         // 임시 비밀번호인지 판단 여부
         if (response.data.temporaryPasswordStatus) {
@@ -86,7 +88,7 @@ const LoginPage = () => {
           window.location.reload();
         }
       } catch (error) {
-        const code = error.response.data.code;
+        const code = error.response?.data?.code;
 
         if (code == 4024) {
           setModalOpen(true);

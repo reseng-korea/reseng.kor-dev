@@ -9,6 +9,7 @@ import 'react-quill-new/dist/quill.snow.css';
 
 import ImageResize from 'quill-image-resize';
 Quill.register('modules/imageResize', ImageResize);
+window.Quill = Quill;
 
 import dompurify from 'dompurify';
 
@@ -33,8 +34,8 @@ const DocumentRegister = () => {
 
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [uploadedFiles, setUploadedFiles] = useState([]); // 이미지, 파일 정보 저장
-  const [displayFiles, setDisplayFiles] = useState([]); //파일 정보만 저장
+  const [uploadedFiles, setUploadedFiles] = useState([]); // 파일 정보 저장
+  const [imageFiles, setImageFiles] = useState([]); //html 태그 내의 이미지 정보 저장
 
   const [selectedDate, setSelectedDate] = useState(''); //보도자료 기사 작성 날짜
   const quillRef = useRef(null);
@@ -45,6 +46,7 @@ const DocumentRegister = () => {
       setTitle(documentData.title);
       setContent(documentData.content);
       setUploadedFiles(documentData.files);
+      setImageFiles(documentData.images);
       setSelectedDate(documentData.date);
     }
   }, [documentData]);
@@ -138,7 +140,7 @@ const DocumentRegister = () => {
           const fileName = response.data.data.fileName;
 
           // 파일 정보를 상태에 저장
-          setUploadedFiles((prevFiles) => [
+          setImageFiles((prevFiles) => [
             ...prevFiles,
             { fileUrl, fileType, fileName },
           ]);
@@ -155,6 +157,10 @@ const DocumentRegister = () => {
     };
   };
 
+  useEffect(() => {
+    console.log('이미지 변동사항 아열뤄', imageFiles);
+  }, [imageFiles]);
+
   const modules = useMemo(
     () => ({
       toolbar: {
@@ -165,11 +171,58 @@ const DocumentRegister = () => {
       },
       imageResize: {
         parchment: Quill.import('parchment'),
-        modules: ['Resize', 'DisplaySize'],
+        // modules: ['Resize', 'DisplaySize'],
       },
     }),
     []
   );
+
+  // Delete 키로 이미지 삭제 핸들러 추가
+  // useEffect(() => {
+  //   if (quillRef.current) {
+  //     const quill = quillRef.current.getEditor();
+
+  //     // Quill keyboard.addBinding 방식
+  //     quill.keyboard.addBinding(
+  //       { key: 'Delete' },
+  //       {
+  //         collapsed: true,
+  //         handler(range, context) {
+  //           const [image] = quill.getLeaf(range.index);
+  //           console.log('Context format:', context.format);
+  //           if (image && image.domNode && image.domNode.tagName === 'IMG') {
+  //             console.log('Image detected and deleted via addBinding');
+  //             quill.deleteText(range.index, 1);
+  //             return true;
+  //           }
+  //           return false;
+  //         },
+  //       }
+  //     );
+
+  //     // DOM 이벤트 방식
+  //     const handleKeyDown = (event) => {
+  //       if (event.key === 'Delete') {
+  //         const range = quill.getSelection();
+  //         if (!range) return;
+
+  //         const [leaf] = quill.getLeaf(range.index);
+  //         if (leaf && leaf.domNode && leaf.domNode.tagName === 'IMG') {
+  //           console.log('Image delete detected via DOM event!');
+  //           leaf.domNode.remove();
+  //           quill.deleteText(range.index, 1);
+  //         }
+  //       }
+  //     };
+
+  //     const editor = quill.root;
+  //     editor.addEventListener('keydown', handleKeyDown);
+
+  //     return () => {
+  //       editor.removeEventListener('keydown', handleKeyDown);
+  //     };
+  //   }
+  // }, []);
 
   // 목록 페이지로 이동
   const routeMap = {
@@ -217,6 +270,7 @@ const DocumentRegister = () => {
       date: selectedDate,
       content: content,
       files: uploadedFiles,
+      images: imageFiles,
     };
 
     if (!title) {
@@ -297,6 +351,7 @@ const DocumentRegister = () => {
 
         // 등록 로직이라면
       } else {
+        console.log(data);
         try {
           const response = await axios.post(
             `${apiUrl}/api/v1/documents/${documentType}`,
@@ -309,6 +364,8 @@ const DocumentRegister = () => {
             }
           );
           console.log(response);
+          console.log(imageFiles);
+          console.log(uploadedFiles);
 
           if (response.data.code == 201) {
             setModalOpen(true);
@@ -365,7 +422,7 @@ const DocumentRegister = () => {
     }
   };
 
-  // 파일 확인 및 다운로드
+  // 파일 확인 및 다운로드 ( 에디터에서)
   const handleConfirm = async () => {
     const fileName =
       'certificate/b0a85319-02b2-4df2-b5b1-8d052579ffe1tree.jpeg';
@@ -414,12 +471,89 @@ const DocumentRegister = () => {
       setUploadedFiles((prevFiles) =>
         prevFiles.filter((file) => file.fileName !== fileName)
       );
-
-      setDisplayFiles((prevFiles) =>
-        prevFiles.filter((file) => file.fileName !== fileName)
-      );
     } catch (error) {
       console.log(error);
+    }
+  };
+
+  const findFileNameByUrl = (imageUrl, imageFiles) => {
+    console.log('이미지url', imageUrl);
+    console.log('이미지 파일', imageFiles);
+    const file = imageFiles.find((file) => file.fileUrl === imageUrl);
+    return file ? file.fileName : null;
+  };
+
+  useEffect(() => {
+    if (quillRef.current) {
+      const quill = quillRef.current.getEditor();
+
+      quill.keyboard.bindings = {};
+
+      console.log('Quill 에디터 초기화 완료');
+
+      // Quill 키보드 바인딩으로 삭제 감지
+      quill.keyboard.addBinding(
+        { key: 'Backspace' }, // Backspace 키 바인딩
+        {
+          collapsed: true,
+          handler(range, context) {
+            console.log('Backspace 키 감지');
+            handleDeleteKeyPress(range, context, quill, 'Backspace');
+            return false; // 기본 동작 방지
+          },
+        }
+      );
+
+      quill.keyboard.addBinding(
+        { key: 'Delete' }, // Delete 키 바인딩
+        {
+          collapsed: true,
+          handler(range, context) {
+            console.log('Delete 키 감지');
+            handleDeleteKeyPress(range, context, quill, 'Delete');
+            return false; // 기본 동작 방지
+          },
+        }
+      );
+
+      console.log('테스트');
+    }
+  }, [imageFiles, handleDelete]);
+
+  const handleDeleteKeyPress = async (range, context, quill, keyType) => {
+    console.log(`${keyType} 키 감지`);
+
+    if (!range) return;
+
+    const [leaf] = quill.getLeaf(range.index);
+    if (leaf && leaf.domNode && leaf.domNode.tagName === 'IMG') {
+      const imageNode = leaf.domNode;
+      const imageUrl = imageNode.src; // 이미지 URL 가져오기
+
+      // URL에서 파일 이름 추출
+      const fileName = findFileNameByUrl(imageUrl, imageFiles);
+
+      if (!fileName) {
+        console.error('File name not found for URL:', imageUrl);
+        return;
+      }
+
+      try {
+        // S3에서 이미지 삭제
+        await handleDelete(fileName);
+        console.log(`Image ${fileName} deleted from S3`);
+
+        // imageFiles에서 삭제된 파일 제거
+        setImageFiles((prevFiles) =>
+          prevFiles.filter((file) => file.fileName !== fileName)
+        );
+
+        // Quill에서 이미지 제거
+        imageNode.remove();
+        quill.deleteText(range.index, 1);
+      } catch (error) {
+        console.error(`Failed to delete image ${fileName}`, error);
+      }
     }
   };
 
@@ -472,8 +606,6 @@ const DocumentRegister = () => {
   //   }
   // };
 
-  console.log(uploadedFiles.length);
-
   return (
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
@@ -493,6 +625,10 @@ const DocumentRegister = () => {
             />
           </div>
           <hr className="w-full mb-4 border-t border-gray1" />
+          <span className="text-left text-gray3 text-xs mb-2">
+            *업로드한 사진 삭제 시, Backspace로 사진 삭제해야 s3에서도
+            삭제됩니다. (Delete 키는 s3 삭제 안 됨.)
+          </span>
           {documentType === 'NEWS' && (
             <div className="text-left mb-4">
               <label className="font-bold" htmlFor="date-input">
@@ -533,8 +669,7 @@ const DocumentRegister = () => {
                     apiUrl,
                     documentType,
                     accesstoken,
-                    setUploadedFiles,
-                    setDisplayFiles
+                    setUploadedFiles
                   )
                 }
                 className="bg-white mt-4 mb-4 p-3 rounded-lg border border-primary text-primary hover:bg-hoverLight w-fit"
@@ -542,10 +677,13 @@ const DocumentRegister = () => {
                 파일 선택
               </div>
 
-              {displayFiles.length > 0 && (
+              {uploadedFiles.length > 0 && (
                 <div className="flex flex-col space-y-2">
-                  {displayFiles.map((file, index) => (
-                    <div className="flex px-4 py-2 space-x-2 justify-center items-center bg-white border border-gray2 w-fit rounded-full">
+                  {uploadedFiles.map((file, index) => (
+                    <div
+                      key={file.fileName || index}
+                      className="flex px-4 py-2 space-x-2 justify-center items-center bg-white border border-gray2 w-fit rounded-full"
+                    >
                       <span className="text-xs text-gray3">
                         {file.fileName}
                       </span>

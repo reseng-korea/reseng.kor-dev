@@ -58,8 +58,7 @@ export const handleFileUpload = async (
   apiUrl,
   documentType,
   accesstoken,
-  setUploadedFiles,
-  setDisplayFiles
+  setUploadedFiles
 ) => {
   const input = document.createElement('input');
   input.setAttribute('type', 'file');
@@ -92,11 +91,6 @@ export const handleFileUpload = async (
         const fileType = response.data.data.fileType;
 
         setUploadedFiles((prevFiles) => [
-          ...prevFiles,
-          { fileUrl, fileType, fileName },
-        ]);
-
-        setDisplayFiles((prevFiles) => [
           ...prevFiles,
           { fileUrl, fileType, fileName },
         ]);

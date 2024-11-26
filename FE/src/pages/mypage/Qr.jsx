@@ -13,7 +13,7 @@ const Qr = () => {
     { label: '현수막 관리', route: '/mypage/manage' },
     { label: '현수막 발주', route: '/mypage/order' },
     { label: 'QR 발생기', route: '/mypage/qr' },
-    { label: '회원 정보 수정', route: '/mypage/user/edit' },
+    { label: '회원 정보 수정', route: '/mypage/user' },
   ];
 
   const [selectedDate, setSelectedDate] = useState(null);

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
+import apiClient from '../../services/apiClient';
+
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
@@ -64,12 +66,15 @@ const UserEdit = () => {
     const userId = localStorage.getItem('userId');
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/api/v1/users/${userId}`, {
-          headers: {
-            Authorization: accesstoken,
-            'Content-Type': 'application/json',
-          },
-        });
+        const response = await apiClient.get(
+          `${apiUrl}/api/v1/users/${userId}`,
+          {
+            headers: {
+              Authorization: accesstoken,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
 
         console.log(response);
 
@@ -92,16 +97,16 @@ const UserEdit = () => {
         setAddress(response.data.data.userProfile.streetAddress);
         setDetailAddress(response.data.data.userProfile.detailAddress);
 
-        console.log(response.data.data.email); //이메일
-        console.log(response.data.data.phoneNumber); //휴대폰 번호
-        // 대표자명
-        console.log(response.data.data.companyName); //업체명
-        console.log(response.data.data.userProfile.companyPhoneNumber); //회사번호
-        console.log(response.data.data.userProfile.faxNumber); //팩스번호
-        console.log(response.data.data.userProfile.city);
-        console.log(response.data.data.userProfile.district);
-        console.log(response.data.data.userProfile.streetAddress); //주소
-        console.log(response.data.data.userProfile.detailAddress); //상세주소
+        // console.log(response.data.data.email); //이메일
+        // console.log(response.data.data.phoneNumber); //휴대폰 번호
+        // // 대표자명
+        // console.log(response.data.data.companyName); //업체명
+        // console.log(response.data.data.userProfile.companyPhoneNumber); //회사번호
+        // console.log(response.data.data.userProfile.faxNumber); //팩스번호
+        // console.log(response.data.data.userProfile.city);
+        // console.log(response.data.data.userProfile.district);
+        // console.log(response.data.data.userProfile.streetAddress); //주소
+        // console.log(response.data.data.userProfile.detailAddress); //상세주소
       } catch (error) {
         console.log(error);
       }
@@ -205,7 +210,7 @@ const UserEdit = () => {
       });
     } else {
       try {
-        const response = await axios.put(
+        const response = await apiClient.put(
           `${apiUrl}/api/v1/users/${userId}`,
           {
             email: email,
