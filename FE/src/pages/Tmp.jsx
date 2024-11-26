@@ -43,12 +43,33 @@ const Tmp = () => {
     }
   };
 
+  const refreshAccessToken = async () => {
+    try {
+      const response = await axios.post(
+        `${apiUrl}/api/v1/reissue`,
+        {},
+        { withCredentials: true }
+      );
+      console.log('리프레시 토큰 재발급', response);
+      localStorage.setItem('accessToken', response.headers.authorization);
+
+      localStorage.setItem('액세스 재발급', '재발급');
+
+      // loginTime = Date.now(); // 갱신된 시점 저장
+    } catch (error) {
+      console.error('토큰 만료', error);
+      // 실패 시 로그아웃 처리
+      // logoutService();
+    }
+  };
+
   return (
     <div className="flex justify-center px-3 py-2 min-h-screen mt-16">
       <div className="w-full flex flex-col mb-1 space-x-2">
         <button onClick={() => navigateTo(routes.itemsBanner)}>
           아이템 페이지
         </button>
+        <button onClick={refreshAccessToken}>아이템 페이지</button>
       </div>
       <RenderModal />
     </div>

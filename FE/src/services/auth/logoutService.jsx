@@ -18,7 +18,7 @@ export const logoutService = async (
       `${apiUrl}/api/v1/logout`,
       {},
       {
-        withCredentials: true, // Include cookies in the request
+        withCredentials: true,
       }
     );
 
@@ -29,8 +29,8 @@ export const logoutService = async (
         type: 'success',
         isAutoClose: false,
         onConfirm: () => {
-          window.location.reload();
           navigateTo(routes.home);
+          window.location.reload();
           closeModal();
         },
       });
@@ -38,6 +38,7 @@ export const logoutService = async (
       localStorage.removeItem('accessToken');
       localStorage.removeItem('role');
       localStorage.removeItem('userId');
+      localStorage.removeItem('name');
     }
     return response;
   } catch (error) {
