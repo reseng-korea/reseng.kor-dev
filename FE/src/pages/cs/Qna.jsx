@@ -3,6 +3,8 @@ import axios from 'axios';
 import { useSearchParams } from 'react-router-dom';
 import Pagination from 'react-js-pagination';
 
+import apiClient from '../../services/apiClient';
+
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
@@ -86,7 +88,7 @@ const Qna = () => {
     // 관리자라면
     if (role === 'ROLE_MANAGER') {
       try {
-        const response = await axios.get(
+        const response = await apiClient.get(
           `${apiUrl}/api/v1/qna/questions/${id}`,
           {
             headers: {
@@ -118,7 +120,7 @@ const Qna = () => {
           onConfirm: async (password) => {
             console.log('입력된 비밀번호:', password);
             try {
-              const response = await axios.get(
+              const response = await apiClient.get(
                 `${apiUrl}/api/v1/qna/questions/${id}?password=${password}`,
                 {
                   headers: {

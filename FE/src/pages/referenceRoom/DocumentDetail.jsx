@@ -8,6 +8,8 @@ import SubNavbar from '../../components/SubNavbar';
 import useModal from '../../hooks/useModal';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
+import { IoMdDownload } from 'react-icons/io';
+
 const DocumentDetail = () => {
   const navItems = [
     { label: '인증서', route: '/certificate' },
@@ -30,6 +32,7 @@ const DocumentDetail = () => {
 
   console.log(initialData);
   console.log(documentData);
+  console.log(documentData.files);
 
   const activePageText = (() => {
     switch (documentData.type) {
@@ -108,6 +111,51 @@ const DocumentDetail = () => {
     });
   };
 
+  // 파일 다운로드
+  const handleDownload = async (fileId, fileName) => {
+    console.log(fileName);
+    console.log(documentData.type);
+    console.log(fileId);
+    try {
+      const response = await axios.get(
+        `${apiUrl}/api/v1/documents/download/${documentData.type}/${fileId}`,
+
+        {
+          headers: {
+            Authorization: accesstoken,
+          },
+          responseType: 'blob',
+        }
+      );
+      console.log(response);
+
+      // const blob = new Blob([response.data], {
+      //   type: response.headers['content-type'],
+      // });
+      // const url = window.URL.createObjectURL(blob);
+      // console.log(url);
+      // const link = document.createElement('a');
+      // link.href = url;
+      // link.download = fileName;
+      // link.click();
+      // window.URL.revokeObjectURL(url);
+
+      console.log('Response status:', response.status);
+      console.log('Response headers:', response.headers);
+      console.log('Blob size:', response.data.size || response.data.length);
+
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', fileName); // 파일 이름 설정
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <Layout>
       <div className="flex justify-center min-h-screen px-3 py-2">
@@ -127,11 +175,40 @@ const DocumentDetail = () => {
               <span className="text-gray3 mt-4">{documentData.createdAt}</span>
             )}
             <hr className="w-full mt-6 mb-6 border border-gray3" />
+
             {/* 내용 */}
-            <div class="parent-container">
+            <div className="parent-container">
               <div dangerouslySetInnerHTML={{ __html: documentData.content }} />
             </div>
           </div>
+
+          {/* 첨부 파일 유무 */}
+          {documentData?.files?.length > 0 && (
+            <div className="flex flex-col w-full">
+              <h3 className="text-left font-bold mb-4">
+                첨부한 파일{' '}
+                <span className="text-primary">
+                  {' '}
+                  ({documentData.files.length}개)
+                </span>
+              </h3>
+
+              {documentData.files.map((file, index) => (
+                <div
+                  key={file.fileName || index}
+                  onClick={() => handleDownload(file.fileId, file.fileName)}
+                  // onClick={() => handleDownload()}
+                  className="flex px-8 py-8 justify-between items-center bg-placeHolder w-full rounded-md mb-2"
+                >
+                  <span className="text-md text-gray4 hover:text-gray3">
+                    {file.fileName}
+                  </span>
+                  <IoMdDownload className="text-2xl text-gray3 hover:text-gray4" />
+                </div>
+              ))}
+            </div>
+          )}
+
           <hr className="w-full mt-12 border-t border-gray2" />
           {role === 'ROLE_MANAGER' && (
             <div className="flex space-x-2 justify-end items-end mt-2">

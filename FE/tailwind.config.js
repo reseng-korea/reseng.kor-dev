@@ -19,6 +19,8 @@ export default {
         // hover color
         hover: '#2B8F3F',
         hoverLight: '#D4ECD9',
+        warningHover: '#FAD6D6',
+        reHover: '#B3CFE5',
       },
       rotate: {
         0: '0deg',

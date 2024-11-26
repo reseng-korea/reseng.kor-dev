@@ -69,7 +69,16 @@ const Press = () => {
 
   // Documentdetail 페이지로 데이터 보내는 함수 및 페이지 이동
   const handleResponse = (data, index) => {
-    const { id, title, content, createdAt, date, type, files = [] } = data;
+    const {
+      id,
+      title,
+      content,
+      createdAt,
+      date,
+      type,
+      images = [],
+      files = [],
+    } = data;
     const processedFiles = files.map(({ fileId, ...rest }) => rest);
 
     navigateTo(
@@ -100,58 +109,70 @@ const Press = () => {
           {/* 메인 */}
           <div className="flex flex-col mb-12 slide-down">
             <div className="flex flex-wrap w-full justify-center">
-              {press.map((item, index) => (
-                <div
-                  key={item.id}
-                  onClick={() =>
-                    handleRowClick(
-                      totalElements -
-                        index -
-                        (activePage - 1) * itemsCountPerPage,
-                      item.id
-                    )
-                  }
-                  className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-1/4 justify-center items-center mx-2 my-4"
-                >
-                  {/* 이미지 영역 */}
-                  <div className="flex justify-center items-center mt-4 h-48 w-5/6 overflow-hidden">
-                    <img
-                      className="h-full w-full object-cover rounded-lg"
-                      src={item.thumbnailUrl || resengLogo}
-                      alt={item.title}
-                    />
-                  </div>
+              {press.length > 0 ? (
+                press.map((item, index) => {
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() =>
+                        handleRowClick(
+                          totalElements -
+                            index -
+                            (activePage - 1) * itemsCountPerPage,
+                          item.id
+                        )
+                      }
+                      className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-1/4 justify-center items-center mx-2 my-4"
+                    >
+                      {/* 이미지 영역 */}
+                      <div className="flex justify-center items-center mt-4 h-48 w-5/6 overflow-hidden">
+                        <img
+                          className="h-full w-full object-cover rounded-lg"
+                          src={item.thumbnailUrl || resengLogo}
+                          alt={item.title}
+                        />
+                      </div>
 
-                  {/* 텍스트 영역 */}
-                  <div className="flex flex-col flex-grow items-start mt-4 w-5/6 overflow-hidden">
-                    {/* <div className="flex flex-col items-start w-full px-2 mt-4"> */}
-                    <div className="flex">
-                      <span className="text-left text-lg font-bold flex-grow">
-                        {item.title}
-                      </span>
+                      {/* 텍스트 영역 */}
+                      <div className="flex flex-col flex-grow items-start mt-4 w-5/6 overflow-hidden">
+                        {/* <div className="flex flex-col items-start w-full px-2 mt-4"> */}
+                        <div className="flex">
+                          <span className="text-left text-lg font-bold flex-grow">
+                            {item.title}
+                          </span>
+                        </div>
+                        <span className="text-sm text-gray3 mt-1">
+                          {item.date}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-sm text-gray3 mt-1">{item.date}</span>
-                  </div>
+                  );
+                })
+              ) : (
+                <div className="flex text-center justify-center items-center">
+                  <span>현재 등록된 보도 자료가 없습니다.</span>
                 </div>
-              ))}
+              )}
             </div>
-            <Pagination
-              activePage={activePage} //현재 페이지
-              itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수(10개)
-              totalItemsCount={totalElements} // 표시할 항목의 총 개수(전체)
-              pageRangeDisplayed={5} //페이지네이터의 페이지 범위
-              hideFirstLastPages={true}
-              prevPageText="<"
-              // firstPageText="≪"
-              nextPageText=">"
-              // lastPageText="≫"
-              onChange={handlePageChange}
-              innerClass="flex justify-center mt-4"
-              activeClass="text-white bg-primary rounded-full"
-              activeLinkClass="!text-white hover:!text-white" // 활성화된 페이지 스타일 ( 숫자 부분)
-              itemClass="group inline-block px-4 py-2 border rounded-full text-gray4 mt-4 mx-0.5 hover:text-primary hover:border-primary" // 페이지 번호 스타일
-              linkClass="group-hover:text-primary text-gray4" // 링크의 기본 스타일
-            />
+            {press.length > 0 && (
+              <Pagination
+                activePage={activePage} //현재 페이지
+                itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수(10개)
+                totalItemsCount={totalElements} // 표시할 항목의 총 개수(전체)
+                pageRangeDisplayed={5} //페이지네이터의 페이지 범위
+                hideFirstLastPages={true}
+                prevPageText="<"
+                // firstPageText="≪"
+                nextPageText=">"
+                // lastPageText="≫"
+                onChange={handlePageChange}
+                innerClass="flex justify-center mt-4"
+                activeClass="text-white bg-primary rounded-full"
+                activeLinkClass="!text-white hover:!text-white" // 활성화된 페이지 스타일 ( 숫자 부분)
+                itemClass="group inline-block px-4 py-2 border rounded-full text-gray4 mt-4 mx-0.5 hover:text-primary hover:border-primary" // 페이지 번호 스타일
+                linkClass="group-hover:text-primary text-gray4" // 링크의 기본 스타일
+              />
+            )}
             {role === 'ROLE_MANAGER' && (
               <div className="flex justify-end mt-12 mb-12">
                 <button

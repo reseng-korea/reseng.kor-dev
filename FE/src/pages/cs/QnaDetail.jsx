@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useLocation } from 'react-router-dom';
 
+import apiClient from '../../services/apiClient';
+
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
@@ -69,7 +71,7 @@ const QnaDetail = () => {
   // 댓글 등록 후 API를 다시 호출하여 qnaData를 업데이트하는 함수
   const updateQnaData = async () => {
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${apiUrl}/api/v1/qna/questions/${qnaData.questionId}`,
         {
           headers: {

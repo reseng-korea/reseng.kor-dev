@@ -7,12 +7,19 @@ import {
   useLocation,
 } from 'react-router-dom';
 
+import useModal from './hooks/useModal';
+
 import './App.css';
 
 // components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import ProtectedRoute from './components/ProtectedRoute';
+import OAuthRedirectHandler from './components/OAuthRedirectHandler';
+
+// hooks
+// import { useTokenChecker } from './hooks/useTokenChecker';
 
 // main
 import MainFirstPage from './pages/main/MainFirstPage';
@@ -77,10 +84,6 @@ import Withdraw from './pages/mypage/Withdraw';
 import QrSuccess from './pages/qr/QrSuccess';
 import QrFailure from './pages/qr/QrFailure';
 
-import ProtectedRoute from './components/ProtectedRoute';
-
-import OAuthRedirectHandler from './components/OAuthRedirectHandler';
-
 import Tmp from './pages/Tmp';
 
 function App() {
@@ -117,6 +120,35 @@ function App() {
       window.removeEventListener('scroll', handleScroll);
     };
   }, []);
+
+  // 모달 관리
+  const { openModal, RenderModal } = useModal();
+
+  const handleTokenExpiration = () => {
+    openModal({
+      primaryText: '세션이 만료되었습니다.',
+      context: '다시 로그인해주세요.',
+      type: 'warning',
+      onConfirm: () => {
+        localStorage.clear(); // 로컬 스토리지 초기화
+        window.location.href = '/signin'; // 로그인 페이지로 리다이렉트
+      },
+    });
+  };
+
+  // useTokenChecker(handleTokenExpiration);
+
+  // useEffect(() => {
+  //   const checkToken = async () => {
+  //     try {
+  //       await refreshAccessToken(handleTokenExpiration);
+  //     } catch (error) {
+  //       console.error('토큰 갱신 중 오류:', error);
+  //     }
+  //   };
+
+  //   checkToken();
+  // }, []);
 
   return (
     <>
@@ -260,6 +292,7 @@ function App() {
           <Route path="/tmp" element={<Tmp />} />
         </Routes>
         <Footer />
+        <RenderModal />
       </div>
     </>
   );

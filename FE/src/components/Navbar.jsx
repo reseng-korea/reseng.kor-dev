@@ -274,7 +274,7 @@ export default function Example() {
               )}
 
               {/* 임시페이지(삭제 예정) */}
-              {/* <div
+              <div
                 className="relative ml-3"
                 onMouseEnter={() => handleMouseEnter('login')}
                 onMouseLeave={handleMouseLeave}
@@ -283,9 +283,9 @@ export default function Example() {
                   onClick={() => navigateTo(routes.tmp)}
                   className="relative flex text-sm bg-transparent hover:border-2"
                 >
-                  <p className="text-gray4 font-bold">임시</p>
+                  <p className="text-gray4 font-bold">테스트용</p>
                 </button>
-              </div> */}
+              </div>
             </div>
           </div>
         </div>

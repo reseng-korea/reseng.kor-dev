@@ -20,6 +20,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderResponseDto {
 
+    private Long id; // 발주 번호
     private UserResponseDto userResponseDto;        // 대리점 이름
     private LocalDate orderDate;                    // 발주 날짜
     private OrderStatus orderStatus;                // 발주 상태 확인 정보
@@ -31,7 +32,8 @@ public class OrderResponseDto {
 
     public static OrderResponseDto of(OrderHistory orderHistory) {
 
-        return new OrderResponseDto(UserResponseDto.of(orderHistory.getSeller()),
+        return new OrderResponseDto(orderHistory.getId(),
+                UserResponseDto.of(orderHistory.getSeller()),
                 orderHistory.getOrderDate(),
                 orderHistory.getOrderStatus(),
                 orderHistory.getReceiveStatus() != null ? orderHistory.getReceiveStatus() : false,

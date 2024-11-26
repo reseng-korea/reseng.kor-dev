@@ -46,9 +46,6 @@ const QnaRegister = () => {
       setTitle(data.title);
       setContent(data.content);
       setIsSecret(data.secret);
-    } else {
-      console.log('데이터없니', data);
-      console.log('데이터없니', data.isModify);
     }
   }, [data]);
 

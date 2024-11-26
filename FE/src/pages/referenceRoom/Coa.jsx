@@ -101,58 +101,58 @@ const Coa = () => {
           {/* 메인 */}
           <div className="flex flex-col mb-12 slide-down">
             <div className="flex flex-wrap w-full justify-center">
-              {coa.map((item, index) => (
-                // <div
-                //   key={item.id}
-                //   className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-1/3 justify-center items-center mx-8"
-                // >
-                // <div className="flex justify-center items-center border border-gray3 rounded-lg">
-                <>
-                  <div
-                    key={item.id}
-                    onClick={() =>
-                      handleRowClick(
-                        totalElements -
-                          index -
-                          (activePage - 1) * itemsCountPerPage,
-                        item.id
-                      )
-                    }
-                    className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-2/7 items-center py-8 my-2 mx-2"
-                  >
-                    {/* 이미지 영역 */}
-                    <div className="flex justify-center items-center w-5/6 h-96 border border-gray3 rounded-lg px-8 py-8 mt-4">
-                      <img
-                        className="w-full max-h-full object-contain"
-                        src={item.thumbnailUrl || resengLogo}
-                        alt={item.title}
-                      />
+              {coa.length > 0 ? (
+                coa.map((item, index) => {
+                  const calculatedIndex =
+                    totalElements -
+                    index -
+                    (activePage - 1) * itemsCountPerPage;
+                  return (
+                    <div
+                      key={item.id}
+                      onClick={() => handleRowClick(calculatedIndex, item.id)}
+                      className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-2/7 items-center py-8 my-2 mx-2"
+                    >
+                      {/* 이미지 영역 */}
+                      <div className="flex justify-center items-center w-5/6 h-96 border border-gray3 rounded-lg px-8 py-8 mt-4">
+                        <img
+                          className="w-full max-h-full object-contain"
+                          src={item.thumbnailUrl || resengLogo}
+                          alt={item.title}
+                        />
+                      </div>
+                      {/* 텍스트 영역 */}
+                      <div className="w-full mt-4 text-center">
+                        <span className="text-xl font-bold">{item.title}</span>
+                      </div>
                     </div>
-                    {/* 텍스트 영역 */}
-                    <div className="w-full mt-4 text-center">
-                      <span className="text-xl font-bold">{item.title}</span>
-                    </div>
-                  </div>
-                </>
-              ))}
+                  );
+                })
+              ) : (
+                <div className="flex text-center justify-center items-center">
+                  <span>현재 등록된 성적서가 없습니다.</span>
+                </div>
+              )}
             </div>
-            <Pagination
-              activePage={activePage} //현재 페이지
-              itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수(10개)
-              totalItemsCount={totalElements} // 표시할 항목의 총 개수(전체)
-              pageRangeDisplayed={5} //페이지네이터의 페이지 범위
-              hideFirstLastPages={true}
-              prevPageText="<"
-              // firstPageText="≪"
-              nextPageText=">"
-              // lastPageText="≫"
-              onChange={handlePageChange}
-              innerClass="flex justify-center mt-4"
-              activeClass="text-white bg-primary rounded-full"
-              activeLinkClass="!text-white hover:!text-white" // 활성화된 페이지 스타일 ( 숫자 부분)
-              itemClass="group inline-block px-4 py-2 border rounded-full text-gray4 mt-4 mx-0.5 hover:text-primary hover:border-primary" // 페이지 번호 스타일
-              linkClass="group-hover:text-primary text-gray4" // 링크의 기본 스타일
-            />
+
+            {coa.length > 0 && (
+              <Pagination
+                activePage={activePage} // 현재 페이지
+                itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수
+                totalItemsCount={totalElements} // 표시할 항목의 총 개수
+                pageRangeDisplayed={5} // 페이지네이터의 페이지 범위
+                hideFirstLastPages={true}
+                prevPageText="<"
+                nextPageText=">"
+                onChange={handlePageChange}
+                innerClass="flex justify-center mt-4"
+                activeClass="text-white bg-primary rounded-full"
+                activeLinkClass="!text-white hover:!text-white" // 활성화된 페이지 스타일
+                itemClass="group inline-block px-4 py-2 border rounded-full text-gray4 mt-4 mx-0.5 hover:text-primary hover:border-primary" // 페이지 번호 스타일
+                linkClass="group-hover:text-primary text-gray4" // 링크의 기본 스타일
+              />
+            )}
+
             {role === 'ROLE_MANAGER' && (
               <div className="flex justify-end mt-12 mb-12">
                 <button
