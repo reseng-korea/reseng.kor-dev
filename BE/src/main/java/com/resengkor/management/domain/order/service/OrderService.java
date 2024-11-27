@@ -112,11 +112,19 @@ public class OrderService {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         OrderHistory orderHistory = orderHistoryRepository.findByIdAndBuyer_Id(orderId, userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.ORDER_NOT_FOUND));
-        // 수령 상태가 true로 변경되면, BannerType을 DB에 저장
-        if (receiveStatus && !orderHistory.getReceiveStatus()) {
+
+        // 배송상태가 미확인이거나 확인 상태인 경우 수령상태 변경 불가
+        if (orderHistory.getOrderStatus() == OrderStatus.UNCONFIRMED || orderHistory.getOrderStatus() == OrderStatus.CONFIRMED) {
+            throw new CustomException(ExceptionStatus.INVALID_REQUEST_STATE);
+        }
+
+/       // 수령 상태가 true로 변경되면, BannerType을 DB에 저장
+        if (receiveStatus && !orderHistory.getReceiveStatus() ) {
             saveOrderAndBannerTypes(orderHistory);
             orderHistory.updateReceiveStatus(true);
         }
+
+
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage());
     }
 
@@ -172,6 +180,13 @@ public class OrderService {
         Long sellerId = UserAuthorizationUtil.getLoginMemberId();
         OrderHistory orderHistory = orderHistoryRepository.findByIdAndSeller_Id(orderId, sellerId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.ORDER_NOT_FOUND));
+
+        OrderStatus currentStatus = orderHistory.getOrderStatus();
+
+        // 상태 전이 가능 여부 확인
+        if (!currentStatus.canTransitionTo(newStatus)) {
+            throw new CustomException(ExceptionStatus.INVALID_STATE_TRANSITION);
+        }
 
         orderHistory.updateOrderStatus(newStatus);
         orderHistoryRepository.save(orderHistory);
