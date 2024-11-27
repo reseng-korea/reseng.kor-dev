@@ -118,7 +118,7 @@ public class OrderService {
             throw new CustomException(ExceptionStatus.INVALID_REQUEST_STATE);
         }
 
-/       // 수령 상태가 true로 변경되면, BannerType을 DB에 저장
+        // 수령 상태가 true로 변경되면, BannerType을 DB에 저장
         if (receiveStatus && !orderHistory.getReceiveStatus() ) {
             saveOrderAndBannerTypes(orderHistory);
             orderHistory.updateReceiveStatus(true);
