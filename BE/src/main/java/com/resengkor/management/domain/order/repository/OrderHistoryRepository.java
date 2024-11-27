@@ -19,7 +19,13 @@ public interface OrderHistoryRepository extends JpaRepository<OrderHistory, Long
     @EntityGraph(attributePaths = {"temporaryBannerTypes"})
     List<OrderHistory> findBySellerIdOrderByOrderDateDesc(Long sellerId);
 
-    // 사용자 ID, 주문번호에 해당하는 OrderHistory 조회
+    // 판매자 ID, 주문번호에 해당하는 OrderHistory 조회
     Optional<OrderHistory> findByIdAndSeller_Id(Long id, Long sellerId);
+
+    // 구매자 ID, 주문번호에 해당하는 OrderHistory 조회
+    Optional<OrderHistory> findByIdAndBuyer_Id(Long id, Long buyerId);
+
+    // 로그인한 사용자 본인 ID, 주문번호에 해당하는 OrderHistory 조회
+    Optional<OrderHistory> findByIdAndUser_Id(Long id, Long userId);
 }
 
