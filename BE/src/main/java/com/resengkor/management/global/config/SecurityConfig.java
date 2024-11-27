@@ -63,8 +63,7 @@ public class SecurityConfig {
             "/api/v1/regions/**", "/api/v1/companies/**",
             "/api/v1/faq/**",
             "api/v1/qr-code",
-            "/api/v1/qna/questions/**",
-            "/api/v1/qualifications"
+            "/api/v1/qna/questions/**"
     );
 
     @Bean
@@ -155,15 +154,15 @@ public class SecurityConfig {
         POST_LIST.forEach(url -> auth.requestMatchers(HttpMethod.POST, url).permitAll());
         GET_LIST.forEach(url -> auth.requestMatchers(HttpMethod.GET, url).permitAll());
         auth.requestMatchers("/api/v1/login", "/api/v1/logout",
-                "/api/v1/mail/**", "/api/v1/sms/**", "/api/v1/users/withdrawal", "/api/v1/documents/**","/api/v1/s3/**").permitAll();
+                "/api/v1/mail/**", "/api/v1/sms/**", "/api/v1/users/withdrawal").permitAll();
     }
 
     private void configureManagerEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
-        auth.requestMatchers(HttpMethod.POST, "/api/v1/qualifications/**").hasRole("MANAGER");
-        auth.requestMatchers(HttpMethod.PUT, "/api/v1/qualifications/**").hasRole("MANAGER");
-        auth.requestMatchers(HttpMethod.DELETE, "/api/v1/qualifications/**").hasRole("MANAGER");
+//        auth.requestMatchers(HttpMethod.POST, "/api/v1/qualifications/**").hasRole("MANAGER");
+//        auth.requestMatchers(HttpMethod.PUT, "/api/v1/qualifications/**").hasRole("MANAGER");
+//        auth.requestMatchers(HttpMethod.DELETE, "/api/v1/qualifications/**").hasRole("MANAGER");
         auth.requestMatchers("/api/v1/admin/**", "/api/v1/qna/answers/**").hasRole("MANAGER");
-//        auth.requestMatchers("/api/v1/admin/**", "/api/v1/qna/answers/**","/api/v1/s3/**").hasRole("MANAGER");
+        auth.requestMatchers("/api/v1/admin/**", "/api/v1/qna/answers/**","/api/v1/s3/**").hasRole("MANAGER");
     }
 
     private void configureUserEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
@@ -175,11 +174,11 @@ public class SecurityConfig {
     }
 
     private void configureDocumentsEndpoints(AuthorizeHttpRequestsConfigurer<HttpSecurity>.AuthorizationManagerRequestMatcherRegistry auth) {
-//        auth.requestMatchers(HttpMethod.GET, "/api/v1/documents/{documentType}", "/api/v1/documents/{documentType}/{documentId}").permitAll();
-//        auth.requestMatchers(HttpMethod.POST, "/api/v1/documents/{documentType}").hasRole("MANAGER");
-//        auth.requestMatchers(HttpMethod.PUT, "/api/v1/documents/{documentType}/{documentId}").hasRole("MANAGER");
-//        auth.requestMatchers(HttpMethod.DELETE, "/api/v1/documents/{documentType}/{documentId}").hasRole("MANAGER");
-//        auth.requestMatchers(HttpMethod.GET, "/api/v1/documents/download/{documentType}/{fileId}").hasRole("CUSTOMER");
+        auth.requestMatchers(HttpMethod.GET, "/api/v1/documents/{documentType}", "/api/v1/documents/{documentType}/{documentId}").permitAll();
+        auth.requestMatchers(HttpMethod.POST, "/api/v1/documents/{documentType}").hasRole("MANAGER");
+        auth.requestMatchers(HttpMethod.PUT, "/api/v1/documents/{documentType}/{documentId}").hasRole("MANAGER");
+        auth.requestMatchers(HttpMethod.DELETE, "/api/v1/documents/{documentType}/{documentId}").hasRole("MANAGER");
+        auth.requestMatchers(HttpMethod.GET, "/api/v1/documents/download/{documentType}/{fileId}").hasRole("CUSTOMER");
     }
 
 
@@ -190,6 +189,7 @@ public class SecurityConfig {
                 .role("DISTRIBUTOR").implies("AGENCY")
                 .role("AGENCY").implies("CUSTOMER")
                 .role("CUSTOMER").implies("GUEST")
+                .role("GUEST").implies("PENDING")
                 .build();
     }
 }
