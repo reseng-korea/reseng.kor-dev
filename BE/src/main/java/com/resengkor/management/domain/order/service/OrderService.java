@@ -177,7 +177,7 @@ public class OrderService {
     }
 
     private OrderHistory getOrderHistory(Long orderId, Long userId) {
-        return orderHistoryRepository.findByUserIdAndId(userId, orderId)
+        return orderHistoryRepository.findByIdAndSeller_Id(orderId, userId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.ORDER_NOT_FOUND));
     }
 
