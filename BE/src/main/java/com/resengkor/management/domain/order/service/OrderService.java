@@ -101,7 +101,8 @@ public class OrderService {
     // 특정 orderId로 발주 내역 조회
     public DataResponse<OrderResponseDto> getUserOrderHistoryById(Long orderId) {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
-        OrderHistory orderHistory = getOrderHistory(orderId, userId);
+        OrderHistory orderHistory = orderHistoryRepository.findByIdAndUser_Id(orderId, userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), orderHistoryMapper.toDto(orderHistory));
     }
 
@@ -109,7 +110,8 @@ public class OrderService {
     @Transactional
     public CommonResponse updateReceiveStatus(Long orderId, boolean receiveStatus) {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
-        OrderHistory orderHistory = getOrderHistory(orderId, userId);
+        OrderHistory orderHistory = orderHistoryRepository.findByIdAndBuyer_Id(orderId, userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.ORDER_NOT_FOUND));
         // 수령 상태가 true로 변경되면, BannerType을 DB에 저장
         if (receiveStatus && !orderHistory.getReceiveStatus()) {
             saveOrderAndBannerTypes(orderHistory);
@@ -168,17 +170,12 @@ public class OrderService {
     public CommonResponse updateOrderStatus(Long orderId, OrderStatus newStatus) {
         // 현재 로그인된 사용자의 ID를 가져옴
         Long sellerId = UserAuthorizationUtil.getLoginMemberId();
-        OrderHistory orderHistory = getOrderHistory(orderId, sellerId);
+        OrderHistory orderHistory = orderHistoryRepository.findByIdAndSeller_Id(orderId, sellerId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.ORDER_NOT_FOUND));
 
         orderHistory.updateOrderStatus(newStatus);
         orderHistoryRepository.save(orderHistory);
 
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage());
     }
-
-    private OrderHistory getOrderHistory(Long orderId, Long userId) {
-        return orderHistoryRepository.findByIdAndSeller_Id(orderId, userId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.ORDER_NOT_FOUND));
-    }
-
 }
