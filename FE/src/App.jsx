@@ -7,7 +7,13 @@ import {
   useLocation,
 } from 'react-router-dom';
 
+import { ModalProvider } from './context/ModalContext';
+
+import { useModalContext } from './context/ModalContext';
+
 import useModal from './hooks/useModal';
+
+import { setOpenModal } from './services/auth/authService';
 
 import './App.css';
 
@@ -17,9 +23,6 @@ import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
 import ProtectedRoute from './components/ProtectedRoute';
 import OAuthRedirectHandler from './components/OAuthRedirectHandler';
-
-// hooks
-// import { useTokenChecker } from './hooks/useTokenChecker';
 
 // main
 import MainFirstPage from './pages/main/MainFirstPage';
@@ -86,6 +89,20 @@ import QrFailure from './pages/qr/QrFailure';
 
 import Tmp from './pages/Tmp';
 
+export const handleTokenExpiration = (openModal) => {
+  console.log('실행?');
+  // const { openModal } = useModalContext();
+  openModal({
+    primaryText: '세션이 만료되었습니다.',
+    context: '다시 로그인해주세요.',
+    type: 'warning',
+    onConfirm: () => {
+      localStorage.clear(); // 로컬 스토리지 초기화
+      window.location.href = '/signin'; // 로그인 페이지로 리다이렉트
+    },
+  });
+};
+
 function App() {
   // 현재 경로를 가져옴
   const location = useLocation();
@@ -97,6 +114,12 @@ function App() {
   const shouldHideNavbar = hideNavbarPaths.includes(location.pathname);
 
   const [isMainSixthVisible, setIsMainSixthVisible] = useState(false);
+
+  const { openModal, RenderModal } = useModal();
+
+  useEffect(() => {
+    setOpenModal(openModal); // openModal 전달
+  }, [openModal]);
 
   const handleScroll = () => {
     const sixthPage = document.getElementById('main-sixth-page');
@@ -112,8 +135,6 @@ function App() {
     return !!token; // 토큰이 있으면 true 반환
   };
 
-  // console.log(isAuthenticated);
-
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
     return () => {
@@ -121,37 +142,8 @@ function App() {
     };
   }, []);
 
-  // 모달 관리
-  const { openModal, RenderModal } = useModal();
-
-  const handleTokenExpiration = () => {
-    openModal({
-      primaryText: '세션이 만료되었습니다.',
-      context: '다시 로그인해주세요.',
-      type: 'warning',
-      onConfirm: () => {
-        localStorage.clear(); // 로컬 스토리지 초기화
-        window.location.href = '/signin'; // 로그인 페이지로 리다이렉트
-      },
-    });
-  };
-
-  // useTokenChecker(handleTokenExpiration);
-
-  // useEffect(() => {
-  //   const checkToken = async () => {
-  //     try {
-  //       await refreshAccessToken(handleTokenExpiration);
-  //     } catch (error) {
-  //       console.error('토큰 갱신 중 오류:', error);
-  //     }
-  //   };
-
-  //   checkToken();
-  // }, []);
-
   return (
-    <>
+    <ModalProvider>
       <ScrollToTop />
       {!shouldHideNavbar && <Navbar />}
       <div className="h-screen">
@@ -294,7 +286,7 @@ function App() {
         <Footer />
         <RenderModal />
       </div>
-    </>
+    </ModalProvider>
   );
 }
 
