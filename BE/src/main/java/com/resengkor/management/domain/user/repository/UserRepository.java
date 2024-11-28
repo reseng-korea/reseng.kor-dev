@@ -44,4 +44,6 @@ public interface UserRepository extends JpaRepository<User, Long>,
 //            "LEFT JOIN FETCH up.district " +
 //            "WHERE u.role IN (:roles)")
 //    Page<User> findAllWithProfileAndRegion(@Param("roles") List<Role> roles, Pageable pageable);
+
+    List<User> findByRole(Role role);
 }

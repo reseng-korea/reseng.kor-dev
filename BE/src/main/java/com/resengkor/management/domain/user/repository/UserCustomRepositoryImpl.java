@@ -8,7 +8,7 @@ import com.resengkor.management.domain.user.dto.UserListPaginationDTO;
 import com.resengkor.management.domain.user.entity.QUser;
 import com.resengkor.management.domain.user.entity.QUserProfile;
 import com.resengkor.management.domain.user.entity.Role;
-import org.hibernate.Hibernate;
+import com.resengkor.management.domain.user.entity.User;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
@@ -25,6 +25,17 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     QUser user = QUser.user;
     QUserProfile userProfile = QUserProfile.userProfile;
+
+    @Override
+    public Optional<User> findManagerUser() {
+
+        User manager = jpaQueryFactory
+                .selectFrom(user)
+                .where(user.role.eq(Role.ROLE_MANAGER))
+                .fetchFirst();
+
+        return Optional.ofNullable(manager);
+    }
 
     @Override
     public UserListPaginationDTO getAllUserByManager(Pageable pageable, String role, String status, LocalDateTime createdAt, List<Role> accessibleRoles, String companyName, String city, String district) {

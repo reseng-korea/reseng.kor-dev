@@ -171,15 +171,26 @@ public class UserService {
         User savedUser = userRepository.save(user);
         log.info("user 저장 성공");
 
-        // 6. RoleHierarchy 생성 (상위 관계가 없는 일반 사용자는 자기 자신)
-        RoleHierarchy roleHierarchy = RoleHierarchy.builder()
+        // 6. RoleHierarchy 생성 (자기 자신 + 관리자 - 가입유저)
+        RoleHierarchy selfRoleHierarchy = RoleHierarchy.builder()
                 .ancestor(savedUser)  // 상위 관계: 자신
                 .descendant(savedUser)  // 하위 관계: 자신
                 .depth(0)  // 자기 자신과의 관계는 depth 0
                 .build();
+
+        User manager = getAdminUser();
+
+        RoleHierarchy defaultRoleHierarchy = RoleHierarchy.builder()
+                        .ancestor(manager)
+                        .descendant(savedUser)
+                        .depth(manager.getRole().getRank() - savedUser.getRole().getRank())
+                        .build();
+
         log.info("RoleHierarchy 생성 성공");
         
-        roleHierarchyRepository.save(roleHierarchy);
+        roleHierarchyRepository.save(selfRoleHierarchy);
+        roleHierarchyRepository.save(defaultRoleHierarchy);
+
         log.info("RoleHierarchy 저장 성공");
         
         // 7. 응답 생성
@@ -628,5 +639,11 @@ public class UserService {
         targetUser.updateUserRole(userRoleUpdateRequestDTO.getTargetRole());
 
         return new CommonResponse(ResponseStatus.UPDATED_SUCCESS.getCode(), ResponseStatus.UPDATED_SUCCESS.getMessage());
+    }
+
+    private User getAdminUser() {
+
+        return userRepository.findManagerUser()
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
     }
 }
