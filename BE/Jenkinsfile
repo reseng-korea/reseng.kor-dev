@@ -82,7 +82,7 @@ pipeline {
         // 빌드 캐시 정리 단계 추가
         stage("Docker Cache Cleaning") {
             steps {
-                sh "docker builder prune -f"
+                sh "docker builder prune --filter until=24h --filter unused-for=24h -f"
             }
         }
 
