@@ -20,6 +20,6 @@ public class QrPageDataDTO {
     @JsonInclude(JsonInclude.Include.NON_NULL) // Null인 경우 필드제거 후 반환
     private Integer postedDuration; // 게시기간
     @JsonInclude(JsonInclude.Include.NON_NULL) // Null인 경우 필드제거 후 반환
-    private Integer horizontalLength; // 사용할 현수막 길이
+    private Long horizontalLength; // 사용할 현수막 길이
     private Integer requestedLength;  // 현수막 길이
 }

@@ -31,11 +31,11 @@ public interface BannerRequestMapper {
     @Mapping(source = "requestedLength", target = "requestedLength")
     BannerRequest toBannerRequest(QrPageDataDTO bannerRequestDTO);
 
-    // 1.092 곱한 후 BigDecimal로 변환하는 헬퍼 메서드 (DTO -> Entity 변환)
+    // 1.094 곱한 후 BigDecimal로 변환하는 헬퍼 메서드 (DTO -> Entity 변환)
     @Named("adjustAndRoundLength")
-    default BigDecimal adjustAndRoundLength(Integer length) {
+    default BigDecimal adjustAndRoundLength(Long length) {
         return length != null
-                ? BigDecimal.valueOf(length).multiply(BigDecimal.valueOf(1.092)).setScale(6, RoundingMode.HALF_UP)
+                ? BigDecimal.valueOf(length).multiply(BigDecimal.valueOf(1.094)).setScale(6, RoundingMode.HALF_UP)
                 : null;
     }
 

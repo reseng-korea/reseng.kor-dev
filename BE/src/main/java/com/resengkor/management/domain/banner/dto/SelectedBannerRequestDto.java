@@ -9,6 +9,6 @@ import lombok.Getter;
 public class SelectedBannerRequestDto {
 
     private Integer typeWidth;
-    private Integer horizontalLength;
+    private Long horizontalLength;
 
 }
