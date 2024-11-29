@@ -153,19 +153,19 @@ const OrderList = () => {
               {orderList.length !== 0 && (
                 <>
                   <div className="flex w-full space-x-6 items-center justify-center mb-6">
-                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border border-gray2 rounded-lg">
+                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border-2 border-hoverLight rounded-lg hover:bg-hoverLight">
                       <span className="text-lg">전체 발주</span>
                       <span className="text-lg font-bold">
                         {summary.total}건
                       </span>
                     </div>
-                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border border-gray2 rounded-lg">
+                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border-2 border-warningHover rounded-lg hover:bg-warningHover">
                       <span className="text-lg">진행 중</span>
                       <span className="text-lg font-bold">
                         {summary.inProgress}건
                       </span>
                     </div>
-                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border border-gray2 rounded-lg">
+                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border-2 border-reHover rounded-lg hover:bg-reHover">
                       <span className="text-lg">완료</span>
                       <span className="text-lg font-bold">
                         {summary.completed}건

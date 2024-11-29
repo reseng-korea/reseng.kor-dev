@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 
+import apiClient from '../../services/apiClient';
+
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
@@ -7,7 +9,10 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import datePicker from '../../assets/date_picker.png';
 
+import useModal from '../../hooks/useModal';
+
 const Qr = () => {
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },
     { label: '현수막 관리', route: '/mypage/manage' },
@@ -16,7 +21,69 @@ const Qr = () => {
     { label: '회원 정보 수정', route: '/mypage/user' },
   ];
 
+  const [clientName, setClientName] = useState(''); //고객명
+  const [postedLocation, setPostedLocation] = useState(''); //게시 장소
+  const [requestedDate, setRequestedDate] = useState(''); //요청 날짜
+  const [postedDate, setPostedDate] = useState(''); //게시 날짜
+  const [postedDuration, setPostedDuration] = useState(''); //게시 기간
+  const [typeWidth, setTypeWidth] = useState(''); //사용 현수막
+  const [horizontalLength, setHorizontalLength] = useState(''); //가로 길이
+  const [requestedLength, setRequestedLength] = useState(''); //사용할 길이
+
   const [selectedDate, setSelectedDate] = useState(null);
+
+  const [imageUrl, setImageUrl] = useState(null);
+
+  const handleSubmit = async () => {
+    const typeWidth = 800;
+    try {
+      const response = await apiClient.get(
+        `${apiUrl}/api/v1/inventory/${typeWidth}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(response);
+
+      // Blob 객체 생성
+    } catch (error) {
+      console.log(error);
+    }
+
+    const data = {
+      clientName: '유재석',
+      postedLocation: '관저로',
+      requestedDate: '2024-11-02',
+      postedDate: '2024-11-13',
+      postedDuration: 1,
+      typeWidth: 1500,
+      horizontalLength: 98,
+      requestedLength: 20,
+    };
+
+    try {
+      const response = await apiClient.post(`${apiUrl}/api/v1/qr-code`, data, {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        responseType: 'blob',
+      });
+
+      console.log(response);
+
+      // Blob 객체 생성
+      const blob = new Blob([response.data], { type: 'image/png' });
+
+      // Blob을 URL로 변환
+      const url = URL.createObjectURL(blob);
+
+      setImageUrl(url); // 상태로 URL 저장
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <Layout>
@@ -123,7 +190,8 @@ const Qr = () => {
               <div className="flex justify-end mt-4">
                 <button
                   type="submit"
-                  className="px-8 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-white hover:text-primary"
+                  onClick={handleSubmit}
+                  className="px-8 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-hover"
                 >
                   QR 발생하기
                 </button>
@@ -132,7 +200,7 @@ const Qr = () => {
           </div>
           {/* QR 발생 칸 */}
           <div className="min-h-48 mt-12 border border-gray3">
-            <span>QR 나오는 칸</span>
+            {imageUrl && <img src={imageUrl} alt="QR Code" />}
           </div>
         </div>
       </div>
