@@ -73,18 +73,25 @@ public class BannerTypeService {
     public DataResponse<BannerInventoryDto> getBannerInventoryBySpecificWidth(Integer typeWidth) {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
         List<BannerType> banners = bannerTypeRepository.findByUserIdAndTypeWidth(userId, typeWidth);
-        List<Integer> allLengths = new ArrayList<>();
+        List<Integer> nonStandardLengths = new ArrayList<>();
+
+        int standardCount = 0;
 
         for (BannerType banner : banners) {
             // 각 배너의 horizontalLength를 추가
             int roundedLength = bannerRequestMapper.INSTANCE.roundBigDecimalToInteger(banner.getHorizontalLength());
-            allLengths.add(roundedLength);
+            if (roundedLength == 120) {
+                // 정단(120)인 경우 개수 증가
+                standardCount++;
+            } else {
+                // 비정단 리스트에만 추가
+                nonStandardLengths.add(roundedLength);
+            }
         }
-        // 중복 제거 후 horizontalLength 기준으로 오름차순 정렬
-        allLengths = allLengths.stream().sorted().collect(Collectors.toList());
-        // 정단 개수를 allLengths 리스트에서 계산
-        int standardCount = (int) allLengths.stream().filter(length -> length == 120).count();
-        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), new BannerInventoryDto(typeWidth, standardCount, allLengths));
+
+        // 비정단 리스트를 오름차순 정렬
+        nonStandardLengths = nonStandardLengths.stream().sorted().collect(Collectors.toList());
+        return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), new BannerInventoryDto(typeWidth, standardCount, nonStandardLengths));
     }
 
     // 현수막 사용 요청을 처리하여 재고 업데이트
