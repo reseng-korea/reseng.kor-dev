@@ -123,6 +123,9 @@ public class RoleHierarchyService {
         User childUser = userRepository.findById(childId)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
 
+        log.info("loginUser 등급 : " + loginUser.getRole());
+        log.info("childUser 등급 : " + childUser.getRole());
+
         if(loginUser.getRole().getRank() <= childUser.getRole().getRank())
             throw new CustomException(ExceptionStatus.ROLE_PERMISSION_DENIED);
 
@@ -131,10 +134,35 @@ public class RoleHierarchyService {
         if (!accessibleRoles.contains(childUser.getRole()))
             throw new CustomException(ExceptionStatus.ROLE_CHANGE_FAIL);
 
+        // ex> 만약 manager-agency-customer 관계인데 agency를 삭제시킨다.
+        // 그러면 manager-customer 관계가 되어야 한다.
+        // manager-agency 삭제.
+        // agency-customer 삭제.
+
+        // 만약 manager-distributor-agency-customer 관계에서 agency 삭제라면
+        // manager-distributor-customer
+        // agency-customer 삭제
+        // distributor-agency 삭제
+
+
+        // loginUser - childUser 관계 삭제
         RoleHierarchy roleHierarchy = roleHierarchyRepository.findByAncestorAndDescendant(loginUser, childUser)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.HIERARCHY_NOT_FOUND));
 
-        roleHierarchyRepository.delete(roleHierarchy);
+        // 상관이 Manager인 경우 제외
+        if(roleHierarchy.getAncestor().getRole() != Role.ROLE_MANAGER)
+            roleHierarchyRepository.delete(roleHierarchy);
+
+        // childUser - 그 아래 모든 관계들 삭제
+        List<RoleHierarchy> list = roleHierarchyRepository.findByAncestor(childUser);
+
+        for (RoleHierarchy hierarchy : list) {
+            // 자기 자신과 연결된 경우 제외
+            if(hierarchy.getAncestor() == hierarchy.getDescendant())
+                continue;
+
+            roleHierarchyRepository.delete(hierarchy);
+        }
 
         return new CommonResponse(ResponseStatus.DELETED_SUCCESS.getCode(), ResponseStatus.DELETED_SUCCESS.getMessage());
     }
