@@ -28,4 +28,6 @@ public interface RoleHierarchyRepository extends JpaRepository<RoleHierarchy, Lo
     List<RoleHierarchy> findByAncestor(User ancestor);
 
     List<RoleHierarchy> findByDescendant(User descendant);
+
+    boolean existsByAncestorAndDescendant(User ancestor, User descendant);
 }

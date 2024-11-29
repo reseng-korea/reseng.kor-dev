@@ -6,6 +6,7 @@ import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import useModal from '../../hooks/useModal';
 
 const OrderList = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -18,6 +19,8 @@ const OrderList = () => {
   ];
 
   const { navigateTo, routes } = useNavigateTo();
+
+  const { openModal, closeModal, RenderModal } = useModal();
 
   const [orderList, setOrderList] = useState([]);
   const [summary, setSummary] = useState({
@@ -51,7 +54,6 @@ const OrderList = () => {
           { total: 0, inProgress: 0, completed: 0 }
         );
         setSummary({ total, inProgress, completed });
-        console.log(total, inProgress, completed);
       } catch (error) {
         console.log(error);
       }
@@ -66,6 +68,9 @@ const OrderList = () => {
       const response = await apiClient.patch(
         `${apiUrl}/api/v1/orders/${orderId}`,
         {
+          receiveStatus: true,
+        },
+        {
           headers: {
             'Content-Type': 'application/json',
           },
@@ -73,6 +78,16 @@ const OrderList = () => {
       );
 
       console.log(response);
+
+      openModal({
+        primaryText: '수령이 완료되었습니다.',
+        type: 'success',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal();
+          window.location.reload();
+        },
+      });
     } catch (error) {
       console.log(error);
     }
@@ -138,19 +153,19 @@ const OrderList = () => {
               {orderList.length !== 0 && (
                 <>
                   <div className="flex w-full space-x-6 items-center justify-center mb-6">
-                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border border-gray2 rounded-lg">
+                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border-2 border-hoverLight rounded-lg hover:bg-hoverLight">
                       <span className="text-lg">전체 발주</span>
                       <span className="text-lg font-bold">
                         {summary.total}건
                       </span>
                     </div>
-                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border border-gray2 rounded-lg">
+                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border-2 border-warningHover rounded-lg hover:bg-warningHover">
                       <span className="text-lg">진행 중</span>
                       <span className="text-lg font-bold">
                         {summary.inProgress}건
                       </span>
                     </div>
-                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border border-gray2 rounded-lg">
+                    <div className="flex w-1/4 flex-col py-6 justify-center items-center space-y-2 border-2 border-reHover rounded-lg hover:bg-reHover">
                       <span className="text-lg">완료</span>
                       <span className="text-lg font-bold">
                         {summary.completed}건
@@ -229,25 +244,13 @@ const OrderList = () => {
                               {statusText}
                             </span>
                           </div>
-
-                          {/* 삭제 예정 */}
-                          {/* <div
-                            onClick={() => isReceivedHandler(order.id)}
-                            className="px-5 py-2 mb-2 rounded-full text-lg text-primary font-bold bg-hoverLight hover:bg-primary hover:text-white"
-                          >
-                            수령 완료
-                          </div>
-                          <span className="text-xs text-gray2">
-                            수령 완료 후 버튼을 눌러주세요.
-                          </span> */}
-                          {/* 삭제 예정 */}
                           {(order.orderStatus === 'SHIPPED_COURIER' ||
                             order.orderStatus === 'SHIPPED_FREIGHT') && (
                             <>
                               {!order.receiveStatus ? (
                                 <>
                                   <div
-                                    onClick={isReceivedHandler(order.id)}
+                                    onClick={() => isReceivedHandler(order.id)}
                                     className="px-5 py-2 mb-2 rounded-full text-lg text-primary font-bold bg-hoverLight hover:bg-primary hover:text-white"
                                   >
                                     수령 완료
@@ -284,6 +287,7 @@ const OrderList = () => {
           </div>
         </div>
       </div>
+      <RenderModal />
     </Layout>
   );
 };

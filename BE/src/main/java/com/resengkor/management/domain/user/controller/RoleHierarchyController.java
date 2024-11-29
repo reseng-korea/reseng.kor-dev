@@ -45,4 +45,11 @@ public class RoleHierarchyController {
 
         return roleHierarchyService.getRoleHierarchyByDescendant();
     }
+
+    @Operation(description = "Guest 유저 Customer로 승격")
+    @PutMapping("/guest/to/customer/{childId}")
+    public CommonResponse makeGuestToCustomer(@Valid @PathVariable("childId") Long childId) {
+
+        return roleHierarchyService.makeGuestToCustomer(childId);
+    }
 }

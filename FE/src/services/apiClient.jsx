@@ -3,6 +3,12 @@ import { refreshAccessToken } from './auth/authService';
 
 const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
+let openModalInstance = null;
+
+export const setOpenModal = (openModal) => {
+  openModalInstance = openModal;
+};
+
 const apiClient = axios.create({
   baseURL: apiUrl,
 });
@@ -39,7 +45,8 @@ apiClient.interceptors.response.use(
         return apiClient(originalRequest); // 원래 요청으로 다시 보내기
       } catch (refreshError) {
         console.error('토큰 재발급 실패:', refreshError);
-        return Promise.reject(refreshError); // 토큰 재발급 실패 에러 전파
+        // handleTokenExpiration(openModalInstance);
+        // return Promise.reject(refreshError); // 토큰 재발급 실패 에러 전파
       }
     }
 

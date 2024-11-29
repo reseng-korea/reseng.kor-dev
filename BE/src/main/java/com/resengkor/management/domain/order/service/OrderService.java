@@ -101,7 +101,8 @@ public class OrderService {
     // 특정 orderId로 발주 내역 조회
     public DataResponse<OrderResponseDto> getUserOrderHistoryById(Long orderId) {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
-        OrderHistory orderHistory = getOrderHistory(orderId, userId);
+        OrderHistory orderHistory = orderHistoryRepository.findByIdAndUser_Id(orderId, userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), orderHistoryMapper.toDto(orderHistory));
     }
 
@@ -109,12 +110,21 @@ public class OrderService {
     @Transactional
     public CommonResponse updateReceiveStatus(Long orderId, boolean receiveStatus) {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
-        OrderHistory orderHistory = getOrderHistory(orderId, userId);
+        OrderHistory orderHistory = orderHistoryRepository.findByIdAndBuyer_Id(orderId, userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.ORDER_NOT_FOUND));
+
+        // 배송상태가 미확인이거나 확인 상태인 경우 수령상태 변경 불가
+        if (orderHistory.getOrderStatus() == OrderStatus.UNCONFIRMED || orderHistory.getOrderStatus() == OrderStatus.CONFIRMED) {
+            throw new CustomException(ExceptionStatus.INVALID_REQUEST_STATE);
+        }
+
         // 수령 상태가 true로 변경되면, BannerType을 DB에 저장
-        if (receiveStatus && !orderHistory.getReceiveStatus()) {
+        if (receiveStatus && !orderHistory.getReceiveStatus() ) {
             saveOrderAndBannerTypes(orderHistory);
             orderHistory.updateReceiveStatus(true);
         }
+
+
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage());
     }
 
@@ -168,17 +178,19 @@ public class OrderService {
     public CommonResponse updateOrderStatus(Long orderId, OrderStatus newStatus) {
         // 현재 로그인된 사용자의 ID를 가져옴
         Long sellerId = UserAuthorizationUtil.getLoginMemberId();
-        OrderHistory orderHistory = getOrderHistory(orderId, sellerId);
+        OrderHistory orderHistory = orderHistoryRepository.findByIdAndSeller_Id(orderId, sellerId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.ORDER_NOT_FOUND));
+
+        OrderStatus currentStatus = orderHistory.getOrderStatus();
+
+        // 상태 전이 가능 여부 확인
+        if (!currentStatus.canTransitionTo(newStatus)) {
+            throw new CustomException(ExceptionStatus.INVALID_STATE_TRANSITION);
+        }
 
         orderHistory.updateOrderStatus(newStatus);
         orderHistoryRepository.save(orderHistory);
 
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage());
     }
-
-    private OrderHistory getOrderHistory(Long orderId, Long userId) {
-        return orderHistoryRepository.findByUserIdAndId(userId, orderId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.ORDER_NOT_FOUND));
-    }
-
 }
