@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import Select from 'react-select';
 
 import apiClient from '../../services/apiClient';
 
@@ -26,9 +27,13 @@ const Order = () => {
 
   const { navigateTo, routes } = useNavigateTo();
   const optionValues = Array.from({ length: 16 }, (_, i) => 300 + i * 100);
+  const selectOptions = optionValues.map((value) => ({
+    value,
+    label: `${value}mm`,
+  }));
 
   const [orders, setOrders] = useState([
-    { id: Date.now(), temporaryTypeWidth: optionValues[0], quantity: '' }, // 초기 값 1개
+    { id: Date.now(), temporaryTypeWidth: null, quantity: '' }, // 초기 값 1개
   ]);
 
   useEffect(() => {
@@ -39,7 +44,7 @@ const Order = () => {
   const handleAddOrder = () => {
     setOrders((prevOrders) => [
       ...prevOrders,
-      { id: Date.now(), temporaryTypeWidth: optionValues[0], quantity: '' },
+      { id: Date.now(), temporaryTypeWidth: null, quantity: '' },
     ]);
   };
 
@@ -106,6 +111,7 @@ const Order = () => {
       quantity: parseInt(quantity), // 숫자로 변환
     }));
 
+    console.log(bannerRequests);
     try {
       const response = await apiClient.post(
         `${apiUrl}/api/v1/orders`,
@@ -120,6 +126,19 @@ const Order = () => {
       );
 
       console.log(response);
+
+      if (response.data.code == -9999) {
+        openModal({
+          primaryText: '현재 발주 가능한 영업점이',
+          secondaryText: '등록되어 있지 않습니다.',
+          context: '담당자에게 문의하세요.',
+          type: 'warning',
+          isAutoClose: false,
+          onConfirm: () => {
+            closeModal();
+          },
+        });
+      }
 
       if (response.data.code == 201) {
         openModal({
@@ -199,31 +218,35 @@ const Order = () => {
               {orders.map((order) => (
                 <div
                   key={order.id}
-                  className="flex justify-center py-4 border border-gray3 rounded-lg mb-6 space-x-4"
+                  className="flex justify-center py-4 border border-gray2 rounded-lg mb-6 space-x-4"
                 >
                   <div className="flex w-4/5">
                     <div className="flex w-1/2 items-center justify-end space-x-4">
                       <span className="text-lg font-bold">폭</span>
-                      <select
-                        className="w-2/3 p-2 rounded-lg border border-gray3"
-                        value={order.temporaryTypeWidth}
-                        onChange={(e) =>
-                          handleWidthChange(order.id, e.target.value)
+                      <Select
+                        className="w-2/3 text-sm text-left"
+                        value={
+                          order.temporaryTypeWidth
+                            ? selectOptions.find(
+                                (option) =>
+                                  option.value === order.temporaryTypeWidth
+                              )
+                            : null
                         }
-                      >
-                        {optionValues.map((value) => (
-                          <option key={value} value={value}>
-                            {`${value}mm`}
-                          </option>
-                        ))}
-                      </select>
+                        onChange={(selectedOption) =>
+                          handleWidthChange(order.id, selectedOption.value)
+                        }
+                        options={selectOptions}
+                        placeholder="폭을 선택하세요"
+                      />
                     </div>
                     <div className="flex w-1/2 items-center justify-center space-x-4">
                       <span className="text-lg font-bold">롤</span>
                       <input
-                        className="w-2/3 p-2 rounded-lg border border-gray3"
+                        className="w-2/3 p-2 text-sm rounded-lg border border-gray2"
                         type="text"
                         value={order.quantity}
+                        placeholder="롤 개수를 입력해주세요"
                         onChange={(e) =>
                           handleRollChange(order.id, e.target.value)
                         }
@@ -235,7 +258,7 @@ const Order = () => {
                       onClick={() => handleDeleteOrder(order.id)}
                       className="flex items-center justify-center h-10 border border-warning hover:bg-warningHover hover:border-warningHover"
                     >
-                      <span>삭제</span>
+                      <span className="text-sm">삭제</span>
                     </button>
                   </div>
                 </div>
@@ -243,13 +266,13 @@ const Order = () => {
 
               <div
                 onClick={handleAddOrder}
-                className="py-4 border border-gray3 rounded-lg mb-6 hover:bg-placeHolder"
+                className="py-4 border border-gray2 rounded-lg mb-6 hover:bg-placeHolder hover:border-placeHolder"
               >
                 <span className="text-lg font-bold cursor-pointer">
                   + 추가하기
                 </span>
               </div>
-              <div className="flex justify-end space-x-2">
+              <div className="flex justify-end space-x-2 mb-12">
                 <button
                   onClick={handleResetOrders}
                   className="flex px-6 items-center justify-center h-10 border border-primary hover:bg-hoverLight hover:border-hoverLight"
