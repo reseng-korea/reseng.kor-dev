@@ -32,6 +32,35 @@ public class RoleHierarchyService {
 
     private final UserService userService;
 
+    // Guest -> Customer
+    // 기존에 Manager-Guest 되어있는 것을 Manager-Customer로 수정해야함.
+    @Transactional
+    public CommonResponse makeGuestToCustomer(Long childId) {
+        Long userId = UserAuthorizationUtil.getLoginMemberId();
+        User loginUser = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        User childUser = userRepository.findById(childId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        if(loginUser.getRole().getRank() <= childUser.getRole().getRank())
+            throw new CustomException(ExceptionStatus.ROLE_PERMISSION_DENIED);
+
+        if(!childUser.getRole().equals(Role.ROLE_GUEST))
+            throw new CustomException(ExceptionStatus.ROLE_CHANGE_FAIL);
+
+        User managerUser = userRepository.findByRole(Role.ROLE_MANAGER).getFirst();
+
+        RoleHierarchy roleHierarchy = roleHierarchyRepository.findByAncestorAndDescendant(managerUser, childUser)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.HIERARCHY_NOT_FOUND));
+
+        childUser.updateUserRole(Role.ROLE_CUSTOMER);
+        roleHierarchy.updateRoleHierarchy(managerUser, childUser, managerUser.getRole().getRank() - childUser.getRole().getRank());
+
+        return new CommonResponse(ResponseStatus.UPDATED_SUCCESS.getCode(), ResponseStatus.UPDATED_SUCCESS.getMessage());
+    }
+
+
     @Transactional
     public CommonResponse addRoleHierarchy(Long childId) {
         Long userId = UserAuthorizationUtil.getLoginMemberId();
@@ -49,6 +78,10 @@ public class RoleHierarchyService {
         if (!accessibleRoles.contains(childUser.getRole()))
             throw new CustomException(ExceptionStatus.ROLE_CHANGE_FAIL);
 
+        // Manager-Distributor-Agency 상태에서 만약 Agency가 Customer을 연결하려 한다.
+        // DB상 추가해야 할 것은 Agency-Customer, Distributor-Customer (Manager-Customer은 기본으로 되어있음)
+
+        // loginUser - childUser
         RoleHierarchy roleHierarchy = RoleHierarchy.builder()
                 .ancestor(loginUser)
                 .descendant(childUser)
@@ -56,6 +89,26 @@ public class RoleHierarchyService {
                 .build();
 
         roleHierarchyRepository.save(roleHierarchy);
+
+        // loginUser의 부모들 - childUser
+        List<RoleHierarchy> parentList = roleHierarchyRepository.findByDescendant(loginUser);
+
+        for (RoleHierarchy rh : parentList) {
+            User parentUser = rh.getAncestor();
+
+            // 중복체크
+            boolean check = roleHierarchyRepository.existsByAncestorAndDescendant(parentUser, childUser);
+
+            if(!check) {
+                RoleHierarchy newHierarchy = RoleHierarchy.builder()
+                        .ancestor(parentUser)
+                        .descendant(childUser)
+                        .depth(parentUser.getRole().getRank() - childUser.getRole().getRank())
+                        .build();
+
+                roleHierarchyRepository.save(newHierarchy);
+            }
+        }
 
         return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(), ResponseStatus.CREATED_SUCCESS.getMessage());
     }

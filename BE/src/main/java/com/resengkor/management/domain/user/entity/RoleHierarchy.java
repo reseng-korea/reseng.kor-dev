@@ -31,4 +31,10 @@ public class RoleHierarchy {
         this.descendant = descendant;
         this.depth = depth;
     }
+
+    public void updateRoleHierarchy(User ancestor, User descendant, int depth) {
+        this.ancestor = ancestor;
+        this.descendant = descendant;
+        this.depth = depth;
+    }
 }
