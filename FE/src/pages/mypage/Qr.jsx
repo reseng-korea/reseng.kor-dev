@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Select from 'react-select';
 
 import apiClient from '../../services/apiClient';
 
@@ -21,12 +22,14 @@ const Qr = () => {
     { label: '회원 정보 수정', route: '/mypage/user' },
   ];
 
+  const [selectOptions, setSelectOptions] = useState([]);
+
   const [clientName, setClientName] = useState(''); //고객명
   const [postedLocation, setPostedLocation] = useState(''); //게시 장소
   const [requestedDate, setRequestedDate] = useState(''); //요청 날짜
   const [postedDate, setPostedDate] = useState(''); //게시 날짜
   const [postedDuration, setPostedDuration] = useState(''); //게시 기간
-  const [typeWidth, setTypeWidth] = useState(''); //사용 현수막
+  const [typeWidth, setTypeWidth] = useState(null); //사용 현수막
   const [horizontalLength, setHorizontalLength] = useState(''); //가로 길이
   const [requestedLength, setRequestedLength] = useState(''); //사용할 길이
 
@@ -34,8 +37,36 @@ const Qr = () => {
 
   const [imageUrl, setImageUrl] = useState(null);
 
-  const handleSubmit = async () => {
-    const typeWidth = 800;
+  // typeWidth 불러오기
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await apiClient.get(`${apiUrl}/api/v1/inventory`, {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
+
+        console.log(response);
+
+        const options = response.data.data
+          .filter((item) => item.typeWidth !== undefined)
+          .map((item) => ({
+            value: item.typeWidth,
+            label: `${item.typeWidth}mm`,
+          }));
+
+        setSelectOptions(options); // 상태 업데이트
+      } catch (error) {
+        console.log(error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const handleSearchTypeWidth = async () => {
+    console.log(typeWidth);
     try {
       const response = await apiClient.get(
         `${apiUrl}/api/v1/inventory/${typeWidth}`,
@@ -46,8 +77,22 @@ const Qr = () => {
         }
       );
       console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
-      // Blob 객체 생성
+  const handleSubmit = async () => {
+    try {
+      const response = await apiClient.get(
+        `${apiUrl}/api/v1/inventory/${typeWidth}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(response);
     } catch (error) {
       console.log(error);
     }
@@ -101,17 +146,18 @@ const Qr = () => {
               <span className="text-lg font-bold">폭 설정</span>
               <div className="flex flex-col">
                 <div className="flex mt-4 justify-center space-x-2">
-                  <select className="w-1/2 p-2 border border-gray3">
-                    <option value="">폭</option>
-                    <option value="800m">800m</option>
-                    <option value="900m">900m</option>
-                    <option value="1300m">1300m</option>
-                    <option value="1400m">1400m</option>
-                    <option value="1700m">1700m</option>
-                  </select>
+                  <Select
+                    options={selectOptions}
+                    value={typeWidth}
+                    onChange={(selectedOption) => setTypeWidth(selectedOption)}
+                    placeholder="폭을 선택해주세요"
+                    // isClearable
+                    className="w-1/3"
+                  />
                   <button
                     type="submit"
-                    className="px-8 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-white hover:text-primary"
+                    onClick={handleSearchTypeWidth}
+                    className="px-8 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-hover"
                   >
                     검색
                   </button>

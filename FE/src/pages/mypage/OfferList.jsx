@@ -185,21 +185,33 @@ const OfferList = () => {
       });
     } catch (error) {
       console.log(error);
-
       setOfferList((prevOfferList) =>
         prevOfferList.map((offer) =>
           offer.id === id ? { ...offer, orderStatus: currentStatus } : offer
         )
       );
-      openModal({
-        primaryText: '현재 상태와 같거나',
-        secondaryText: '이전 상태로 변경할 수 없습니다.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal();
-        },
-      });
+
+      if (currentStatus === 'UNCONFIRMED') {
+        openModal({
+          primaryText: '출고 완료로 변경하려면',
+          secondaryText: `먼저 '확인 완료'를 선택해주세요.`,
+          type: 'warning',
+          isAutoClose: false,
+          onConfirm: () => {
+            closeModal();
+          },
+        });
+      } else {
+        openModal({
+          primaryText: '현재 상태와 같거나',
+          secondaryText: '이전 상태로 변경할 수 없습니다.',
+          type: 'warning',
+          isAutoClose: false,
+          onConfirm: () => {
+            closeModal();
+          },
+        });
+      }
     }
   };
 

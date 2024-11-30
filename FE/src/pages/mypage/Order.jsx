@@ -127,19 +127,6 @@ const Order = () => {
 
       console.log(response);
 
-      if (response.data.code == -9999) {
-        openModal({
-          primaryText: '현재 발주 가능한 영업점이',
-          secondaryText: '등록되어 있지 않습니다.',
-          context: '담당자에게 문의하세요.',
-          type: 'warning',
-          isAutoClose: false,
-          onConfirm: () => {
-            closeModal();
-          },
-        });
-      }
-
       if (response.data.code == 201) {
         openModal({
           primaryText: '발주 요청이 성공적으로 완료되었습니다.',
@@ -153,15 +140,29 @@ const Order = () => {
       }
     } catch (error) {
       console.error('Error:', error);
-      openModal({
-        primaryText: '발주 요청에 실패했습니다.',
-        context: '잠시 후 다시 시도해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal();
-        },
-      });
+
+      if (error.response.data.code == 4028) {
+        openModal({
+          primaryText: '현재 발주 가능한 영업점이',
+          secondaryText: '등록되어 있지 않습니다.',
+          context: '담당자에게 문의하세요.',
+          type: 'warning',
+          isAutoClose: false,
+          onConfirm: () => {
+            closeModal();
+          },
+        });
+      } else {
+        openModal({
+          primaryText: '발주 요청에 실패했습니다.',
+          context: '잠시 후 다시 시도해주세요.',
+          type: 'warning',
+          isAutoClose: false,
+          onConfirm: () => {
+            closeModal();
+          },
+        });
+      }
     }
   };
 
@@ -237,7 +238,7 @@ const Order = () => {
                           handleWidthChange(order.id, selectedOption.value)
                         }
                         options={selectOptions}
-                        placeholder="폭을 선택하세요"
+                        placeholder="폭을 선택해주세요"
                       />
                     </div>
                     <div className="flex w-1/2 items-center justify-center space-x-4">
