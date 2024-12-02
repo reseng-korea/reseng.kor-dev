@@ -84,6 +84,7 @@ import UserEdit from './pages/mypage/UserEdit';
 import Withdraw from './pages/mypage/Withdraw';
 
 // qr
+import ValidateQR from './pages/qr/ValidateQR';
 import QrSuccess from './pages/qr/QrSuccess';
 import QrFailure from './pages/qr/QrFailure';
 
@@ -271,6 +272,8 @@ function App() {
           {/* 탈퇴 페이지 */}
           <Route path="/mypage/withdraw" element={<Withdraw />} />
 
+          {/* QR 유효성 확인 페이지 */}
+          <Route path="/validateQR" element={<ValidateQR />} />
           {/* QR 발생기 확인 성공 페이지 */}
           <Route path="/mypage/qr/success" element={<QrSuccess />} />
           {/* QR 발생기 확인 실패 페이지 */}

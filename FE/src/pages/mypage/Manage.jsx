@@ -49,38 +49,38 @@ const Manage = () => {
           />
 
           {/* 메인 */}
-          <div className="flex flex-col mb-12">
+          <div className="flex flex-col mb-12 slide-down">
             {currentStock.length == 0 ? (
               <div className="flex justify-center items-center mt-24">
                 <span>현재 재고 수량이 없습니다.</span>
               </div>
             ) : (
               <>
-                <span className="text-lg text-left font-bold mb-4">
+                <span className="text-2xl text-left font-bold mb-6">
                   현재 재고 수량
                 </span>
-                <table className="min-w-full border border-gray4 border-collapse">
+                <table className="min-w-full border border-gray2 border-collapse">
                   <thead>
                     <tr className="border border-gray4 text-left">
-                      <th className="px-2 py-3 border border-gray4">폭</th>
-                      <th className="px-2 py-3 border border-gray4">
+                      <th className="px-2 py-3 border border-gray2">폭</th>
+                      <th className="px-2 py-3 border border-gray2">
                         정단(120yd) 개수
                       </th>
-                      <th className="px-2 py-3 border border-gray4">
+                      <th className="px-2 py-3 border border-gray2">
                         비정단(120yd 외) 길이별 개수
                       </th>
                     </tr>
                   </thead>
                   <tbody>
                     {currentStock.map((stock, index) => (
-                      <tr key={index} className="border border-gray4">
-                        <td className="px-2 py-2 border border-gray4 text-left">
+                      <tr key={index} className="border border-gray2">
+                        <td className="px-2 py-2 border border-gray2 text-left">
                           {stock.typeWidth}
                         </td>
-                        <td className="px-2 py-2 border border-gray4 text-left">
+                        <td className="px-2 py-2 border border-gray2 text-left">
                           {stock.standardCount}
                         </td>
-                        <td className="px-2 py-2 border border-gray4 text-left">
+                        <td className="px-2 py-2 border border-gray2 text-left">
                           {stock.nonStandardLengths.join(' ')}
                         </td>
                       </tr>
