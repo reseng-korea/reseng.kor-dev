@@ -1,15 +1,36 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
-import { useNavigateTo } from '../../hooks/useNavigateTo';
 import { regionsData } from '../../data/regionsData';
 
 import reset from '../../assets/member_reset.png';
-import { memberData } from '../../data/memberData';
+// 여기부터
+// 역할 체계 상수 추가
+const ROLE_HIERARCHY = {
+  ROLE_MANAGER: 4,
+  ROLE_DISTRIBUTOR: 3,
+  ROLE_AGENCY: 2,
+  ROLE_CUSTOMER: 1,
+  ROLE_GUEST: 0
+};
+
+const ROLE_NAMES = {
+  ROLE_MANAGER: "관리자",
+  ROLE_DISTRIBUTOR: "총판",
+  ROLE_AGENCY: "대리점",
+  ROLE_CUSTOMER: "소비자",
+  ROLE_GUEST: "일반회원"
+};
+// 여기까지
 
 const Member = () => {
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const accesstoken = localStorage.getItem('accessToken');
+  const role = localStorage.getItem('role');
+
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },
     { label: '현수막 관리', route: '/mypage/manage' },
@@ -35,9 +56,122 @@ const Member = () => {
 
   // 업체 목록 테이블
   const [isTableVisible, setIsTableVisible] = useState(false);
+  
+  // 업체명 입력을 위한 상태 추가
+  const [companyName, setCompanyName] = useState('');
+  
+  // 유저 롤 선택을 위한 상태 추가
+  const [selectedRole, setSelectedRole] = useState("DEFAULT");
 
-  const handleLookUp = () => {
-    setIsTableVisible((prev) => !prev);
+  // 유저 롤 변경을 위한 상태 추가
+  const [editRole, setEditRole] = useState(role);
+
+  // 조회 결과를 저장할 상태 수정
+  const [memberList, setMemberList] = useState([]);
+
+  // 역할 변경 핸들러
+  const handleRoleEdit = async (e, userId) => {
+    try {
+      const newRole = e.target.value;
+
+      const requestBody = {
+        targetUserId: userId,
+        targetRole: newRole
+      };
+      console.log(requestBody);
+
+      const ment = newRole === "ROLE_GUEST" ? "해당 역할을 해제하시겠습니까?" : "해당 역할을 부여하시겠습니까?";
+
+      if (window.confirm(ment)) {
+        const response = await axios.patch(
+          `${apiUrl}/api/v1/users/roles`,
+          requestBody,
+          {
+            headers: {
+              Authorization: accesstoken,
+              'Content-Type': 'application/json',
+            },
+          }
+        );
+
+        if (response.data.code === 200) {
+          console.log("역할 변경 성공");
+          handleLookUp();
+        }
+      }
+    } catch (error) {
+      console.error('역할 변경 중 오류 발생:', error);
+    }
+  };
+
+  // 사용 가능한 역할 옵션 생성 함수
+  const getAvailableRoles = (currentRole) => {
+    const myRoleLevel = ROLE_HIERARCHY[role];
+    const currentRoleLevel = ROLE_HIERARCHY[currentRole];
+    
+    // GUEST보다 상위 역할인 경우
+    if (currentRoleLevel > ROLE_HIERARCHY.ROLE_GUEST) {
+      return [
+        { value: currentRole, label: ROLE_NAMES[currentRole] },
+        { value: "ROLE_GUEST", label: "해제" }
+      ];
+    }
+    
+    // GUEST인 경우, 내 역할 이하의 모든 역할 표시
+    return Object.entries(ROLE_HIERARCHY)
+      .filter(([role, level]) => level <= myRoleLevel)
+      .map(([role]) => ({
+        value: role,
+        label: ROLE_NAMES[role]
+      }));
+  };
+
+  // handleLookUp 함수 수정
+  const handleLookUp = async () => {
+    try {
+      // 쿼리 파라미터 구성
+      const params = new URLSearchParams();
+      
+      if (selectedMetropolitan) params.append('city', selectedMetropolitan);
+      if (selectedDistrict) params.append('district', selectedDistrict);
+      if (selectedRole !== 'DEFAULT') params.append('role', selectedRole);
+      if (companyName) params.append('companyName', companyName);
+      if (selectedOption) params.append('scope', selectedOption);
+
+      const response = await axios.get(
+        `${apiUrl}/api/v1/users/pagination?${params}`,
+        {
+          headers: {
+            Authorization: accesstoken,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      if (response.data.code === 200) {
+        if (response.data.data.totalCount > 0) {
+          setMemberList(response.data.data.userList);
+          setIsTableVisible(true);
+        } else {
+          setIsTableVisible(false);
+          setMemberList([]);
+        }
+      }
+    } catch (error) {
+      console.error('조회 중 오류 발생:', error);
+      setIsTableVisible(false);
+      setMemberList([]);
+    }
+  };
+
+  // 업체명 입력 핸들러 추가
+  const handleCompanyNameChange = (e) => {
+    setCompanyName(e.target.value);
+  };
+
+  // 유저 롤 선택 핸들러 추가
+  const handleRoleChange = (e) => {
+    setSelectedRole(e.target.value);
   };
 
   return (
@@ -91,13 +225,17 @@ const Member = () => {
                 <div className="flex flex-col w-1/5 px-3 py-2">
                   <span className="text-lg font-bold">롤 설정</span>
                   <div className="flex items-center py-2 space-x-2">
-                    <select className="w-full p-2 border border-gray3">
-                      <option value="">유저롤</option>
-                      <option value="admin">관리자</option>
-                      <option value="distributor">총판</option>
-                      <option value="agency">대리점</option>
-                      <option value="consumer">소비자</option>
-                      <option value="guest">게스트</option>
+                    <select 
+                      className="w-full p-2 border border-gray3"
+                      value={selectedRole}
+                      onChange={handleRoleChange}
+                    >
+                      <option value="DEFAULT">유저롤</option>
+                      <option value="ROLE_MANAGER">관리자</option>
+                      <option value="ROLE_DISTRIBUTOR">총판</option>
+                      <option value="ROLE_AGENCY">대리점</option>
+                      <option value="ROLE_CUSTOMER">소비자</option>
+                      <option value="ROLE_GUEST">게스트</option>
                     </select>
                   </div>
                 </div>
@@ -109,6 +247,8 @@ const Member = () => {
                       className="w-full p-2 border border-gray3"
                       type="text"
                       placeholder="업체명"
+                      value={companyName}
+                      onChange={handleCompanyNameChange}
                     />
                   </div>
                 </div>
@@ -180,29 +320,43 @@ const Member = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {memberData.map((company) => (
-                        <tr key={company.id}>
+                      {memberList.map((company) => (
+                        <tr key={company.userId}>
                           <td
-                            className={`py-2 text-sm ${company.managementStatus == '관리' ? 'text-primary font-bold' : 'text-warning'}`}
+                            className={`py-2 text-sm ${company.status ? 'text-primary font-bold' : 'text-warning'}`}
                           >
-                            {company.managementStatus}
+                            {company.status ? "관리" : "미관리"}
                           </td>
                           <td className="py-3 text-sm">
                             {company.companyName}
                           </td>
-                          <td className="py-2 text-sm">{company.location}</td>
+                          <td className="py-2 text-sm">{company.detailAddress}</td>
                           <td className="py-2 text-sm">
-                            {company.companyPhone}
-                          </td>
-                          <td className="py-2 text-sm">{company.companyFax}</td>
-                          <td className="py-2 text-sm">
-                            {company.mobilePhone}
+                            {company.companyPhoneNumber}
                           </td>
                           <td className="py-2 text-sm">
-                            {company.metropolitanArea}
+                            {company.faxNumber}
                           </td>
-                          <td className="py-2 text-sm">{company.localArea}</td>
-                          <td className="py-2 text-sm">{company.userRole}</td>
+                          <td className="py-2 text-sm">
+                            {company.phoneNumber}
+                          </td>
+                          <td className="py-2 text-sm">
+                            {company.city}
+                          </td>
+                          <td className="py-2 text-sm">{company.district}</td>
+                          <td className="py-2 text-sm">
+                            <select
+                              className="p-2 border border-gray3"
+                              value={company.role}
+                              onChange={(e) => handleRoleEdit(e, company.userId)}
+                            >
+                              {getAvailableRoles(company.role).map((option) => (
+                                <option key={option.value} value={option.value}>
+                                  {option.label}
+                                </option>
+                              ))}
+                            </select>
+                          </td>
                         </tr>
                       ))}
                     </tbody>
