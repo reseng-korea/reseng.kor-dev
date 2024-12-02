@@ -185,21 +185,33 @@ const OfferList = () => {
       });
     } catch (error) {
       console.log(error);
-
       setOfferList((prevOfferList) =>
         prevOfferList.map((offer) =>
           offer.id === id ? { ...offer, orderStatus: currentStatus } : offer
         )
       );
-      openModal({
-        primaryText: '현재 상태와 같거나',
-        secondaryText: '이전 상태로 변경할 수 없습니다.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal();
-        },
-      });
+
+      if (currentStatus === 'UNCONFIRMED') {
+        openModal({
+          primaryText: '출고 완료로 변경하려면',
+          secondaryText: `먼저 '확인 완료'를 선택해주세요.`,
+          type: 'warning',
+          isAutoClose: false,
+          onConfirm: () => {
+            closeModal();
+          },
+        });
+      } else {
+        openModal({
+          primaryText: '현재 상태와 같거나',
+          secondaryText: '이전 상태로 변경할 수 없습니다.',
+          type: 'warning',
+          isAutoClose: false,
+          onConfirm: () => {
+            closeModal();
+          },
+        });
+      }
     }
   };
 
@@ -215,7 +227,7 @@ const OfferList = () => {
 
           <div className="flex w-full space-x-2">
             {/* 더 하위 카테고리 */}
-            <div className="flex flex-col w-1/6 justify-start mb-4">
+            <div className="flex flex-col w-1/6 justify-start mb-4 move-right">
               <button
                 onClick={() => navigateTo(routes.mypageOrder)}
                 className="flex items-center justify-start h-10"
@@ -238,7 +250,7 @@ const OfferList = () => {
               </button>
             </div>
             {/* 메인 */}
-            <div className="flex flex-col w-5/6 px-4 py-4 justify-center items-center">
+            <div className="flex flex-col w-5/6 px-4 py-4 justify-center items-center slide-down">
               {/* 현재 진행 상황 */}
               {offerList.length !== 0 && (
                 <>

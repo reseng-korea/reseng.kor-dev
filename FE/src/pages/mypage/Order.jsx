@@ -127,19 +127,6 @@ const Order = () => {
 
       console.log(response);
 
-      if (response.data.code == -9999) {
-        openModal({
-          primaryText: '현재 발주 가능한 영업점이',
-          secondaryText: '등록되어 있지 않습니다.',
-          context: '담당자에게 문의하세요.',
-          type: 'warning',
-          isAutoClose: false,
-          onConfirm: () => {
-            closeModal();
-          },
-        });
-      }
-
       if (response.data.code == 201) {
         openModal({
           primaryText: '발주 요청이 성공적으로 완료되었습니다.',
@@ -153,15 +140,29 @@ const Order = () => {
       }
     } catch (error) {
       console.error('Error:', error);
-      openModal({
-        primaryText: '발주 요청에 실패했습니다.',
-        context: '잠시 후 다시 시도해주세요.',
-        type: 'warning',
-        isAutoClose: false,
-        onConfirm: () => {
-          closeModal();
-        },
-      });
+
+      if (error.response.data.code == 4028) {
+        openModal({
+          primaryText: '현재 발주 가능한 영업점이',
+          secondaryText: '등록되어 있지 않습니다.',
+          context: '담당자에게 문의하세요.',
+          type: 'warning',
+          isAutoClose: false,
+          onConfirm: () => {
+            closeModal();
+          },
+        });
+      } else {
+        openModal({
+          primaryText: '발주 요청에 실패했습니다.',
+          context: '잠시 후 다시 시도해주세요.',
+          type: 'warning',
+          isAutoClose: false,
+          onConfirm: () => {
+            closeModal();
+          },
+        });
+      }
     }
   };
 
@@ -191,9 +192,9 @@ const Order = () => {
             activePage="현수막 발주"
             mainCategory="마이페이지"
           />
-          {/* 더 하위 카테고리 */}
           <div className="flex w-full space-x-2">
-            <div className="flex flex-col w-1/6 justify-start mb-4">
+            {/* 더 하위 카테고리 */}
+            <div className="flex flex-col w-1/6 justify-start mb-4 move-right">
               <button
                 onClick={() => navigateTo(routes.mypageOrder)}
                 className="flex items-center justify-start h-10 border-l-4 border-l-primary rounded-none"
@@ -214,7 +215,7 @@ const Order = () => {
               </button>
             </div>
             {/* 메인 */}
-            <div className="w-5/6">
+            <div className="w-5/6 slide-down">
               {orders.map((order) => (
                 <div
                   key={order.id}
@@ -237,7 +238,7 @@ const Order = () => {
                           handleWidthChange(order.id, selectedOption.value)
                         }
                         options={selectOptions}
-                        placeholder="폭을 선택하세요"
+                        placeholder="폭을 선택해주세요"
                       />
                     </div>
                     <div className="flex w-1/2 items-center justify-center space-x-4">

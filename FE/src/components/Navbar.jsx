@@ -230,7 +230,7 @@ export default function Example() {
                   onMouseLeave={handleMouseLeave}
                 >
                   <button
-                    // onClick={() => navigateTo(routes.mypageMember)}
+                    onClick={() => navigateTo(routes.mypageMember)}
                     className="relative flex text-sm bg-transparent hover:border-2"
                   >
                     <IoPersonSharp className="text-gray4" />

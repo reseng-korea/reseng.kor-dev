@@ -79,7 +79,7 @@ const Press = () => {
       images = [],
       files = [],
     } = data;
-    const processedFiles = files.map(({ fileId, ...rest }) => rest);
+    // const processedFiles = files.map(({ fileId, ...rest }) => rest);
 
     navigateTo(
       routes.documentDetail.replace(':type', 'press').replace(':id', id),
@@ -91,7 +91,8 @@ const Press = () => {
         date,
         type,
         createdAt: createdAt ? formatDate(createdAt) : '',
-        files: processedFiles,
+        files,
+        images,
         isFromNavigation: true, //페이지 이동 표시
       }
     );
