@@ -22,8 +22,8 @@ const QrSuccess = () => {
       <div className="my-16">
         <div className="flex flex-col justify-center items-center">
           <span className="text-4xl font-bold">QR 정보</span>
-          <hr className="w-full mt-6 mb-6 border border-gray2" />
-          <span className="text-primary text-2xl font-bold">
+          <hr className="w-full mt-6 mb-8 border border-gray2" />
+          <span className="text-primary text-xl font-bold">
             친환경 현수막을 사용해주셔서 감사합니다.
           </span>
           <span className="text-primary text-lg mt-2">
@@ -33,7 +33,7 @@ const QrSuccess = () => {
 
         {/* 테이블을 중앙에 배치하는 부분 */}
         <div className="flex items-center justify-center mt-8">
-          <table className="border-collapse border border-gray2 min-w-[400px]">
+          <table className="border-collapse border border-gray2 md:min-w-[400px]">
             <tbody>
               <tr>
                 <th className="border border-gray2 px-4 py-2">업체명</th>
