@@ -192,9 +192,9 @@ const Order = () => {
             activePage="현수막 발주"
             mainCategory="마이페이지"
           />
-          {/* 더 하위 카테고리 */}
           <div className="flex w-full space-x-2">
-            <div className="flex flex-col w-1/6 justify-start mb-4">
+            {/* 더 하위 카테고리 */}
+            <div className="flex flex-col w-1/6 justify-start mb-4 move-right">
               <button
                 onClick={() => navigateTo(routes.mypageOrder)}
                 className="flex items-center justify-start h-10 border-l-4 border-l-primary rounded-none"
@@ -215,7 +215,7 @@ const Order = () => {
               </button>
             </div>
             {/* 메인 */}
-            <div className="w-5/6">
+            <div className="w-5/6 slide-down">
               {orders.map((order) => (
                 <div
                   key={order.id}

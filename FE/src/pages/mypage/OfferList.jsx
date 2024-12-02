@@ -227,7 +227,7 @@ const OfferList = () => {
 
           <div className="flex w-full space-x-2">
             {/* 더 하위 카테고리 */}
-            <div className="flex flex-col w-1/6 justify-start mb-4">
+            <div className="flex flex-col w-1/6 justify-start mb-4 move-right">
               <button
                 onClick={() => navigateTo(routes.mypageOrder)}
                 className="flex items-center justify-start h-10"
@@ -250,7 +250,7 @@ const OfferList = () => {
               </button>
             </div>
             {/* 메인 */}
-            <div className="flex flex-col w-5/6 px-4 py-4 justify-center items-center">
+            <div className="flex flex-col w-5/6 px-4 py-4 justify-center items-center slide-down">
               {/* 현재 진행 상황 */}
               {offerList.length !== 0 && (
                 <>

@@ -70,8 +70,17 @@ const Coa = () => {
 
   // Documentdetail 페이지로 데이터 보내는 함수 및 페이지 이동
   const handleResponse = (data, index) => {
-    const { id, title, content, createdAt, date, type, files = [] } = data;
-    const processedFiles = files.map(({ fileId, ...rest }) => rest);
+    const {
+      id,
+      title,
+      content,
+      createdAt,
+      date,
+      type,
+      images = [],
+      files = [],
+    } = data || {};
+    // const processedFiles = files.map(({ fileId, ...rest }) => rest);
 
     navigateTo(
       routes.documentDetail.replace(':type', 'coa').replace(':id', id),
@@ -83,7 +92,8 @@ const Coa = () => {
         date,
         type,
         createdAt: createdAt ? formatDate(createdAt) : '',
-        files: processedFiles,
+        files,
+        images,
         isFromNavigation: true, //페이지 이동 표시
       }
     );
