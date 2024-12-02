@@ -404,8 +404,8 @@ const Qr = () => {
                         selected={requestedDate}
                         onChange={handleRequestedDateInputChange}
                         dateFormat="yyyy/MM/dd"
-                        placeholderText="Select a date"
-                        className="w-full px-4 py-2 text-sm border border-gray3 shadow-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                        placeholderText="요청 날짜를 선택해주세요"
+                        className="w-full px-4 py-2 text-sm border border-gray2 rounded-md shadow-sm focus:outline-none focus:ring-1 focus:ring-primary"
                         popperClassName="border border-gray3 shadow-lg bg-white"
                       />
                     </div>
@@ -419,7 +419,7 @@ const Qr = () => {
                           value={horizontalLength}
                           onChange={handleHorizontalLengthInputChange}
                           placeholder="폭을 선택해주세요"
-                          className="w-full"
+                          className="w-full text-sm"
                         />
                       </div>
                     </div>
@@ -457,6 +457,7 @@ const Qr = () => {
                           value={requestedLength}
                           onChange={handleRequestedLengthInputChange}
                           type="text"
+                          placeholder="사용할 길이를 입력해주세요"
                         />
                       </div>
                     </div>
@@ -476,8 +477,8 @@ const Qr = () => {
                         selected={postedDate}
                         onChange={handlePostedDateInputChange}
                         dateFormat="yyyy/MM/dd"
-                        placeholderText="Select a date"
-                        className="w-full px-4 py-2 text-sm border border-gray3 shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
+                        placeholderText="게시 날짜를 선택해주세요"
+                        className="w-full px-4 py-2 text-sm border border-gray2 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-primary"
                         popperClassName="border border-gray3 shadow-lg bg-white"
                       />
                     </div>
@@ -491,6 +492,7 @@ const Qr = () => {
                           value={postedDuration}
                           onChange={handlePostedDurationInputChange}
                           type="number"
+                          placeholder="게시 기간을 입력해주세요"
                         />
                       </div>
                     </div>
@@ -502,6 +504,7 @@ const Qr = () => {
                           value={postedLocation}
                           onChange={handlePostedLocationInputChange}
                           type="text"
+                          placeholder="게시 장소를 입력해주세요"
                         />
                       </div>
                     </div>
@@ -519,10 +522,11 @@ const Qr = () => {
                       <span className="text-lg font-bold">고객명</span>
                       <div className="flex items-center py-2 space-x-2">
                         <input
-                          className="w-full p-2 border border-gray2 rounded-md"
+                          className="w-full text-sm p-2 border border-gray2 rounded-md"
                           value={clientName}
                           onChange={handleClientNameInputChange}
                           type="text"
+                          placeholder="고객명을 입력해주세요"
                         />
                       </div>
                     </div>
