@@ -14,15 +14,15 @@ const ROLE_HIERARCHY = {
   ROLE_DISTRIBUTOR: 3,
   ROLE_AGENCY: 2,
   ROLE_CUSTOMER: 1,
-  ROLE_GUEST: 0
+  ROLE_GUEST: 0,
 };
 
 const ROLE_NAMES = {
-  ROLE_MANAGER: "관리자",
-  ROLE_DISTRIBUTOR: "총판",
-  ROLE_AGENCY: "대리점",
-  ROLE_CUSTOMER: "소비자",
-  ROLE_GUEST: "일반회원"
+  ROLE_MANAGER: '관리자',
+  ROLE_DISTRIBUTOR: '총판',
+  ROLE_AGENCY: '대리점',
+  ROLE_CUSTOMER: '소비자',
+  ROLE_GUEST: '일반회원',
 };
 // 여기까지
 
@@ -56,12 +56,12 @@ const Member = () => {
 
   // 업체 목록 테이블
   const [isTableVisible, setIsTableVisible] = useState(false);
-  
+
   // 업체명 입력을 위한 상태 추가
   const [companyName, setCompanyName] = useState('');
-  
+
   // 유저 롤 선택을 위한 상태 추가
-  const [selectedRole, setSelectedRole] = useState("DEFAULT");
+  const [selectedRole, setSelectedRole] = useState('DEFAULT');
 
   // 유저 롤 변경을 위한 상태 추가
   const [editRole, setEditRole] = useState(role);
@@ -76,11 +76,14 @@ const Member = () => {
 
       const requestBody = {
         targetUserId: userId,
-        targetRole: newRole
+        targetRole: newRole,
       };
       console.log(requestBody);
 
-      const ment = newRole === "ROLE_GUEST" ? "해당 역할을 해제하시겠습니까?" : "해당 역할을 부여하시겠습니까?";
+      const ment =
+        newRole === 'ROLE_GUEST'
+          ? '해당 역할을 해제하시겠습니까?'
+          : '해당 역할을 부여하시겠습니까?';
 
       if (window.confirm(ment)) {
         const response = await axios.patch(
@@ -95,7 +98,7 @@ const Member = () => {
         );
 
         if (response.data.code === 200) {
-          console.log("역할 변경 성공");
+          console.log('역할 변경 성공');
           handleLookUp();
         }
       }
@@ -108,21 +111,21 @@ const Member = () => {
   const getAvailableRoles = (currentRole) => {
     const myRoleLevel = ROLE_HIERARCHY[role];
     const currentRoleLevel = ROLE_HIERARCHY[currentRole];
-    
+
     // GUEST보다 상위 역할인 경우
     if (currentRoleLevel > ROLE_HIERARCHY.ROLE_GUEST) {
       return [
         { value: currentRole, label: ROLE_NAMES[currentRole] },
-        { value: "ROLE_GUEST", label: "해제" }
+        { value: 'ROLE_GUEST', label: '해제' },
       ];
     }
-    
+
     // GUEST인 경우, 내 역할 이하의 모든 역할 표시
     return Object.entries(ROLE_HIERARCHY)
       .filter(([role, level]) => level <= myRoleLevel)
       .map(([role]) => ({
         value: role,
-        label: ROLE_NAMES[role]
+        label: ROLE_NAMES[role],
       }));
   };
 
@@ -131,7 +134,7 @@ const Member = () => {
     try {
       // 쿼리 파라미터 구성
       const params = new URLSearchParams();
-      
+
       if (selectedMetropolitan) params.append('city', selectedMetropolitan);
       if (selectedDistrict) params.append('district', selectedDistrict);
       if (selectedRole !== 'DEFAULT') params.append('role', selectedRole);
@@ -225,7 +228,7 @@ const Member = () => {
                 <div className="flex flex-col w-1/5 px-3 py-2">
                   <span className="text-lg font-bold">롤 설정</span>
                   <div className="flex items-center py-2 space-x-2">
-                    <select 
+                    <select
                       className="w-full p-2 border border-gray3"
                       value={selectedRole}
                       onChange={handleRoleChange}
@@ -325,30 +328,30 @@ const Member = () => {
                           <td
                             className={`py-2 text-sm ${company.status ? 'text-primary font-bold' : 'text-warning'}`}
                           >
-                            {company.status ? "관리" : "미관리"}
+                            {company.status ? '관리' : '미관리'}
                           </td>
                           <td className="py-3 text-sm">
                             {company.companyName}
                           </td>
-                          <td className="py-2 text-sm">{company.detailAddress}</td>
+                          <td className="py-2 text-sm">
+                            {company.detailAddress}
+                          </td>
                           <td className="py-2 text-sm">
                             {company.companyPhoneNumber}
                           </td>
-                          <td className="py-2 text-sm">
-                            {company.faxNumber}
-                          </td>
+                          <td className="py-2 text-sm">{company.faxNumber}</td>
                           <td className="py-2 text-sm">
                             {company.phoneNumber}
                           </td>
-                          <td className="py-2 text-sm">
-                            {company.city}
-                          </td>
+                          <td className="py-2 text-sm">{company.city}</td>
                           <td className="py-2 text-sm">{company.district}</td>
                           <td className="py-2 text-sm">
                             <select
                               className="p-2 border border-gray3"
                               value={company.role}
-                              onChange={(e) => handleRoleEdit(e, company.userId)}
+                              onChange={(e) =>
+                                handleRoleEdit(e, company.userId)
+                              }
                             >
                               {getAvailableRoles(company.role).map((option) => (
                                 <option key={option.value} value={option.value}>
