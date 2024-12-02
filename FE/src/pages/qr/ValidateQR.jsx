@@ -20,14 +20,20 @@ const ValidateQR = () => {
         // const data = await response.json();
         console.log(response);
 
-        // if (response.ok) {
-        //   navigateTo(routes.qrSuccess); // 성공 시 성공 페이지로 이동
-        // } else {
-        //   navigateTo(routes.qrFailure); // 실패 시 실패 페이지로 이동
-        // }
+        const data = response.data;
+
+        navigateTo(routes.qrSuccess, {
+          clientName: data.clientName,
+          company: data.company,
+          postedDate: data.postedDate,
+          postedLocation: data.postedLocation,
+          requestedDate: data.requestedDate,
+          requestedLength: data.requestedLength,
+          typeWidth: data.typeWidth,
+        });
       } catch (error) {
         console.error('QR 코드 유효성 검사 중 오류:', error);
-        // navigate('/failure'); // 오류 발생 시 실패 페이지로 이동
+        navigateTo(routes.qrFailure);
       }
     };
 
