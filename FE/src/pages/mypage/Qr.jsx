@@ -603,39 +603,6 @@ const Qr = () => {
                       </tr>
                     </tbody>
                   </table>
-
-                  {/* <div>
-                    <span>요청 날짜</span>
-                    <span>{requestedDate}</span>
-                  </div>
-                  <div>
-                    <span>폭</span>
-                    <span>{typeWidth.value}</span>
-                  </div>
-                  <div>
-                    <span>사용 현수막</span>
-                    <span>{serverHorizontalLength}</span>
-                  </div>
-                  <div>
-                    <span>사용할 길이</span>
-                    <span>{requestedLength}</span>
-                  </div>
-                  <div>
-                    <span>게시 날짜</span>
-                    <span>{postedDate}</span>
-                  </div>
-                  <div>
-                    <span>게시 기간</span>
-                    <span>{postedDuration}일</span>
-                  </div>
-                  <div>
-                    <span>게시 장소</span>
-                    <span>{postedLocation}</span>
-                  </div>
-                  <div>
-                    <span>고객명</span>
-                    <span>{clientName}</span>
-                  </div> */}
                 </div>
               </div>
             </div>
