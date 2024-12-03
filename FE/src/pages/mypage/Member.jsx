@@ -285,12 +285,14 @@ const Member = () => {
                 <div className="justify-end items-center flex space-x-3">
                   <div className="flex space-x-1 items-center cursor-pointer">
                     <img src={reset} className="w-4 h-4" />
-                    <span className="text-gray3 text-sm">초기화</span>
+                    <span className="text-gray3 text-sm hover:text-gray2">
+                      초기화
+                    </span>
                   </div>
                   <button
                     onClick={handleLookUp}
                     type="submit"
-                    className="px-4 py-1.5 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-white hover:text-primary"
+                    className="px-4 py-1.5 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-hover"
                   >
                     조회하기
                   </button>
