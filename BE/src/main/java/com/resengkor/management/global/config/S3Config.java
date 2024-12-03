@@ -4,6 +4,7 @@ import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
+import jakarta.annotation.PreDestroy;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -20,6 +21,8 @@ public class S3Config {
     @Value("${spring.cloud.aws.region.static}")
     private String region;
 
+    private AmazonS3 amazonS3Client;
+
     @Bean
     public AmazonS3 amazonS3Client() {
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(accessKey, secretKey);
@@ -28,5 +31,12 @@ public class S3Config {
                 .enablePathStyleAccess()
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
                 .build();
+    }
+
+    @PreDestroy
+    public void closeAmazonS3Client() {
+        if (this.amazonS3Client != null) {
+            this.amazonS3Client.shutdown();
+        }
     }
 }
