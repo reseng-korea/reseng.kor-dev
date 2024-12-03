@@ -23,6 +23,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -51,15 +53,27 @@ public class S3Service {
         log.info("------------Service : 에디터 파일 업로드  start------------");
         String uuid = UUID.randomUUID().toString();
 
+        // 현재 날짜와 시간을 "yyyyMMdd_HHmmss" 형식으로 가져오기
+        String currentDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss"));
+
+
         // null 체크: 원래 파일 이름이 null인지 확인
         String originalFilename = multipartFile.getOriginalFilename();
         if (originalFilename == null || originalFilename.isEmpty()) {
             throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
 
-        // S3에 저장할 파일의 전체 경로 (디렉토리 이름 + uuid + 원본 이름) 키 값
-//        String s3FileName = dirName + "/" + uuid + originalFilename;
-        String s3FileName = dirName + "/" + uuid;
+        // 확장자 추출
+        String extension = "";
+        int index = originalFilename.lastIndexOf('.');
+        if (index > 0) {
+            extension = originalFilename.substring(index); // "." 포함 확장자
+        } else {
+            throw new CustomException(ExceptionStatus.VALIDATION_ERROR); // 확장자가 없을 경우 에러 처리
+        }
+
+        // S3에 저장할 파일의 전체 경로 (디렉토리 이름 + uuid + 시간 + 확장자) 키 값
+        String s3FileName = dirName + "/" + uuid + "_" + currentDate + extension;
 
 
         // 업로드된 파일의 S3 URL 반환
