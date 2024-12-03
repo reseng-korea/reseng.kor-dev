@@ -245,6 +245,16 @@ const Qr = () => {
         },
       });
       return;
+    } else if (maxRequestedLength < requestedLength) {
+      openModal({
+        primaryText: `${maxRequestedLength}m 이하의 길이를 입력해주세요.`,
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal();
+        },
+      });
+      return;
     } else if (!postedDate) {
       openModal({
         primaryText: '게시 날짜를 선택해주세요.',
