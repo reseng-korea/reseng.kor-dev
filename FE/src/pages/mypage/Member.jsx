@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import Select from 'react-select';
+
+import apiClient from '../../services/apiClient';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
-import { regionsData } from '../../data/regionsData';
+// import { regionsData } from '../../data/regionsData';
 
-import reset from '../../assets/member_reset.png';
-// 여기부터
-// 역할 체계 상수 추가
+import { MdAutorenew } from 'react-icons/md';
+
 const ROLE_HIERARCHY = {
   ROLE_MANAGER: 4,
   ROLE_DISTRIBUTOR: 3,
@@ -24,7 +26,6 @@ const ROLE_NAMES = {
   ROLE_CUSTOMER: '소비자',
   ROLE_GUEST: '일반회원',
 };
-// 여기까지
 
 const Member = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -68,6 +69,52 @@ const Member = () => {
 
   // 조회 결과를 저장할 상태 수정
   const [memberList, setMemberList] = useState([]);
+
+  const [regionsData, setRegionsData] = useState([]);
+  const [subRegionsData, setSubRegionsData] = useState([]);
+  const [selectedRegion, setSelectedRegion] = useState(null);
+  const [selectedSubRegion, setSelectedSubRegion] = useState(null);
+
+  // 페이지 로드 시 `regionsData`를 자동으로 가져옴
+  useEffect(() => {
+    async function loadRegionsData() {
+      try {
+        const response = await axios.get(`${apiUrl}/api/v1/regions/cities`);
+        const regions = response.data.data.map((item) => ({
+          value: item.id,
+          label: item.regionName,
+        }));
+        setRegionsData(regions);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+    loadRegionsData();
+  }, [apiUrl]);
+
+  // `region`이 변경될 때마다 `subRegion` 목록을 자동으로 불러옴
+  useEffect(() => {
+    async function loadSubRegions() {
+      if (selectedRegion) {
+        try {
+          const response = await axios.get(
+            `${apiUrl}/api/v1/regions/${selectedRegion.value}/districts`
+          );
+          const subRegions = response.data.data.map((item) => ({
+            value: item.id,
+            label: item.regionName,
+          }));
+          setSubRegionsData(subRegions);
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        setSubRegionsData([]); // region이 없으면 하위 지역 초기화
+      }
+    }
+
+    loadSubRegions();
+  }, [selectedRegion, apiUrl]);
 
   // 역할 변경 핸들러
   const handleRoleEdit = async (e, userId) => {
@@ -189,39 +236,31 @@ const Member = () => {
           {/* 메인 */}
           <div>
             {/* 설정 창 */}
-            <div className="flex flex-col border border-gray3 px-4 py-4">
+            <div className="flex flex-col border border-gray2 rounded-lg px-4 py-4">
               {/* 설정하는 곳 */}
               <div className="flex mb-2 text-left">
                 {/* 지역 설정 */}
                 <div className="flex flex-col w-2/5 px-3 py-2">
                   <span className="text-lg font-bold">지역 설정</span>
                   <div className="flex items-center py-2 space-x-2">
-                    <select
-                      className="w-1/2 p-2 mb-1 border border-gray3"
-                      value={selectedMetropolitan}
-                      onChange={handleMetropolitanChange}
-                    >
-                      <option value="">광역자치구</option>
-                      {Object.keys(regionsData).map((metropolitan) => (
-                        <option key={metropolitan} value={metropolitan}>
-                          {metropolitan}
-                        </option>
-                      ))}
-                    </select>
-                    <select
-                      className="w-1/2 p-2 mb-1 border border-gray3"
-                      value={selectedDistrict}
-                      onChange={(e) => setSelectedDistrict(e.target.value)}
-                      disabled={!selectedMetropolitan}
-                    >
-                      <option value="">지역자치구</option>
-                      {selectedMetropolitan &&
-                        regionsData[selectedMetropolitan].map((district) => (
-                          <option key={district} value={district}>
-                            {district}
-                          </option>
-                        ))}
-                    </select>
+                    <Select
+                      options={regionsData}
+                      value={selectedRegion}
+                      onChange={(selectedOption) =>
+                        setSelectedRegion(selectedOption)
+                      }
+                      placeholder="광역자치구 선택하세요"
+                      className="text-sm"
+                    />
+                    <Select
+                      options={subRegionsData}
+                      value={selectedSubRegion}
+                      onChange={(selectedOption) =>
+                        setSelectedSubRegion(selectedOption)
+                      }
+                      placeholder="지역자치구를 선택하세요"
+                      className="text-sm"
+                    />
                   </div>
                 </div>
                 {/* 롤 설정 */}
@@ -283,11 +322,9 @@ const Member = () => {
               {/* 조회 버튼 칸 */}
               <div>
                 <div className="justify-end items-center flex space-x-3">
-                  <div className="flex space-x-1 items-center cursor-pointer">
-                    <img src={reset} className="w-4 h-4" />
-                    <span className="text-gray3 text-sm hover:text-gray2">
-                      초기화
-                    </span>
+                  <div className="flex space-x-1 items-center cursor-pointer text-gray3 hover:text-gray2">
+                    <MdAutorenew className="text-lg" />
+                    <span className="text-sm">초기화</span>
                   </div>
                   <button
                     onClick={handleLookUp}
