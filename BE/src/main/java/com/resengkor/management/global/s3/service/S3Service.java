@@ -58,7 +58,8 @@ public class S3Service {
         }
 
         // S3에 저장할 파일의 전체 경로 (디렉토리 이름 + uuid + 원본 이름) 키 값
-        String s3FileName = dirName + "/" + uuid + originalFilename;
+//        String s3FileName = dirName + "/" + uuid + originalFilename;
+        String s3FileName = dirName + "/" + uuid;
 
 
         // 업로드된 파일의 S3 URL 반환
