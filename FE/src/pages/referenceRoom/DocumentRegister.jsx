@@ -28,6 +28,7 @@ import { GiConsoleController } from 'react-icons/gi';
 const DocumentRegister = () => {
   const location = useLocation();
   const documentData = location.state?.data || {};
+  console.log(documentData);
   const documentType = documentData.isModify
     ? location.state?.data?.type // Detail 페이지에서 전달된 데이터
     : location.state?.documentType || ''; // Certificate 페이지에서 전달된 데이터
@@ -42,6 +43,8 @@ const DocumentRegister = () => {
 
   // id가 존재하면 수정 모드로 인식하여 데이터를 불러옴
   useEffect(() => {
+    console.log('수정');
+    console.log(documentData.images);
     if (documentData && documentData.isModify) {
       setTitle(documentData.title);
       setContent(documentData.content);
@@ -156,10 +159,6 @@ const DocumentRegister = () => {
       }
     };
   };
-
-  useEffect(() => {
-    console.log('이미지 변동사항 아열뤄', imageFiles);
-  }, [imageFiles]);
 
   const modules = useMemo(
     () => ({
@@ -306,6 +305,8 @@ const DocumentRegister = () => {
     } else {
       // 수정 로직이라면
       console.log('수정일 때, 데이터 확인', data);
+      console.log(documentType);
+      console.log(documentData.id);
       if (documentData.isModify) {
         try {
           const response = await axios.put(
@@ -697,7 +698,7 @@ const DocumentRegister = () => {
               )}
             </div>
 
-            <div className="w-full flex flex-col justify-between" id="content">
+            {/* <div className="w-full flex flex-col justify-between" id="content">
               <div>{content}</div>
               <div className="flex flex-col mt-8">
                 <div className="text-2xl font-bold mb-4">미리보기</div>
@@ -706,7 +707,7 @@ const DocumentRegister = () => {
                   dangerouslySetInnerHTML={{ __html: sanitizer(`${content}`) }}
                 />
               </div>
-            </div>
+            </div> */}
           </div>
 
           <div className="flex items-center justify-center w-full px-3 py-2 mt-4 space-x-4">
@@ -724,7 +725,7 @@ const DocumentRegister = () => {
             >
               취소
             </button>
-            <button
+            {/* <button
               type="submit"
               onClick={handleConfirm}
               className="px-4 py-2 font-bold text-primary transition-colors duration-300 bg-white border-primary rounded-lg w-1/6 hover:border-hoverLight hover:bg-hoverLight"
@@ -737,7 +738,7 @@ const DocumentRegister = () => {
               className="px-4 py-2 font-bold text-primary transition-colors duration-300 bg-white border-primary rounded-lg w-1/6 hover:border-hoverLight hover:bg-hoverLight"
             >
               이미지 삭제
-            </button>
+            </button> */}
           </div>
         </div>
       </div>
