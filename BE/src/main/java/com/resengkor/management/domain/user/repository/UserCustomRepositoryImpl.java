@@ -38,6 +38,9 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
         BooleanBuilder builder = new BooleanBuilder();
 
+        // accessibleRoles에 포함된 역할만 포함되도록 필터링
+        builder.and(user.role.in(accessibleRoles));
+
         if(companyName != null && !companyName.trim().isEmpty())
             builder.and(user.companyName.contains(companyName));
 
