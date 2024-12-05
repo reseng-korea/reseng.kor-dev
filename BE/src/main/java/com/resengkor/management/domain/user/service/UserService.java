@@ -580,7 +580,7 @@ public class UserService {
                 "사용 가능한 이메일입니다.");
     }
 
-    public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String companyName, String city, String district, String scope) {
+    public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String companyName, String city, String district, String manage) {
 
         Long userId = UserAuthorizationUtil.getLoginMemberId();
 
@@ -596,7 +596,7 @@ public class UserService {
 
         PageRequest pageRequest = PageRequest.of(page, 10);
 
-        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, loginUser.getId(), role, accessibleRoles, companyName, city, district, scope);
+        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, loginUser.getId(), role, accessibleRoles, companyName, city, district, manage);
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), userListPaginationDTO);
     }

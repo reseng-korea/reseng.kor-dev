@@ -34,14 +34,9 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     }
 
     @Override
-    public UserListPaginationDTO getAllUserByManager(Pageable pageable, Long loginUserId, String role, List<Role> accessibleRoles, String companyName, String city, String district, String scope) {
+    public UserListPaginationDTO getAllUserByManager(Pageable pageable, Long loginUserId, String role, List<Role> accessibleRoles, String companyName, String city, String district, String manage) {
 
         BooleanBuilder builder = new BooleanBuilder();
-
-        if(role != null && !role.trim().isEmpty())
-            builder.and(user.role.eq(Role.valueOf(role)));
-        else
-            builder.and(user.role.in(accessibleRoles));
 
         if(companyName != null && !companyName.trim().isEmpty())
             builder.and(user.companyName.contains(companyName));
@@ -55,12 +50,12 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                     .and(userProfile.district.regionType.trim().eq("DISTRICT")); // exact match가 아닌 경우만 추가
 
         // Scope 조건에 따른 필터링 추가
-        if (scope != null && !scope.trim().isEmpty()) {
-            if ("ALL".equals(scope)) {
+        if (role != null && !role.trim().isEmpty()) {
+            if ("ALL".equals(role)) {
                 // ALL은 모든 역할을 포함하므로 별도의 추가 조건이 필요 없음
             } else {
                 // Scope 값이 유효하면 해당 역할 이상인 사용자만 필터링
-                Role targetRole = Role.valueOf(scope);
+                Role targetRole = Role.valueOf(role);
                 builder.and(user.role.in(getRolesUpTo(targetRole)));
             }
         }
@@ -96,6 +91,17 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                         managedUserIdList.contains(user.getId()) // 부모-자식 관계 여부 판단
                 ))
                 .collect(Collectors.toList());
+
+        // manage 필터링 적용: 관리 상태(true/false)로 결과 필터링
+        if ("MANAGE".equals(manage)) {
+            resultList = resultList.stream()
+                    .filter(UserListDTO::isManagementStatus)
+                    .collect(Collectors.toList());
+        } else if ("NONMANAGE".equals(manage)) {
+            resultList = resultList.stream()
+                    .filter(dto -> !dto.isManagementStatus())
+                    .collect(Collectors.toList());
+        }
 
         // 결과 정렬: managementStatus(true 먼저), Role 우선순위
         resultList.sort((u1, u2) -> {

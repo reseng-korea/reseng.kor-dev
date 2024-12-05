@@ -116,13 +116,13 @@ public class UserController {
     @GetMapping("/pagination")
     public DataResponse<?> getAllUserByManager(
             @RequestParam(value = "page", defaultValue = "0") int page,
-            @RequestParam(value = "role", required = false) String role,
+            @RequestParam(value = "role", required = false, defaultValue = "ALL") String role,
             @RequestParam(value = "companyName", required = false) String companyName,
             @RequestParam(value = "city", required = false) String city,
             @RequestParam(value = "district", required = false) String district,
-            @RequestParam(value = "scope", required = false, defaultValue = "ALL") String scope) {
+            @RequestParam(value = "manage", required = false, defaultValue = "ALL") String manage) {
 
-        return userServiceImpl.getAllUserByManager(page, role, companyName, city, district, scope);
+        return userServiceImpl.getAllUserByManager(page, role, companyName, city, district, manage);
     }
 
     @Operation(description = "로그인 유저의 하위 사용자 등급 수정")

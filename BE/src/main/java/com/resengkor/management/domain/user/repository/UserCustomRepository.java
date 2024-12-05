@@ -15,5 +15,5 @@ public interface UserCustomRepository {
     // Manager (관리자) 찾기
     Optional<User> findManagerUser();
 
-    UserListPaginationDTO getAllUserByManager(Pageable pageable, Long loginUserId, String role, List<Role> accessibleRoles, String companyName, String city, String district, String scope);
+    UserListPaginationDTO getAllUserByManager(Pageable pageable, Long loginUserId, String role, List<Role> accessibleRoles, String companyName, String city, String district, String manage);
 }
