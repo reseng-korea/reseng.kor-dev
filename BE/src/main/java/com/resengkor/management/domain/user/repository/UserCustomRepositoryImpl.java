@@ -73,8 +73,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 .selectFrom(user)
                 .join(user.userProfile, userProfile)
                 .where(builder)
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
                 .fetch();
 
         // RoleHierarchy에서 부모-자식 관계 조회
@@ -99,29 +97,27 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         // 결과 정렬: managementStatus(true 먼저), Role 우선순위
         resultList.sort((u1, u2) -> {
             // 관리 상태 기준 정렬 (true 먼저)
-            if (u1.isManagementStatus() && !u2.isManagementStatus()) return -1;
-            if (!u1.isManagementStatus() && u2.isManagementStatus()) return 1;
+            if (u1.isManagementStatus() && !u2.isManagementStatus())
+                return -1;
+            if (!u1.isManagementStatus() && u2.isManagementStatus())
+                return 1;
 
             // Role 우선순위 기준 정렬
             int roleOrder1 = getRoleRank(u1.getRole());
             int roleOrder2 = getRoleRank(u2.getRole());
 
-            return Integer.compare(roleOrder1, roleOrder2);
+            return Integer.compare(roleOrder2, roleOrder1);
         });
 
-        Long totalCount = Optional.ofNullable(
-            jpaQueryFactory
-                .select(user.count())
-                .from(user)
-                .where(builder)
-                .fetchOne()
-        ).orElse(0L);
-
-//        int totalPage = (int) Math.ceil((double) totalCount / pageable.getPageSize());
+        // 페이지네이션 적용
+        int totalCount = resultList.size(); // 전체 데이터 개수
+        int fromIndex = Math.min((int) pageable.getOffset(), totalCount);
+        int toIndex = Math.min((fromIndex + pageable.getPageSize()), totalCount);
+        List<UserListDTO> pagedList = resultList.subList(fromIndex, toIndex);
 
         return UserListPaginationDTO.builder()
-                .totalCount(totalCount.intValue())
-                .userList(resultList)
+                .totalCount(totalCount)
+                .userList(pagedList)
                 .build();
     }
 
