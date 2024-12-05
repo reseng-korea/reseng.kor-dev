@@ -611,11 +611,11 @@ public class UserService {
 
     public List<Role> getAccessibleRoles(Role userRole) {
         return switch (userRole) {
-            case ROLE_MANAGER -> List.of(Role.ROLE_MANAGER, Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
-            case ROLE_DISTRIBUTOR -> List.of(Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
-            case ROLE_AGENCY -> List.of(Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
+            case ROLE_MANAGER -> List.of(Role.ROLE_MANAGER, Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER, Role.ROLE_GUEST);
+            case ROLE_DISTRIBUTOR -> List.of(Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER, Role.ROLE_GUEST);
+            case ROLE_AGENCY -> List.of(Role.ROLE_AGENCY, Role.ROLE_CUSTOMER, Role.ROLE_GUEST);
             case ROLE_PENDING, ROLE_GUEST -> null;
-            case ROLE_CUSTOMER -> List.of(Role.ROLE_CUSTOMER);
+            case ROLE_CUSTOMER -> List.of(Role.ROLE_CUSTOMER, Role.ROLE_GUEST);
         };
     }
 
