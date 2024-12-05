@@ -5,15 +5,15 @@ import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.resengkor.management.domain.user.dto.QUserListDTO;
 import com.resengkor.management.domain.user.dto.UserListDTO;
 import com.resengkor.management.domain.user.dto.UserListPaginationDTO;
-import com.resengkor.management.domain.user.entity.QUser;
-import com.resengkor.management.domain.user.entity.QUserProfile;
-import com.resengkor.management.domain.user.entity.Role;
-import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.domain.user.entity.*;
 import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class UserCustomRepositoryImpl implements UserCustomRepository {
 
@@ -25,6 +25,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
 
     QUser user = QUser.user;
     QUserProfile userProfile = QUserProfile.userProfile;
+    QRoleHierarchy roleHierarchy = QRoleHierarchy.roleHierarchy;
 
     @Override
     public Optional<User> findManagerUser() {
@@ -38,7 +39,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     }
 
     @Override
-    public UserListPaginationDTO getAllUserByManager(Pageable pageable, String role, String status, LocalDateTime createdAt, List<Role> accessibleRoles, String companyName, String city, String district) {
+    public UserListPaginationDTO getAllUserByManager(Pageable pageable, Long loginUserId, String role, String status, LocalDateTime createdAt, List<Role> accessibleRoles, String companyName, String city, String district) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -64,15 +65,37 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             builder.and(userProfile.district.regionName.eq(district.trim()))
                     .and(userProfile.district.regionType.trim().eq("DISTRICT")); // exact match가 아닌 경우만 추가
 
-        List<UserListDTO> resultList = jpaQueryFactory
-                .select(new QUserListDTO(user))
-                .from(user)
-                .join(user.userProfile, userProfile) // Join User with UserProfile
+        // **자기 자신 제외 조건 추가**
+        builder.and(user.id.ne(loginUserId)); // loginUserId와 같은 ID를 가진 유저 제외
+
+        // 조회된 유저 리스트 가져오기
+        List<User> userList = jpaQueryFactory
+                .selectFrom(user)
+                .join(user.userProfile, userProfile)
                 .where(builder)
-                .offset(pageable.getOffset()) // 페이징 처리 (offset)
-                .limit(pageable.getPageSize()) // 페이징 처리 (limit)
-                .orderBy(user.id.asc()) // 정렬 기준
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .orderBy(user.id.asc())
                 .fetch();
+
+        // RoleHierarchy에서 부모-자식 관계 조회
+        List<Long> userIdList = userList.stream().map(User::getId).toList();
+
+        Set<Long> managedUserIdList = new HashSet<>(jpaQueryFactory
+                .select(roleHierarchy.descendant.id)
+                .from(roleHierarchy)
+                .where(roleHierarchy.ancestor.id.eq(loginUserId)
+                        .and(roleHierarchy.descendant.id.in(userIdList))
+                )
+                .fetch());
+
+        // UserListDTO 생성
+        List<UserListDTO> resultList = userList.stream()
+                .map(user -> UserListDTO.fromUser(
+                        user,
+                        managedUserIdList.contains(user.getId()) // 부모-자식 관계 여부 판단
+                ))
+                .collect(Collectors.toList());
 
         Long totalCount = Optional.ofNullable(
             jpaQueryFactory

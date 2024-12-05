@@ -604,7 +604,7 @@ public class UserService {
 
         PageRequest pageRequest = PageRequest.of(page, 10);
 
-        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, role, status, createdAt, accessibleRoles, companyName, city, district);
+        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, loginUser.getId(), role, status, createdAt, accessibleRoles, companyName, city, district);
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), userListPaginationDTO);
     }
