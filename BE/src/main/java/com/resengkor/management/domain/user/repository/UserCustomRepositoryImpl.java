@@ -2,17 +2,12 @@ package com.resengkor.management.domain.user.repository;
 
 import com.querydsl.core.BooleanBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.resengkor.management.domain.user.dto.QUserListDTO;
 import com.resengkor.management.domain.user.dto.UserListDTO;
 import com.resengkor.management.domain.user.dto.UserListPaginationDTO;
 import com.resengkor.management.domain.user.entity.*;
 import org.springframework.data.domain.Pageable;
 
-import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class UserCustomRepositoryImpl implements UserCustomRepository {
@@ -39,7 +34,7 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     }
 
     @Override
-    public UserListPaginationDTO getAllUserByManager(Pageable pageable, Long loginUserId, String role, String status, LocalDateTime createdAt, List<Role> accessibleRoles, String companyName, String city, String district) {
+    public UserListPaginationDTO getAllUserByManager(Pageable pageable, Long loginUserId, String role, List<Role> accessibleRoles, String companyName, String city, String district, String scope) {
 
         BooleanBuilder builder = new BooleanBuilder();
 
@@ -47,12 +42,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
             builder.and(user.role.eq(Role.valueOf(role)));
         else
             builder.and(user.role.in(accessibleRoles));
-
-        if(status != null && !status.trim().isEmpty())
-            builder.and(user.status.eq(Boolean.parseBoolean(status)));
-
-        if(createdAt != null)
-            builder.and(user.createdAt.after(createdAt));
 
         if(companyName != null && !companyName.trim().isEmpty())
             builder.and(user.companyName.contains(companyName));
@@ -64,6 +53,20 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
         if(district != null && !district.trim().isEmpty())
             builder.and(userProfile.district.regionName.eq(district.trim()))
                     .and(userProfile.district.regionType.trim().eq("DISTRICT")); // exact match가 아닌 경우만 추가
+
+        // Scope 조건에 따른 필터링 추가
+        if (scope != null && !scope.trim().isEmpty()) {
+            if ("ALL".equals(scope)) {
+                // ALL은 모든 역할을 포함하므로 별도의 추가 조건이 필요 없음
+            } else {
+                // Scope 값이 유효하면 해당 역할 이상인 사용자만 필터링
+                Role targetRole = Role.valueOf(scope);
+                builder.and(user.role.in(getRolesUpTo(targetRole)));
+            }
+        }
+
+        // 회원 상태가 true인 사용자만 포함되도록 조건 추가
+        builder.and(user.status.eq(true)); // 상태가 활성화(true)인 사용자만 조회
 
         // **자기 자신 제외 조건 추가**
         builder.and(user.id.ne(loginUserId)); // loginUserId와 같은 ID를 가진 유저 제외
@@ -124,5 +127,16 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
     // 역할 우선순위(rank)를 반환하는 메서드
     private int getRoleRank(Role role) {
         return role.getRank(); // Role의 rank 값을 그대로 사용
+    }
+
+    // 특정 역할 이상인 사용자들만 가져오는 메서드
+    private List<Role> getRolesUpTo(Role targetRole) {
+        List<Role> roles = new ArrayList<>();
+        for (Role role : Role.values()) {
+            if (role.getRank() <= targetRole.getRank()) {
+                roles.add(role);
+            }
+        }
+        return roles;
     }
 }

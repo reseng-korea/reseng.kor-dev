@@ -117,13 +117,12 @@ public class UserController {
     public DataResponse<?> getAllUserByManager(
             @RequestParam(value = "page", defaultValue = "0") int page,
             @RequestParam(value = "role", required = false) String role,
-            @RequestParam(value = "status", required = false) String status,
-            @RequestParam(value = "createdDate", required = false) String createdDate,
             @RequestParam(value = "companyName", required = false) String companyName,
             @RequestParam(value = "city", required = false) String city,
-            @RequestParam(value = "district", required = false) String district) {
+            @RequestParam(value = "district", required = false) String district,
+            @RequestParam(value = "scope", required = false, defaultValue = "ALL") String scope) {
 
-        return userServiceImpl.getAllUserByManager(page, role, status, createdDate, companyName, city, district);
+        return userServiceImpl.getAllUserByManager(page, role, companyName, city, district, scope);
     }
 
     @Operation(description = "로그인 유저의 하위 사용자 등급 수정")
