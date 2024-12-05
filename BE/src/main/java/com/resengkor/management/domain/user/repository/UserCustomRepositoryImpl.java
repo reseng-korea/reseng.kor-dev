@@ -75,7 +75,6 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 .where(builder)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
-                .orderBy(user.id.asc())
                 .fetch();
 
         // RoleHierarchy에서 부모-자식 관계 조회
@@ -97,6 +96,19 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 ))
                 .collect(Collectors.toList());
 
+        // 결과 정렬: managementStatus(true 먼저), Role 우선순위
+        resultList.sort((u1, u2) -> {
+            // 관리 상태 기준 정렬 (true 먼저)
+            if (u1.isManagementStatus() && !u2.isManagementStatus()) return -1;
+            if (!u1.isManagementStatus() && u2.isManagementStatus()) return 1;
+
+            // Role 우선순위 기준 정렬
+            int roleOrder1 = getRoleRank(u1.getRole());
+            int roleOrder2 = getRoleRank(u2.getRole());
+
+            return Integer.compare(roleOrder1, roleOrder2);
+        });
+
         Long totalCount = Optional.ofNullable(
             jpaQueryFactory
                 .select(user.count())
@@ -111,5 +123,10 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 .totalCount(totalCount.intValue())
                 .userList(resultList)
                 .build();
+    }
+
+    // 역할 우선순위(rank)를 반환하는 메서드
+    private int getRoleRank(Role role) {
+        return role.getRank(); // Role의 rank 값을 그대로 사용
     }
 }
