@@ -23,7 +23,10 @@ const Withdraw = () => {
         </span>
 
         <button
-          onClick={() => navigateTo(routes.home)}
+          onClick={() => {
+            navigateTo(routes.home);
+            window.location.reload();
+          }}
           type="submit"
           className="w-[25%] py-3 px-4 mb-20 font-bold text-white bg-primary rounded-lg hover:bg-hover"
         >

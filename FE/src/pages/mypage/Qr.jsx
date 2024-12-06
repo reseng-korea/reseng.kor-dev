@@ -320,14 +320,6 @@ const Qr = () => {
 
       console.log(response);
 
-      // if (qrSectionRef.current) {
-      //   console.log('스크롤');
-      //   qrSectionRef.current.scrollIntoView({
-      //     behavior: 'smooth',
-      //     block: 'start',
-      //   });
-      // }
-
       // Blob 객체 생성
       const blob = new Blob([response.data], { type: 'image/png' });
 

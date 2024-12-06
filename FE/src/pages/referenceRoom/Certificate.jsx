@@ -152,7 +152,7 @@ const Cerificate = () => {
             {certificate.length > 0 && (
               <Pagination
                 activePage={activePage} //현재 페이지
-                itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수(10개)
+                itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수(6개)
                 totalItemsCount={totalElements} // 표시할 항목의 총 개수(전체)
                 pageRangeDisplayed={5} //페이지네이터의 페이지 범위
                 hideFirstLastPages={true}
