@@ -633,7 +633,7 @@ public class UserService {
         List<RoleHierarchy> byAncestor = roleHierarchyRepository.findByAncestor(targetUser);
 
         if(byDescendant.size() > 2 || byAncestor.size() > 1)
-            throw new CustomException(ExceptionStatus.ROLE_CHANGE_FAIL);
+            throw new CustomException(ExceptionStatus.ROLE_CHANGE_ERROR);
 
         targetUser.updateUserRole(userRoleUpdateRequestDTO.getTargetRole());
 
