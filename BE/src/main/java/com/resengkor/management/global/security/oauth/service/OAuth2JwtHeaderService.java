@@ -80,6 +80,11 @@ public class OAuth2JwtHeaderService {
         // 응답 출력
         try {
             ObjectMapper objectMapper = new ObjectMapper();
+
+            // Content-Type과 인코딩 설정 추가
+            response.setContentType("application/json;charset=UTF-8");
+            response.setCharacterEncoding("UTF-8");
+
             response.getWriter().write(objectMapper.writeValueAsString(loginResponse));
             response.getWriter().flush();
         } catch (IOException e) {
