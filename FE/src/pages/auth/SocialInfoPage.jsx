@@ -173,6 +173,7 @@ const AddSignupPage = () => {
         if (response.data.code == 201) {
           localStorage.setItem('userId', response.data.data.id);
           localStorage.setItem('role', response.data.data.role);
+          localStorage.setItem('loginType', response.data.data.loginType);
           setModalOpen(true);
           openModal({
             primaryText: '회원가입이 완료되었습니다.',
@@ -181,6 +182,7 @@ const AddSignupPage = () => {
             onConfirm: () => {
               closeModal(), setModalOpen(false);
               navigateTo(routes.home);
+              window.location.reload();
             },
           });
         }
