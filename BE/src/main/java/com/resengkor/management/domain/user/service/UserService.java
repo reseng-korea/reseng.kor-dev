@@ -628,7 +628,20 @@ public class UserService {
         if (!accessibleRoles.contains(userRoleUpdateRequestDTO.getTargetRole()) || userRoleUpdateRequestDTO.getTargetRole().getRank() >= loginUser.getRole().getRank())
             throw new CustomException(ExceptionStatus.ROLE_CHANGE_FAIL);
 
+        List<RoleHierarchy> byDescendant = roleHierarchyRepository.findByDescendant(targetUser);
+        List<RoleHierarchy> byAncestor = roleHierarchyRepository.findByAncestor(targetUser);
+
+        if(byDescendant.size() > 2 || byAncestor.size() > 1)
+            throw new CustomException(ExceptionStatus.ROLE_CHANGE_FAIL);
+
         targetUser.updateUserRole(userRoleUpdateRequestDTO.getTargetRole());
+
+        User adminUser = getAdminUser();
+
+        RoleHierarchy roleHierarchy = roleHierarchyRepository.findByAncestorAndDescendant(adminUser, targetUser)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.HIERARCHY_NOT_FOUND));
+
+        roleHierarchy.updateRoleHierarchy(adminUser, targetUser, adminUser.getRole().getRank() - targetUser.getRole().getRank());
 
         return new CommonResponse(ResponseStatus.UPDATED_SUCCESS.getCode(), ResponseStatus.UPDATED_SUCCESS.getMessage());
     }
