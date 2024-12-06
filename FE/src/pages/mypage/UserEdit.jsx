@@ -38,8 +38,7 @@ const UserEdit = () => {
   const accesstoken = localStorage.getItem('accessToken');
   const userId = localStorage.getItem('userId');
   const role = localStorage.getItem('role');
-
-  console.log(userId);
+  const loginType = localStorage.getItem('loginType');
 
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -117,7 +116,7 @@ const UserEdit = () => {
 
   // 회원 정보 수정 버튼 클릭
   const handleSubmit = async () => {
-    if (!password) {
+    if (!password && loginType === 'LOCAL') {
       setModalOpen(true);
       openModal({
         primaryText: '비밀번호를 입력해주세요.',
@@ -127,7 +126,7 @@ const UserEdit = () => {
           closeModal(), setModalOpen(false);
         },
       });
-    } else if (!confirmPassword) {
+    } else if (!confirmPassword && loginType === 'LOCAL') {
       setModalOpen(true);
       openModal({
         primaryText: '비밀번호를 입력해주세요.',
@@ -137,7 +136,7 @@ const UserEdit = () => {
           closeModal(), setModalOpen(false);
         },
       });
-    } else if (!isValidPassword) {
+    } else if (!isValidPassword && loginType === 'LOCAL') {
       setModalOpen(true);
       openModal({
         primaryText: '비밀번호가 일치하지 않습니다.',
@@ -356,24 +355,30 @@ const UserEdit = () => {
               isClicked={isClicked}
               setIsClicked={setIsClicked}
             />
-            <PasswordInfoForm
-              password={password}
-              setPassword={setPassword}
-              confirmPassword={confirmPassword}
-              setConfirmPassword={setConfirmPassword}
-              isValidPassword={isValidPassword}
-              setIsValidPassword={setIsValidPassword}
-              isPasswordMatched={isPasswordMatched}
-              setIsPasswordMatched={setIsPasswordMatched}
-            />
-            <PhoneNumberInfoForm
-              phoneNumber={phoneNumber}
-              setPhoneNumber={setPhoneNumber}
-              isValidPhoneNumber={isValidPhoneNumber}
-              setIsValidPhoneNumber={setIsValidPhoneNumber}
-              isPhoneNumberVerified={isPhoneNumberVerified}
-              setIsPhoneNumberVerified={setIsPhoneNumberVerified}
-            />
+
+            {loginType === 'LOCAL' && (
+              <>
+                <PasswordInfoForm
+                  password={password}
+                  setPassword={setPassword}
+                  confirmPassword={confirmPassword}
+                  setConfirmPassword={setConfirmPassword}
+                  isValidPassword={isValidPassword}
+                  setIsValidPassword={setIsValidPassword}
+                  isPasswordMatched={isPasswordMatched}
+                  setIsPasswordMatched={setIsPasswordMatched}
+                />
+                <PhoneNumberInfoForm
+                  phoneNumber={phoneNumber}
+                  setPhoneNumber={setPhoneNumber}
+                  isValidPhoneNumber={isValidPhoneNumber}
+                  setIsValidPhoneNumber={setIsValidPhoneNumber}
+                  isPhoneNumberVerified={isPhoneNumberVerified}
+                  setIsPhoneNumberVerified={setIsPhoneNumberVerified}
+                />
+              </>
+            )}
+
             <CompanyNameInfoForm
               companyName={companyName}
               setCompanyName={setCompanyName}

@@ -22,7 +22,7 @@ export const handleLogin = (data, accessToken) => {
   localStorage.setItem('userId', data.id);
   localStorage.setItem('role', data.role);
   localStorage.setItem('name', data.representativeName);
-  localStorage.setItem('time', new Date(loginTime).toLocaleString());
+  localStorage.setItem('loginType', data.loginType);
 };
 
 // accessToken 만료 시 access,refresh 재발급

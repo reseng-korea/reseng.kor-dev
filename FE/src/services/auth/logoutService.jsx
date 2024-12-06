@@ -39,6 +39,7 @@ export const logoutService = async (
       localStorage.removeItem('role');
       localStorage.removeItem('userId');
       localStorage.removeItem('name');
+      localStorage.removeItem('loginType');
     }
     return response;
   } catch (error) {

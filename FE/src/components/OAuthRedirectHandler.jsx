@@ -33,6 +33,7 @@ function OAuthRedirectHandler() {
           localStorage.setItem('accessToken', accessToken);
           localStorage.setItem('userId', data.id);
           localStorage.setItem('role', data.role);
+          localStorage.setItem('loginType', data.loginType);
 
           if (!data.password) {
             navigateTo(routes.termsAndPolicySocial, { data });

@@ -174,7 +174,6 @@ const QnaRegister = () => {
             },
             {
               headers: {
-                Authorization: accesstoken,
                 'Content-Type': 'application/json',
               },
             }
