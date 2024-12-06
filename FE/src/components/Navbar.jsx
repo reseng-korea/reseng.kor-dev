@@ -233,13 +233,10 @@ export default function Example() {
                     onClick={() => {
                       const role = localStorage.getItem('role');
                       const loginType = localStorage.getItem('loginType');
-                      if (role === 'ROLE_GUEST') {
-                        navigateTo(routes.mypageUser);
-                      } else if (
-                        role === 'ROLE_PENDING' ||
-                        loginType === 'SOCIAL'
-                      ) {
+                      if (role === 'ROLE_PENDING' || loginType === 'SOCIAL') {
                         navigateTo(routes.mypageUserEdit);
+                      } else if (role === 'ROLE_GUEST') {
+                        navigateTo(routes.mypageUser);
                       } else {
                         navigateTo(routes.mypageMember);
                       }
