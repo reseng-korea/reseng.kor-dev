@@ -178,20 +178,21 @@ public class UserService {
                 .depth(0)  // 자기 자신과의 관계는 depth 0
                 .build();
 
-        User manager = getAdminUser();
-
-        RoleHierarchy defaultRoleHierarchy = RoleHierarchy.builder()
-                        .ancestor(manager)
-                        .descendant(savedUser)
-                        .depth(manager.getRole().getRank() - savedUser.getRole().getRank())
-                        .build();
-
-        log.info("RoleHierarchy 생성 성공");
-        
         roleHierarchyRepository.save(selfRoleHierarchy);
-        roleHierarchyRepository.save(defaultRoleHierarchy);
 
-        log.info("RoleHierarchy 저장 성공");
+        Optional<User> adminUser = getAdminUser();
+
+        if(adminUser.isPresent()) {
+            User manager = adminUser.orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+            RoleHierarchy defaultRoleHierarchy = RoleHierarchy.builder()
+                    .ancestor(manager)
+                    .descendant(savedUser)
+                    .depth(manager.getRole().getRank() - savedUser.getRole().getRank())
+                    .build();
+
+            roleHierarchyRepository.save(defaultRoleHierarchy);
+        }
         
         // 7. 응답 생성
         UserDTO userDTO = userMapper.toUserDTO(savedUser);
@@ -579,11 +580,8 @@ public class UserService {
                 ResponseStatus.RESPONSE_SUCCESS.getMessage(),
                 "사용 가능한 이메일입니다.");
     }
-    
-    
-    
 
-    public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String status, String createdDate, String companyName, String city, String district) {
+    public DataResponse<UserListPaginationDTO> getAllUserByManager(int page, String role, String companyName, String city, String district, String manage) {
 
         Long userId = UserAuthorizationUtil.getLoginMemberId();
 
@@ -597,25 +595,20 @@ public class UserService {
 
         List<Role> accessibleRoles = getAccessibleRoles(userRole);
 
-        LocalDateTime createdAt = null;
-
-        if(createdDate != null && !createdDate.isEmpty())
-            createdAt = LocalDateTime.parse(createdDate);
-
         PageRequest pageRequest = PageRequest.of(page, 10);
 
-        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, role, status, createdAt, accessibleRoles, companyName, city, district);
+        UserListPaginationDTO userListPaginationDTO = userRepository.getAllUserByManager(pageRequest, loginUser.getId(), role, accessibleRoles, companyName, city, district, manage);
 
         return new DataResponse<>(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage(), userListPaginationDTO);
     }
 
     public List<Role> getAccessibleRoles(Role userRole) {
         return switch (userRole) {
-            case ROLE_MANAGER -> List.of(Role.ROLE_MANAGER, Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
-            case ROLE_DISTRIBUTOR -> List.of(Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
-            case ROLE_AGENCY -> List.of(Role.ROLE_AGENCY, Role.ROLE_CUSTOMER);
+            case ROLE_MANAGER -> List.of(Role.ROLE_MANAGER, Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER, Role.ROLE_GUEST);
+            case ROLE_DISTRIBUTOR -> List.of(Role.ROLE_DISTRIBUTOR, Role.ROLE_AGENCY, Role.ROLE_CUSTOMER, Role.ROLE_GUEST);
+            case ROLE_AGENCY -> List.of(Role.ROLE_AGENCY, Role.ROLE_CUSTOMER, Role.ROLE_GUEST);
             case ROLE_PENDING, ROLE_GUEST -> null;
-            case ROLE_CUSTOMER -> List.of(Role.ROLE_CUSTOMER);
+            case ROLE_CUSTOMER -> List.of(Role.ROLE_CUSTOMER, Role.ROLE_GUEST);
         };
     }
 
@@ -636,14 +629,26 @@ public class UserService {
         if (!accessibleRoles.contains(userRoleUpdateRequestDTO.getTargetRole()) || userRoleUpdateRequestDTO.getTargetRole().getRank() >= loginUser.getRole().getRank())
             throw new CustomException(ExceptionStatus.ROLE_CHANGE_FAIL);
 
+        List<RoleHierarchy> byDescendant = roleHierarchyRepository.findByDescendant(targetUser);
+        List<RoleHierarchy> byAncestor = roleHierarchyRepository.findByAncestor(targetUser);
+
+        if(byDescendant.size() > 2 || byAncestor.size() > 1)
+            throw new CustomException(ExceptionStatus.ROLE_CHANGE_FAIL);
+
         targetUser.updateUserRole(userRoleUpdateRequestDTO.getTargetRole());
+
+        User adminUser = getAdminUser().orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+        RoleHierarchy roleHierarchy = roleHierarchyRepository.findByAncestorAndDescendant(adminUser, targetUser)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.HIERARCHY_NOT_FOUND));
+
+        roleHierarchy.updateRoleHierarchy(adminUser, targetUser, adminUser.getRole().getRank() - targetUser.getRole().getRank());
 
         return new CommonResponse(ResponseStatus.UPDATED_SUCCESS.getCode(), ResponseStatus.UPDATED_SUCCESS.getMessage());
     }
 
-    private User getAdminUser() {
+    private Optional<User> getAdminUser() {
 
-        return userRepository.findManagerUser()
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        return userRepository.findManagerUser();
     }
 }

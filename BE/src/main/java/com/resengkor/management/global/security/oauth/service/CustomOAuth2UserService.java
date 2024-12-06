@@ -3,6 +3,7 @@ package com.resengkor.management.global.security.oauth.service;
 import com.resengkor.management.domain.user.entity.*;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
+import com.resengkor.management.global.exception.CustomException;
 import com.resengkor.management.global.exception.ExceptionStatus;
 import com.resengkor.management.global.security.oauth.dto.*;
 import jakarta.transaction.Transactional;
@@ -80,13 +81,28 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .build();
             user = userRepository.save(user);
 
-            // RoleHierarchy 생성 (상위 관계가 없는 일반 사용자는 자기 자신)
-            RoleHierarchy roleHierarchy = RoleHierarchy.builder()
+            // RoleHierarchy 생성 (자기 자신 + 관리자 - 가입유저)
+            RoleHierarchy selfRoleHierarchy = RoleHierarchy.builder()
                     .ancestor(user)  // 상위 관계: 자신
                     .descendant(user)  // 하위 관계: 자신
                     .depth(0)  // 자기 자신과의 관계는 depth 0
                     .build();
-            roleHierarchyRepository.save(roleHierarchy);
+
+
+            User manager = getAdminUser();
+
+            RoleHierarchy defaultRoleHierarchy = RoleHierarchy.builder()
+                    .ancestor(manager)
+                    .descendant(user)
+                    .depth(manager.getRole().getRank() - user.getRole().getRank())
+                    .build();
+
+            log.info("RoleHierarchy 생성 성공");
+
+            roleHierarchyRepository.save(selfRoleHierarchy);
+            roleHierarchyRepository.save(defaultRoleHierarchy);
+
+            log.info("RoleHierarchy 저장 성공");
 
             // Entity 목적 순수하게 유지하기 위해서 dto 로 전달..
             OAuth2UserDTO oAuth2UserDto = OAuth2UserDTO.builder()
@@ -136,5 +152,11 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
 
             return new CustomOAuth2User(oAuth2UserDto);
         }
+    }
+
+    private User getAdminUser() {
+
+        return userRepository.findManagerUser()
+                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
     }
 }
