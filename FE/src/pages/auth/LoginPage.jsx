@@ -233,14 +233,15 @@ const LoginPage = () => {
             </div>
 
             {/* 로그인 버튼 */}
-            <button
-              type="submit"
-              onClick={handleSubmit}
-              className="w-full px-4 py-2 font-bold text-white bg-primary rounded-lg hover:bg-hover"
-            >
-              로그인
-            </button>
-
+            <div className="px-3">
+              <button
+                type="submit"
+                onClick={handleSubmit}
+                className="w-full px-3 py-2 font-bold text-white bg-primary rounded-lg hover:bg-hover"
+              >
+                로그인
+              </button>
+            </div>
             {/* 비번, 아이디 찾기, 회원가입 */}
             <div className="flex items-center justify-between px-3 py-2 mt-2 mb-4">
               <span
