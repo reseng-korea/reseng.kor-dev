@@ -1,8 +1,9 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
 import ReactQuill, { Quill } from 'react-quill-new';
 import 'react-quill-new/dist/quill.snow.css';
+
+import apiClient from '../../services/apiClient';
 
 // import ImageResize from 'quill-image-resize-module-react';
 // Quill.register('modules/imageResize', ImageResize);
@@ -126,7 +127,7 @@ const DocumentRegister = () => {
 
         try {
           console.log(documentType);
-          const response = await axios.post(
+          const response = await apiClient.post(
             `${apiUrl}/api/v1/s3/upload/${documentType}`,
             formData,
             {
@@ -309,7 +310,7 @@ const DocumentRegister = () => {
       console.log(documentData.id);
       if (documentData.isModify) {
         try {
-          const response = await axios.put(
+          const response = await apiClient.put(
             `${apiUrl}/api/v1/documents/${documentType}/${documentData.id}`,
             data,
             {
@@ -354,7 +355,7 @@ const DocumentRegister = () => {
       } else {
         console.log(data);
         try {
-          const response = await axios.post(
+          const response = await apiClient.post(
             `${apiUrl}/api/v1/documents/${documentType}`,
             data,
             {
@@ -431,7 +432,7 @@ const DocumentRegister = () => {
     console.log('access', accesstoken);
 
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${apiUrl}/api/v1/s3/download?fileName=${fileName}`,
         {
           headers: {
@@ -457,7 +458,7 @@ const DocumentRegister = () => {
   // 파일 삭제
   const handleDelete = async (fileName) => {
     try {
-      const response = await axios.delete(
+      const response = await apiClient.delete(
         `${apiUrl}/api/v1/s3?fileName=${fileName}`,
         {
           headers: {

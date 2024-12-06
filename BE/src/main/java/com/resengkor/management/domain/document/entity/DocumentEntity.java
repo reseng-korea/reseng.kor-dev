@@ -33,6 +33,7 @@ public class DocumentEntity extends BaseEntity {
     @Column(columnDefinition = "LONGTEXT", nullable = false)
     private String content;
 
+    @Column(length = 1000)
     private String thumbnailUrl;
 
     @OneToMany(mappedBy = "documentEntity", cascade = CascadeType.ALL, orphanRemoval = true)

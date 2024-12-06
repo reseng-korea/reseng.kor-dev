@@ -22,7 +22,7 @@ public class Answer extends BaseEntity {
     @Column(name = "answer_id", updatable = false)
     private Long id;
 
-    @Column(name = "answer_content", nullable = false, columnDefinition = "VARCHAR(500 CHAR)")
+    @Column(name = "answer_content", nullable = false, columnDefinition = "VARCHAR(500)")
     private String content;
 
     @OneToOne(fetch = FetchType.LAZY)

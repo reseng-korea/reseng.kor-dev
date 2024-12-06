@@ -230,7 +230,14 @@ export default function Example() {
                   onMouseLeave={handleMouseLeave}
                 >
                   <button
-                    onClick={() => navigateTo(routes.mypageMember)}
+                    onClick={() => {
+                      const role = localStorage.getItem('role');
+                      if (role === 'ROLE_GUEST') {
+                        navigateTo(routes.mypageUser);
+                      } else {
+                        navigateTo(routes.mypageMember);
+                      }
+                    }}
                     className="relative flex text-sm bg-transparent hover:border-2"
                   >
                     <IoPersonSharp className="text-gray4" />
@@ -243,7 +250,14 @@ export default function Example() {
                       </a>
                       <hr />
                       <a
-                        onClick={() => navigateTo(routes.mypageMember)}
+                        onClick={() => {
+                          const role = localStorage.getItem('role');
+                          if (role === 'ROLE_GUEST') {
+                            navigateTo(routes.mypageUser);
+                          } else {
+                            navigateTo(routes.mypageMember);
+                          }
+                        }}
                         className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
                       >
                         마이페이지

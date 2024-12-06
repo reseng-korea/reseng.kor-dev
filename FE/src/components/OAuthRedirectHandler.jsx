@@ -7,11 +7,8 @@ function OAuthRedirectHandler() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
 
-  console.log('route가 성공적으로 되어 OAuthRedirectHandler로 들어옵니다요');
-
   useEffect(() => {
     async function checkLoginStatus() {
-      console.log('useEffect로 들어옵니당');
       try {
         // 로그인 상태를 확인하는 API 호출 (쿠키 기반 인증)
 
@@ -26,7 +23,6 @@ function OAuthRedirectHandler() {
 
         // JSON 응답 처리
         const data = await response.json(); // 안전하게 호출
-        console.log('데이터:', data);
         // 응답 헤더에서 토큰 추출
         const accessToken = response.headers.get('authorization');
 

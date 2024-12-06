@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
 import useModal from '../../hooks/useModal';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
+import apiClient from '../../services/apiClient';
 import {
   validatePassword,
   checkPasswordMatch,
@@ -111,7 +111,7 @@ const ChangePasswordPage = () => {
       });
     } else {
       try {
-        const response = await axios.put(
+        const response = await apiClient.put(
           `${apiUrl}/api/v1/users/${userId}/password`,
           { oldPassword: tempPassword, newPassword: newPassword },
           {

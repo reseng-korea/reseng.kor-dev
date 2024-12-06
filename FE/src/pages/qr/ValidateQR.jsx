@@ -1,7 +1,9 @@
 import { useEffect } from 'react';
-import axios from 'axios';
+
 import { useSearchParams } from 'react-router-dom';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+
+import apiClient from '../../services/apiClient';
 
 const ValidateQR = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -14,7 +16,7 @@ const ValidateQR = () => {
       const uuid = searchParams.get('uuid'); // URL에서 uuid 추출
 
       try {
-        const response = await axios.get(
+        const response = await apiClient.get(
           `${apiUrl}/api/v1/qr-code?uuid=${uuid}`
         );
         // const data = await response.json();

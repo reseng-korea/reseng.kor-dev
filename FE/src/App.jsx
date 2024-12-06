@@ -91,8 +91,6 @@ import QrFailure from './pages/qr/QrFailure';
 import Tmp from './pages/Tmp';
 
 export const handleTokenExpiration = (openModal) => {
-  console.log('실행?');
-  // const { openModal } = useModalContext();
   openModal({
     primaryText: '세션이 만료되었습니다.',
     context: '다시 로그인해주세요.',

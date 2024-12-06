@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
 import apiClient from '../../services/apiClient';
 
@@ -27,6 +26,7 @@ const UserEdit = () => {
     { label: 'QR 발생기', route: '/mypage/qr' },
     { label: '회원 정보 수정', route: '/mypage/user' },
   ];
+  const guestNavItems = [{ label: '회원 정보 수정', route: '/mypage/user' }];
   const { navigateTo, routes } = useNavigateTo();
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -37,7 +37,7 @@ const UserEdit = () => {
 
   const accesstoken = localStorage.getItem('accessToken');
   const userId = localStorage.getItem('userId');
-  const refreshtoken = localStorage.getItem('refreshToken');
+  const role = localStorage.getItem('role');
 
   console.log(userId);
 
@@ -289,7 +289,7 @@ const UserEdit = () => {
       },
       onCancel: async () => {
         try {
-          const response = await axios.put(
+          const response = await apiClient.put(
             `${apiUrl}/api/v1/users/withdrawal`,
             {},
             {
@@ -327,7 +327,7 @@ const UserEdit = () => {
       <div className="flex flex-col items-center justify-start min-h-screen px-3 py-2">
         <div className="flex flex-col items-center justify-center w-full">
           <SubNavbar
-            items={navItems}
+            items={role === 'ROLE_GUEST' ? guestNavItems : navItems}
             activePage="회원 정보 수정"
             mainCategory="마이페이지"
           />
