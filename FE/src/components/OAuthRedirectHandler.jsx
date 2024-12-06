@@ -26,7 +26,7 @@ function OAuthRedirectHandler() {
         // 응답 헤더에서 토큰 추출
         const accessToken = response.headers.get('authorization');
 
-        console.log(data);
+        console.log('데이터', data);
 
         if (accessToken) {
           // 로컬 스토리지에 저장
