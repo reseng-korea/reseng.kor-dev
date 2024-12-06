@@ -178,20 +178,21 @@ public class UserService {
                 .depth(0)  // 자기 자신과의 관계는 depth 0
                 .build();
 
-        User manager = getAdminUser();
-
-        RoleHierarchy defaultRoleHierarchy = RoleHierarchy.builder()
-                        .ancestor(manager)
-                        .descendant(savedUser)
-                        .depth(manager.getRole().getRank() - savedUser.getRole().getRank())
-                        .build();
-
-        log.info("RoleHierarchy 생성 성공");
-        
         roleHierarchyRepository.save(selfRoleHierarchy);
-        roleHierarchyRepository.save(defaultRoleHierarchy);
 
-        log.info("RoleHierarchy 저장 성공");
+        Optional<User> adminUser = getAdminUser();
+
+        if(adminUser.isPresent()) {
+            User manager = adminUser.orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+
+            RoleHierarchy defaultRoleHierarchy = RoleHierarchy.builder()
+                    .ancestor(manager)
+                    .descendant(savedUser)
+                    .depth(manager.getRole().getRank() - savedUser.getRole().getRank())
+                    .build();
+
+            roleHierarchyRepository.save(defaultRoleHierarchy);
+        }
         
         // 7. 응답 생성
         UserDTO userDTO = userMapper.toUserDTO(savedUser);
@@ -636,7 +637,7 @@ public class UserService {
 
         targetUser.updateUserRole(userRoleUpdateRequestDTO.getTargetRole());
 
-        User adminUser = getAdminUser();
+        User adminUser = getAdminUser().orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
 
         RoleHierarchy roleHierarchy = roleHierarchyRepository.findByAncestorAndDescendant(adminUser, targetUser)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.HIERARCHY_NOT_FOUND));
@@ -646,9 +647,8 @@ public class UserService {
         return new CommonResponse(ResponseStatus.UPDATED_SUCCESS.getCode(), ResponseStatus.UPDATED_SUCCESS.getMessage());
     }
 
-    private User getAdminUser() {
+    private Optional<User> getAdminUser() {
 
-        return userRepository.findManagerUser()
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        return userRepository.findManagerUser();
     }
 }
