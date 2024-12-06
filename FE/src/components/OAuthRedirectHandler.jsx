@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import axios from 'axios';
 
 import { useNavigateTo } from '../hooks/useNavigateTo';
+import { handleLogin } from '../services/auth/authService';
 
 function OAuthRedirectHandler() {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -29,16 +30,17 @@ function OAuthRedirectHandler() {
         console.log('데이터', data);
 
         if (accessToken) {
-          // 로컬 스토리지에 저장
-          localStorage.setItem('accessToken', accessToken);
-          localStorage.setItem('userId', data.id);
-          localStorage.setItem('role', data.role);
-          localStorage.setItem('loginType', data.loginType);
+          // localStorage.setItem('userId', data.id);
+          // localStorage.setItem('role', data.role);
+          // localStorage.setItem('loginType', data.loginType);
 
-          if (!data.password) {
+          handleLogin(data, accessToken);
+
+          if (data.role === 'ROLE_PENDING') {
             navigateTo(routes.termsAndPolicySocial, { data });
           } else {
             navigateTo(routes.home);
+            window.location.reload();
           }
         } else {
           console.error('Tokens are missing in the response headers.');

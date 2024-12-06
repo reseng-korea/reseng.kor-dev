@@ -13,7 +13,7 @@ export const useNavigateTo = () => {
     home: '/',
     signin: '/signin',
     signup: '/signup',
-    socialinfo: '/socialinfo',
+    socialinfo: '/socialinfo', //
     idinquiry: '/idinquiry',
     idinquirySuccess: '/idinquiry/success',
     idinquiryFailure: '/idinquiry/failure',
