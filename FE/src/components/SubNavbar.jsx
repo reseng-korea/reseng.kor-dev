@@ -5,7 +5,7 @@ const SubNavbar = ({ items, activePage, mainCategory }) => {
   const { navigateTo } = useNavigateTo();
 
   return (
-    <div>
+    <div className="w-full">
       <div className="mt-28 mb-12 text-5xl font-bold slide-up">
         {mainCategory}
       </div>

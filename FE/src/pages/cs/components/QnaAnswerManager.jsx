@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
+import apiClient from '../../../services/apiClient';
 import useModal from '../../../hooks/useModal';
 import { formatCreatedAt } from '../../../utils/dateUtils';
 
@@ -25,7 +25,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
     // 수정된 답변 등록이라면
     if (isModify) {
       try {
-        const response = await axios.put(
+        const response = await apiClient.put(
           `${apiUrl}/api/v1/qna/answers/${qnaData.answerId}`,
           {
             content: answerContentInput,
@@ -72,7 +72,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
       // 처음 답변을 등록하는 거라면
     } else {
       try {
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${apiUrl}/api/v1/qna/answers`,
           {
             content: answerContentInput,
@@ -112,7 +112,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
   // 댓글 등록 후 API를 다시 호출하여 qnaData를 업데이트하는 함수
   const updateQnaData = async () => {
     try {
-      const response = await axios.get(
+      const response = await apiClient.get(
         `${apiUrl}/api/v1/qna/questions/${qnaData.questionId}`,
         {
           headers: {
@@ -160,7 +160,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
       onCancel: async () => {
         try {
           closeModal();
-          const response = await axios.delete(
+          const response = await apiClient.delete(
             `${apiUrl}/api/v1/qna/answers/${qnaData.answerId}`,
             {
               headers: {

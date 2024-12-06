@@ -51,7 +51,7 @@ const Manage = () => {
           {/* 메인 */}
           <div className="flex flex-col mb-12 slide-down">
             {currentStock.length == 0 ? (
-              <div className="flex justify-center items-center mt-24">
+              <div className="flex flex-col justify-center items-center mt-24 h-1/2">
                 <span>현재 재고 수량이 없습니다.</span>
               </div>
             ) : (

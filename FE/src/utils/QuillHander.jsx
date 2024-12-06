@@ -1,4 +1,4 @@
-import axios from 'axios';
+import apiClient from '../services/apiClient';
 
 export const handleImageUpload = async (
   quillRef,
@@ -20,7 +20,7 @@ export const handleImageUpload = async (
       formData.append('file', file);
 
       try {
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${apiUrl}/api/v1/s3/upload/${documentType}`,
           formData,
           {
@@ -73,7 +73,7 @@ export const handleFileUpload = async (
       formData.append('file', file);
 
       try {
-        const response = await axios.post(
+        const response = await apiClient.post(
           `${apiUrl}/api/v1/s3/upload/${documentType}`,
           formData,
           {

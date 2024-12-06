@@ -44,9 +44,10 @@ const Qr = () => {
   const [postedDate, setPostedDate] = useState(''); //게시 날짜
   const [postedDuration, setPostedDuration] = useState(''); //게시 기간(일)
   const [typeWidth, setTypeWidth] = useState(null); //사용 현수막
-  const [horizontalLength, setHorizontalLength] = useState(null); //가로 길이
+  const [horizontalLength, setHorizontalLength] = useState(0); //가로 길이
   const [serverHorizontalLength, setServerHorizontalLength] = useState(''); //가로 길이(서버 전송 데이터)
   const [requestedLength, setRequestedLength] = useState(''); //사용할 길이
+  const [maxRequestedLength, setMaxRequestedLength] = useState(0); // 최대로 사용할 수 있는 길이
 
   const [imageUrl, setImageUrl] = useState(null);
 
@@ -149,6 +150,17 @@ const Qr = () => {
     }
   };
 
+  // 최대로 사용할 수 있는 길이
+  useEffect(() => {
+    if (horizontalLength !== null) {
+      const calculatedMax = parseFloat(
+        (serverHorizontalLength / 1.094).toFixed(3)
+      );
+      setMaxRequestedLength(calculatedMax);
+      console.log(calculatedMax);
+    }
+  }, [horizontalLength, requestedLength]);
+
   const formatDate = (date) => {
     // 로컬 타임존으로 날짜를 조정한 후 "YYYY-MM-DD" 형식으로 반환
     const year = date.getFullYear();
@@ -233,6 +245,16 @@ const Qr = () => {
         },
       });
       return;
+    } else if (maxRequestedLength < requestedLength) {
+      openModal({
+        primaryText: `${maxRequestedLength}m 이하의 길이를 입력해주세요.`,
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal();
+        },
+      });
+      return;
     } else if (!postedDate) {
       openModal({
         primaryText: '게시 날짜를 선택해주세요.',
@@ -297,14 +319,6 @@ const Qr = () => {
       });
 
       console.log(response);
-
-      // if (qrSectionRef.current) {
-      //   console.log('스크롤');
-      //   qrSectionRef.current.scrollIntoView({
-      //     behavior: 'smooth',
-      //     block: 'start',
-      //   });
-      // }
 
       // Blob 객체 생성
       const blob = new Blob([response.data], { type: 'image/png' });
@@ -451,7 +465,7 @@ const Qr = () => {
                         소수점 셋째 자리까지 입력할 수 있습니다. 숫자만
                         입력해주세요.
                       </span> */}
-                      <div className="flex flex-col items-center py-2 space-x-2">
+                      <div className="flex flex-col py-2 space-x-2">
                         <input
                           className="w-full p-2 border border-gray2 rounded-md text-sm"
                           value={requestedLength}
@@ -460,6 +474,20 @@ const Qr = () => {
                           placeholder="사용할 길이를 입력해주세요"
                         />
                       </div>
+                    </div>
+                  </div>
+                  <div className="flex w-full justify-between items-center space-x-4">
+                    <div className="w-1/3"></div>
+                    <div className="w-1/3"></div>
+                    <div className="w-1/3">
+                      {horizontalLength !== null && (
+                        <span className="text-left text-sm text-warning">
+                          <span className="font-bold">
+                            {maxRequestedLength}m{` `}
+                          </span>
+                          이하의 값을 입력해주세요.
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>

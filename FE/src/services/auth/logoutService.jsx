@@ -1,4 +1,4 @@
-import axios from 'axios';
+import apiClient from '../apiClient';
 
 /**
  * Logs out the user and handles modal and navigation
@@ -14,7 +14,7 @@ export const logoutService = async (
   { openModal, closeModal, navigateTo, routes }
 ) => {
   try {
-    const response = await axios.post(
+    const response = await apiClient.post(
       `${apiUrl}/api/v1/logout`,
       {},
       {
