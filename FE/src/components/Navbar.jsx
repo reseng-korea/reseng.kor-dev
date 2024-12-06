@@ -288,7 +288,7 @@ export default function Example() {
               )}
 
               {/* 임시페이지(삭제 예정) */}
-              <div
+              {/* <div
                 className="relative ml-3"
                 onMouseEnter={() => handleMouseEnter('login')}
                 onMouseLeave={handleMouseLeave}
@@ -299,7 +299,7 @@ export default function Example() {
                 >
                   <p className="text-gray4 font-bold">테스트용</p>
                 </button>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
