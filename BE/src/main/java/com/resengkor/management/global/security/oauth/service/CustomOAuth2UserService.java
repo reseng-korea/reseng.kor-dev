@@ -73,6 +73,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .emailStatus(true)
                     .representativeName(response.getName())
                     .phoneNumber(response.getPhoneNumber())
+                    .companyName("회사명을 입력해주세요")
                     .role(Role.ROLE_PENDING)
                     .loginType(LoginType.SOCIAL)
                     .status(true)
