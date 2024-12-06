@@ -58,8 +58,11 @@ public class UserCustomRepositoryImpl implements UserCustomRepository {
                 // ALL은 모든 역할을 포함하므로 별도의 추가 조건이 필요 없음
             } else {
                 // Scope 값이 유효하면 해당 역할 이상인 사용자만 필터링
-                Role targetRole = Role.valueOf(role);
-                builder.and(user.role.in(getRolesUpTo(targetRole)));
+//                Role targetRole = Role.valueOf(role);
+//                builder.and(user.role.in(getRolesUpTo(targetRole)));
+
+                // 입력받은 Role만 출력하기 위해
+                builder.and(user.role.eq(Role.valueOf(role)));
             }
         }
 
