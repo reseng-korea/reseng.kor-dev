@@ -209,21 +209,26 @@ const UserEdit = () => {
       });
     } else {
       try {
+        const data = {
+          email: email,
+          companyName: companyName,
+          representativeName: ownerName,
+          phoneNumber: phoneNumber,
+          companyPhoneNumber: companyPhoneNumber,
+          faxNumber: companyFaxNumber,
+          cityId: region.id,
+          districtId: subRegion.id,
+          streetAddress: address,
+          detailAddress: detailAddress,
+        };
+
+        if (loginType !== 'SOCIAL') {
+          data.password = password;
+        }
+
         const response = await apiClient.put(
           `${apiUrl}/api/v1/users/${userId}`,
-          {
-            email: email,
-            password: password,
-            companyName: companyName,
-            representativeName: ownerName,
-            phoneNumber: phoneNumber,
-            companyPhoneNumber: companyPhoneNumber,
-            faxNumber: companyFaxNumber,
-            cityId: region.id,
-            districtId: subRegion.id,
-            streetAddress: address,
-            detailAddress: detailAddress,
-          },
+          data,
           {
             headers: {
               Authorization: accesstoken,
