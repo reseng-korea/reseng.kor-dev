@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useLocation } from 'react-router-dom';
 import Layout from '../../components/Layouts';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import useModal from '../../hooks/useModal';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
+
+import apiClient from '../../services/apiClient';
 
 import EmailInfoForm from './components/EmailInfoForm';
 import PhoneNumberInfoForm from './components/PhoneNumberInfoForm';
@@ -145,10 +146,7 @@ const AddSignupPage = () => {
       });
     } else {
       try {
-        console.log(data?.id);
-        console.log('광역자치구 id로 들어가는지 ?', region.id);
-        console.log('지역자치구 id로 들어가는지', subRegion.id);
-        const response = await axios.put(
+        const response = await apiClient.put(
           `${apiUrl}/api/v1/users/oauth/${data.id}`,
           {
             email: email,

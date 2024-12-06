@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
+import apiClient from '../../../services/apiClient';
 import { useNavigateTo } from '../../../hooks/useNavigateTo';
 import useModal from '../../../hooks/useModal';
 
@@ -45,7 +45,7 @@ const QnaContent = (
       onCancel: async () => {
         try {
           closeModal();
-          const response = await axios.delete(
+          const response = await apiClient.delete(
             `${apiUrl}/api/v1/qna/questions/${qnaData.questionId}`,
             {
               headers: {

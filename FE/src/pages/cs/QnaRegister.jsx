@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import axios from 'axios';
 import { useParams } from 'react-router-dom';
+
+import apiClient from '../../services/apiClient';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
@@ -115,7 +116,7 @@ const QnaRegister = () => {
       if (data.isModify) {
         console.log(data.questionId);
         try {
-          const response = await axios.put(
+          const response = await apiClient.put(
             `${apiUrl}/api/v1/qna/questions/${data.questionId}`,
             {
               title: title,
@@ -163,7 +164,7 @@ const QnaRegister = () => {
         // 등록 로직이라면
       } else {
         try {
-          const response = await axios.post(
+          const response = await apiClient.post(
             `${apiUrl}/api/v1/qna/questions`,
             {
               title: title,

@@ -278,13 +278,6 @@ const Member = () => {
     return number.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
   };
 
-  //
-  //
-  //
-  //
-  //
-  //
-
   // 역할 변경 핸들러
   const handleRoleEdit = async (
     childId,
@@ -321,15 +314,16 @@ const Member = () => {
             console.log(response);
 
             // 성공하면
-            // openModal({
-            //   primaryText: `${companyName}"의 역할이 성공적으로`,
-            //   secondaryText: `소비자로 변경되었습니다.`,
-            //   type: 'success',
-            //   isAutoClose: false,
-            //   onConfirm: async () => {
-            //     closeModal();
-            //   },
-            // });
+            openModal({
+              primaryText: `${companyName}의 역할이 성공적으로`,
+              secondaryText: `소비자로 변경되었습니다.`,
+              type: 'success',
+              isAutoClose: false,
+              onConfirm: async () => {
+                closeModal();
+                handleLookUp();
+              },
+            });
           } catch (error) {
             console.log(error);
             openModal({
@@ -367,7 +361,7 @@ const Member = () => {
           closeModal();
           try {
             const response = await apiClient.patch(
-              `${apiUrl}/api/v1/roles`,
+              `${apiUrl}/api/v1/users/roles`,
               requestBody,
               {
                 headers: {
@@ -379,27 +373,43 @@ const Member = () => {
             console.log(response);
 
             // 성공하면
-            // openModal({
-            //   primaryText: `${companyName}"의 역할이 성공적으로`,
-            //   secondaryText: `'${ROLE_NAMES[selectedValue]}'(으)로 변경되었습니다.`,
-            //   type: 'success',
-            //   isAutoClose: false,
-            //   onConfirm: async () => {
-            //     closeModal();
-            //   },
-            // });
-          } catch (error) {
-            console.log(error);
             openModal({
-              primaryText: `${companyName}"의 역할 변경 중 오류가`,
-              secondaryText: `발생했습니다. 잠시 후 다시 시도해 주세요.`,
-              context: '문제가 지속되면 관리자에게 문의해 주세요.',
-              type: 'warning',
+              primaryText: `${companyName}의 역할이 성공적으로`,
+              secondaryText: `'${ROLE_NAMES[selectedValue]}'(으)로 변경되었습니다.`,
+              type: 'success',
               isAutoClose: false,
               onConfirm: async () => {
                 closeModal();
+                handleLookUp();
               },
             });
+          } catch (error) {
+            console.log(error);
+
+            if (
+              error.response.data.code == 6001 ||
+              error.response.data.code == 6004
+            ) {
+              openModal({
+                primaryText: `${companyName}의 등급을 변경할 권리가 없습니다.`,
+                type: 'warning',
+                isAutoClose: false,
+                onConfirm: async () => {
+                  closeModal();
+                },
+              });
+            } else {
+              openModal({
+                primaryText: `${companyName}의 역할 변경 중 오류가`,
+                secondaryText: `발생했습니다. 잠시 후 다시 시도해 주세요.`,
+                context: '문제가 지속되면 관리자에게 문의해 주세요.',
+                type: 'warning',
+                isAutoClose: false,
+                onConfirm: async () => {
+                  closeModal();
+                },
+              });
+            }
           }
         },
         onCancel: () => {

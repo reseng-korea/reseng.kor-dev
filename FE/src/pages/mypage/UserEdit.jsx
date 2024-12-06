@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
 
 import apiClient from '../../services/apiClient';
 
@@ -290,7 +289,7 @@ const UserEdit = () => {
       },
       onCancel: async () => {
         try {
-          const response = await axios.put(
+          const response = await apiClient.put(
             `${apiUrl}/api/v1/users/withdrawal`,
             {},
             {

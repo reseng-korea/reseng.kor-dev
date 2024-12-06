@@ -13,7 +13,6 @@ const apiUrl = import.meta.env.VITE_API_BASE_URL;
 let loginTime = localStorage.getItem('loginTime')
   ? Number(localStorage.getItem('loginTime'))
   : null;
-const expiresIn = 3600 * 1000; // 1시간 (accessToken 유효 시간)
 
 // 로그인 후 정보 저장
 export const handleLogin = (data, accessToken) => {
