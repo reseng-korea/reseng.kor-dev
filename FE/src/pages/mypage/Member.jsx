@@ -145,7 +145,7 @@ const Member = () => {
         }));
         setRegionsData(regions);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     }
     loadRegionsData();
@@ -165,7 +165,7 @@ const Member = () => {
           }));
           setSubRegionsData(subRegions);
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       } else {
         setSubRegionsData([]); // region이 없으면 하위 지역 초기화
@@ -190,7 +190,6 @@ const Member = () => {
 
   // 페이지네이션
   useEffect(() => {
-    console.log(memberList);
     if (memberList.length > 0) {
       handleLookUp();
     }
@@ -229,13 +228,6 @@ const Member = () => {
       if (companyName) params.append('companyName', companyName);
       if (selectedOption) params.append('manage', selectedOption);
 
-      console.log('선택 - 광역자치구', `${selectedRegion?.label}`);
-      console.log('선택 - 지역 자치구', `${selectedSubRegion?.label}`);
-      console.log('선택 - 롤', `${selectedRole?.value}`);
-      console.log('선택 - 회사 이름', `${companyName}`);
-      console.log('선택 - 옵션', `${selectedOption}`);
-      console.log('params', params.toString());
-      console.log(activePage);
       const response = await apiClient.get(
         `${apiUrl}/api/v1/users/pagination?page=${activePage - 1}&${params}`,
         {
@@ -245,7 +237,7 @@ const Member = () => {
         }
       );
 
-      console.log(response);
+      // console.log(response);
 
       if (response.data.code === 200) {
         setIsTableVisible(true);
@@ -258,7 +250,7 @@ const Member = () => {
       }
     } catch (error) {
       console.error('조회 중 오류 발생:', error);
-      console.log(error);
+      // console.log(error);
       setIsTableVisible(false);
       setMemberList([]);
     }
@@ -285,12 +277,6 @@ const Member = () => {
     selectedValue,
     optionsLength
   ) => {
-    console.log(childId);
-    console.log(companyName);
-    console.log(selectedValue);
-    console.log(ROLE_NAMES[selectedValue]);
-    console.log(optionsLength);
-
     // 게스트 -> 소비자
     if (optionsLength == 2) {
       openModal({
@@ -311,7 +297,7 @@ const Member = () => {
               }
             );
 
-            console.log(response);
+            // console.log(response);
 
             // 성공하면
             openModal({
@@ -325,7 +311,7 @@ const Member = () => {
               },
             });
           } catch (error) {
-            console.log(error);
+            // console.log(error);
             openModal({
               primaryText: `${companyName}"의 역할 변경 중 오류가`,
               secondaryText: `발생했습니다. 잠시 후 다시 시도해 주세요.`,
@@ -349,8 +335,6 @@ const Member = () => {
         targetRole: selectedValue,
       };
 
-      console.log(requestBody);
-
       openModal({
         primaryText: `${companyName}의 역할을`,
         secondaryText: `'${ROLE_NAMES[selectedValue]}'(으)로 변경하시겠습니까?`,
@@ -370,7 +354,7 @@ const Member = () => {
               }
             );
 
-            console.log(response);
+            // console.log(response);
 
             // 성공하면
             openModal({
@@ -384,7 +368,7 @@ const Member = () => {
               },
             });
           } catch (error) {
-            console.log(error);
+            // console.log(error);
 
             if (
               error.response.data.code == 6001 ||

@@ -36,11 +36,10 @@ const Location = () => {
             size: 10,
           },
         });
-        console.log(response);
-        console.log(response.data.data.content);
+        // console.log(response);
         setCompany(response.data.data.content); // 서버에서 받은 데이터 저장
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       } finally {
         setLoading(false);
       }

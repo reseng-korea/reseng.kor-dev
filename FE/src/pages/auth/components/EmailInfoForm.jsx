@@ -85,7 +85,7 @@ const EmailInfoForm = ({
           }
         );
 
-        console.log(response);
+        // console.log(response);
         if (response.data.code == 201) {
           setIsLoading(false);
           setModalOpen(true);
@@ -110,7 +110,7 @@ const EmailInfoForm = ({
         }
       } catch (error) {
         setIsLoading(false);
-        console.log(error);
+        // console.log(error);
         const code = error.response.data.code;
         if (code == 4022) {
           setModalOpen(true);
@@ -151,10 +151,7 @@ const EmailInfoForm = ({
         },
       });
     } else {
-      console.log(email);
-      console.log(authCode);
       try {
-        console.log(authCode);
         const response = await axios.post(
           `${apiUrl}/api/v1/mail/verify`,
           {
@@ -168,7 +165,6 @@ const EmailInfoForm = ({
           }
         );
         // console.log(response);
-        console.log(response.data.code);
 
         if (response.data.code == 200) {
           setModalOpen(true);
@@ -187,7 +183,7 @@ const EmailInfoForm = ({
           timerRef.current = null;
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         if (
           error.response.data.message ===
           '인증 코드가 일치하지 않습니다. 올바른 코드를 입력해 주세요.'

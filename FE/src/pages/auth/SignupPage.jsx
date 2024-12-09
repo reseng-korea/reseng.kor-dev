@@ -201,8 +201,6 @@ const SignupPage = () => {
         },
       });
     } else if (!detailAddress) {
-      console.log(region.id);
-      console.log(subRegion.id);
       setModalOpen(true);
       openModal({
         primaryText: '상세 주소를 입력해주세요.',
@@ -236,8 +234,6 @@ const SignupPage = () => {
           }
         );
 
-        console.log(response);
-
         if (
           response.data.message == '요청에 성공되어 데이터가 생성되었습니다'
         ) {
@@ -252,10 +248,7 @@ const SignupPage = () => {
             },
           });
         }
-        console.log(response);
-      } catch (error) {
-        console.log(error);
-      }
+      } catch (error) {}
     }
   };
 

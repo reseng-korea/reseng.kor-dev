@@ -51,7 +51,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
         openModal({
           primaryText: '답변 수정에 실패했습니다.',
           context: '잠시 후 다시 시도해주세요.',
@@ -104,7 +104,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     }
   };
@@ -132,7 +132,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
         });
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
@@ -182,7 +182,7 @@ const QnaAnswerManager = ({ qnaData, setQnaData }) => {
             });
           }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
           openModal({
             primaryText: '답변 삭제에 실패했습니다.',
             context: '잠시 후 다시 시도해주세요.',

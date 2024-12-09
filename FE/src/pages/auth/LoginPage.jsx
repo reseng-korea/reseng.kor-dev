@@ -72,7 +72,7 @@ const LoginPage = () => {
           }
         );
 
-        console.log(response);
+        // console.log(response);
 
         // localStorage.setItem('accessToken', response.headers.authorization);
         // localStorage.setItem('userId', response.data.id);
@@ -138,7 +138,6 @@ const LoginPage = () => {
 
   const handleRememberLogin = (e) => {
     setRememberLogin(e.target.checked);
-    console.log(e.target.checked);
   };
 
   // const handleKaKao = async () => {

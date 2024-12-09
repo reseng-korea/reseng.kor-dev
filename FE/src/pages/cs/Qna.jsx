@@ -98,14 +98,12 @@ const Qna = () => {
           }
         );
 
-        console.log('조회수 - 게시물 들어갈 때 ');
-
         // 데이터 처리
         if (response.data.code == 200) {
           handleResponse(response.data.data, index);
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
       // 관리자가 아니라면
     } else {
@@ -118,7 +116,6 @@ const Qna = () => {
           inputPlaceholder: '비밀번호 숫자 4자리',
           type: 'warning',
           onConfirm: async (password) => {
-            console.log('입력된 비밀번호:', password);
             try {
               const response = await apiClient.get(
                 `${apiUrl}/api/v1/qna/questions/${id}?password=${password}`,
@@ -129,13 +126,12 @@ const Qna = () => {
                   },
                 }
               );
-              console.log(response);
+              // console.log(response);
               if (response.data.code == 200) {
                 handleResponse(response.data.data, index);
               }
             } catch (error) {
-              console.log(error);
-              console.log(error.response.data.code);
+              // console.log(error);
               if (error.response.data.code == 4026) {
                 openModal({
                   primaryText: '비밀번호가 틀립니다.',
@@ -170,13 +166,13 @@ const Qna = () => {
           const response = await axios.get(
             `${apiUrl}/api/v1/qna/questions/${id}`
           );
-          console.log(response);
+          // console.log(response);
 
           if (response.data.code == 200) {
             handleResponse(response.data.data, index);
           }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       }
     }
@@ -189,7 +185,7 @@ const Qna = () => {
           `${apiUrl}/api/v1/qna/questions?page=${activePage - 1}&size=${itemsCountPerPage}`
         );
 
-        console.log(response);
+        // console.log(response);
 
         setTotalElements(response.data.data.totalElements);
         const startingIndex =
@@ -209,7 +205,7 @@ const Qna = () => {
 
         setQnaData(sortedData);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     }
     fetchData();

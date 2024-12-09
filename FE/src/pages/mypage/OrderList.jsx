@@ -38,7 +38,7 @@ const OrderList = () => {
           },
         });
 
-        console.log(response);
+        // console.log(response);
         setOrderList(response.data.data);
 
         const { total, inProgress, completed } = response.data.data.reduce(
@@ -55,7 +55,7 @@ const OrderList = () => {
         );
         setSummary({ total, inProgress, completed });
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -63,7 +63,6 @@ const OrderList = () => {
   }, []);
 
   const isReceivedHandler = async (orderId) => {
-    console.log(orderId);
     try {
       const response = await apiClient.patch(
         `${apiUrl}/api/v1/orders/${orderId}`,
@@ -77,7 +76,7 @@ const OrderList = () => {
         }
       );
 
-      console.log(response);
+      // console.log(response);
 
       openModal({
         primaryText: '수령이 완료되었습니다.',
@@ -89,7 +88,7 @@ const OrderList = () => {
         },
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

@@ -27,7 +27,7 @@ const AddressInfoForm = ({
         }));
         setRegionsData(regions);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     }
 
@@ -48,7 +48,7 @@ const AddressInfoForm = ({
           }));
           setSubRegionsData(subRegions);
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       } else {
         setSubRegionsData([]); // region이 없으면 하위 지역 초기화
