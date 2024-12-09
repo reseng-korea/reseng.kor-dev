@@ -77,7 +77,7 @@ const Qr = () => {
           },
         });
 
-        console.log(response);
+        // console.log(response);
 
         const options = response.data.data
           .filter((item) => item.typeWidth !== undefined)
@@ -88,7 +88,7 @@ const Qr = () => {
 
         setTypeWidthOptions(options); // 상태 업데이트
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -119,7 +119,7 @@ const Qr = () => {
           },
         }
       );
-      console.log(response);
+      // console.log(response);
       setIsOptions(true);
       const options = [
         ...response.data.data.nonStandardLengths.map((length, index) => ({
@@ -135,15 +135,13 @@ const Qr = () => {
         ),
       ];
       setHorizontalLengthOptions(options);
-      console.log(options);
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
   // 사용할 길이(m)
   const handleRequestedLengthInputChange = (e) => {
-    console.log(e.target.value);
     const value = e.target.value;
     if (value === '' || /^\d*\.?\d{0,3}$/.test(value)) {
       setRequestedLength(value);
@@ -157,7 +155,6 @@ const Qr = () => {
         (serverHorizontalLength / 1.094).toFixed(3)
       );
       setMaxRequestedLength(calculatedMax);
-      console.log(calculatedMax);
     }
   }, [horizontalLength, requestedLength]);
 
@@ -171,7 +168,6 @@ const Qr = () => {
 
   // 요청 날짜
   const handleRequestedDateInputChange = (date) => {
-    console.log(date);
     const formattedDate = formatDate(date);
     setRequestedDate(formattedDate);
   };
@@ -308,8 +304,6 @@ const Qr = () => {
       requestedLength: Number(requestedLength),
     };
 
-    console.log(data);
-
     try {
       const response = await apiClient.post(`${apiUrl}/api/v1/qr-code`, data, {
         headers: {
@@ -318,7 +312,7 @@ const Qr = () => {
         responseType: 'blob',
       });
 
-      console.log(response);
+      // console.log(response);
 
       // Blob 객체 생성
       const blob = new Blob([response.data], { type: 'image/png' });
@@ -328,7 +322,7 @@ const Qr = () => {
 
       setImageUrl(url); // 상태로 URL 저장
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

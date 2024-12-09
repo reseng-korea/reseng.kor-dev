@@ -28,10 +28,10 @@ const Manage = () => {
           },
         });
 
-        console.log(response);
+        // console.log(response);
         setCurrentStock(response.data.data);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 

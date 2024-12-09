@@ -35,8 +35,8 @@ const QnaDetail = () => {
   const [qnaData, setQnaData] = useState(initialData);
   const [visitCount, setVisitCount] = useState(0); // 방문 횟수 관리
 
-  console.log(initialData);
-  console.log(qnaData);
+  // console.log(initialData);
+  // console.log(qnaData);
 
   // 방문 횟수 증가
   // useEffect(() => {
@@ -58,10 +58,10 @@ const QnaDetail = () => {
   useEffect(() => {
     let isFromNavigation = sessionStorage.getItem('isFromNavigation');
     if (isFromNavigation === 'false') {
-      console.log('새로고침 시 들어와야돼');
+      // console.log('새로고침 시 들어와야돼');
       updateQnaData();
     } else {
-      console.log('처음에만 들어와');
+      // console.log('처음에만 들어와');
       isFromNavigation = 'false';
       sessionStorage.setItem('isFromNavigation', isFromNavigation);
     }
@@ -79,7 +79,7 @@ const QnaDetail = () => {
           },
         }
       );
-      console.log('api 재 호출 - QnaDetail', response);
+      // console.log('api 재 호출 - QnaDetail', response);
       if (response.data.code == 200) {
         const { answer, ...qnaDetails } = response.data.data;
         setQnaData({

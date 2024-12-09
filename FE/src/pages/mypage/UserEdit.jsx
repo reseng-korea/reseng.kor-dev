@@ -75,7 +75,7 @@ const UserEdit = () => {
           }
         );
 
-        console.log(response);
+        // console.log(response);
 
         setEmail(response.data.data.email);
         setPhoneNumber(response.data.data.phoneNumber);
@@ -107,7 +107,7 @@ const UserEdit = () => {
         // console.log(response.data.data.userProfile.streetAddress); //주소
         // console.log(response.data.data.userProfile.detailAddress); //상세주소
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -237,8 +237,7 @@ const UserEdit = () => {
           }
         );
 
-        console.log(response);
-        console.log(response.status);
+        // console.log(response);
 
         if (response.status == 200) {
           setModalOpen(true);
@@ -253,7 +252,7 @@ const UserEdit = () => {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     }
   };
@@ -307,9 +306,9 @@ const UserEdit = () => {
             localStorage.removeItem('userId');
             navigateTo(routes.mypageWithdraw);
           }
-          console.log(response);
+          // console.log(response);
         } catch (error) {
-          console.log(error);
+          // console.log(error);
           setModalOpen(true);
           openModal({
             primaryText: '탈퇴 요청이 실패했습니다.',
