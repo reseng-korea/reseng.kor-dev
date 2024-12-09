@@ -35,7 +35,7 @@ const OfferList = () => {
   const location = useLocation(); // 전달받은 state 접근
 
   useEffect(() => {
-    console.log('Scroll Position:', location.state?.scrollPosition);
+    // console.log('Scroll Position:', location.state?.scrollPosition);
     // state에서 scrollPosition 값을 읽어와 스크롤 복원
     if (location.state?.scrollPosition) {
       window.scrollTo(0, location.state.scrollPosition);
@@ -51,7 +51,7 @@ const OfferList = () => {
           },
         });
 
-        console.log(response);
+        // console.log(response);
         const data = response.data.data;
         setOfferList(data);
         const countResult = data.reduce(
@@ -79,7 +79,7 @@ const OfferList = () => {
 
         setSummary(countResult);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
 
@@ -170,7 +170,7 @@ const OfferList = () => {
           },
         }
       );
-      console.log(response);
+      // console.log(response);
       openModal({
         primaryText: '상태가 변경되었습니다.',
         type: 'success',
@@ -184,7 +184,7 @@ const OfferList = () => {
         },
       });
     } catch (error) {
-      console.log(error);
+      // console.log(error);
       setOfferList((prevOfferList) =>
         prevOfferList.map((offer) =>
           offer.id === id ? { ...offer, orderStatus: currentStatus } : offer

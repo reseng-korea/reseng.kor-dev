@@ -19,7 +19,6 @@ const AddSignupPage = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const location = useLocation();
   const data = location.state?.data;
-  console.log(data);
 
   const accesstoken = localStorage.getItem('accessToken');
 
@@ -50,7 +49,6 @@ const AddSignupPage = () => {
     if (data?.email) {
       setEmail(data.email); // 전달받은 이메일을 상태로 설정
     }
-    console.log('이메일', email);
   }, [data]);
 
   const handleSubmit = async () => {
@@ -168,7 +166,7 @@ const AddSignupPage = () => {
           }
         );
 
-        console.log(response);
+        // console.log(response);
 
         if (response.data.code == 201) {
           localStorage.setItem('userId', response.data.data.id);
@@ -189,7 +187,7 @@ const AddSignupPage = () => {
           });
         }
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     }
   };

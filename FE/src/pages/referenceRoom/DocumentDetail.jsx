@@ -30,9 +30,9 @@ const DocumentDetail = () => {
   const initialData = location.state || {};
   const [documentData, setDocumentData] = useState(initialData);
 
-  console.log(initialData);
-  console.log(documentData);
-  console.log(documentData.files);
+  // console.log(initialData);
+  // console.log(documentData);
+  // console.log(documentData.files);
 
   const activePageText = (() => {
     switch (documentData.type) {
@@ -61,7 +61,6 @@ const DocumentDetail = () => {
 
   // 자료실 글 수정 버튼 클릭 시
   const handleModifyPost = () => {
-    console.log(documentData);
     navigateTo(routes.documentRegister, {
       data: {
         isModify: true,
@@ -105,7 +104,7 @@ const DocumentDetail = () => {
             });
           }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
         }
       },
     });
@@ -113,9 +112,6 @@ const DocumentDetail = () => {
 
   // 파일 다운로드
   const handleDownload = async (fileId, fileName) => {
-    console.log(fileName);
-    console.log(documentData.type);
-    console.log(fileId);
     try {
       const response = await axios.get(
         `${apiUrl}/api/v1/documents/download/${documentData.type}/${fileId}`,
@@ -127,7 +123,7 @@ const DocumentDetail = () => {
           responseType: 'blob',
         }
       );
-      console.log(response);
+      // console.log(response);
 
       // const blob = new Blob([response.data], {
       //   type: response.headers['content-type'],
@@ -140,10 +136,6 @@ const DocumentDetail = () => {
       // link.click();
       // window.URL.revokeObjectURL(url);
 
-      console.log('Response status:', response.status);
-      console.log('Response headers:', response.headers);
-      console.log('Blob size:', response.data.size || response.data.length);
-
       const url = window.URL.createObjectURL(new Blob([response.data]));
       const link = document.createElement('a');
       link.href = url;
@@ -152,7 +144,7 @@ const DocumentDetail = () => {
       link.click();
       link.remove();
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

@@ -41,9 +41,6 @@ const QnaRegister = () => {
   // id가 존재하면 수정 모드로 인식하여 데이터를 불러옴
   useEffect(() => {
     if (data && data.isModify) {
-      console.log(data);
-      console.log(data.title);
-      console.log(data.isModify);
       setTitle(data.title);
       setContent(data.content);
       setIsSecret(data.secret);
@@ -114,7 +111,6 @@ const QnaRegister = () => {
     } else {
       // 수정 로직이라면
       if (data.isModify) {
-        console.log(data.questionId);
         try {
           const response = await apiClient.put(
             `${apiUrl}/api/v1/qna/questions/${data.questionId}`,
@@ -131,7 +127,6 @@ const QnaRegister = () => {
               },
             }
           );
-          console.log('수정 버튼 클릭', response);
 
           if (response.data.code == 201) {
             setModalOpen(true);
@@ -147,7 +142,7 @@ const QnaRegister = () => {
             });
           }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
           setModalOpen(true);
           openModal({
             primaryText: '문의 수정에 실패했습니다.',
@@ -178,7 +173,7 @@ const QnaRegister = () => {
               },
             }
           );
-          console.log(response);
+          // console.log(response);
 
           if (response.data.code == 201) {
             setModalOpen(true);
@@ -194,7 +189,7 @@ const QnaRegister = () => {
             });
           }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
           setModalOpen(true);
           openModal({
             primaryText: '문의 등록에 실패했습니다.',
@@ -213,7 +208,7 @@ const QnaRegister = () => {
   };
 
   const handleCancle = () => {
-    console.log(title);
+    // console.log(title);
     if (!title && !content && !isSecret && password.length == 0) {
       navigateTo(routes.qna);
     } else {

@@ -38,9 +38,7 @@ const PasswordInfoForm = ({
 
   useEffect(() => {
     const isPasswordValid = validatePassword(password);
-    console.log(isPasswordValid);
     const isConfirmPasswordValid = validatePassword(confirmPassword);
-    console.log(isConfirmPasswordValid);
     const doesPasswordMatch = checkPasswordMatch(password, confirmPassword);
     setIsValidPassword(isPasswordValid && isConfirmPasswordValid);
     setIsPasswordMatched(doesPasswordMatch);

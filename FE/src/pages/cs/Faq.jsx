@@ -28,9 +28,9 @@ const Faq = () => {
         const response = await axios.get(`${apiUrl}/api/v1/faq`);
         const fetchedFaqs = response.data.data.content; // response 데이터 구조에 맞게 data를 가져옴
         setFaqs(fetchedFaqs);
-        console.log(response);
+        // console.log(response);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
     fetchFaqData();

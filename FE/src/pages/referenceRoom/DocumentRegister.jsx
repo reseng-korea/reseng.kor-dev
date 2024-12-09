@@ -29,7 +29,6 @@ import { GiConsoleController } from 'react-icons/gi';
 const DocumentRegister = () => {
   const location = useLocation();
   const documentData = location.state?.data || {};
-  console.log(documentData);
   const documentType = documentData.isModify
     ? location.state?.data?.type // Detail 페이지에서 전달된 데이터
     : location.state?.documentType || ''; // Certificate 페이지에서 전달된 데이터
@@ -44,8 +43,6 @@ const DocumentRegister = () => {
 
   // id가 존재하면 수정 모드로 인식하여 데이터를 불러옴
   useEffect(() => {
-    console.log('수정');
-    console.log(documentData.images);
     if (documentData && documentData.isModify) {
       setTitle(documentData.title);
       setContent(documentData.content);
@@ -121,16 +118,11 @@ const DocumentRegister = () => {
     input.onchange = async () => {
       const file = input.files[0];
 
-      console.log('파일 이름:', file.name); // 파일 이름
-      console.log('파일 크기:', (file.size / 1024).toFixed(2) + ' KB'); // 파일 크기 (KB 단위)
-      console.log('파일 유형:', file.type); // 파일 MIME 타입
-
       if (file) {
         const formData = new FormData();
         formData.append('file', file);
 
         try {
-          console.log(documentType);
           const response = await apiClient.post(
             `${apiUrl}/api/v1/s3/upload/${documentType}`,
             formData,
@@ -142,7 +134,7 @@ const DocumentRegister = () => {
             }
           );
 
-          console.log(response);
+          // console.log(response);
           const fileUrl = response.data.data.fileUrl;
           const fileType = response.data.data.fileType;
           const fileName = response.data.data.fileName;
@@ -254,7 +246,6 @@ const DocumentRegister = () => {
   // 날짜 입력
   const handleDateChange = (event) => {
     setSelectedDate(event.target.value);
-    console.log('Selected Date:', event.target.value);
   };
 
   const wrapContentWithDiv = (htmlContent) => {
@@ -266,8 +257,8 @@ const DocumentRegister = () => {
 
   // 글 등록
   const handleSubmit = async () => {
-    console.log('제목', title);
-    console.log('내용', content);
+    // console.log('제목', title);
+    // console.log('내용', content);
 
     const data = {
       title: title,
@@ -309,9 +300,6 @@ const DocumentRegister = () => {
       });
     } else {
       // 수정 로직이라면
-      console.log('수정일 때, 데이터 확인', data);
-      console.log(documentType);
-      console.log(documentData.id);
       if (documentData.isModify) {
         try {
           const response = await apiClient.put(
@@ -324,7 +312,7 @@ const DocumentRegister = () => {
               },
             }
           );
-          console.log(response);
+          // console.log(response);
 
           if (response.data.code == 201) {
             setModalOpen(true);
@@ -340,7 +328,7 @@ const DocumentRegister = () => {
             });
           }
         } catch (error) {
-          console.log(error);
+          // console.log(error);
           setModalOpen(true);
           openModal({
             primaryText: '글 수정에 실패했습니다.',
@@ -357,7 +345,6 @@ const DocumentRegister = () => {
 
         // 등록 로직이라면
       } else {
-        console.log(data);
         try {
           const response = await apiClient.post(
             `${apiUrl}/api/v1/documents/${documentType}`,
@@ -369,9 +356,6 @@ const DocumentRegister = () => {
               },
             }
           );
-          console.log(response);
-          console.log(imageFiles);
-          console.log(uploadedFiles);
 
           if (response.data.code == 201) {
             setModalOpen(true);
@@ -429,35 +413,33 @@ const DocumentRegister = () => {
   };
 
   // 파일 확인 및 다운로드 ( 에디터에서)
-  const handleConfirm = async () => {
-    const fileName =
-      'certificate/b0a85319-02b2-4df2-b5b1-8d052579ffe1tree.jpeg';
+  // const handleConfirm = async () => {
+  //   const fileName =
+  //     'certificate/b0a85319-02b2-4df2-b5b1-8d052579ffe1tree.jpeg';
 
-    console.log('access', accesstoken);
+  //   try {
+  //     const response = await apiClient.get(
+  //       `${apiUrl}/api/v1/s3/download?fileName=${fileName}`,
+  //       {
+  //         headers: {
+  //           Authorization: accesstoken,
+  //         },
+  //         responseType: 'blob',
+  //       }
+  //     );
+  //     console.log(response);
 
-    try {
-      const response = await apiClient.get(
-        `${apiUrl}/api/v1/s3/download?fileName=${fileName}`,
-        {
-          headers: {
-            Authorization: accesstoken,
-          },
-          responseType: 'blob',
-        }
-      );
-      console.log(response);
-
-      const url = window.URL.createObjectURL(new Blob([response.data]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.setAttribute('download', fileName.split('/').pop()); // 파일 이름 설정
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-    } catch (error) {
-      console.log(error);
-    }
-  };
+  //     const url = window.URL.createObjectURL(new Blob([response.data]));
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.setAttribute('download', fileName.split('/').pop()); // 파일 이름 설정
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     link.remove();
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
 
   // 파일 삭제
   const handleDelete = async (fileName) => {
@@ -472,19 +454,17 @@ const DocumentRegister = () => {
         }
       );
 
-      console.log(response);
-
       setUploadedFiles((prevFiles) =>
         prevFiles.filter((file) => file.fileName !== fileName)
       );
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 
   const findFileNameByUrl = (imageUrl, imageFiles) => {
-    console.log('이미지url', imageUrl);
-    console.log('이미지 파일', imageFiles);
+    // console.log('이미지url', imageUrl);
+    // console.log('이미지 파일', imageFiles);
     const file = imageFiles.find((file) => file.fileUrl === imageUrl);
     return file ? file.fileName : null;
   };
@@ -495,7 +475,7 @@ const DocumentRegister = () => {
 
       quill.keyboard.bindings = {};
 
-      console.log('Quill 에디터 초기화 완료');
+      // console.log('Quill 에디터 초기화 완료');
 
       // Quill 키보드 바인딩으로 삭제 감지
       quill.keyboard.addBinding(
@@ -503,7 +483,7 @@ const DocumentRegister = () => {
         {
           collapsed: true,
           handler(range, context) {
-            console.log('Backspace 키 감지');
+            // console.log('Backspace 키 감지');
             handleDeleteKeyPress(range, context, quill, 'Backspace');
             return false; // 기본 동작 방지
           },
@@ -515,19 +495,19 @@ const DocumentRegister = () => {
         {
           collapsed: true,
           handler(range, context) {
-            console.log('Delete 키 감지');
+            // console.log('Delete 키 감지');
             handleDeleteKeyPress(range, context, quill, 'Delete');
             return false; // 기본 동작 방지
           },
         }
       );
 
-      console.log('테스트');
+      // console.log('테스트');
     }
   }, [imageFiles, handleDelete]);
 
   const handleDeleteKeyPress = async (range, context, quill, keyType) => {
-    console.log(`${keyType} 키 감지`);
+    // console.log(`${keyType} 키 감지`);
 
     if (!range) return;
 
@@ -547,7 +527,7 @@ const DocumentRegister = () => {
       try {
         // S3에서 이미지 삭제
         await handleDelete(fileName);
-        console.log(`Image ${fileName} deleted from S3`);
+        // console.log(`Image ${fileName} deleted from S3`);
 
         // imageFiles에서 삭제된 파일 제거
         setImageFiles((prevFiles) =>
