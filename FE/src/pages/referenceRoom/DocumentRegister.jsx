@@ -12,6 +12,36 @@ import ImageResize from 'quill-image-resize';
 Quill.register('modules/imageResize', ImageResize);
 window.Quill = Quill;
 
+// CustomVideoBlot 등록
+const BlockEmbed = Quill.import('blots/block/embed');
+
+class CustomVideoBlot extends BlockEmbed {
+  static create(value) {
+    const node = super.create();
+    node.setAttribute('src', value);
+    node.setAttribute('class', 'ql-video');
+    node.setAttribute('frameborder', '0');
+    node.setAttribute('allowfullscreen', true);
+    node.setAttribute('style', `
+      aspect-ratio: 16/9;
+      width: 70%;
+      max-width: 800px;
+      height: auto;
+      margin: 20px auto;
+      display: block;
+    `);
+    return node;
+  }
+
+  static value(node) {
+    return node.getAttribute('src');
+  }
+}
+
+CustomVideoBlot.blotName = 'customVideo';
+CustomVideoBlot.tagName = 'iframe'; // YouTube에서 iframe을 사용해야 동작
+Quill.register(CustomVideoBlot);
+
 import dompurify from 'dompurify';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
@@ -101,6 +131,8 @@ const DocumentRegister = () => {
       'indent',
       'link',
       'image',
+      'video',
+      'customVideo',
       'color',
       'background',
       'align',
@@ -165,12 +197,57 @@ const DocumentRegister = () => {
     };
   };
 
+  const VideoHandler = () => {
+    const videoUrl = prompt('YouTube 동영상 URL을 입력하세요:');
+    
+    if (videoUrl) {
+      // YouTube URL 형식 처리 개선
+      let embedUrl = videoUrl;
+      
+      // youtube.com/watch?v= 형식 처리
+      if (videoUrl.includes('watch?v=')) {
+        embedUrl = videoUrl.replace('watch?v=', 'embed/');
+      }
+      // youtu.be/ 형식 처리
+      else if (videoUrl.includes('youtu.be/')) {
+        embedUrl = videoUrl.replace('youtu.be/', 'youtube.com/embed/');
+      }
+      
+      // http:// 또는 https:// 가 없는 경우 추가
+      if (!embedUrl.match(/^https?:\/\//)) {
+        embedUrl = 'https://' + embedUrl;
+      }
+
+      const editor = quillRef.current.getEditor();
+      const range = editor.getSelection();
+      
+      try {
+        // 비디오 삽입 전에 줄바꿈 추가
+      editor.insertText(range.index, '\n');
+      
+      // 비디오 삽입
+      editor.insertEmbed(range.index + 1, 'customVideo', embedUrl);
+      
+      // 비디오 삽입 후 줄바꿈 추가
+      editor.insertText(range.index + 2, '\n');
+      
+      // 커서를 비디오 다음으로 이동
+      editor.setSelection(range.index + 3, 0);
+      
+      console.log('Video embedded:', embedUrl);
+      } catch (error) {
+        console.error('Error embedding video:', error);
+      }
+    }
+  };
+
   const modules = useMemo(
     () => ({
       toolbar: {
         container: '#toolBar',
         handlers: {
           image: ImageHandler,
+          video: VideoHandler,
         },
       },
       imageResize: {
@@ -376,7 +453,7 @@ const DocumentRegister = () => {
           if (response.data.code == 201) {
             setModalOpen(true);
             openModal({
-              primaryText: '글이 성공적으로 등록되었습니다.',
+              primaryText: '글이 성공적으로 등��되었습니다.',
               type: 'success',
               isAutoClose: false,
               onConfirm: () => {
@@ -580,7 +657,7 @@ const DocumentRegister = () => {
   //         const height =
   //           img.style.height || img.getAttribute('height') || 'auto';
 
-  //         // 실제 렌더링된 크기 가져오기
+  //         // 실제 렌더링된 크기 가��오기
   //         const { width: renderedWidth, height: renderedHeight } =
   //           img.getBoundingClientRect();
 
