@@ -453,7 +453,7 @@ const DocumentRegister = () => {
           if (response.data.code == 201) {
             setModalOpen(true);
             openModal({
-              primaryText: '글이 성공적으로 등��되었습니다.',
+              primaryText: '글이 성공적으로 등록되었습니다.',
               type: 'success',
               isAutoClose: false,
               onConfirm: () => {
@@ -657,7 +657,7 @@ const DocumentRegister = () => {
   //         const height =
   //           img.style.height || img.getAttribute('height') || 'auto';
 
-  //         // 실제 렌더링된 크기 가��오기
+  //         // 실제 렌더링된 크기 가져오기
   //         const { width: renderedWidth, height: renderedHeight } =
   //           img.getBoundingClientRect();
 
