@@ -39,13 +39,13 @@ const Press = () => {
         const response = await axios.get(
           `${apiUrl}/api/v1/documents/NEWS?page=${activePage - 1}&size=${itemsCountPerPage}`
         );
-        console.log(response);
+        // console.log(response);
 
         setTotalElements(response.data.data.totalElements);
         const data = response.data.data.content;
         setPress(data);
       } catch (error) {
-        console.log(error);
+        // console.log(error);
       }
     };
     fetchFaqData();
@@ -57,13 +57,13 @@ const Press = () => {
         `${apiUrl}/api/v1/documents/NEWS/${documentId}`
       );
 
-      console.log(response);
+      // console.log(response);
 
       if (response.data.code == 200) {
         handleResponse(response.data.data, index);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

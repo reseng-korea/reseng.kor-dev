@@ -62,9 +62,7 @@ import QnaDetail from './pages/cs/QnaDetail';
 import DocumentRegister from './pages/referenceRoom/DocumentRegister';
 import Certificate from './pages/referenceRoom/Certificate';
 import Coa from './pages/referenceRoom/Coa';
-import CoaDetail from './pages/referenceRoom/CoaDetail';
 import Press from './pages/referenceRoom/Press';
-import PressDetail from './pages/referenceRoom/PressDetail';
 import DocumentDetail from './pages/referenceRoom/DocumentDetail';
 
 //items
@@ -87,6 +85,9 @@ import Withdraw from './pages/mypage/Withdraw';
 import ValidateQR from './pages/qr/ValidateQR';
 import QrSuccess from './pages/qr/QrSuccess';
 import QrFailure from './pages/qr/QrFailure';
+
+// 404 에러
+import NotFoundPage from './pages/NotFoundPage';
 
 import Tmp from './pages/Tmp';
 
@@ -205,15 +206,17 @@ function App() {
           {/* cs */}
           {/* 자주 묻는 질문 페이지 */}
           <Route path="/faq" element={<Faq />} />
-          {/* 사용자가 "/qna"로 들어왔을 때 자동으로 "/qna/1"로 리다이렉트 */}
-          {/* <Route
-            path="//qna/?page={:pageNumber}"
-            element={<Navigate to="/qna/?page={1}" />}
-          /> */}
           {/* 1:1 문의 페이지 */}
           <Route path="/qna" element={<Qna />} />
           {/* 1:1 문의 글 등록 페이지 */}
-          <Route path="/qna/register" element={<QnaRegister />} />
+          <Route
+            path="/qna/register"
+            element={
+              <ProtectedRoute isAuthenticated={isAuthenticated()}>
+                <QnaRegister />
+              </ProtectedRoute>
+            }
+          />
           {/* 1:1 문의 글 상세 페이지 */}
           <Route path="/qna/:pageNumber" element={<QnaDetail />} />
 
@@ -223,12 +226,8 @@ function App() {
           <Route path="/certificate" element={<Certificate />} />
           {/* 성적서 페이지 */}
           <Route path="/coa" element={<Coa />} />
-          {/* 성적서 상세 페이지 */}
-          <Route path="/coa/1" element={<CoaDetail />} />
           {/* 보도 자료 페이지 */}
           <Route path="/press" element={<Press />} />
-          {/* 보도 자료 상세 페이지 */}
-          <Route path="/press/1" element={<PressDetail />} />
           {/* 자료실 상세 페이지 */}
           <Route path="/certificate/:pageNumber" element={<DocumentDetail />} />
 
@@ -281,6 +280,9 @@ function App() {
             path="/jwt-header-oauth2" // 카카오 인증 후 돌아올 경로
             element={<OAuthRedirectHandler />}
           />
+
+          {/* 404에러 페이지 */}
+          <Route path="*" element={<NotFoundPage />} />
           {/* 임시  페이지(삭제 예정) */}
           <Route path="/tmp" element={<Tmp />} />
         </Routes>

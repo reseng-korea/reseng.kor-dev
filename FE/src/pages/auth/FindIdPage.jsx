@@ -28,7 +28,6 @@ const FindIdPage = () => {
     // 숫자만 입력 가능하도록 필터링
     const filteredValue = value.replace(/[^0-9]/g, '');
     setPhoneNumber(filteredValue);
-    console.log(phoneNumber);
   };
 
   const handleSubmit = async () => {
@@ -73,7 +72,7 @@ const FindIdPage = () => {
             },
           }
         );
-        console.log(response.data.data.email);
+        // console.log(response.data.data.email);
 
         // 성공했을 때
         if (response.status == 200) {
@@ -84,7 +83,6 @@ const FindIdPage = () => {
           });
         }
       } catch (error) {
-        console.log(error);
         navigateTo(routes.idinquiryFailure);
       }
     }

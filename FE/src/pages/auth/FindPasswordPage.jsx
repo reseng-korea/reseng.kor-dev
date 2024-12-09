@@ -78,7 +78,6 @@ const FindPasswordPage = () => {
             },
           }
         );
-        console.log(response);
         // 성공했을 때
         if (response.status == 200) {
           setModalOpen(true);
@@ -95,7 +94,6 @@ const FindPasswordPage = () => {
           });
         }
       } catch (error) {
-        console.log(error);
         setModalOpen(true);
         openModal({
           primaryText: '입력하신 정보와 일치하는 계정을',
