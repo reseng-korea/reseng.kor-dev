@@ -121,6 +121,10 @@ const DocumentRegister = () => {
     input.onchange = async () => {
       const file = input.files[0];
 
+      console.log('파일 이름:', file.name); // 파일 이름
+      console.log('파일 크기:', (file.size / 1024).toFixed(2) + ' KB'); // 파일 크기 (KB 단위)
+      console.log('파일 유형:', file.type); // 파일 MIME 타입
+
       if (file) {
         const formData = new FormData();
         formData.append('file', file);

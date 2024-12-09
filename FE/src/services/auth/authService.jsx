@@ -27,7 +27,7 @@ export const handleLogin = (data, accessToken) => {
 
 // accessToken 만료 시 access,refresh 재발급
 export const refreshAccessToken = async () => {
-  console.log('토큰 만료 확인');
+  // console.log('토큰 만료 확인');
   try {
     const response = await axios.post(
       `${apiUrl}/api/v1/reissue`,
@@ -35,7 +35,7 @@ export const refreshAccessToken = async () => {
       { withCredentials: true }
     );
 
-    console.log('리프레시 토큰 재발급 가능', response);
+    // console.log('리프레시 토큰 재발급 가능', response);
 
     localStorage.setItem('accessToken', response.headers.authorization);
     loginTime = Date.now();

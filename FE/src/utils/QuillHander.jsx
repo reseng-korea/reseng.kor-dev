@@ -30,8 +30,6 @@ export const handleImageUpload = async (
             },
           }
         );
-
-        console.log(response);
         const fileUrl = response.data.data.fileUrl;
         const fileType = response.data.data.fileType;
         const fileName = response.data.data.fileName;
@@ -83,8 +81,6 @@ export const handleFileUpload = async (
             },
           }
         );
-
-        console.log(response);
 
         const fileUrl = response.data.data.fileUrl;
         const fileName = response.data.data.fileName;
