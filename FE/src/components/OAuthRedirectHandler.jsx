@@ -20,14 +20,11 @@ function OAuthRedirectHandler() {
             'Content-Type': 'application/json',
           },
         });
-        console.log(response);
 
         // JSON 응답 처리
         const data = await response.json(); // 안전하게 호출
         // 응답 헤더에서 토큰 추출
         const accessToken = response.headers.get('authorization');
-
-        console.log('데이터', data);
 
         if (accessToken) {
           // localStorage.setItem('userId', data.id);

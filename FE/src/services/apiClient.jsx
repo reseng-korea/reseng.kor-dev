@@ -17,7 +17,7 @@ const apiClient = axios.create({
 apiClient.interceptors.request.use(
   (config) => {
     const token = localStorage.getItem('accessToken');
-    console.log('요청 인터셉터 실행');
+    // console.log('요청 인터셉터 실행');
     if (token) {
       config.headers.Authorization = token;
     }
@@ -31,13 +31,12 @@ apiClient.interceptors.response.use(
   (response) => response, // 성공적인 응답은 그대로 반환
   async (error) => {
     const originalRequest = error.config;
-    console.log('응답 인터셉터 실행');
+    // console.log('응답 인터셉터 실행');
 
     // 토큰 만료 에러(401) 처리
     if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true; // 재요청 방지 플래그
       try {
-        console.log('여기 실행');
         await refreshAccessToken(); // 토큰 재발급 요청
         const newAccessToken = localStorage.getItem('accessToken'); //새로운 토큰을
         originalRequest.headers.Authorization = newAccessToken;

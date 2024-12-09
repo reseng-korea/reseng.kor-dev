@@ -20,7 +20,7 @@ const ValidateQR = () => {
           `${apiUrl}/api/v1/qr-code?uuid=${uuid}`
         );
         // const data = await response.json();
-        console.log(response);
+        // console.log(response);
 
         const data = response.data;
 

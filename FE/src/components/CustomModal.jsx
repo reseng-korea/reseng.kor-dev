@@ -42,18 +42,18 @@ function CustomModal({
 
   useEffect(() => {
     // openModal 함수 내부
-    console.log('5. CustomModal로 왔다.', {
-      primaryText,
-      secondaryText,
-      context,
-      type,
-      isAutoClose,
-      cancleButton,
-      buttonName,
-      cancleButtonName,
-      onConfirm,
-      onCancel,
-    });
+    // console.log('5. CustomModal로 왔다.', {
+    //   primaryText,
+    //   secondaryText,
+    //   context,
+    //   type,
+    //   isAutoClose,
+    //   cancleButton,
+    //   buttonName,
+    //   cancleButtonName,
+    //   onConfirm,
+    //   onCancel,
+    // });
 
     if (isOpen && isAutoClose && !timerRef.current) {
       timerRef.current = setTimeout(() => {

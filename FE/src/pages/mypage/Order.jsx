@@ -36,10 +36,6 @@ const Order = () => {
     { id: Date.now(), temporaryTypeWidth: null, quantity: '' }, // 초기 값 1개
   ]);
 
-  useEffect(() => {
-    console.log(orders);
-  }, [orders]);
-
   // 추가하기
   const handleAddOrder = () => {
     setOrders((prevOrders) => [
@@ -111,7 +107,6 @@ const Order = () => {
       quantity: parseInt(quantity), // 숫자로 변환
     }));
 
-    console.log(bannerRequests);
     try {
       const response = await apiClient.post(
         `${apiUrl}/api/v1/orders`,
@@ -124,8 +119,6 @@ const Order = () => {
           },
         }
       );
-
-      console.log(response);
 
       if (response.data.code == 201) {
         openModal({

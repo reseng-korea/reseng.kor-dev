@@ -30,9 +30,7 @@ export const useNavigateTo = () => {
     documentRegister: '/document/register', //
     documentDetail: '/:type/:id', //
     coa: '/coa',
-    coaDetail: '/coa/1', //
     press: '/press', //
-    pressDetail: '/press/1', //
     itemsBanner: '/items/banner',
     itemsBiodegradable: '/items/biodegradable',
     itemsRecycle: '/items/recycle',

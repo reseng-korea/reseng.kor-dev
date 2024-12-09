@@ -42,9 +42,7 @@ const ChangePasswordPage = () => {
 
   useEffect(() => {
     const isPasswordValid = validatePassword(newPassword);
-    console.log(isPasswordValid);
     const isConfirmPasswordValid = validatePassword(confirmNewPassword);
-    console.log(isConfirmPasswordValid);
     const doesPasswordMatch = checkPasswordMatch(
       newPassword,
       confirmNewPassword
@@ -56,7 +54,6 @@ const ChangePasswordPage = () => {
   // 비밀번호 변경하기 버튼 클릭
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(isValidPassword);
     if (!tempPassword) {
       setModalOpen(true);
       openModal({
@@ -121,8 +118,6 @@ const ChangePasswordPage = () => {
           }
         );
 
-        console.log(response.data.code);
-
         if (response.data.code == 201) {
           setModalOpen(true);
           openModal({
@@ -137,8 +132,6 @@ const ChangePasswordPage = () => {
           });
         }
       } catch (error) {
-        console.log(error);
-        console.log(error.response.data.code);
         const code = error.response.data.code;
         if (code == 4000 || code == 4026) {
           setModalOpen(true);
