@@ -27,10 +27,10 @@ export const useNavigateTo = () => {
     qnaRegist: '/qna/register', //토큰 있어야만
     qnaDetail: '/qna/:pageNumber', //
     certificate: '/certificate',
-    documentRegister: '/document/register', //
-    documentDetail: '/:type/:id', //
     coa: '/coa',
     press: '/press', //
+    documentRegister: '/document/register', //
+    documentDetail: '/:type/:id', //
     itemsBanner: '/items/banner',
     itemsBiodegradable: '/items/biodegradable',
     itemsRecycle: '/items/recycle',
