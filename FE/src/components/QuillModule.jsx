@@ -49,6 +49,7 @@ const QuillModule = () => {
         <button className="ql-code-block" />
         <button className="ql-link" />
         <button className="ql-image" />
+        <button className="ql-video" />
         {/* <button className="ql-attach-file text-[11px] text-gray4 ml-1">
           <FaFile />
         </button> */}
