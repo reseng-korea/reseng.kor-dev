@@ -229,8 +229,6 @@ function App() {
           {/* 보도 자료 페이지 */}
           <Route path="/press" element={<Press />} />
           {/* 자료실 상세 페이지 */}
-          <Route path="/certificate/:pageNumber" element={<DocumentDetail />} />
-
           <Route path="/:type/:id" element={<DocumentDetail />} />
 
           {/* items */}
