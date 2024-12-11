@@ -11,6 +11,9 @@ import java.util.Optional;
 
 public interface DocumentRepository extends JpaRepository<DocumentEntity, Long> {
     //카테고리에 따른 목록 조회
+    @Query("SELECT d FROM DocumentEntity d " +
+            "ORDER BY CASE WHEN d.date IS NOT NULL THEN 0 ELSE 1 END, " +
+            "d.date DESC NULLS LAST, d.createdAt ASC")
     Page<DocumentEntity> findByType(DocumentType type, Pageable pageable);
 
     // Document ID와 Type을 기준으로 문서 조회(세부)
