@@ -13,7 +13,7 @@ import java.util.Optional;
 public interface DocumentRepository extends JpaRepository<DocumentEntity, Long> {
     //카테고리에 따른 목록 조회
     @Query("SELECT d FROM DocumentEntity d WHERE d.type = :type " +
-            "ORDER BY CASE WHEN :type = 'NEWS' THEN d.date ELSE d.createdAt END DESC"
+            "ORDER BY CASE WHEN :type = 'NEWS' THEN d.date ASC ELSE d.createdAt DESC END"
     Page<DocumentEntity> findByType(@Param("type") DocumentType type, Pageable pageable);
 
     // Document ID와 Type을 기준으로 문서 조회(세부)
