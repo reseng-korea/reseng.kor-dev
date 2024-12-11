@@ -56,7 +56,7 @@ const Extra = () => {
   const handleRowClick = async (index, documentId) => {
     try {
       const response = await axios.get(
-        `${apiUrl}/api/v1/documents/GRADE/${documentId}`
+        `${apiUrl}/api/v1/documents/EXTRA/${documentId}`
       );
 
       // console.log(response);
@@ -170,7 +170,7 @@ const Extra = () => {
                   type="submit"
                   onClick={() =>
                     navigateTo(routes.documentRegister, {
-                      documentType: 'GRADE',
+                      documentType: 'EXTRA',
                     })
                   }
                   className="px-8 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-hover"
