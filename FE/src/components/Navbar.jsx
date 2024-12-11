@@ -218,6 +218,12 @@ export default function Example() {
                     >
                       보도자료
                     </a>
+                    <a
+                      onClick={() => navigateTo(routes.extra)}
+                      className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
+                    >
+                      기타자료
+                    </a>
                   </div>
                 )}
               </div>

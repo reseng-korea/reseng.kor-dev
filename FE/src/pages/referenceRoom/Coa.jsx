@@ -16,6 +16,7 @@ const Coa = () => {
     { label: '인증서', route: '/certificate' },
     { label: '성적서', route: '/coa' },
     { label: '보도 자료', route: '/press' },
+    { label: '기타 자료', route: '/extra' },
   ];
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
