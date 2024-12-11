@@ -305,6 +305,7 @@ const DocumentRegister = () => {
     CERTIFICATE: routes.certificate,
     GRADE: routes.coa,
     NEWS: routes.press,
+    EXTRA: routes.extra,
   };
 
   const handleNavigate = () => {
