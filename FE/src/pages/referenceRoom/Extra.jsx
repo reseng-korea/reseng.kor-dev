@@ -23,7 +23,7 @@ const Extra = () => {
   const { navigateTo, routes } = useNavigateTo();
   const role = localStorage.getItem('role');
 
-  const [coa, setCoa] = useState([]);
+  const [extra, setExtra] = useState([]);
 
   const [totalElements, setTotalElements] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -45,7 +45,7 @@ const Extra = () => {
 
         setTotalElements(response.data.data.totalElements);
         const data = response.data.data.content;
-        setCoa(data);
+        setExtra(data);
       } catch (error) {
         // console.log(error);
       }
@@ -84,7 +84,7 @@ const Extra = () => {
     // const processedFiles = files.map(({ fileId, ...rest }) => rest);
 
     navigateTo(
-      routes.documentDetail.replace(':type', 'coa').replace(':id', id),
+      routes.documentDetail.replace(':type', 'extra').replace(':id', id),
       {
         activePage,
         id,
@@ -112,8 +112,8 @@ const Extra = () => {
           {/* 메인 */}
           <div className="flex flex-col mb-12 slide-down">
             <div className="flex flex-wrap w-full justify-center">
-              {coa.length > 0 ? (
-                coa.map((item, index) => {
+              {extra.length > 0 ? (
+                extra.map((item, index) => {
                   const calculatedIndex =
                     totalElements -
                     index -
@@ -146,7 +146,7 @@ const Extra = () => {
               )}
             </div>
 
-            {coa.length > 0 && (
+            {extra.length > 0 && (
               <Pagination
                 activePage={activePage} // 현재 페이지
                 itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수
