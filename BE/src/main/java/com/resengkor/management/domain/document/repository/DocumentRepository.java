@@ -5,16 +5,16 @@ import com.resengkor.management.domain.document.entity.DocumentType;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
 import java.util.Optional;
 
-
+@Repository
 public interface DocumentRepository extends JpaRepository<DocumentEntity, Long> {
     //카테고리에 따른 목록 조회
-    @Query("SELECT d FROM DocumentEntity d " +
-            "ORDER BY CASE WHEN d.date IS NOT NULL THEN 0 ELSE 1 END, " +
-            "d.date DESC NULLS LAST, d.createdAt ASC")
-    Page<DocumentEntity> findByType(DocumentType type, Pageable pageable);
+    @Query("SELECT d FROM DocumentEntity d WHERE d.type = :type " +
+            "ORDER BY CASE WHEN :type = 'NEWS' THEN d.date ELSE d.createdAt END DESC"
+    Page<DocumentEntity> findByType(@Param("type") DocumentType type, Pageable pageable);
 
     // Document ID와 Type을 기준으로 문서 조회(세부)
     Optional<DocumentEntity> findByIdAndType(Long documentId, DocumentType type);
