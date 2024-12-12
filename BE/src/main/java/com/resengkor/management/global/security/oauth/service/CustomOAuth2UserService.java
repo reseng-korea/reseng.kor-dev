@@ -89,21 +89,19 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
                     .depth(0)  // 자기 자신과의 관계는 depth 0
                     .build();
 
-
-            User manager = getAdminUser();
-
-            RoleHierarchy defaultRoleHierarchy = RoleHierarchy.builder()
-                    .ancestor(manager)
-                    .descendant(user)
-                    .depth(manager.getRole().getRank() - user.getRole().getRank())
-                    .build();
-
-            log.info("RoleHierarchy 생성 성공");
-
             roleHierarchyRepository.save(selfRoleHierarchy);
-            roleHierarchyRepository.save(defaultRoleHierarchy);
 
-            log.info("RoleHierarchy 저장 성공");
+            Optional<User> manager = getAdminUser();
+
+            if(manager.isPresent()) {
+                RoleHierarchy defaultRoleHierarchy = RoleHierarchy.builder()
+                        .ancestor(manager.get())
+                        .descendant(user)
+                        .depth(manager.get().getRole().getRank() - user.getRole().getRank())
+                        .build();
+
+                roleHierarchyRepository.save(defaultRoleHierarchy);
+            }
 
             // Entity 목적 순수하게 유지하기 위해서 dto 로 전달..
             OAuth2UserDTO oAuth2UserDto = OAuth2UserDTO.builder()
@@ -155,9 +153,8 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         }
     }
 
-    private User getAdminUser() {
+    private Optional<User> getAdminUser() {
 
-        return userRepository.findManagerUser()
-                .orElseThrow(() -> new CustomException(ExceptionStatus.MEMBER_NOT_FOUND));
+        return userRepository.findManagerUser();
     }
 }
