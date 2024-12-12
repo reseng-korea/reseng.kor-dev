@@ -108,7 +108,7 @@ public class MailServiceWithRedis {
 
     // 이메일 및 인증 코드를 redis에 저장
     public void saveVerificationCode(String email, String verificationCode) {
-//        redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
+        redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
     }
 
 //    // 메일 발송
