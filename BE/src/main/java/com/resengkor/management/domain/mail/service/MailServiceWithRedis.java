@@ -139,7 +139,7 @@ public class MailServiceWithRedis {
         }
 
         // 인증 코드 확인
-        if (!storedCode.equals(dto.getCode())) {
+        if (!storedCode.equals(dto.getCode().trim())) {
             throw new CustomException(ExceptionStatus.CODE_MISMATCH); // 인증 코드가 일치하지 않는 경우 예외 발생
         }
 
