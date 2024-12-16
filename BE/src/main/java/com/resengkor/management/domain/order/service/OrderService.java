@@ -30,6 +30,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -58,8 +59,7 @@ public class OrderService {
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         // 부모 대리점(= seller) 조회
-        User parentAgency = roleHierarchyRepository.findAncestorRole(userId)
-                .orElseThrow(() -> new CustomException(ExceptionStatus.PARENT_AGENCY_NOT_FOUND));
+        User parentAgency = getParents(userId);
 
         try {
             // OrderHistory 생성
@@ -89,6 +89,18 @@ public class OrderService {
         } catch (Exception e) {
             throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
         }
+    }
+
+    // 부모 대리점(= seller) 조회
+    private User getParents(Long userId) throws NoSuchElementException {
+        List<User> ancestors = roleHierarchyRepository.findAncestorRoles(userId);
+
+        if (ancestors.size() > 1) {
+            throw new CustomException(ExceptionStatus.MULTIPLE_ANCESTOR_ROLES);
+        } else if (ancestors.isEmpty()) {
+            throw new CustomException(ExceptionStatus.PARENT_AGENCY_NOT_FOUND);
+        }
+        return ancestors.getFirst();
     }
 
     // 로그인한 사용자의 모든 발주 내역 조회
