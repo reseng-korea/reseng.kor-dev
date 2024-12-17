@@ -29,6 +29,7 @@ export const useNavigateTo = () => {
     certificate: '/certificate',
     coa: '/coa',
     press: '/press', //
+    extra: '/extra',
     documentRegister: '/document/register', //
     documentDetail: '/:type/:id', //
     itemsBanner: '/items/banner',

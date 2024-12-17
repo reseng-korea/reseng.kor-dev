@@ -70,6 +70,9 @@ public enum ExceptionStatus {
     INVALID_STATE_TRANSITION(4043,"현재 상태와 같거나 이전 상태로 변경할 수 없습니다."),
     INVALID_REQUEST_STATE(4044,"배송이 끝나지 않았거나 요청이 이전 요청과 동일합니다."),
 
+    // 등급 조회 관련 오류
+    MULTIPLE_ANCESTOR_ROLES(4045, "부모 등급이 2개 이상 존재합니다."),
+
 
     // 5xx 서버 오류
     EMAIL_SEND_FAIL(5001, "메일 발송 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요."),
