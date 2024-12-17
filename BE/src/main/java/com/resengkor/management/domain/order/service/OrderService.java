@@ -1,5 +1,6 @@
 package com.resengkor.management.domain.order.service;
 
+import com.resengkor.management.domain.banner.dto.BannerOrderItemDto;
 import com.resengkor.management.domain.order.dto.OrderRequestDto;
 import com.resengkor.management.domain.order.dto.OrderResponseDto;
 import com.resengkor.management.domain.order.dto.ReceivedOrderResponseDto;
@@ -13,6 +14,7 @@ import com.resengkor.management.domain.banner.repository.TemporaryBannerTypeRepo
 import com.resengkor.management.domain.order.entity.OrderBanner;
 import com.resengkor.management.domain.order.entity.OrderHistory;
 import com.resengkor.management.domain.order.entity.OrderStatus;
+import com.resengkor.management.domain.user.entity.Role;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.RoleHierarchyRepository;
 import com.resengkor.management.domain.user.repository.UserRepository;
@@ -28,9 +30,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -59,9 +59,41 @@ public class OrderService {
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
 
         // 부모 대리점(= seller) 조회
-        User parentAgency = getParents(userId);
+        User parentAgency = loginedUser;
+        if (loginedUser.getRole() != Role.ROLE_MANAGER) {
+            parentAgency = getParents(userId);
+        }
+
+        // Manager인 경우 처리 로직
+        if (loginedUser.getRole() == Role.ROLE_MANAGER) {
+            OrderHistory managerOrderHistory = OrderHistory.builder()
+                    .orderDate(LocalDate.now())
+                    .seller(loginedUser)  // Manager 자신이 seller
+                    .buyer(loginedUser)  // Manager 자신이 buyer
+                    .orderStatus(OrderStatus.SHIPPED_COURIER)  // 상태는 CONFIRMED
+                    .receiveStatus(false)  // 즉시 처리됨으로 true
+                    .user(loginedUser)
+                    .build();
+
+            // OrderHistoryBannerType 리스트 생성 후 연관 설정
+            orderRequestDto.getBannerRequests().forEach(bannerOrderItem -> {
+                TemporaryBannerType managerTemporaryBannerType = TemporaryBannerType.builder()
+                        .temporaryTypeWidth(bannerOrderItem.getTemporaryTypeWidth())
+                        .quantity(bannerOrderItem.getQuantity())
+                        .orderHistory(managerOrderHistory)
+                        .build();
+
+                temporaryBannerTypeRepository.save(managerTemporaryBannerType);
+            });
+
+            // OrderHistory 저장
+            orderHistoryRepository.save(managerOrderHistory);
+            return new CommonResponse(ResponseStatus.MANAGER_CREATED_SUCCESS.getCode(),
+                    ResponseStatus.MANAGER_CREATED_SUCCESS.getMessage());
+        }
 
         try {
+            // 일반 사용자 처리 로직
             // OrderHistory 생성
             OrderHistory orderHistory = OrderHistory.builder()
                     .orderDate(LocalDate.now())
@@ -85,7 +117,9 @@ public class OrderService {
             });
             // OrderHistory 저장
             orderHistoryRepository.save(orderHistory);
+
             return new CommonResponse(ResponseStatus.CREATED_SUCCESS.getCode(), ResponseStatus.CREATED_SUCCESS.getMessage());
+
         } catch (Exception e) {
             throw new CustomException(ExceptionStatus.USER_NOT_FOUND);
         }
@@ -131,12 +165,10 @@ public class OrderService {
         }
 
         // 수령 상태가 true로 변경되면, BannerType을 DB에 저장
-        if (receiveStatus && !orderHistory.getReceiveStatus() ) {
+        if (receiveStatus && !orderHistory.getReceiveStatus()) {
             saveOrderAndBannerTypes(orderHistory);
             orderHistory.updateReceiveStatus(true);
         }
-
-
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage());
     }
 
@@ -173,7 +205,7 @@ public class OrderService {
                     orderBannerRepository.save(orderBanner);
                 }
             }
-        } catch(Exception e){
+        } catch (Exception e) {
             throw new CustomException(ExceptionStatus.BANNER_SAVE_FAILED);
         }
     }
