@@ -32,6 +32,7 @@ import MainFourthPage from './pages/main/MainFourthPage';
 import MainFifthPage from './pages/main/MainFifthPage';
 import MainSixthPage from './pages/main/MainSixthPage';
 import MainSeventhPage from './pages/main/MainSeventhPage';
+import SliderMainFourthPage from './pages/main/SliderMainFourthPage';
 
 // auth
 import LoginPage from './pages/auth/LoginPage';
@@ -161,6 +162,7 @@ function App() {
                 {/* <MainSixthPage isVisible={isMainSixthVisible} /> */}
                 {/* <MainSeventhPage /> */}
                 <MainFourthPage />
+                {/* <SliderMainFourthPage /> */}
               </>
             }
           />
