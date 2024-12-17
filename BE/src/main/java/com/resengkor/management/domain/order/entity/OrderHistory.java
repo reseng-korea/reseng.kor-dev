@@ -82,6 +82,20 @@ public class OrderHistory {
     public int hashCode() {
         return Objects.hash(id, orderDate, seller, buyer, orderStatus, receiveStatus, user, temporaryBannerTypes);
     }
+
+    @Override
+    public String toString() {
+        return "OrderHistory{" +
+                "id=" + id +
+                ", orderDate=" + orderDate +
+                ", seller=" + seller +
+                ", buyer=" + buyer +
+                ", orderStatus=" + orderStatus +
+                ", receiveStatus=" + receiveStatus +
+                ", user=" + user +
+                ", temporaryBannerTypes=" + temporaryBannerTypes +
+                '}';
+    }
 }
 
 
