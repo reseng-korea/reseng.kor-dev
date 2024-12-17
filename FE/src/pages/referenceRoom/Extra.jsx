@@ -5,12 +5,13 @@ import { useSearchParams } from 'react-router-dom';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
+
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import { formatDate } from '../../utils/dateUtils';
 
 import resengLogo from '../../assets/reseng_logo.png';
 
-const Cerificate = () => {
+const Extra = () => {
   const navItems = [
     { label: '인증서', route: '/certificate' },
     { label: '성적서', route: '/coa' },
@@ -22,7 +23,7 @@ const Cerificate = () => {
   const { navigateTo, routes } = useNavigateTo();
   const role = localStorage.getItem('role');
 
-  const [certificate, setCertificate] = useState([]);
+  const [extra, setExtra] = useState([]);
 
   const [totalElements, setTotalElements] = useState(0);
   const [searchParams, setSearchParams] = useSearchParams();
@@ -34,28 +35,28 @@ const Cerificate = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchFaqData = async () => {
       try {
         const response = await axios.get(
-          `${apiUrl}/api/v1/documents/CERTIFICATE?page=${activePage - 1}&size=${itemsCountPerPage}`
+          `${apiUrl}/api/v1/documents/EXTRA?page=${activePage - 1}&size=${itemsCountPerPage}`
         );
 
         // console.log(response);
-        setTotalElements(response.data.data.totalElements);
 
+        setTotalElements(response.data.data.totalElements);
         const data = response.data.data.content;
-        setCertificate(data);
+        setExtra(data);
       } catch (error) {
         // console.log(error);
       }
     };
-    fetchData();
+    fetchFaqData();
   }, [activePage]);
 
   const handleRowClick = async (index, documentId) => {
     try {
       const response = await axios.get(
-        `${apiUrl}/api/v1/documents/CERTIFICATE/${documentId}`
+        `${apiUrl}/api/v1/documents/EXTRA/${documentId}`
       );
 
       // console.log(response);
@@ -77,14 +78,13 @@ const Cerificate = () => {
       createdAt,
       date,
       type,
-      files = [],
       images = [],
+      files = [],
     } = data || {};
-    // fileId를 제외한 나머지 필드만 추출
-    // const processedFiles = (files || []).map(({ fileId, ...rest }) => rest);
+    // const processedFiles = files.map(({ fileId, ...rest }) => rest);
 
     navigateTo(
-      routes.documentDetail.replace(':type', 'certificate').replace(':id', id),
+      routes.documentDetail.replace(':type', 'extra').replace(':id', id),
       {
         activePage,
         id,
@@ -106,25 +106,22 @@ const Cerificate = () => {
         <div className="w-full flex flex-col">
           <SubNavbar
             items={navItems}
-            activePage="인증서"
+            activePage="기타 자료"
             mainCategory="자료실"
           />
           {/* 메인 */}
           <div className="flex flex-col mb-12 slide-down">
             <div className="flex flex-wrap w-full justify-center">
-              {certificate.length > 0 ? (
-                certificate.map((item, index) => {
+              {extra.length > 0 ? (
+                extra.map((item, index) => {
+                  const calculatedIndex =
+                    totalElements -
+                    index -
+                    (activePage - 1) * itemsCountPerPage;
                   return (
                     <div
                       key={item.id}
-                      onClick={() =>
-                        handleRowClick(
-                          totalElements -
-                            index -
-                            (activePage - 1) * itemsCountPerPage,
-                          item.id
-                        )
-                      }
+                      onClick={() => handleRowClick(calculatedIndex, item.id)}
                       className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-2/7 items-center px-6 py-8 border border-gray3 rounded-lg mx-4 my-2"
                     >
                       {/* 이미지 영역 */}
@@ -144,41 +141,41 @@ const Cerificate = () => {
                 })
               ) : (
                 <div className="flex text-center justify-center items-center">
-                  <span>현재 등록된 인증서가 없습니다.</span>
+                  <span>현재 등록된 자료가 없습니다.</span>
                 </div>
               )}
             </div>
-            {certificate.length > 0 && (
+
+            {extra.length > 0 && (
               <Pagination
-                activePage={activePage} //현재 페이지
-                itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수(6개)
-                totalItemsCount={totalElements} // 표시할 항목의 총 개수(전체)
-                pageRangeDisplayed={5} //페이지네이터의 페이지 범위
+                activePage={activePage} // 현재 페이지
+                itemsCountPerPage={itemsCountPerPage} // 페이지 당 항목 수
+                totalItemsCount={totalElements} // 표시할 항목의 총 개수
+                pageRangeDisplayed={5} // 페이지네이터의 페이지 범위
                 hideFirstLastPages={true}
                 prevPageText="<"
-                // firstPageText="≪"
                 nextPageText=">"
-                // lastPageText="≫"
                 onChange={handlePageChange}
                 innerClass="flex justify-center mt-4"
                 activeClass="text-white bg-primary rounded-full"
-                activeLinkClass="!text-white hover:!text-white" // 활성화된 페이지 스타일 ( 숫자 부분)
+                activeLinkClass="!text-white hover:!text-white" // 활성화된 페이지 스타일
                 itemClass="group inline-block px-4 py-2 border rounded-full text-gray4 mt-4 mx-0.5 hover:text-primary hover:border-primary" // 페이지 번호 스타일
                 linkClass="group-hover:text-primary text-gray4" // 링크의 기본 스타일
               />
             )}
+
             {role === 'ROLE_MANAGER' && (
               <div className="flex justify-end mt-12 mb-12">
                 <button
                   type="submit"
                   onClick={() =>
                     navigateTo(routes.documentRegister, {
-                      documentType: 'CERTIFICATE',
+                      documentType: 'EXTRA',
                     })
                   }
                   className="px-8 py-2 font-bold text-white transition-colors duration-300 bg-primary rounded-lg hover:bg-hover"
                 >
-                  인증서 등록
+                  자료 등록
                 </button>
               </div>
             )}
@@ -189,4 +186,4 @@ const Cerificate = () => {
   );
 };
 
-export default Cerificate;
+export default Extra;

@@ -119,7 +119,8 @@ public class DocumentService {
 
     //조회
     public DataResponse<Page<DocumentResponse>> getDocumentList(String documentType,int page, int size) {
-        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "id"));
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC,
+                documentType.equalsIgnoreCase("NEWS") ? "date" : "createdAt"));
         Page<DocumentEntity> documentPage = documentRepository.findByType(DocumentType.valueOf(documentType.toUpperCase()), pageRequest);
 
         Page<DocumentResponse> documentResponsePage = documentPage.map(DocumentResponse::fromEntity);

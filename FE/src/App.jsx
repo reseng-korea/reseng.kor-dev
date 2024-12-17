@@ -32,6 +32,7 @@ import MainFourthPage from './pages/main/MainFourthPage';
 import MainFifthPage from './pages/main/MainFifthPage';
 import MainSixthPage from './pages/main/MainSixthPage';
 import MainSeventhPage from './pages/main/MainSeventhPage';
+import SliderMainFourthPage from './pages/main/SliderMainFourthPage';
 
 // auth
 import LoginPage from './pages/auth/LoginPage';
@@ -63,6 +64,7 @@ import DocumentRegister from './pages/referenceRoom/DocumentRegister';
 import Certificate from './pages/referenceRoom/Certificate';
 import Coa from './pages/referenceRoom/Coa';
 import Press from './pages/referenceRoom/Press';
+import Extra from './pages/referenceRoom/Extra';
 import DocumentDetail from './pages/referenceRoom/DocumentDetail';
 
 //items
@@ -160,6 +162,7 @@ function App() {
                 {/* <MainSixthPage isVisible={isMainSixthVisible} /> */}
                 {/* <MainSeventhPage /> */}
                 <MainFourthPage />
+                {/* <SliderMainFourthPage /> */}
               </>
             }
           />
@@ -228,6 +231,8 @@ function App() {
           <Route path="/coa" element={<Coa />} />
           {/* 보도 자료 페이지 */}
           <Route path="/press" element={<Press />} />
+          {/* 기타 자료 페이지 */}
+          <Route path="/extra" element={<Extra />} />
           {/* 자료실 상세 페이지 */}
           <Route path="/:type/:id" element={<DocumentDetail />} />
 

@@ -99,12 +99,12 @@ const Location = () => {
                             : 'hover:bg-placeHolder'
                         }`}
                       >
-                        <div className="flex justify-between mb-4">
+                        <div className="flex w-full h-auto justify-between items-start mb-4">
                           <p className="p-2 mb-2 text-[10px] font-bold sm:text-sm md:text-lg lg:text-xl">
                             {item.companyName}
                           </p>
                           <p
-                            className={`px-4 py-2 mb-2 text-md text-white font-bold rounded-lg
+                            className={`w-1/4 h-auto px-4 py-2 mb-2 text-center text-md text-white font-bold rounded-lg
                             ${item.role === 'ROLE_MANAGER' ? 'bg-primary' : 'bg-re'} `}
                           >
                             {item.role === 'ROLE_MANAGER' ? '본사' : '총판'}

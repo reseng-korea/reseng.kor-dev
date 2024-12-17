@@ -16,6 +16,7 @@ const Coa = () => {
     { label: '인증서', route: '/certificate' },
     { label: '성적서', route: '/coa' },
     { label: '보도 자료', route: '/press' },
+    { label: '기타 자료', route: '/extra' },
   ];
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
@@ -121,19 +122,19 @@ const Coa = () => {
                     <div
                       key={item.id}
                       onClick={() => handleRowClick(calculatedIndex, item.id)}
-                      className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-2/7 items-center py-8 my-2 mx-2"
+                      className="flex flex-col w-full sm:w-2/5 md:w-1/4 lg:w-2/7 items-center px-6 py-8 border border-gray3 rounded-lg mx-4 my-2"
                     >
                       {/* 이미지 영역 */}
-                      <div className="flex justify-center items-center w-5/6 h-96 border border-gray3 rounded-lg px-8 py-8 mt-4">
+                      <div className="flex justify-center items-center h-36">
                         <img
-                          className="w-full max-h-full object-contain"
+                          className="max-w-full max-h-full object-contain"
                           src={item.thumbnailUrl || resengLogo}
                           alt={item.title}
                         />
                       </div>
                       {/* 텍스트 영역 */}
                       <div className="w-full mt-4 text-center">
-                        <span className="text-xl font-bold">{item.title}</span>
+                        <span className="text-lg font-bold">{item.title}</span>
                       </div>
                     </div>
                   );

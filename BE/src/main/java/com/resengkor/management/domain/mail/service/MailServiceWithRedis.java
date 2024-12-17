@@ -108,7 +108,7 @@ public class MailServiceWithRedis {
 
     // 이메일 및 인증 코드를 redis에 저장
     public void saveVerificationCode(String email, String verificationCode) {
-//        redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
+        redisUtil.setData("email:verification:" + email, verificationCode, 5, TimeUnit.MINUTES); // 5분 유효
     }
 
 //    // 메일 발송
@@ -139,7 +139,7 @@ public class MailServiceWithRedis {
         }
 
         // 인증 코드 확인
-        if (!storedCode.equals(dto.getCode())) {
+        if (!storedCode.equals(dto.getCode().trim())) {
             throw new CustomException(ExceptionStatus.CODE_MISMATCH); // 인증 코드가 일치하지 않는 경우 예외 발생
         }
 

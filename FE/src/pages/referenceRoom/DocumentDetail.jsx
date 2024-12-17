@@ -15,6 +15,7 @@ const DocumentDetail = () => {
     { label: '인증서', route: '/certificate' },
     { label: '성적서', route: '/coa' },
     { label: '보도 자료', route: '/press' },
+    { label: '기타 자료', route: '/extra' },
   ];
 
   const { navigateTo, routes } = useNavigateTo();
@@ -42,6 +43,8 @@ const DocumentDetail = () => {
         return '인증서';
       case 'GRADE':
         return '성적서';
+      case 'EXTRA':
+        return '기타 자료';
       default:
         return '인증서'; // 기본값
     }
