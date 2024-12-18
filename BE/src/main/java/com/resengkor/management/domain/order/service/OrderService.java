@@ -1,6 +1,5 @@
 package com.resengkor.management.domain.order.service;
 
-import com.resengkor.management.domain.banner.dto.BannerOrderItemDto;
 import com.resengkor.management.domain.order.dto.OrderRequestDto;
 import com.resengkor.management.domain.order.dto.OrderResponseDto;
 import com.resengkor.management.domain.order.dto.ReceivedOrderResponseDto;
@@ -169,6 +168,7 @@ public class OrderService {
             saveOrderAndBannerTypes(orderHistory);
             orderHistory.updateReceiveStatus(true);
         }
+
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage());
     }
 
@@ -226,15 +226,62 @@ public class OrderService {
                 .orElseThrow(() -> new CustomException(ExceptionStatus.ORDER_NOT_FOUND));
 
         OrderStatus currentStatus = orderHistory.getOrderStatus();
-
+        // 보유 재고 수량 체크
+        checkBannerStock(sellerId, orderId);
         // 상태 전이 가능 여부 확인
         if (!currentStatus.canTransitionTo(newStatus)) {
             throw new CustomException(ExceptionStatus.INVALID_STATE_TRANSITION);
         }
-
         orderHistory.updateOrderStatus(newStatus);
+        // 배송 완료되면 재고 감소
+        if (newStatus.equals(OrderStatus.SHIPPED_COURIER) || newStatus.equals(OrderStatus.SHIPPED_FREIGHT)) {
+            try {
+                reduceBannerStock(sellerId, orderId);
+            } catch (Exception e) {
+                throw new CustomException(ExceptionStatus.BANNER_REDUCTION_FAIL);
+            }
+        }
         orderHistoryRepository.save(orderHistory);
-
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), ResponseStatus.RESPONSE_SUCCESS.getMessage());
+    }
+
+    // 보유 현수막 재고 감소 메서드
+    private void reduceBannerStock(Long userId, Long orderId) {
+        List<TemporaryBannerType> temporaryBannerTypes = temporaryBannerTypeRepository.findByOrderHistoryId(orderId);
+
+        for (TemporaryBannerType temporaryBannerType : temporaryBannerTypes) {
+            Integer typeWidth = temporaryBannerType.getTemporaryTypeWidth();
+            Integer quantity = temporaryBannerType.getQuantity();
+
+            List<BannerType> bannerTypes = bannerTypeRepository.findByUserIdAndTypeWidth(userId, typeWidth);
+
+            int remainingQuantity = quantity;
+            for (BannerType bannerType : bannerTypes) {
+                if (remainingQuantity > 0) {
+                    bannerTypeRepository.delete(bannerType);
+                    remainingQuantity--;
+                } else {
+                    break;
+                }
+            }
+        }
+    }
+
+    // 보유 수량 확인
+    private void checkBannerStock(Long userId, Long orderId) {
+        List<TemporaryBannerType> temporaryBannerTypes = temporaryBannerTypeRepository.findByOrderHistoryId(orderId);
+
+        for (TemporaryBannerType temporaryBannerType : temporaryBannerTypes) {
+            Integer typeWidth = temporaryBannerType.getTemporaryTypeWidth();
+            Integer quantity = temporaryBannerType.getQuantity();
+
+            List<BannerType> bannerTypes = bannerTypeRepository.findByUserIdAndTypeWidth(userId, typeWidth);
+
+            int totalAvailableQuantity = bannerTypes.size();
+
+            if (totalAvailableQuantity < quantity) {
+                throw new CustomException(ExceptionStatus.INSUFFICIENT_BANNER);
+            }
+        }
     }
 }

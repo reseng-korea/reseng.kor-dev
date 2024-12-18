@@ -29,7 +29,7 @@ public class OrderBanner {
     @JoinColumn(name = "order_history_id")
     private OrderHistory orderHistory;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinColumn(name = "banner_type_id")
     private BannerType bannerType;
 }
