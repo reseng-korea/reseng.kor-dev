@@ -1,5 +1,6 @@
 package com.resengkor.management.domain.banner.entity;
 
+import com.resengkor.management.domain.order.entity.OrderBanner;
 import com.resengkor.management.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @Entity
 @Getter
@@ -33,5 +35,19 @@ public class BannerType {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @OneToMany(mappedBy = "bannerType", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderBanner> orderBanners;
+
+    @Override
+    public String toString() {
+        return "BannerType{" +
+                "id=" + id +
+                ", typeWidth=" + typeWidth +
+                ", horizontalLength=" + horizontalLength +
+                ", isStandard=" + isStandard +
+                ", user=" + user +
+                '}';
+    }
 }
 
