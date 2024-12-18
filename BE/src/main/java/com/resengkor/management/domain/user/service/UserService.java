@@ -20,9 +20,7 @@ import com.resengkor.management.global.response.ResponseStatus;
 import com.resengkor.management.global.security.authorization.UserAuthorizationUtil;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.service.KakaoUserWithdrawService;
-import com.resengkor.management.global.util.CookieUtil;
-import com.resengkor.management.global.util.RedisUtil;
-import com.resengkor.management.global.util.TmpCodeUtil;
+import com.resengkor.management.global.util.*;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -40,6 +38,7 @@ import org.springframework.validation.FieldError;
 
 import java.time.LocalDateTime;
 import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 
 @Service
@@ -58,6 +57,7 @@ public class UserService {
     private final RedisUtil redisUtil; // RedisUtil 추가
     private final SmsServiceWithRedis smsService;
     private final KakaoUserWithdrawService kakaoUserWithdrawService;
+    private final RoleJWTUtil roleJWTUtil;
 
     //테스트용
     public DataResponse<Long> tmp() {
@@ -352,7 +352,7 @@ public class UserService {
     //소셜 로그인 회원정보 추가(소셜 로그인 첫 회원가입시 바로 진행)
     //로그인O
     @Transactional
-    public DataResponse<UserDTO> oauthUpdateUser(Long pathVariableUserId, OauthUserUpdateRequest request) {
+    public DataResponse<UserDTO> oauthUpdateUser(Long pathVariableUserId, OauthUserUpdateRequest request, String authorizationHeader,HttpServletResponse response) {
         log.info("----Service Start: 소셜 회원 정보 추가하기-----");
 
         //1. 로그인한 loginUserId 가져오기
@@ -411,6 +411,16 @@ public class UserService {
         // 8. 응답 생성
         UserDTO userDTO = userMapper.toUserDTO(user);
         log.info("응답 생성 성공");
+
+        // 9. JWT 재발급 로직 추가
+        String oldAccessToken = authorizationHeader.substring(7);
+        TokenResponse tokenResponse = roleJWTUtil.changeJWT(oldAccessToken, user);
+
+        //새 토큰 발급
+        //access는 헤더로 전해줌
+        response.setHeader("Authorization", "Bearer " + tokenResponse.getAccessToken());
+        //refresh는 쿠키로 전해줌
+        response.addCookie(CookieUtil.createCookie("Refresh", tokenResponse.getRefreshToken(), tokenResponse.getExpire()));
 
         return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
                 ResponseStatus.UPDATED_SUCCESS.getMessage(), userDTO);

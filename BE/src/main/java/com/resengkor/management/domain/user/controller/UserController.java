@@ -37,7 +37,8 @@ public class UserController {
 
     //회원정보 추가하기(oauth용)
     @PutMapping("/oauth/{userId}")
-    public DataResponse<UserDTO> oauthUpdateUser(@PathVariable("userId") Long userId, @Valid @RequestBody OauthUserUpdateRequest request, BindingResult bindingResult){
+    public DataResponse<UserDTO> oauthUpdateUser(@PathVariable("userId") Long userId, @Valid @RequestBody OauthUserUpdateRequest request, BindingResult bindingResult,
+                                                 @RequestHeader(value = "Authorization", required = false) String authorizationHeader, HttpServletResponse response){
         log.info("----Controller Start: OAuth 회원 정보 추가하기-----");
 
         // 바인딩 에러가 있는지 확인
@@ -47,7 +48,7 @@ public class UserController {
             throw new CustomException(ExceptionStatus.VALIDATION_ERROR);
         }
 
-        return userServiceImpl.oauthUpdateUser(userId, request);
+        return userServiceImpl.oauthUpdateUser(userId, request, authorizationHeader, response);
     }
 
     //회원정보 수정하기
