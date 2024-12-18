@@ -414,13 +414,12 @@ public class UserService {
 
         // 9. JWT 재발급 로직 추가
         String oldAccessToken = authorizationHeader.substring(7);
-        TokenResponse tokenResponse = roleJWTUtil.changeJWT(oldAccessToken, user);
+        String newAccessToken = roleJWTUtil.changeJWT(oldAccessToken, user);
 
         //새 토큰 발급
         //access는 헤더로 전해줌
-        response.setHeader("Authorization", "Bearer " + tokenResponse.getAccessToken());
+        response.setHeader("Authorization", "Bearer " + newAccessToken);
         //refresh는 쿠키로 전해줌
-        response.addCookie(CookieUtil.createCookie("Refresh", tokenResponse.getRefreshToken(), tokenResponse.getExpire()));
 
         return new DataResponse<>(ResponseStatus.UPDATED_SUCCESS.getCode(),
                 ResponseStatus.UPDATED_SUCCESS.getMessage(), userDTO);
