@@ -414,7 +414,8 @@ public class UserService {
 
         // 9. JWT 재발급 로직 추가
         String oldAccessToken = authorizationHeader.substring(7);
-        String newAccessToken = roleJWTUtil.changeJWT(oldAccessToken, user);
+        log.info(oldAccessToken);
+        String newAccessToken = roleJWTUtil.changeOAuthJWT(oldAccessToken, user);
 
         //새 토큰 발급
         //access는 헤더로 전해줌

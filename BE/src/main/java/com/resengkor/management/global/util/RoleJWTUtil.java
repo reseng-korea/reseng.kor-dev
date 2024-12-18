@@ -17,8 +17,7 @@ import java.util.concurrent.TimeUnit;
 public class RoleJWTUtil {
     private final JWTUtil jwtUtil;
 
-    public String changeJWT(String oldAccessToken, User user) {
-        boolean isAuto = jwtUtil.getIsAuto(oldAccessToken);
+    public String changeOAuthJWT(String oldAccessToken, User user) {
         String email = user.getEmail();
         String role = user.getRole().toString();
         long userId = user.getId();
@@ -26,7 +25,7 @@ public class RoleJWTUtil {
 
         // Access Token 및 Refresh Token 생성
         long accessTokenExpiration = 60 * 60 * 1000L; // 1시간
-        String newAccessToken = jwtUtil.createJwt("Authorization", "local", email, userId, role, accessTokenExpiration, isAuto, sessionId);
+        String newAccessToken = jwtUtil.createOuathJwt("Authorization", "local", email, userId, role, accessTokenExpiration, sessionId);
 
         return newAccessToken;
     }
