@@ -18,12 +18,17 @@ import { AiFillExclamationCircle } from 'react-icons/ai';
 
 const Qr = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const loginType = localStorage.getItem('loginType');
+
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },
     { label: '현수막 관리', route: '/mypage/manage' },
     { label: '현수막 발주', route: '/mypage/order' },
     { label: 'QR 발생기', route: '/mypage/qr' },
-    { label: '회원 정보 수정', route: '/mypage/user' },
+    {
+      label: '회원 정보 수정',
+      route: loginType === 'SOCIAL' ? '/mypage/user/edit' : '/mypage/user',
+    },
   ];
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
