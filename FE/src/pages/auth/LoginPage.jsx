@@ -89,7 +89,7 @@ const LoginPage = () => {
         }
       } catch (error) {
         const code = error.response?.data?.code;
-
+        // console.log(error);
         if (code == 4024) {
           setModalOpen(true);
           openModal({
