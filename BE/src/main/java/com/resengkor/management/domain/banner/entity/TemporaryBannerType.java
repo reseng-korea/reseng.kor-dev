@@ -29,4 +29,13 @@ public class TemporaryBannerType {
     @JoinColumn(name = "order_history_id", nullable = false)
     private OrderHistory orderHistory;
 
+    @Override
+    public String toString() {
+        return "TemporaryBannerType{" +
+                "id=" + id +
+                ", temporaryTypeWidth=" + temporaryTypeWidth +
+                ", quantity=" + quantity +
+                ", orderHistory=" + orderHistory +
+                '}';
+    }
 }

@@ -218,6 +218,7 @@ const PhoneNumberInfoForm = ({
           />
           <button
             type="submit"
+            disabled={isPhoneNumberVerified}
             onClick={handlePhoneNumberCheckClick}
             className={`flex-grow-0 px-4 py-2 mb-2 font-bold transition-colors duration-300 rounded-lg ${
               isPhoneNumberVerified

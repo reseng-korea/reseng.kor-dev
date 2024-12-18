@@ -38,10 +38,8 @@ export const refreshAccessToken = async () => {
     // console.log('리프레시 토큰 재발급 가능', response);
 
     localStorage.setItem('accessToken', response.headers.authorization);
-    loginTime = Date.now();
-    localStorage.setItem('time', new Date(loginTime).toLocaleString());
   } catch (error) {
-    console.error('토큰 만료로 재발급 불가능', error);
+    // console.error('토큰 만료로 재발급 불가능', error);
     handleTokenExpiration(openModalInstance);
   }
 };

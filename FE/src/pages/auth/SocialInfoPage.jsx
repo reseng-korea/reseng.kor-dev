@@ -45,9 +45,17 @@ const AddSignupPage = () => {
   const [address, setAddress] = useState('');
   const [detailAddress, setDetailAddress] = useState('');
 
+  const [userId, setUserId] = useState('');
+
   useEffect(() => {
     if (data?.email) {
       setEmail(data.email); // 전달받은 이메일을 상태로 설정
+      setUserId(data.id);
+    }
+
+    if (localStorage.getItem('email')) {
+      setEmail(localStorage.getItem('email'));
+      setUserId(localStorage.getItem('userId'));
     }
   }, [data]);
 
@@ -145,7 +153,7 @@ const AddSignupPage = () => {
     } else {
       try {
         const response = await apiClient.put(
-          `${apiUrl}/api/v1/users/oauth/${data.id}`,
+          `${apiUrl}/api/v1/users/oauth/${userId}`,
           {
             email: email,
             companyName: companyName,
@@ -166,13 +174,14 @@ const AddSignupPage = () => {
           }
         );
 
-        // console.log(response);
+        console.log(response);
 
         if (response.data.code == 201) {
           localStorage.setItem('userId', response.data.data.id);
           localStorage.setItem('role', response.data.data.role);
           localStorage.setItem('name', response.data.data.representativeName);
           localStorage.setItem('loginType', response.data.data.loginType);
+          localStorage.setItem('accessToken', response.headers.authorization);
 
           setModalOpen(true);
           openModal({
@@ -182,12 +191,12 @@ const AddSignupPage = () => {
             onConfirm: () => {
               closeModal(), setModalOpen(false);
               navigateTo(routes.home);
-              window.location.reload();
+              // window.location.reload();
             },
           });
         }
       } catch (error) {
-        // console.log(error);
+        console.log(error);
       }
     }
   };

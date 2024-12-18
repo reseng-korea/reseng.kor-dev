@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface RoleHierarchyRepository extends JpaRepository<RoleHierarchy, Long> {
 
     // 부모 등급 사용자 조회 (리스트로 반환)
-    @Query("SELECT rh.ancestor FROM RoleHierarchy rh WHERE rh.descendant.id = :userId")
+    @Query("SELECT rh.ancestor FROM RoleHierarchy rh WHERE rh.descendant.id = :userId AND rh.ancestor.id != rh.descendant.id")
     List<User> findAncestorRoles(@Param("userId") Long userId);
 
     // 자식 등급 사용자 조회 (여러 명 가능)
