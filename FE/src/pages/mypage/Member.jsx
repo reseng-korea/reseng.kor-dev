@@ -38,10 +38,7 @@ const roleOptions = [
 
 const getRoleOptions = (role) => {
   if (role === 'ROLE_GUEST') {
-    return [
-      { value: 'ROLE_CUSTOMER', label: '소비자' },
-      { value: 'ROLE_GUEST', label: '일반회원' },
-    ];
+    return [{ value: 'ROLE_CUSTOMER', label: '소비자' }];
   }
   return [
     { value: 'ROLE_DISTRIBUTOR', label: '총판' },

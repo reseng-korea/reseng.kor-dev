@@ -26,11 +26,12 @@ function OAuthRedirectHandler() {
         // 응답 헤더에서 토큰 추출
         const accessToken = response.headers.get('authorization');
 
+        console.log(data);
         if (accessToken) {
           // localStorage.setItem('userId', data.id);
           // localStorage.setItem('role', data.role);
           // localStorage.setItem('loginType', data.loginType);
-
+          localStorage.setItem('email', data.email);
           handleLogin(data, accessToken);
 
           if (data.role === 'ROLE_PENDING') {

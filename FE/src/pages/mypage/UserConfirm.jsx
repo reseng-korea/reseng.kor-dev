@@ -42,25 +42,14 @@ const UserConfirm = () => {
           { password: password },
           {
             headers: {
-              // Authorization: accesstoken,
               'Content-Type': 'application/json',
             },
           }
         );
         // console.log(response);
         navigateTo(routes.mypageUserEdit);
-
-        const token = localStorage.getItem('accessToken');
-
-        const payloadBase64 = token.split('.')[1];
-        const decodedPayload = JSON.parse(atob(payloadBase64));
-
-        // 유효시간 (exp) 확인
-        const expirationTime = decodedPayload.exp; // Unix Timestamp
-        const expirationDate = new Date(expirationTime * 1000); // 밀리초 단위로 변환
       } catch (error) {
         const errorCode = error.response?.data?.code;
-        const statusCode = error.response?.status;
 
         if (errorCode == 4000 || errorCode == 4026) {
           setModalOpen(true);
@@ -73,11 +62,6 @@ const UserConfirm = () => {
               closeModal(), setModalOpen(false);
             },
           });
-        } else if (statusCode == 401) {
-          // 사실 상 필요 없음.
-          // 토큰이 만료된 경우 - apiClient를 통한 자동 처리
-          // 여기서는 추가적으로 아무 작업도 하지 않아도 됩니다.
-          // apiClient가 인터셉터를 통해 토큰 재발급 및 재요청을 처리하도록 설계되었기 때문입니다.
         }
       }
     }
