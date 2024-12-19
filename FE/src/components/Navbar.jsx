@@ -241,13 +241,14 @@ export default function Example() {
                       const loginType = localStorage.getItem('loginType');
                       if (role === 'ROLE_PENDING') {
                         navigateTo(routes.socialinfo);
-                      } else if (loginType === 'SOCIAL') {
-                        navigateTo(routes.mypageUserEdit);
                       } else if (role === 'ROLE_GUEST') {
                         navigateTo(routes.mypageUser);
                       } else {
                         navigateTo(routes.mypageMember);
                       }
+                      // else if (loginType === 'SOCIAL') {
+                      //   navigateTo(routes.mypageUserEdit);
+                      // }
                     }}
                     className="relative flex text-sm bg-transparent hover:border-2"
                   >
@@ -266,8 +267,6 @@ export default function Example() {
                           const loginType = localStorage.getItem('loginType');
                           if (role === 'ROLE_PENDING') {
                             navigateTo(routes.socialinfo);
-                          } else if (loginType === 'SOCIAL') {
-                            navigateTo(routes.mypageUserEdit);
                           } else if (role === 'ROLE_GUEST') {
                             navigateTo(routes.mypageUser);
                           } else {

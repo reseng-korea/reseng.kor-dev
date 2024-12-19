@@ -38,7 +38,10 @@ const roleOptions = [
 
 const getRoleOptions = (role) => {
   if (role === 'ROLE_GUEST') {
-    return [{ value: 'ROLE_CUSTOMER', label: '소비자' }];
+    return [
+      { value: 'ROLE_CUSTOMER', label: '소비자' },
+      { value: 'ROLE_GUEST', label: '일반회원' },
+    ];
   }
   return [
     { value: 'ROLE_DISTRIBUTOR', label: '총판' },
@@ -85,13 +88,17 @@ const Member = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
   const role = localStorage.getItem('role');
+  const loginType = localStorage.getItem('loginType');
 
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },
     { label: '현수막 관리', route: '/mypage/manage' },
     { label: '현수막 발주', route: '/mypage/order' },
     { label: 'QR 발생기', route: '/mypage/qr' },
-    { label: '회원 정보 수정', route: '/mypage/user' },
+    {
+      label: '회원 정보 수정',
+      route: loginType === 'SOCIAL' ? '/mypage/user/edit' : '/mypage/user',
+    },
   ];
 
   const [modalOpen, setModalOpen] = useState(false);
@@ -234,7 +241,7 @@ const Member = () => {
         }
       );
 
-      // console.log(response);
+      console.log(response.data.data);
 
       if (response.data.code === 200) {
         setIsTableVisible(true);
@@ -259,7 +266,7 @@ const Member = () => {
     setSelectedSubRegion(null);
     setSelectedRole('default');
     setCompanyName('');
-    setSelectedOption('manage');
+    setSelectedOption('MANAGE');
   };
 
   // 핸드폰 번호 (-) 추가
@@ -267,18 +274,53 @@ const Member = () => {
     return number.replace(/(\d{3})(\d{4})(\d{4})/, '$1-$2-$3');
   };
 
+  // 부모 변경(부모 - 자식 관계 등록)
+  const handleParentChildRegistration = async (childId) => {
+    try {
+      const response = await apiClient.post(
+        `${apiUrl}/api/v1/role/hierarchy/${childId}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+      console.log(response);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   // 역할 변경 핸들러
   const handleRoleEdit = async (
     childId,
     companyName,
+    existValue,
     selectedValue,
     optionsLength
   ) => {
+    // 기존 롤이랑 동일한지
+    if (selectedValue === existValue) {
+      openModal({
+        primaryText: `이미 '${ROLE_NAMES[existValue]}'으로 설정되어 있습니다.`,
+        context: '변경하시려면 다른 역할을 선택해주세요.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: async () => {
+          closeModal();
+        },
+      });
+      return;
+    }
+
     // 게스트 -> 소비자
     if (optionsLength == 2) {
+      console.log(selectedValue);
+      console.log(existValue);
+
       openModal({
         primaryText: `${companyName}의 역할을`,
-        secondaryText: `'소비자'로 변경하시겠습니까?`,
+        secondaryText: `'${ROLE_NAMES[selectedValue]}'(으)로 변경하시겠습니까?`,
         type: 'success',
         isAutoClose: false,
         cancleButton: true,
@@ -299,12 +341,13 @@ const Member = () => {
             // 성공하면
             openModal({
               primaryText: `${companyName}의 역할이 성공적으로`,
-              secondaryText: `소비자로 변경되었습니다.`,
+              secondaryText: `'${ROLE_NAMES[selectedValue]}'(으)로 변경하시겠습니까?`,
               type: 'success',
               isAutoClose: false,
               onConfirm: async () => {
                 closeModal();
                 handleLookUp();
+                handleParentChildRegistration(childId);
               },
             });
           } catch (error) {
@@ -362,6 +405,7 @@ const Member = () => {
               onConfirm: async () => {
                 closeModal();
                 handleLookUp();
+                handleParentChildRegistration(childId);
               },
             });
           } catch (error) {
@@ -657,6 +701,7 @@ const Member = () => {
                                         handleRoleEdit(
                                           company.userId,
                                           company.companyName,
+                                          company.role,
                                           selectedOption.value,
                                           getRoleOptions(company.role).length
                                         )

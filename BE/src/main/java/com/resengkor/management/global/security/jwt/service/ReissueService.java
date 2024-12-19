@@ -88,7 +88,7 @@ public class ReissueService {
         }
 
         long userId = user.getId();
-        String role = jwtUtil.getRole(oldRefresh);
+        String role = user.getRole().toString();
         String loginType = jwtUtil.getLoginType(oldRefresh);
 
         long refreshTokenExpiration;
