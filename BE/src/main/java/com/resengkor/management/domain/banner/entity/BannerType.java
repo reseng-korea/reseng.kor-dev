@@ -36,7 +36,7 @@ public class BannerType {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @OneToMany(mappedBy = "bannerType", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "bannerType", cascade = CascadeType.ALL)
     private List<OrderBanner> orderBanners;
 
     @Override
