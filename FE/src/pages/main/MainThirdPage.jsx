@@ -65,7 +65,7 @@ const MainThirdPage = () => {
             친환경 현수막
           </span>
           <span
-            className={`mt-6 text-white text-center text-lg test ${showThirdElement1 ? 'slide-up' : 'opacity-0'}`}
+            className={`mt-6 text-white text-center text-lg ${showThirdElement1 ? 'slide-up' : 'opacity-0'}`}
           >
             (주)휴비스의
             <br />
