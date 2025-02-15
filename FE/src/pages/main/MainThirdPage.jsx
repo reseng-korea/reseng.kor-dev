@@ -4,7 +4,7 @@ import React, { useRef, useState, useEffect } from 'react';
 import main3_1 from './../../assets/main3_1.png';
 import main3_2 from './../../assets/main3_2.png';
 import main3_3 from './../../assets/main3_3.png';
-import main333 from './../../assets/main3_333.png';
+import main333 from './../../assets/main3_333.jpg';
 
 import { useNavigateTo } from './../../hooks/useNavigateTo';
 

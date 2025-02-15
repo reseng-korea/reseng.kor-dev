@@ -10,7 +10,7 @@ import { logoutService } from '../services/auth/logoutService';
 
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { IoPersonSharp } from 'react-icons/io5';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo2.jpg';
 
 const navigation = [
   { name: '회사소개', current: false },

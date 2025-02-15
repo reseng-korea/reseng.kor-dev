@@ -1,7 +1,6 @@
 import React from 'react';
 
 // 이미지
-import logo from '../assets/logo.png';
 
 import { useNavigateTo } from './../hooks/useNavigateTo';
 

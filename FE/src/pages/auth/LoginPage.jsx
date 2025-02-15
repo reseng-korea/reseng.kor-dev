@@ -3,7 +3,7 @@ import axios from 'axios';
 
 import useModal from '../../hooks/useModal';
 
-import login from './../../assets/login.png';
+import login from './../../assets/login.jpg';
 import kakao from './../../assets/kakao_logo.png';
 import google from './../../assets/google_logo.png';
 
