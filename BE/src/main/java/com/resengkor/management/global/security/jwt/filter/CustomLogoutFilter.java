@@ -15,11 +15,8 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.web.filter.GenericFilterBean;
-
 import java.io.IOException;
-
 
 /**
  * 로그아웃 필터
@@ -36,6 +33,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         this.defaultFilterUrl = defaultFilterUrl;
         this.jwtUtil = jwtUtil;
         this.redisUtil = redisUtil;
+        
     }
 
     @Override
@@ -64,7 +62,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
             ErrorHandler.sendErrorResponse(response, ExceptionStatus.METHOD_NOT_ALLOWED, HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
         }
-
         //쿠키 가져오기
         Cookie[] cookies = request.getCookies();
         String refresh = null;
@@ -105,7 +102,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
             ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_DB, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-
         // logout
         //로그아웃 진행
         //Refresh 토큰 DB에서 제거
@@ -117,7 +113,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
             ErrorHandler.sendErrorResponse(response, ExceptionStatus.DB_CONNECTION_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
-
         log.info("로그아웃: Refresh 토큰 삭제 성공");
 
         // 성공 응답 설정
@@ -130,8 +125,10 @@ public class CustomLogoutFilter extends GenericFilterBean {
                 "로그아웃에 성공했습니다");
 
         // 응답 JSON 생성
+
         ObjectMapper objectMapper = new ObjectMapper();
         response.getWriter().write(objectMapper.writeValueAsString(commonResponse));
         response.getWriter().flush();
+
     }
 }

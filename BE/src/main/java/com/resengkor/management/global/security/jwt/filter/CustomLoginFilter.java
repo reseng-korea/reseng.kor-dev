@@ -101,7 +101,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         authToken.setDetails(loginDTO);
         return authenticationManager.authenticate(authToken);
     }
-
     @Override
     //로그인 성공 핸들러 -> 여기서 jwt발급
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
@@ -124,7 +123,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         String sessionId = UUID.randomUUID().toString();
         String access = jwtUtil.createJwt("Authorization", "local", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto,sessionId);
         String refresh = jwtUtil.createJwt("Refresh", "local", email, userId, role, refreshTokenExpiration,isAuto,sessionId);
-
         //2-1. Refresh 토큰 DB에 저장 메소드
         String redisKey = "refresh_token:" + email + ":" + sessionId;
         boolean isStored = redisUtil.setData(redisKey, refresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
@@ -133,7 +131,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
             ErrorHandler.sendErrorResponse(response, ExceptionStatus.DB_CONNECTION_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return; // 오류 발생 시 메서드 종료
         }
-        log.info("Refresh토큰 DB에 저장 성공");
+                log.info("Refresh토큰 DB에 저장 성공");
 
 
         // 3. JSON 응답 설정
@@ -167,7 +165,6 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         response.getWriter().flush();
         log.info("----Filter End: 로그인 성공 핸들러 끝-----");
     }
-
     //로그인 실패시 실행
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {

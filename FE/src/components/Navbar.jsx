@@ -49,6 +49,7 @@ export default function Example() {
     }
   }, []);
 
+  
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 0) {

@@ -1,5 +1,4 @@
 package com.resengkor.management.global.config;
-
 import com.resengkor.management.global.security.jwt.filter.*;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.security.oauth.customhandler.OAuth2AuthenticationFailureHandler;
@@ -53,6 +52,7 @@ public class SecurityConfig {
     private static final List<String> POST_LIST = List.of(
             "/api/v1/register",
             "/api/v1/oauth2-jwt-header",
+           
             "/api/v1/find-email", "/api/v1/find-password", "/api/v1/reissue"
     );
 
@@ -121,7 +121,6 @@ public class SecurityConfig {
                         .authenticationEntryPoint(customAuthenticationEntryPoint) // 인증 실패 시 처리
                         .accessDeniedHandler(customAccessDeniedHandler) // 권한 부족 시 처리
                 );
-
         http
                 .addFilterBefore(new JWTFilter(jwtUtil), CustomLoginFilter.class); //JWTFilter가 CustomLoginFilter 전에 실행
         http
@@ -134,7 +133,6 @@ public class SecurityConfig {
         http
                 .sessionManagement((session) -> session
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS));
-
         // oauth2
         http
                 .oauth2Login((oauth2) -> oauth2
