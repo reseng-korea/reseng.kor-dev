@@ -22,8 +22,9 @@ import org.springframework.web.bind.annotation.RestController;
 public class ReissueController {
     private final ReissueService reissueService;
     @PostMapping("/reissue")
-    public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
+    public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response, 
+                                  @RequestHeader(value = "Authorization", required = false) String accessToken) {
         log.info("----Controller Start: refresh 재발급 요청-----");
-        return reissueService.reissue(request, response);
+        return reissueService.reissue(request, response, accessToken);
     }
 }

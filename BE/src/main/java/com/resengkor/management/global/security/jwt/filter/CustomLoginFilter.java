@@ -102,49 +102,37 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         return authenticationManager.authenticate(authToken);
     }
     @Override
-    //로그인 성공 핸들러 -> 여기서 jwt발급
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         log.info("----Filter Start: 로그인 성공 핸들러 진행-----");
 
-        //1. authentication에서 유저 정보를 가져오자.
+        // 1. 사용자 정보 가져오기
         CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
         String email = customUserDetails.getUsername();
         long userId = customUserDetails.getUserId();
         LoginDTO loginDTO = (LoginDTO) authentication.getDetails();
         boolean isAuto = loginDTO.isAuto();
-        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();//user의 role값을 가져온다.
-        Iterator<? extends GrantedAuthority> iterator = authorities.iterator();
-        GrantedAuthority auth = iterator.next();
-        String role = auth.getAuthority();
+        String role = authentication.getAuthorities().iterator().next().getAuthority();
 
-        //2. 토큰 생성
-        //"access"를 통해 카테고리값을 넣어준다.
-        long refreshTokenExpiration = isAuto ? 30 * 24 * 60 * 60 * 1000L : 24 * 60 * 60 * 1000L; //로그인 유지 30일, 일반 24시간
+        // 2. JWT 토큰 생성
+        long refreshTokenExpiration = isAuto ? 30 * 24 * 60 * 60 * 1000L : 24 * 60 * 60 * 1000L;
         String sessionId = UUID.randomUUID().toString();
-        String access = jwtUtil.createJwt("Authorization", "local", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto,sessionId);
-        String refresh = jwtUtil.createJwt("Refresh", "local", email, userId, role, refreshTokenExpiration,isAuto,sessionId);
-        //2-1. Refresh 토큰 DB에 저장 메소드
+        String accessToken = jwtUtil.createJwt("Authorization", "local", email, userId, role, ACCESS_TOKEN_EXPIRATION, isAuto, sessionId);
+        String refreshToken = jwtUtil.createJwt("Refresh", "local", email, userId, role, refreshTokenExpiration, isAuto, sessionId);
+
+        // 3. Refresh Token을 Redis에 저장 (프론트에는 절대 보내지 않음)
         String redisKey = "refresh_token:" + email + ":" + sessionId;
-        boolean isStored = redisUtil.setData(redisKey, refresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+        boolean isStored = redisUtil.setData(redisKey, refreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS);
         if (!isStored) {
             log.error("로그인 성공: Refresh 토큰 Redis 저장 실패 (Redis 연결 오류)");
             ErrorHandler.sendErrorResponse(response, ExceptionStatus.DB_CONNECTION_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-            return; // 오류 발생 시 메서드 종료
+            return;
         }
-                log.info("Refresh토큰 DB에 저장 성공");
+        log.info("Refresh 토큰 Redis 저장 성공");
 
+        // 4. Access Token을 헤더에 추가 (프론트에서 API 요청에 사용)
+        response.setHeader("Authorization", "Bearer " + accessToken);
 
-        // 3. JSON 응답 설정
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        response.setStatus(HttpStatus.OK.value());
-
-        response.setHeader("Authorization", "Bearer " + access);
-//        response.setHeader("Refresh", refresh);
-        //쿠키로 발급
-        response.addCookie(CookieUtil.createCookie("Refresh", refresh, (int)refreshTokenExpiration/1000));
-
-        // 응답 JSON 생성
+        // 5. 응답 JSON 반환 (Refresh Token은 프론트로 절대 보내지 않음)
         LoginResponse loginResponse = LoginResponse.builder()
                 .id(userId)
                 .email(email)
@@ -159,12 +147,13 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
                 .status(customUserDetails.isEnabled())
                 .build();
 
-        // 응답 출력
         ObjectMapper objectMapper = new ObjectMapper();
         response.getWriter().write(objectMapper.writeValueAsString(loginResponse));
         response.getWriter().flush();
+
         log.info("----Filter End: 로그인 성공 핸들러 끝-----");
     }
+
     //로그인 실패시 실행
     @Override
     protected void unsuccessfulAuthentication(HttpServletRequest request, HttpServletResponse response, AuthenticationException failed) throws IOException {
@@ -177,4 +166,5 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         ErrorHandler.handleAuthenticationException(response, failed);
         log.info("----Filter End: 로그인 실패 핸들러 끝-----");
     }
+    
 }
