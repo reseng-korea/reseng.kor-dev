@@ -52,9 +52,8 @@ public class SecurityConfig {
     private static final List<String> POST_LIST = List.of(
             "/api/v1/register",
             "/api/v1/oauth2-jwt-header",
-           "/api/v1/users/me"
-            "/api/v1/find-email", "/api/v1/find-password", "/api/v1/reissue",
-            
+           
+            "/api/v1/find-email", "/api/v1/find-password", "/api/v1/reissue"
     );
 
     // GET으로 허용할 엔드포인트 목록(role 상관없이 전체 접근 가능한 endpoint만!)
