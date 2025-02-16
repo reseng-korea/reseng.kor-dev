@@ -65,7 +65,18 @@ public class UserController {
 
         return userServiceImpl.updateUser(userId, request);
     }
-
+    @GetMapping("/me")
+    public ResponseEntity<UserResponse> getCurrentUser(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        UserResponse response = UserResponse.builder()
+            .id(userDetails.getUserId())
+            .email(userDetails.getUsername())
+            .role(userDetails.getAuthorities().stream().findFirst().get().getAuthority())
+            .name(userDetails.getRepresentativeName())
+            .loginType(userDetails.getLoginType())
+            .build();
+            
+        return ResponseEntity.ok(response);
+    }
     //회원정보 요청
     @GetMapping("/{userId}")
     public DataResponse<UserDTO> getUserInfo(@PathVariable("userId") Long userId){

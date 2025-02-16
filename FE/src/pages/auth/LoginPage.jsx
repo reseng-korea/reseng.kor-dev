@@ -8,7 +8,7 @@ import kakao from './../../assets/kakao_logo.png';
 import google from './../../assets/google_logo.png';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { handleLogin } from '../../services/auth/authService';
+import { handleLogin, getUserInfo } from '../../services/auth/authService';
 
 import { IoIosMail, IoIosLock } from 'react-icons/io';
 
@@ -25,6 +25,7 @@ const LoginPage = () => {
   const [password, setPassword] = useState('');
   const [rememberLogin, setRememberLogin] = useState(false);
 
+
   const [modalOpen, setModalOpen] = useState(false);
   const { openModal, closeModal, RenderModal } = useModal();
 
@@ -32,8 +33,6 @@ const LoginPage = () => {
     ? 'local'
     : 'production';
   const oauthUrl = `${apiUrl}/oauth2/authorization/google?frontend=${ENVIRONMENT}`;
-
-
 
 
   const handleSubmit = async (e) => {

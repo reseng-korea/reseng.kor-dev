@@ -16,15 +16,18 @@ let loginTime = localStorage.getItem('loginTime')
 
 // 로그인 후 정보 저장
 export const handleLogin = (data, accessToken) => {
-  loginTime = Date.now(); // 로그인 시점 저장 (전역 변수로)
-
-  localStorage.setItem('accessToken', accessToken);
-  localStorage.setItem('userId', data.id);
-  localStorage.setItem('role', data.role);
-  localStorage.setItem('name', data.representativeName);
-  localStorage.setItem('loginType', data.loginType);
+  document.cookie = `accessToken=${accessToken}; path=/; HttpOnly; Secure`;
 };
-
+export const getUserInfo = async () => {
+  try {
+    const response = await axios.get(`${apiUrl}/api/v1/users/me`, {
+      withCredentials: true
+    });
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
 // accessToken 만료 시 access,refresh 재발급
 export const refreshAccessToken = async () => {
   // console.log('토큰 만료 확인');

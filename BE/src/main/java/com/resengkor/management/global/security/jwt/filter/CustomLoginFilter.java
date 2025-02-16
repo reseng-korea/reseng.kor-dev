@@ -121,7 +121,13 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         //"access"를 통해 카테고리값을 넣어준다.
         long refreshTokenExpiration = isAuto ? 30 * 24 * 60 * 60 * 1000L : 24 * 60 * 60 * 1000L; //로그인 유지 30일, 일반 24시간
         String sessionId = UUID.randomUUID().toString();
-        String access = jwtUtil.createJwt("Authorization", "local", email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto,sessionId);
+        String access = jwtUtil.createJwt(
+            "Authorization", 
+            "local", 
+            userDetails.getUserId(),
+            ACCESS_TOKEN_EXPIRATION,
+            sessionId
+        );
         String refresh = jwtUtil.createJwt("Refresh", "local", email, userId, role, refreshTokenExpiration,isAuto,sessionId);
         //2-1. Refresh 토큰 DB에 저장 메소드
         String redisKey = "refresh_token:" + email + ":" + sessionId;
@@ -139,25 +145,16 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpStatus.OK.value());
 
-        response.setHeader("Authorization", "Bearer " + access);
+        response.addCookie(CookieUtil.createCookie("Authorization", "Bearer " + access, (int) refreshTokenExpiration / 1000, true, true));
+
 //        response.setHeader("Refresh", refresh);
         //쿠키로 발급
         response.addCookie(CookieUtil.createCookie("Refresh", refresh, (int)refreshTokenExpiration/1000));
 
         // 응답 JSON 생성
         LoginResponse loginResponse = LoginResponse.builder()
-                .id(userId)
-                .email(email)
-                .emailStatus(customUserDetails.isEmailStatus())
-                .temporaryPasswordStatus(customUserDetails.isTemporaryPasswordStatus())
-                .companyName(customUserDetails.getCompanyName())
-                .representativeName(customUserDetails.getRepresentativeName())
-                .phoneNumber(customUserDetails.getPhoneNumber())
-                .phoneNumberStatus(customUserDetails.isPhoneNumberStatus())
-                .role(role)
-                .loginType(customUserDetails.getLoginType())
-                .status(customUserDetails.isEnabled())
-                .build();
+            .id(userDetails.getUserId())
+            .build();
 
         // 응답 출력
         ObjectMapper objectMapper = new ObjectMapper();
