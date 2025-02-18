@@ -97,8 +97,8 @@ public class SecurityConfig {
                         configuration.setAllowedHeaders(Collections.singletonList("*"));
                         configuration.setMaxAge(3600L);
 
-                        configuration.setExposedHeaders(Collections.singletonList("Set-Cookie"));
-                        configuration.setExposedHeaders(Arrays.asList("Authorization", "Refresh"));
+                        //리프레시 토큰 프론트 접근불가
+                        configuration.setExposedHeaders(Collections.singletonList("Authorization")); 
 
                         return configuration;
                     }
