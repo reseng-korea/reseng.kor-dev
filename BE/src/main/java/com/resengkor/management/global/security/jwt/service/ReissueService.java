@@ -146,7 +146,7 @@ public class ReissueService {
         response.setHeader("Authorization", "Bearer " + newAccess);
 
         // ✅ 기존 코드 유지: Refresh Token을 쿠키로 발급
-        response.addCookie(CookieUtil.createCookie("Refresh", newRefresh, (int) refreshTokenExpiration / 1000));
+        //response.addCookie(CookieUtil.createCookie("Refresh", newRefresh, (int) refreshTokenExpiration / 1000));
 
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage());

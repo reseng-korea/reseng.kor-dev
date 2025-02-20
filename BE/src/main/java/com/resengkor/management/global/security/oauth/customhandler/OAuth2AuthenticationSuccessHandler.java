@@ -70,7 +70,7 @@ public class OAuth2AuthenticationSuccessHandler extends SimpleUrlAuthenticationS
 
             // 쿠키에 JWT 토큰 추가
             response.addCookie(CookieUtil.createCookie("Authorization", access, ACCESS_TOKEN_EXPIRATION));
-            response.addCookie(CookieUtil.createCookie("Refresh", refresh, expireS));
+            //response.addCookie(CookieUtil.createCookie("Refresh", refresh, expireS));
 
             // AuthorizationRequestRepository에서 환경 정보 확인
             log.info("--------------세 번째 테스트-----------------------");
