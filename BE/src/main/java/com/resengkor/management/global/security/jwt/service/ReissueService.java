@@ -30,22 +30,24 @@ public class ReissueService {
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
         log.info("----Service Start: refresh 재발급 요청-----");
 
-        // 1. 사용자 이메일과 세션 ID를 요청에서 추출
+        // 1. 쿠키 꺼내기
+        // 쿠키에서 refresh키에 담긴 토큰을 꺼냄
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER);
         }
-
+        
         String accessToken = authorizationHeader.substring(7); // "Bearer " 이후의 토큰 값
-        String email = jwtUtil.getEmail(accessToken);
-        String sessionId = jwtUtil.getSessionId(accessToken);
-
+        String emailFromAccess = jwtUtil.getEmail(accessToken);
+        String sessionIdFromAccess = jwtUtil.getSessionId(accessToken);
+        
         // Redis에서 저장된 Refresh Token 가져오기
-        String redisKey = "refresh_token:" + email + ":" + sessionId;
-        String oldRefresh = redisUtil.getData(redisKey);
-        if (oldRefresh == null) {
+        String redisKeyForRefresh = "refresh_token:" + emailFromAccess + ":" + sessionIdFromAccess;
+        String storedRefreshToken = redisUtil.getData(redisKeyForRefresh);
+        if (storedRefreshToken == null) {
             throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
         }
+        
 
 
         //2. refresh 검증
