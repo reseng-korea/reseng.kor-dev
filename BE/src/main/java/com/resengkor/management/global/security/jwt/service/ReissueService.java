@@ -29,8 +29,14 @@ public class ReissueService {
 
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
         log.info("----Service Start: refresh 재발급 요청-----");
-
-        // Redis에서 저장된 Refresh Token 가져오기
+        String authorizationHeader = request.getHeader("Authorization");
+        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
+            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER);
+        }
+        
+        String accessToken = authorizationHeader.substring(7);
+        String email = jwtUtil.getEmail(accessToken);   // ✅ 먼저 email을 가져옴
+        String sessionId = jwtUtil.getSessionId(accessToken);  // ✅ sessionId도 가져옴
         String redisKey = "refresh_token:" + email + ":" + sessionId;
         String oldRefresh = redisUtil.getData(redisKey);
         if (oldRefresh == null) {
@@ -51,10 +57,6 @@ public class ReissueService {
         if(!category.equals("Refresh")) {
             throw new CustomException(ExceptionStatus.TOKEN_IS_NOT_REFRESH);
         }
-
-
-        String email = jwtUtil.getEmail(oldRefresh);
-        String sessionId = jwtUtil.getSessionId(oldRefresh);
 
         // Redis에서 refresh 토큰 유효성 검사
         Boolean isExist = redisUtil.existData(redisKey);
