@@ -131,7 +131,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 4. Access Token을 헤더에 추가 (프론트에서 API 요청에 사용)
         response.setHeader("Authorization", "Bearer " + accessToken);
-
+        response.addCookie(CookieUtil.createCookie("Refresh", null, 0));
         // 5. 응답 JSON 반환 (Refresh Token은 프론트로 절대 보내지 않음)
         LoginResponse loginResponse = LoginResponse.builder()
                 .id(userId)

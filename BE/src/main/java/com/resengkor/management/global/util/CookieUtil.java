@@ -53,9 +53,7 @@ public class CookieUtil {
         cookie.setPath("/");
         cookie.setHttpOnly(true); // HTTP-Only 속성 설정
         cookie.setMaxAge(maxAge); // 만료 시간 설정
-        if (!"Refresh".equals(name)) {
-            response.addCookie(cookie);
-        }
+        response.addCookie(cookie);
     }
 
     /**
