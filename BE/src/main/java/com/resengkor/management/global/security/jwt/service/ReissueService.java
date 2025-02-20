@@ -30,23 +30,14 @@ public class ReissueService {
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
         log.info("----Service Start: refresh 재발급 요청-----");
 
-        // 1. 쿠키 꺼내기
-        // 쿠키에서 refresh키에 담긴 토큰을 꺼냄
-        String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER);
-        }
-        
-        String accessToken = authorizationHeader.substring(7); // "Bearer " 이후의 토큰 값
-        String email = jwtUtil.getEmail(accessToken);
-        String sessionId = jwtUtil.getSessionId(accessToken);
-        
-        // 2. Redis에서 저장된 Refresh Token 가져오기
+        // Redis에서 저장된 Refresh Token 가져오기
         String redisKey = "refresh_token:" + email + ":" + sessionId;
         String oldRefresh = redisUtil.getData(redisKey);
         if (oldRefresh == null) {
             throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
         }
+
+
         //2. refresh 검증
         // 만료된 토큰은 payload 읽을 수 없음 -> ExpiredJwtException 발생
         try {
@@ -62,21 +53,20 @@ public class ReissueService {
         }
 
 
-        email = jwtUtil.getEmail(oldRefresh);
-        sessionId = jwtUtil.getSessionId(oldRefresh);
-
+        String email = jwtUtil.getEmail(oldRefresh);
+        String sessionId = jwtUtil.getSessionId(oldRefresh);
 
         // Redis에서 refresh 토큰 유효성 검사
-        if (!redisUtil.existData(redisKey)) {
+        Boolean isExist = redisUtil.existData(redisKey);
+        String redisRefresh;
+        if (!isExist) {
             throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
         }
-        
-        // Redis에서 가져온 Refresh Token과 검증
-        String redisRefresh = redisUtil.getData(redisKey);
-        if (!oldRefresh.equals(redisRefresh)) {
-            throw new CustomException(ExceptionStatus.INVALID_REFRESH_TOKEN);
+    
+        if (oldRefresh == null) {
+            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
         }
-        
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
         log.info("user 찾기 성공");
