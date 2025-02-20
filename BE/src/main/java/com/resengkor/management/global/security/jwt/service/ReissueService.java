@@ -32,23 +32,21 @@ public class ReissueService {
 
         // 1. 쿠키 꺼내기
         // 쿠키에서 refresh키에 담긴 토큰을 꺼냄
-        String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER);
+        Cookie[] cookies = request.getCookies();
+        if(cookies == null){
+            throw  new CustomException(ExceptionStatus.COOKIE_NOT_FOUND);
         }
-        
-        String accessToken = authorizationHeader.substring(7); // "Bearer " 이후의 토큰 값
-        String emailFromAccess = jwtUtil.getEmail(accessToken);
-        String sessionIdFromAccess = jwtUtil.getSessionId(accessToken);
-        
-        // Redis에서 저장된 Refresh Token 가져오기
-        String redisKeyForRefresh = "refresh_token:" + emailFromAccess + ":" + sessionIdFromAccess;
-        String storedRefreshToken = redisUtil.getData(redisKeyForRefresh);
-        if (storedRefreshToken == null) {
-            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
-        }
-        
 
+        //쿠키에 담긴 oldRefresh 꺼냄
+        String oldRefresh = null;
+        for (Cookie cookie : cookies) {
+            if(cookie.getName().equals("Refresh")){
+                oldRefresh = cookie.getValue();
+            }
+        }
+        if(oldRefresh == null){
+            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE);
+        }
 
         //2. refresh 검증
         // 만료된 토큰은 payload 읽을 수 없음 -> ExpiredJwtException 발생
