@@ -1,7 +1,7 @@
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.jpg';
 
 const Company = () => {
   const navItems = [

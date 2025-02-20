@@ -1,10 +1,10 @@
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
-import logo from './../../assets/logo.png';
-import parasol from './../../assets/upcycling parasol.png';
-import sack from './../../assets/upcycling sack.png';
-import umbrella from './../../assets/upcycling umbrella.png';
+import logo from './../../assets/logo.jpg';
+import parasol from './../../assets/upcycling parasol.jpg';
+import sack from './../../assets/upcycling sack.jpg';
+import umbrella from './../../assets/upcycling umbrella.jpg';
 import inner_car from './../../assets/main3_3.png';
 
 const Recycle = () => {

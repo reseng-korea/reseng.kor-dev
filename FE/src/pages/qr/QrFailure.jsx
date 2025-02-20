@@ -1,6 +1,6 @@
 import Layout from '../../components/Layouts';
 
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.jpg';
 
 const QrFailure = () => {
   return (

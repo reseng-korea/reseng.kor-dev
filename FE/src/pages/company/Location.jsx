@@ -5,7 +5,7 @@ import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 import KakaoMap from '../../components/Map/KakaoMap';
 
-import location from '../../assets/location.png';
+import location from '../../assets/location.jpg';
 import { FaHome } from 'react-icons/fa';
 import { IoIosCall } from 'react-icons/io';
 

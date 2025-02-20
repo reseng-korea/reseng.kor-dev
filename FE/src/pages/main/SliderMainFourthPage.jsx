@@ -3,7 +3,7 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-import tmp from './../../assets/login.png';
+import tmp from './../../assets/login.jpg';
 import tmp2 from './../../assets/main1_2.png';
 import tmp3 from './../../assets/main1_3.png';
 
