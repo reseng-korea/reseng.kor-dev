@@ -11,15 +11,13 @@ import java.util.Optional;
 public class CookieUtil {
     //프엔이랑 주고 받는 쿠키
     public static Cookie createCookie(String key, String value, Integer expiredS) {
-        if (!"Refresh".equals(key)) { 
         Cookie cookie = new Cookie(key, value);
-        cookie.setHttpOnly(true);
+        //cookie.setHttpOnly(true);
         cookie.setPath("/");
         cookie.setMaxAge(expiredS);
         cookie.setAttribute("SameSite", "None");
         cookie.setSecure(true);
         return cookie;
-        }
     }
 
     //내부에서 repository에 저장하는 쿠키(외부로 보내지 않음)
@@ -51,13 +49,11 @@ public class CookieUtil {
      * @param maxAge   쿠키 만료 시간 (초)
      */
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        if (!"Refresh".equals(name)) { 
-            Cookie cookie = new Cookie(name, value);
-            cookie.setPath("/");
-            cookie.setHttpOnly(true);
-            cookie.setMaxAge(maxAge);
-            response.addCookie(cookie);
-        }
+        Cookie cookie = new Cookie(name, value);
+        cookie.setPath("/");
+        //cookie.setHttpOnly(true); // HTTP-Only 속성 설정
+        cookie.setMaxAge(maxAge); // 만료 시간 설정
+        response.addCookie(cookie);
     }
 
     /**
