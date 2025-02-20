@@ -144,7 +144,7 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setHeader("Authorization", "Bearer " + access);
 //        response.setHeader("Refresh", refresh);
         //쿠키로 발급
-        response.addCookie(CookieUtil.createCookie("Refresh", refresh, (int)refreshTokenExpiration/1000));
+        //response.addCookie(CookieUtil.createCookie("Refresh", refresh, (int)refreshTokenExpiration/1000));
 
         // 응답 JSON 생성
         LoginResponse loginResponse = LoginResponse.builder()
