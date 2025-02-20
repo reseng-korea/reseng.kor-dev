@@ -49,11 +49,13 @@ public class CookieUtil {
      * @param maxAge   쿠키 만료 시간 (초)
      */
     public static void addCookie(HttpServletResponse response, String name, String value, int maxAge) {
-        Cookie cookie = new Cookie(name, value);
-        cookie.setPath("/");
-        cookie.setHttpOnly(true); // HTTP-Only 속성 설정
-        cookie.setMaxAge(maxAge); // 만료 시간 설정
-        response.addCookie(cookie);
+        if (!"Refresh".equals(name)) { 
+            Cookie cookie = new Cookie(name, value);
+            cookie.setPath("/");
+            cookie.setHttpOnly(true);
+            cookie.setMaxAge(maxAge);
+            response.addCookie(cookie);
+        }
     }
 
     /**
