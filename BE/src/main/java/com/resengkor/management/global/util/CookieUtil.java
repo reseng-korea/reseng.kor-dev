@@ -11,6 +11,7 @@ import java.util.Optional;
 public class CookieUtil {
     //프엔이랑 주고 받는 쿠키
     public static Cookie createCookie(String key, String value, Integer expiredS) {
+        if (!"Refresh".equals(key)) { 
         Cookie cookie = new Cookie(key, value);
         cookie.setHttpOnly(true);
         cookie.setPath("/");
@@ -18,6 +19,7 @@ public class CookieUtil {
         cookie.setAttribute("SameSite", "None");
         cookie.setSecure(true);
         return cookie;
+        }
     }
 
     //내부에서 repository에 저장하는 쿠키(외부로 보내지 않음)
