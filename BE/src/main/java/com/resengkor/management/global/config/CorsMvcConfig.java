@@ -9,6 +9,7 @@ public class CorsMvcConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
+                .exposedHeaders("Set-Cookie") 
                 .allowedOrigins("http://localhost:5173","https://reseng.co.kr"); //웹앱이 동작할 서버 주소
     }
 }
