@@ -1,5 +1,6 @@
 package com.resengkor.management.global.security.jwt.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.resengkor.management.domain.user.entity.User;
 import com.resengkor.management.domain.user.repository.UserRepository;
 import com.resengkor.management.global.exception.CustomException;
@@ -10,12 +11,12 @@ import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.CookieUtil;
 import com.resengkor.management.global.util.RedisUtil;
 import io.jsonwebtoken.ExpiredJwtException;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+
 import java.util.concurrent.TimeUnit;
 
 @Service
@@ -24,122 +25,101 @@ import java.util.concurrent.TimeUnit;
 public class ReissueService {
     private final JWTUtil jwtUtil;
     private final RedisUtil redisUtil;
-    private final long ACCESS_TOKEN_EXPIRATION= 60 * 60 * 1000L; //1시간
     private final UserRepository userRepository;
+    private final long ACCESS_TOKEN_EXPIRATION = 60 * 60 * 1000L; // 1시간
 
     public CommonResponse reissue(HttpServletRequest request, HttpServletResponse response) {
         log.info("----Service Start: refresh 재발급 요청-----");
+
+        // 1. AccessToken 검증 및 사용자 정보 추출
         String authorizationHeader = request.getHeader("Authorization");
         if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
             throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER);
         }
-        
+
         String accessToken = authorizationHeader.substring(7);
-        String email = jwtUtil.getEmail(accessToken);   // ✅ 먼저 email을 가져옴
-        String sessionId = jwtUtil.getSessionId(accessToken);  // ✅ sessionId도 가져옴
+        String email = jwtUtil.getEmail(accessToken);
+        String sessionId = jwtUtil.getSessionId(accessToken);
+
+        if (email == null || sessionId == null) {
+            throw new CustomException(ExceptionStatus.TOKEN_PARSE_ERROR);
+        }
+
+        // 2. Redis에서 RefreshToken 조회
         String redisKey = "refresh_token:" + email + ":" + sessionId;
-        String oldRefresh = redisUtil.getData(redisKey);
-        if (oldRefresh == null) {
+        String refreshToken = redisUtil.getData(redisKey);
+
+        if (refreshToken == null) {
             throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
         }
 
-
-        //2. refresh 검증
-        // 만료된 토큰은 payload 읽을 수 없음 -> ExpiredJwtException 발생
+        // 3. RefreshToken 검증
         try {
-            jwtUtil.isExpired(oldRefresh);
-        } catch(ExpiredJwtException e){
+            jwtUtil.isExpired(refreshToken);
+        } catch (ExpiredJwtException e) {
             throw new CustomException(ExceptionStatus.REFRESH_TOKEN_EXPIRED);
         }
 
-        // refresh 토큰이 아님
-        String category = jwtUtil.getCategory(oldRefresh);
-        if(!category.equals("Refresh")) {
+        String category = jwtUtil.getCategory(refreshToken);
+        if (!"Refresh".equals(category)) {
             throw new CustomException(ExceptionStatus.TOKEN_IS_NOT_REFRESH);
         }
 
-        // Redis에서 refresh 토큰 유효성 검사
-        Boolean isExist = redisUtil.existData(redisKey);
-        String redisRefresh;
-        if (!isExist) {
-            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
-        }
-    
-        if (oldRefresh == null) {
-            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
-        }
-
+        // 4. 사용자 정보 조회
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
-        log.info("user 찾기 성공");
-        // 비활성화된 user면 에러 던짐
+
         if (!user.isStatus()) {
-            log.info("비활성 사용자입니다");
-            throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED); // 비활성 사용자 예외
+            throw new CustomException(ExceptionStatus.ACCOUNT_DISABLED);
         }
 
         long userId = user.getId();
         String role = user.getRole().toString();
-        String loginType = jwtUtil.getLoginType(oldRefresh);
+        String loginType = jwtUtil.getLoginType(refreshToken);
 
+        // 5. RefreshToken 만료 시간 설정
         long refreshTokenExpiration;
-        String newAccess;
-        String newRefresh;
+        String newAccessToken;
+        String newRefreshToken;
 
-
-        if(loginType.equals("local")){
-            boolean isAuto = jwtUtil.getIsAuto(oldRefresh);
+        if (loginType.equals("local")) {
+            boolean isAuto = jwtUtil.getIsAuto(refreshToken);
             Long remainingTTL = redisUtil.getRemainingTTL(redisKey);
 
-            // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
-            if(!isExist || remainingTTL == -1L) {
-                log.error("isExist  = {}, remiainingTTL  = {}", isExist, remainingTTL);
+            if (remainingTTL == -1L) {
                 throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
             }
 
-            if(isAuto) {
-                // 남은 기간만큼 새 Refresh Token 발급
-                refreshTokenExpiration = remainingTTL; // Redis에서 가져온 남은 TTL을 사용
-            } else {
-                refreshTokenExpiration = 60 * 60 * 24 * 1000L; // 24시간
-            }
+            refreshTokenExpiration = isAuto ? remainingTTL : 24 * 60 * 60 * 1000L; // 24시간
 
-            // new tokens
-            newAccess = jwtUtil.createJwt("Authorization", "local",email, userId, role, ACCESS_TOKEN_EXPIRATION,isAuto,sessionId);
-            newRefresh = jwtUtil.createJwt("Refresh", "local", email, userId, role, refreshTokenExpiration,isAuto,sessionId);
+            // 새로운 AccessToken 및 RefreshToken 발급
+            newAccessToken = jwtUtil.createJwt("Authorization", "local", email, userId, role, ACCESS_TOKEN_EXPIRATION, isAuto, sessionId);
+            newRefreshToken = jwtUtil.createJwt("Refresh", "local", email, userId, role, refreshTokenExpiration, isAuto, sessionId);
 
-
-        }
-        else { //소셜
-            // DB 에 없는 리프레시 토큰 (혹은 블랙리스트 처리된 리프레시 토큰)
-            if(!isExist) {
-                throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_DB);
-            }
-            refreshTokenExpiration = 30 * 60 * 60 * 24 * 1000L; // 30일
-            newAccess = jwtUtil.createOuathJwt("Authorization", "social", email, userId, role, ACCESS_TOKEN_EXPIRATION,sessionId);
-            newRefresh = jwtUtil.createOuathJwt("Refresh", "social", email, userId, role, refreshTokenExpiration,sessionId);
+        } else { // 소셜 로그인
+            refreshTokenExpiration =  24 * 60 * 60 * 1000L; // 30일
+            newAccessToken = jwtUtil.createOuathJwt("Authorization", "social", email, userId, role, ACCESS_TOKEN_EXPIRATION, sessionId);
+            newRefreshToken = jwtUtil.createOuathJwt("Refresh", "social", email, userId, role, refreshTokenExpiration, sessionId);
         }
 
-        // 기존 refresh DB 삭제, 새로운 refresh 저장
-        boolean isDeleted = redisUtil.deleteData(redisKey); //해당 기기에 해당하는 refresh만 삭제
+        // 6. 기존 RefreshToken 삭제 후 새 RefreshToken 저장
+        boolean isDeleted = redisUtil.deleteData(redisKey);
         if (!isDeleted) {
-            log.error("ReissueService: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
+            log.error("ReissueService: 기존 Refresh 토큰 삭제 실패 (Redis 연결 오류)");
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);
         }
-        // Redis에 새로운 Refresh Token 저장
-        boolean isSaved = redisUtil.setData(redisKey, newRefresh, refreshTokenExpiration, TimeUnit.MILLISECONDS);
+
+        boolean isSaved = redisUtil.setData(redisKey, newRefreshToken, refreshTokenExpiration, TimeUnit.MILLISECONDS);
         if (!isSaved) {
-            log.error("ReissueService: Refresh 토큰 저장 실패 (Redis 연결 오류)");
+            log.error("ReissueService: 새로운 Refresh 토큰 저장 실패 (Redis 연결 오류)");
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);
         }
 
+        // 7. 응답 설정 (새로운 AccessToken 및 RefreshToken 전달)
+        response.setHeader("Authorization", "Bearer " + newAccessToken);
+        response.addCookie(CookieUtil.createCookie("Refresh", newRefreshToken, (int) (refreshTokenExpiration / 1000)));
 
-        //access는 헤더로 전해줌
-        response.setHeader("Authorization", "Bearer " + newAccess);
-        //refresh는 쿠키로 전해줌
-        response.addCookie(CookieUtil.createCookie("Refresh", newRefresh, (int)refreshTokenExpiration/1000));
-
-        return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS .getCode(),
-                ResponseStatus.RESPONSE_SUCCESS .getMessage());
+        return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
+                ResponseStatus.RESPONSE_SUCCESS.getMessage());
     }
 }
