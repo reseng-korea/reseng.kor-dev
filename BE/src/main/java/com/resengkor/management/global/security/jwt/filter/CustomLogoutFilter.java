@@ -17,6 +17,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.web.filter.GenericFilterBean;
+import org.xml.sax.ErrorHandler;
 
 import java.io.IOException;
 
@@ -65,23 +66,19 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
 
-        //쿠키 가져오기
-        Cookie[] cookies = request.getCookies();
-        String refresh = null;
+  
+        String refresh = request.getHeader("Authorization");
+        if (refresh == null || !refresh.startsWith("Bearer ")) {
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER, HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
+        refresh = refresh.substring(7); // "Bearer " 제거
 
-        if(cookies == null){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+        if (refresh == null || !refresh.startsWith("Bearer ")) {
+            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("Refresh")){
-                refresh = cookie.getValue();
-            }
-        }
-        if(refresh == null){
-            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE, HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
+        
 
         // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
         String category = jwtUtil.getCategory(refresh);
@@ -125,7 +122,6 @@ public class CustomLogoutFilter extends GenericFilterBean {
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);
         //refresh 만료 처리
-        response.addCookie(CookieUtil.createCookie("Refresh", null, 0));
         CommonResponse commonResponse = new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 "로그아웃에 성공했습니다");
 
