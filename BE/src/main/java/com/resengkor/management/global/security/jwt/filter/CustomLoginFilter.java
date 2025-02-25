@@ -9,6 +9,7 @@ import com.resengkor.management.global.security.jwt.dto.LoginResponse;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.CookieUtil;
 import com.resengkor.management.global.util.RedisUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;

@@ -103,8 +103,9 @@ public class CustomLogoutFilter extends GenericFilterBean {
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);
         
-        // Refresh 토큰 쿠키 삭제
         response.addCookie(CookieUtil.createCookie("Refresh", null, 0));
+        response.addCookie(CookieUtil.createCookie("accessToken", null, 0));
+
 
         CommonResponse commonResponse = new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), "로그아웃에 성공했습니다");
         ObjectMapper objectMapper = new ObjectMapper();
