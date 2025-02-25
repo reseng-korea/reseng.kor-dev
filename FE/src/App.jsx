@@ -132,9 +132,15 @@ function App() {
     }
   };
 
-  const isAuthenticated = () => {
-    const token = localStorage.getItem('accessToken');
-    return !!token; // 토큰이 있으면 true 반환
+   const isAuthenticated = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/v1/check-auth`, {
+        withCredentials: true, // 쿠키 포함 요청
+      });
+      return response.data; // true or false 반환
+    } catch (error) {
+      return false;
+    }
   };
 
   useEffect(() => {
