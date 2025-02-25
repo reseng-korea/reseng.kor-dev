@@ -206,7 +206,7 @@ export default function Example({userInfo, isLoggedIn}) {
                     </a>
                     <a
                       onClick={() => navigateTo(routes.press)}
-                      className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary"
+                      className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary a"
                     >
                       보도자료
                     </a>
