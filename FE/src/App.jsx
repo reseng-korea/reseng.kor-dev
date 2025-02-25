@@ -203,7 +203,7 @@ function App() {
           {/* 비밀번호 찾기 페이지 */}
           <Route path="/pwinquiry" element={<FindPasswordPage />} />
           {/* 새로운 비밀번호 변경 페이지 */}
-          <Route path="/pwinquiry/new" element={<ChangePasswordPage />} />
+          <Route path="/pwinquiry/new" element={<ChangePasswordPage  userInfo={userInfo} />} />
           {/* 소셜로그인 제외 개인정보처리방침 페이지 */}
           <Route
             path="/signup/termsAndPolicyNonSocial"

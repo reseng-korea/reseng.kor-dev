@@ -99,7 +99,7 @@ public class UserController {
 
     //(두 경우 모두 로그인 완료한 상태)임시번호 발급받은 상태인데, 비밀번호 변경 & 새 비밀번호로 변경하기
     @PutMapping("/{userId}/password")
-    public DataResponse<String> resetPassword(@PathVariable("userId") Long userId, @Valid @RequestBody ResetPasswordRequest request, BindingResult bindingResult) {
+    public DataResponse<String> resetPassword(@PathVariable("userId") Long userId, @Valid @RequestBody ResetPasswordRequest request, BindingResult bindingResult, @CookieValue(value = "accessToken", required = false) String accessToken) {
         log.info("----Controller Start: 비밀번호 변경하기-----");
 
         // 바인딩 에러가 있는지 확인

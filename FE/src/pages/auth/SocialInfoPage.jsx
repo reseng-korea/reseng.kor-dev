@@ -177,11 +177,6 @@ const AddSignupPage = () => {
         console.log(response);
 
         if (response.data.code == 201) {
-          localStorage.setItem('userId', response.data.data.id);
-          localStorage.setItem('role', response.data.data.role);
-          localStorage.setItem('name', response.data.data.representativeName);
-          localStorage.setItem('loginType', response.data.data.loginType);
-          localStorage.setItem('accessToken', response.headers.authorization);
 
           setModalOpen(true);
           openModal({

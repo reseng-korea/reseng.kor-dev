@@ -9,15 +9,14 @@ import {
   checkPasswordMatch,
 } from '../../utils/PasswordValidation';
 
-const ChangePasswordPage = () => {
+const ChangePasswordPage = ({userInfo}) => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
 
   // 새로고침 데이터 날라감 방지
   usePreventRefresh(openModal, closeModal, setModalOpen);
 
-  const accesstoken = localStorage.getItem('accessToken');
-  const userId = localStorage.getItem('userId');
+  const userId = userInfo.userId;
 
   const [tempPassword, setTempPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
@@ -112,9 +111,7 @@ const ChangePasswordPage = () => {
           `${apiUrl}/api/v1/users/${userId}/password`,
           { oldPassword: tempPassword, newPassword: newPassword },
           {
-            headers: {
-              Authorization: accesstoken,
-            },
+            withCredentials: true, // ✅ 쿠키 자동 포함
           }
         );
 
