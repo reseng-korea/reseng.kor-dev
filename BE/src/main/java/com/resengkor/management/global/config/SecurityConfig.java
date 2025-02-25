@@ -127,7 +127,8 @@ public class SecurityConfig {
         http
                 .addFilterAt(new CustomLoginFilter("/api/v1/login", authenticationManager(authenticationConfiguration), jwtUtil, redisUtil), UsernamePasswordAuthenticationFilter.class);
         http
-                .addFilterBefore(new CustomLogoutFilter("/api/v1/logout", jwtUtil, redisUtil), LogoutFilter.class);
+                .addFilterAt(new CustomLogoutFilter("/api/v1/logout", jwtUtil, redisUtil), UsernamePasswordAuthenticationFilter.class);
+            
 
 
         //세션 설정

@@ -62,7 +62,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
             sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
-        accessToken = accessToken.substring(7); // "Bearer " 제거
+
 
         if (jwtUtil.isExpired(accessToken)) {
             log.warn("로그아웃 요청: AccessToken 만료됨");

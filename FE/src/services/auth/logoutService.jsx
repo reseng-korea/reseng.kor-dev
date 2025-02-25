@@ -50,7 +50,6 @@ export const logoutService = async (
         type: 'warning',
         onConfirm: () => {
           localStorage.clear();
-          document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
           window.location.href = '/signin'; 
         },
       });
