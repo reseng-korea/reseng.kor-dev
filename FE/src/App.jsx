@@ -137,8 +137,10 @@ function App() {
       const response = await axios.get(`${apiUrl}/api/v1/check-auth`, {
         withCredentials: true, // 쿠키 포함 요청
       });
+      console.log('asdasdasdasdasdasdsa', response.data);
       return response.data; // true or false 반환
     } catch (error) {
+      console.log('errrrororororororor');
       return false;
     }
   };
