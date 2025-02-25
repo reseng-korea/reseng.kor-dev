@@ -136,6 +136,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         accessTokenCookie.setPath("/");
         accessTokenCookie.setHttpOnly(true);
         accessTokenCookie.setSecure(true);
+        accessTokenCookie.setDomain("reseng.co.kr"); 
         response.addCookie(accessTokenCookie);
 
         Cookie refreshTokenCookie = new Cookie("Refresh", null);
@@ -143,6 +144,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         refreshTokenCookie.setPath("/");
         refreshTokenCookie.setHttpOnly(true);
         refreshTokenCookie.setSecure(true);
+        accessTokenCookie.setDomain("reseng.co.kr"); 
         response.addCookie(refreshTokenCookie);
     }
     private String getAccessTokenFromCookies(HttpServletRequest request) {

@@ -54,7 +54,6 @@ export default function Example({userInfo, isLoggedIn}) {
   }, []);
 
   
-  console.log(isLoggedIn, userInfo); 
   // 로그아웃
   const handleLogout = async () => {
     try {
