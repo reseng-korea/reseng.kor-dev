@@ -135,7 +135,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         accessTokenCookie.setMaxAge(0);
         accessTokenCookie.setPath("/");  // ✅ 경로 확인
         accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(false);  // 🔥 로컬 테스트 시 false (배포 시 true)
+        accessTokenCookie.setSecure(true);  // 🔥 로컬 테스트 시 false (배포 시 true)
         accessTokenCookie.setAttribute("SameSite", "None");  // ✅ 추가
         response.addCookie(accessTokenCookie);
 
@@ -144,7 +144,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         refreshTokenCookie.setMaxAge(0);
         refreshTokenCookie.setPath("/");  // ✅ 경로 확인
         refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(false);  // 🔥 로컬 테스트 시 false (배포 시 true)
+        refreshTokenCookie.setSecure(true);  // 🔥 로컬 테스트 시 false (배포 시 true)
         refreshTokenCookie.setAttribute("SameSite", "None");  // ✅ 추가
         response.addCookie(refreshTokenCookie);
     }
