@@ -112,11 +112,14 @@ public ResponseEntity<CommonResponse> getUserInfo(HttpServletRequest request) {
     userInfo.put("loginType", loginType);
     userInfo.put("name", user.getRepresentativeName());
 
-    return ResponseEntity.ok().body(new CommonResponse(
-        ResponseStatus.RESPONSE_SUCCESS.getCode(),
-        ResponseStatus.RESPONSE_SUCCESS.getMessage(),
-        userInfo
-    ));
+    return ResponseEntity.ok().body(
+        Map.of(
+            "code", ResponseStatus.RESPONSE_SUCCESS.getCode(),
+            "message", ResponseStatus.RESPONSE_SUCCESS.getMessage(),
+            "data", userInfo
+        )
+    );
+    
 }
 
 
