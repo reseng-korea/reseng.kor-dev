@@ -4,14 +4,13 @@ import apiClient from '../../services/apiClient';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
-import { useUserInfo } from '../../hooks/userContext'; 
+
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import useModal from '../../hooks/useModal';
 
 const OrderList = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const { userInfo } = useUserInfo();
-  const loginType = userInfo.loginType;
+  const loginType = localStorage.getItem('loginType');
 
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },

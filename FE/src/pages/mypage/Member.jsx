@@ -6,7 +6,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import apiClient from '../../services/apiClient';
 import useModal from '../../hooks/useModal';
-import { useUserInfo } from '../../hooks/userContext'; 
+
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
@@ -85,11 +85,10 @@ const customStyles = {
 };
 
 const Member = () => {
-  const { userInfo } = useUserInfo();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
-  const role = userInfo.role;
-  const loginType = userInfo.loginType;
+  const role = localStorage.getItem('role');
+  const loginType = localStorage.getItem('loginType');
 
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },
@@ -182,7 +181,7 @@ const Member = () => {
 
   // 페이지 로드 시 롤 불러오기
   useEffect(() => {
-    const currentRole = userInfo.role;
+    const currentRole = localStorage.getItem('role');
     const currentRoleLevel = ROLE_HIERARCHY[currentRole];
 
     // roleOptions를 필터링하여 현재 역할 이하의 항목만 남기기

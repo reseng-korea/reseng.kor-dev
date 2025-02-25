@@ -4,7 +4,6 @@ import apiClient from '../../services/apiClient';
 
 import Layout from '../../components/Layouts';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-import { useUserInfo } from '../../hooks/userContext'; 
 import useModal from '../../hooks/useModal';
 
 const UserConfirm = () => {
@@ -20,9 +19,9 @@ const UserConfirm = () => {
   const handlePasswordChange = (e) => {
     setPassword(e.target.value);
   };
-  const { userInfo } = useUserInfo();
+
   const accesstoken = localStorage.getItem('accessToken');
-  const userId = userInfo.userId;
+  const userId = localStorage.getItem('userId');
 
   const handleSubmit = async (e) => {
     e.preventDefault();

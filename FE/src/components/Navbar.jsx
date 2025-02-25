@@ -65,12 +65,8 @@ export default function Example() {
         navigateTo,
         routes,
       });
-      setTimeout(()=>{
-        navigateTo(routes.home);
-        window.location.reload();
-
-      },1000)
-
+      navigateTo(routes.home);
+      window.location.reload();
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error);
     }

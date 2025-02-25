@@ -15,11 +15,10 @@ import usePreventRefresh from '../../hooks/usePreventRefresh';
 
 import { FaSearch } from 'react-icons/fa';
 import { AiFillExclamationCircle } from 'react-icons/ai';
-import { useUserInfo } from '../../hooks/userContext'; 
+
 const Qr = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const { userInfo } = useUserInfo();
-  const loginType = userInfo.loginType;
+  const loginType = localStorage.getItem('loginType');
 
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },

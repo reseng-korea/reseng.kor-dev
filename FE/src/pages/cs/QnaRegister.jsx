@@ -7,17 +7,17 @@ import apiClient from '../../services/apiClient';
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 import useModal from '../../hooks/useModal';
-import { useUserInfo } from '../../hooks/userContext'; 
+
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
 
 const QnaRegister = () => {
   const location = useLocation();
   const data = location.state?.data || {};
-  const { userInfo } = useUserInfo();
+
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
-  const userId = userInfo.userId;
+  const userId = localStorage.getItem('userId');
   const refreshtoken = localStorage.getItem('refreshToken');
   const navItems = [
     { label: '자주 묻는 질문', route: '/faq' },
