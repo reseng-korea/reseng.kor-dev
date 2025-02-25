@@ -16,7 +16,7 @@ import useModal from './hooks/useModal';
 import { setOpenModal } from './services/auth/authService';
 
 import './App.css';
-
+import axios from 'axios';
 // components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
