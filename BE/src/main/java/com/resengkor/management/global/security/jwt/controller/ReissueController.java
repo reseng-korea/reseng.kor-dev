@@ -118,27 +118,6 @@ public ResponseEntity<CommonResponse> getUserInfo(HttpServletRequest request) {
         userInfo
     ));
 }
-public class CommonResponse {
-    private int code;
-    private String message;
-    private Object data; // 데이터 추가
-
-    public CommonResponse(int code, String message) {
-        this.code = code;
-        this.message = message;
-    }
-
-    public CommonResponse(int code, String message, Object data) { // 새로운 생성자 추가
-        this.code = code;
-        this.message = message;
-        this.data = data;
-    }
-
-    // Getter 추가
-    public Object getData() {
-        return data;
-    }
-}
 
 
     @PostMapping("/reissue")
