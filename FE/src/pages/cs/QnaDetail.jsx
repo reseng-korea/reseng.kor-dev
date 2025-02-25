@@ -10,16 +10,17 @@ import useModal from '../../hooks/useModal';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import { formatCreatedAt } from '../../utils/dateUtils';
-
+import { useUserInfo } from '../../hooks/userContext'; 
 import QnaContent from './components/QnaContent';
 import QnaAnswer from './components/QnaAnswer';
 import QnaAnswerManager from './components/QnaAnswerManager';
 
 const QnaDetail = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const { userInfo } = useUserInfo();
   const accesstoken = localStorage.getItem('accessToken');
-  const localUserId = localStorage.getItem('userId');
-  const role = localStorage.getItem('role');
+  const localUserId = userInfo.userId;
+  const role = userInfo.role;
 
   const navItems = [
     { label: '자주 묻는 질문', route: '/faq' },

@@ -7,6 +7,7 @@ import useModal from '../../../hooks/useModal';
 import { IoPersonSharp } from 'react-icons/io5';
 import { IoTimeOutline } from 'react-icons/io5';
 import { IoEye } from 'react-icons/io5';
+import { useUserInfo } from '../../../hooks/userContext'; 
 
 const QnaContent = (
   { qnaData, setQnaData }
@@ -14,8 +15,9 @@ const QnaContent = (
   //   password, answered, answerId, answerContent, answerCreatedAt, answerUpdatedAt,
 ) => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const { userInfo } = useUserInfo();
   const accesstoken = localStorage.getItem('accessToken');
-  const localUserId = localStorage.getItem('userId');
+  const localUserId = userInfo.userId;
 
   const { navigateTo, routes } = useNavigateTo();
   const { openModal, closeModal, RenderModal } = useModal();

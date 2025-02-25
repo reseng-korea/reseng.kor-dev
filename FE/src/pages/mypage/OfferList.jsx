@@ -10,10 +10,11 @@ import SubNavbar from '../../components/SubNavbar';
 
 import useModal from '../../hooks/useModal';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-
+import { useUserInfo } from '../../hooks/userContext'; 
 const OfferList = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const loginType = localStorage.getItem('loginType');
+  const { userInfo } = useUserInfo();
+  const loginType = userInfo.loginType;
 
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },

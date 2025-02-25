@@ -8,16 +8,16 @@ import {
   validatePassword,
   checkPasswordMatch,
 } from '../../utils/PasswordValidation';
-
+import { useUserInfo } from '../../hooks/userContext'; 
 const ChangePasswordPage = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
 
   // 새로고침 데이터 날라감 방지
   usePreventRefresh(openModal, closeModal, setModalOpen);
-
+  const { userInfo } = useUserInfo();
   const accesstoken = localStorage.getItem('accessToken');
-  const userId = localStorage.getItem('userId');
+  const userId = userInfo.userId;
 
   const [tempPassword, setTempPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');

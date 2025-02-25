@@ -7,7 +7,7 @@ import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import { formatDate } from '../../utils/dateUtils';
-
+import { useUserInfo } from '../../hooks/userContext'; 
 import resengLogo from '../../assets/reseng_logo.png';
 
 const Cerificate = () => {
@@ -20,7 +20,8 @@ const Cerificate = () => {
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
-  const role = localStorage.getItem('role');
+  const { userInfo } = useUserInfo();
+  const role = userInfo.role;
 
   const [certificate, setCertificate] = useState([]);
 

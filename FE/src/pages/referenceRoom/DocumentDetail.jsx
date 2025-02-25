@@ -7,7 +7,7 @@ import SubNavbar from '../../components/SubNavbar';
 
 import useModal from '../../hooks/useModal';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
-
+import { useUserInfo } from '../../hooks/userContext'; 
 import { IoMdDownload } from 'react-icons/io';
 
 const DocumentDetail = () => {
@@ -17,15 +17,15 @@ const DocumentDetail = () => {
     { label: '보도 자료', route: '/press' },
     { label: '기타 자료', route: '/extra' },
   ];
-
+  const { userInfo } = useUserInfo();
   const { navigateTo, routes } = useNavigateTo();
   const { openModal, closeModal, RenderModal } = useModal();
   const [modalOpen, setModalOpen] = useState(false);
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
-  const localUserId = localStorage.getItem('userId');
-  const role = localStorage.getItem('role');
+  const localUserId = userInfo.userId;
+  const role = userInfo.role;
 
   const location = useLocation();
   const initialData = location.state || {};
