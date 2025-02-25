@@ -14,7 +14,6 @@ import { useModalContext } from './context/ModalContext';
 import useModal from './hooks/useModal';
 
 import { setOpenModal } from './services/auth/authService';
-import { useAuth } from "./services/auth/useAuth"; 
 
 import './App.css';
 
@@ -120,8 +119,6 @@ function App() {
 
   const { openModal, RenderModal } = useModal();
 
-  const { accessToken, setAccessToken, userInfo, setUserInfo } = useAuth(); 
-
   useEffect(() => {
     setOpenModal(openModal); // openModal 전달
   }, [openModal]);
@@ -135,7 +132,10 @@ function App() {
     }
   };
 
-  const isAuthenticated = () => !!accessToken;
+  const isAuthenticated = () => {
+    const token = localStorage.getItem('accessToken');
+    return !!token; // 토큰이 있으면 true 반환
+  };
 
   useEffect(() => {
     window.addEventListener('scroll', handleScroll);
@@ -147,7 +147,7 @@ function App() {
   return (
     <ModalProvider>
       <ScrollToTop />
-      {!shouldHideNavbar && <Navbar userInfo={userInfo}/>}
+      {!shouldHideNavbar && <Navbar />}
       <div className="h-screen">
         <Routes>
           {/* 메인페이지 */}

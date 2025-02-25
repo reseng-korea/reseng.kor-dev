@@ -72,7 +72,14 @@ const LoginPage = () => {
           }
         );
 
-        handleLogin(response.data, response.headers.authorization, setAccessToken, setUserInfo);
+        // console.log(response);
+
+        // localStorage.setItem('accessToken', response.headers.authorization);
+        // localStorage.setItem('userId', response.data.id);
+        // localStorage.setItem('role', response.data.role);
+        // localStorage.setItem('name', response.data.representativeName);
+        handleLogin(response.data, response.headers.authorization);
+
         // 임시 비밀번호인지 판단 여부
         if (response.data.temporaryPasswordStatus) {
           navigateTo(routes.pwinquiryNew);
