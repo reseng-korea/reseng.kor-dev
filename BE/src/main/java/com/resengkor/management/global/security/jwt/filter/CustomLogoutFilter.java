@@ -133,20 +133,12 @@ public class CustomLogoutFilter extends GenericFilterBean {
     private void removeAuthCookies(HttpServletResponse response) {
         Cookie accessTokenCookie = new Cookie("accessToken", null);
         accessTokenCookie.setMaxAge(0);
-        accessTokenCookie.setPath("/");
+        accessTokenCookie.setPath("/");  // ✅ 경로 확인
         accessTokenCookie.setHttpOnly(true);
-        accessTokenCookie.setSecure(true);
-        accessTokenCookie.setDomain("reseng.co.kr"); 
+        accessTokenCookie.setSecure(false);  
+        accessTokenCookie.setAttribute("SameSite", "None");  // ✅ 추가
         response.addCookie(accessTokenCookie);
 
-        Cookie refreshTokenCookie = new Cookie("Refresh", null);
-        refreshTokenCookie.setMaxAge(0);
-        refreshTokenCookie.setPath("/");
-        refreshTokenCookie.setHttpOnly(true);
-        refreshTokenCookie.setSecure(true);
-        accessTokenCookie.setDomain("reseng.co.kr"); 
-        response.addCookie(refreshTokenCookie);
-    }
     private String getAccessTokenFromCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
