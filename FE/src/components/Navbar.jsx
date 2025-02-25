@@ -11,6 +11,7 @@ import { logoutService } from '../services/auth/logoutService';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { IoPersonSharp } from 'react-icons/io5';
 import logo from '../assets/logo2.jpg';
+import axios from 'axios';
 
 const navigation = [
   { name: '회사소개', current: false },
@@ -39,14 +40,20 @@ export default function Example() {
   const handleMouseLeave = () => setIsMenuOpen(null);
 
   const [isLoggedIn, setIsLoggedIn] = useState(null);
+  const [userInfo, setUserInfo] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
+    const checkAuth = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/v1/check-auth`, { withCredentials: true });
+        console.log(response)
+        setIsLoggedIn(response.data);
+      } catch (error) {
+        setIsLoggedIn(false);
+      }
+    };
+  
+    checkAuth();
   }, []);
 
   useEffect(() => {
@@ -61,7 +68,22 @@ export default function Example() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/v1/user-info`, {
+          withCredentials: true, 
+        });
+        setUserInfo(response.data.data);
+      } catch (error) {
+        console.error("사용자 정보 가져오기 실패:", error);
+      }
+    };
+  
+    fetchUserInfo();
+  }, []);
+  
+  console.log(userInfo); 
   // 로그아웃
   const handleLogout = async () => {
     try {
