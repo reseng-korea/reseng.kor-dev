@@ -293,7 +293,6 @@ export default function Example({userInfo, isLoggedIn}) {
                   </button>
                 </div>
               )}
-
               {/* 임시페이지(삭제 예정) */}
               {/* <div
                 className="relative ml-3"
