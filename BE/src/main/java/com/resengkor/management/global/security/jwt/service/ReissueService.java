@@ -34,12 +34,12 @@ public class ReissueService {
         log.info("----Service Start: refresh 재발급 요청-----");
 
         // 1. AccessToken 검증 및 사용자 정보 추출
-        String authorizationHeader = request.getHeader("Authorization");
-        if (authorizationHeader == null || !authorizationHeader.startsWith("Bearer ")) {
-            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER);
+        // 수정 코드 (쿠키에서 가져옴)
+        String accessToken = getAccessTokenFromCookies(request);
+        if (accessToken == null || accessToken.isEmpty()) {
+            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE);
         }
 
-        String accessToken = authorizationHeader.substring(7);
         String email = jwtUtil.getEmail(accessToken);
         String sessionId = jwtUtil.getSessionId(accessToken);
 
@@ -127,4 +127,16 @@ public class ReissueService {
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage());
     }
+    private String getAccessTokenFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
+    }
+    
 }
