@@ -57,8 +57,24 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         // 프론트에서 보낸 AccessToken 가져오기
         String accessToken = request.getHeader("Authorization");
-        if (accessToken == null || !accessToken.startsWith("Bearer ")) {
-            sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_HEADER, HttpServletResponse.SC_BAD_REQUEST);
+        if (accessToken != null && accessToken.startsWith("Bearer ")) {
+            accessToken = accessToken.substring(7); // "Bearer " 제거
+        } else {
+            // 2. Authorization 헤더가 없으면, 쿠키에서 accessToken 가져오기
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                for (Cookie cookie : cookies) {
+                    if ("accessToken".equals(cookie.getName())) {
+                        accessToken = cookie.getValue();
+                        break;
+                    }
+                }
+            }
+        }
+        
+        // 3. accessToken이 여전히 없으면 에러 반환
+        if (accessToken == null) {
+            sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
         accessToken = accessToken.substring(7); // "Bearer " 제거

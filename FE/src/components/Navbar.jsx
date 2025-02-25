@@ -40,7 +40,7 @@ export default function Example() {
   const handleMouseLeave = () => setIsMenuOpen(null);
 
   const [isLoggedIn, setIsLoggedIn] = useState(null);
-  const [userInfo, setUserInfo] = useState(null);
+
 
   useEffect(() => {
     const checkAuth = async () => {
@@ -68,20 +68,7 @@ export default function Example() {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/v1/user-info`, {
-          withCredentials: true, 
-        });
-        setUserInfo(response.data.data);
-      } catch (error) {
-        console.error("사용자 정보 가져오기 실패:", error);
-      }
-    };
-  
-    fetchUserInfo();
-  }, []);
+
   
   console.log(userInfo); 
   // 로그아웃

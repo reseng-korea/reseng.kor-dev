@@ -131,16 +131,28 @@ function App() {
       setIsMainSixthVisible(isVisible);
     }
   };
-
+  const [userInfo, setUserInfo] = useState(null);
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await axios.get(`${apiUrl}/api/v1/user-info`, {
+          withCredentials: true, 
+        });
+        setUserInfo(response.data.data);
+      } catch (error) {
+        console.error("사용자 정보 가져오기 실패:", error);
+      }
+    };
+  
+    fetchUserInfo();
+  }, []);
    const isAuthenticated = async () => {
     try {
       const response = await axios.get(`${apiUrl}/api/v1/check-auth`, {
         withCredentials: true, // 쿠키 포함 요청
       });
-      console.log('asdasdasdasdasdasdsa', response.data);
       return response.data; // true or false 반환
     } catch (error) {
-      console.log('errrrororororororor');
       return false;
     }
   };
@@ -155,7 +167,7 @@ function App() {
   return (
     <ModalProvider>
       <ScrollToTop />
-      {!shouldHideNavbar && <Navbar />}
+      {!shouldHideNavbar && <Navbar userInfo={userInfo}/>}
       <div className="h-screen">
         <Routes>
           {/* 메인페이지 */}
