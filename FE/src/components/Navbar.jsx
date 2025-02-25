@@ -25,7 +25,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Example({userInfo}) {
+export default function Example({userInfo, isLoggedIn}) {
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
@@ -41,7 +41,6 @@ export default function Example({userInfo}) {
 
 
   useEffect(() => {
-    console.log(userInfo); 
     const handleScroll = () => {
       if (window.scrollY > 0) {
         setIsScrolled(true);
@@ -55,7 +54,7 @@ export default function Example({userInfo}) {
   }, []);
 
   
-
+  console.log(isLoggedIn, userInfo); 
   // 로그아웃
   const handleLogout = async () => {
     try {
