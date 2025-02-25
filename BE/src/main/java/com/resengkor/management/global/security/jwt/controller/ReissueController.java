@@ -14,6 +14,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import com.resengkor.management.global.exception.CustomException;
+import com.resengkor.management.global.exception.ExceptionStatus;
+import com.resengkor.management.domain.user.entity.User;
+import com.resengkor.management.domain.user.repository.UserRepository;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * refresh 토큰으로 재발급 요청 처리
@@ -24,6 +30,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1")
 @Slf4j
 public class ReissueController {
+    private final UserRepository userRepository;
     private final ReissueService reissueService;
     private final JWTUtil jwtUtil;
 
