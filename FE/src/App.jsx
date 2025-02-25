@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { useUserInfo } from '.hooks/userContext';
+import { useUserInfo } from './hooks/userContext';
 import {
   BrowserRouter as Router,
   Routes,
