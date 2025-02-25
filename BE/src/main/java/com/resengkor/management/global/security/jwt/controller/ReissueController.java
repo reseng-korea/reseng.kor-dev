@@ -69,58 +69,58 @@ public class ReissueController {
         }
     }
 
-@GetMapping("/user-info")
-public ResponseEntity<CommonResponse> getUserInfo(HttpServletRequest request) {
-    log.info("----Controller Start: 로그인된 사용자 정보 요청-----");
-
-    // 1. 쿠키에서 accessToken 찾기
-    String accessToken = null;
-    Cookie[] cookies = request.getCookies();
-    if (cookies != null) {
-        for (Cookie cookie : cookies) {
-            if ("accessToken".equals(cookie.getName())) {
-                accessToken = cookie.getValue();
-                break;
+    @GetMapping("/user-info")
+    public ResponseEntity<Map<String, Object>> getUserInfo(HttpServletRequest request) {
+        log.info("----Controller Start: 로그인된 사용자 정보 요청-----");
+    
+        // 1. 쿠키에서 accessToken 찾기
+        String accessToken = null;
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    accessToken = cookie.getValue();
+                    break;
+                }
             }
         }
-    }
-
-    // 2. accessToken이 없으면 예외 발생
-    if (accessToken == null) {
-        throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE);
-    }
-
-    // 3. accessToken 유효성 검사
-    if (jwtUtil.isExpired(accessToken)) {
-        throw new CustomException(ExceptionStatus.ACCESS_TOKEN_EXPIRED);
-    }
-
-    // 4. accessToken에서 사용자 정보 추출
-    String email = jwtUtil.getEmail(accessToken);
-    Long userId = jwtUtil.getUserId(accessToken);
-    String role = jwtUtil.getRole(accessToken);
-    String loginType = jwtUtil.getLoginType(accessToken);
-
-    // 5. 유저 정보 조회
-    User user = userRepository.findById(userId)
-            .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
-
-    // 6. 응답 데이터 구성
-    Map<String, Object> userInfo = new HashMap<>();
-    userInfo.put("userId", userId);
-    userInfo.put("role", role);
-    userInfo.put("loginType", loginType);
-    userInfo.put("name", user.getRepresentativeName());
-
-    return ResponseEntity.ok().body(
-        Map.of(
-            "code", ResponseStatus.RESPONSE_SUCCESS.getCode(),
-            "message", ResponseStatus.RESPONSE_SUCCESS.getMessage(),
-            "data", userInfo
-        )
-    );
     
-}
+        // 2. accessToken이 없으면 예외 발생
+        if (accessToken == null) {
+            throw new CustomException(ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE);
+        }
+    
+        // 3. accessToken 유효성 검사
+        if (jwtUtil.isExpired(accessToken)) {
+            throw new CustomException(ExceptionStatus.ACCESS_TOKEN_EXPIRED);
+        }
+    
+        // 4. accessToken에서 사용자 정보 추출
+        String email = jwtUtil.getEmail(accessToken);
+        Long userId = jwtUtil.getUserId(accessToken);
+        String role = jwtUtil.getRole(accessToken);
+        String loginType = jwtUtil.getLoginType(accessToken);
+    
+        // 5. 유저 정보 조회
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ExceptionStatus.USER_NOT_FOUND));
+    
+        // 6. 응답 데이터 구성 (CommonResponse 없이)
+        Map<String, Object> response = new HashMap<>();
+        response.put("code", ResponseStatus.RESPONSE_SUCCESS.getCode());
+        response.put("message", ResponseStatus.RESPONSE_SUCCESS.getMessage());
+    
+        Map<String, Object> userInfo = new HashMap<>();
+        userInfo.put("userId", userId);
+        userInfo.put("role", role);
+        userInfo.put("loginType", loginType);
+        userInfo.put("name", user.getRepresentativeName());
+    
+        response.put("data", userInfo);
+    
+        return ResponseEntity.ok(response);
+    }
+    
 
 
     @PostMapping("/reissue")
