@@ -141,7 +141,7 @@ function App() {
         });
         setUserInfo(response.data.data);
       } catch (error) {
-        console.error("사용자 정보 가져오기 실패:", error);
+       
       }
     };
   
@@ -168,7 +168,7 @@ function App() {
   return (
     <ModalProvider>
       <ScrollToTop />
-      {!shouldHideNavbar && <Navbar userInfo={userInfo} isLoggedIn={!userInfo ? true : false}/>}
+      {!shouldHideNavbar && <Navbar userInfo={userInfo} isLoggedIn={!userInfo ? false : true}/>}
       <div className="h-screen">
         <Routes>
           {/* 메인페이지 */}
