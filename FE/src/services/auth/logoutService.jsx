@@ -43,16 +43,28 @@ export const logoutService = async (
     }
     return response;
   } catch (error) {
-    console.error('로그아웃 실패:', error);
-    openModal({
-      primaryText: '로그아웃에 실패했습니다.',
-      context: '잠시 후 다시 시도해주세요.',
-      type: 'warning',
-      isAutoClose: false,
-      onConfirm: () => {
-        closeModal();
-      },
-    });
+    if (error.response && error.response.status === 401) {
+      openModal({
+        primaryText: '세션이 만료되었습니다.',
+        context: '다시 로그인해주세요.',
+        type: 'warning',
+        onConfirm: () => {
+          localStorage.clear();
+          document.cookie = "accessToken=; path=/; expires=Thu, 01 Jan 1970 00:00:00 UTC;";
+          window.location.href = '/signin'; 
+        },
+      });
+    } else {
+      openModal({
+        primaryText: '로그아웃에 실패했습니다.',
+        context: '잠시 후 다시 시도해주세요.',
+        type: 'warning',
+        isAutoClose: false,
+        onConfirm: () => {
+          closeModal();
+        },
+      });
+    }
     throw error;
   }
 };

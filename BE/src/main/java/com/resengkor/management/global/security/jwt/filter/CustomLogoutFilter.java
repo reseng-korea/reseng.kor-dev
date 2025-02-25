@@ -78,7 +78,12 @@ public class CustomLogoutFilter extends GenericFilterBean {
             return;
         }
         accessToken = accessToken.substring(7); // "Bearer " 제거
-
+        if (jwtUtil.isExpired(accessToken)) {
+            log.warn("로그아웃 요청: AccessToken 만료됨");
+            sendErrorResponse(response, ExceptionStatus.ACCESS_TOKEN_EXPIRED, HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+    
         // AccessToken에서 email과 sessionId 추출
         String email = jwtUtil.getEmail(accessToken);
         String sessionId = jwtUtil.getSessionId(accessToken);
