@@ -115,9 +115,12 @@ public class ReissueService {
             throw new CustomException(ExceptionStatus.DB_CONNECTION_ERROR);
         }
 
-        // 7. 응답 설정 (새로운 AccessToken 및 RefreshToken 전달)
-        response.setHeader("Authorization", "Bearer " + newAccessToken);
-        response.addCookie(CookieUtil.createCookie("Refresh", newRefreshToken, (int) (refreshTokenExpiration / 1000)));
+        Cookie accessTokenCookie = new Cookie("accessToken", newAccessToken);
+        accessTokenCookie.setHttpOnly(true); // JavaScript에서 접근 불가
+        accessTokenCookie.setSecure(true); // HTTPS에서만 전송
+        accessTokenCookie.setPath("/"); // 모든 경로에서 쿠키 사용 가능
+        accessTokenCookie.setMaxAge((int) ACCESS_TOKEN_EXPIRATION / 1000); // 1시간
+    
 
         return new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
                 ResponseStatus.RESPONSE_SUCCESS.getMessage());
