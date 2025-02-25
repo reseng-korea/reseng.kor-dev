@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-
+import jakarta.servlet.http.Cookie;
 /**
  * 로그아웃 필터
  * refresh 토큰 만료
