@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { useUserInfo } from '.hooks/userContext';
 import {
   BrowserRouter as Router,
   Routes,
@@ -132,21 +133,6 @@ function App() {
     }
   };
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const [userInfo, setUserInfo] = useState(null);
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/v1/user-info`, {
-          withCredentials: true, 
-        });
-        setUserInfo(response.data.data);
-      } catch (error) {
-       
-      }
-    };
-  
-    fetchUserInfo();
-  }, []);
    const isAuthenticated = async () => {
     try {
       const response = await axios.get(`${apiUrl}/api/v1/check-auth`, {
@@ -166,9 +152,10 @@ function App() {
   }, []);
 
   return (
+    <UserProvider>
     <ModalProvider>
       <ScrollToTop />
-      {!shouldHideNavbar && <Navbar userInfo={userInfo} isLoggedIn={!userInfo ? false : true}/>}
+      {!shouldHideNavbar && <Navbar/>}
       <div className="h-screen">
         <Routes>
           {/* 메인페이지 */}
@@ -314,6 +301,7 @@ function App() {
         <RenderModal />
       </div>
     </ModalProvider>
+    </UserProvider>
   );
 }
 

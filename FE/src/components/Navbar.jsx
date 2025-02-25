@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { useNavigateTo } from '../hooks/useNavigateTo';
 import useModal from '../hooks/useModal';
 import { logoutService } from '../services/auth/logoutService';
-
+import { useUserInfo } from '../hooks/userContext'; // ✅ 추가
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { IoPersonSharp } from 'react-icons/io5';
 import logo from '../assets/logo2.jpg';
@@ -25,7 +25,9 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Example({userInfo, isLoggedIn}) {
+export default function Example() {
+  const { userInfo } = useUserInfo();
+  const isLoggedIn = userInfo !== null; 
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
@@ -63,6 +65,8 @@ export default function Example({userInfo, isLoggedIn}) {
         navigateTo,
         routes,
       });
+      navigateTo(routes.home);
+      window.location.reload();
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error);
     }

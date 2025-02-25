@@ -9,7 +9,7 @@ import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const Manage = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const loginType = localStorage.getItem('loginType');
+  const loginType = userInfo.loginType;
 
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },
@@ -33,10 +33,9 @@ const Manage = () => {
           },
         });
 
-        // console.log(response);
         setCurrentStock(response.data.data);
       } catch (error) {
-        // console.log(error);
+
       }
     };
 
