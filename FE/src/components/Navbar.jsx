@@ -25,7 +25,7 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-export default function Example({userInfo}) {
+export default function Example({userInfo, isLoggedIn}) {
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
@@ -39,22 +39,6 @@ export default function Example({userInfo}) {
   const handleMouseEnter = (menu) => setIsMenuOpen(menu);
   const handleMouseLeave = () => setIsMenuOpen(null);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
-
-
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await axios.get(`${apiUrl}/api/v1/check-auth`, { withCredentials: true });
-        console.log(response)
-        setIsLoggedIn(response.data);
-      } catch (error) {
-        setIsLoggedIn(false);
-      }
-    };
-  
-    checkAuth();
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
