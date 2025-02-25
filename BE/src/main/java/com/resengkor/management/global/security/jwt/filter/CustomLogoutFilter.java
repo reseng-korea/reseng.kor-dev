@@ -138,7 +138,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         accessTokenCookie.setSecure(false);  
         accessTokenCookie.setAttribute("SameSite", "None");  // ✅ 추가
         response.addCookie(accessTokenCookie);
-
+    }
     private String getAccessTokenFromCookies(HttpServletRequest request) {
         Cookie[] cookies = request.getCookies();
         if (cookies != null) {
