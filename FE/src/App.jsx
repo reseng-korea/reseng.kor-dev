@@ -131,6 +131,7 @@ function App() {
       setIsMainSixthVisible(isVisible);
     }
   };
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const [userInfo, setUserInfo] = useState(null);
   useEffect(() => {
     const fetchUserInfo = async () => {
