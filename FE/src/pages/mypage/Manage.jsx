@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from 'react';
 
 import apiClient from '../../services/apiClient';
-
+import { useUserInfo } from '../../hooks/userContext'; 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const Manage = () => {
+  const { userInfo } = useUserInfo();
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const loginType = userInfo.loginType;
 
