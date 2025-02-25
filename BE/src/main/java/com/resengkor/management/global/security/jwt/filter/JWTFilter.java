@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
+import jakarta.servlet.http.Cookie;
 /**
  * 이미 액세스 토큰이 있는 경우,
  * 내부에서 사용할 authentication 정보를 set
