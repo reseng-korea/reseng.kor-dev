@@ -17,10 +17,6 @@ let loginTime = localStorage.getItem('loginTime')
 // 로그인 후 정보 저장
 export const handleLogin = (data, accessToken) => {
   loginTime = Date.now(); // 로그인 시점 저장 (전역 변수로)
-  localStorage.setItem('userId', data.id);
-  localStorage.setItem('role', data.role);
-  localStorage.setItem('name', data.representativeName);
-  localStorage.setItem('loginType', data.loginType);
 };
 
 

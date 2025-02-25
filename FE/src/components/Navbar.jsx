@@ -229,8 +229,8 @@ export default function Example({userInfo, isLoggedIn}) {
                 >
                   <button
                     onClick={() => {
-                      const role = localStorage.getItem('role');
-                      const loginType = localStorage.getItem('loginType');
+                      const role = userInfo.role;
+                      const loginType =  userInfo.loginType;
                       if (role === 'ROLE_PENDING') {
                         navigateTo(routes.socialinfo);
                       } else if (role === 'ROLE_GUEST') {
@@ -250,13 +250,13 @@ export default function Example({userInfo, isLoggedIn}) {
                   {isMenuOpen === 'mypage' && (
                     <div className="absolute z-20 w-32 py-1 mt-1 origin-top-center bg-white rounded-md shadow-lg left-1/2 transform -translate-x-1/2 ring-1 ring-black ring-opacity-5">
                       <a className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary">
-                        {localStorage.getItem('name')}님
+                        {userInfo.name}님
                       </a>
                       <hr />
                       <a
                         onClick={() => {
-                          const role = localStorage.getItem('role');
-                          const loginType = localStorage.getItem('loginType');
+                          const role = userInfo.role;
+                          const loginType = userInfo.loginType;
                           if (role === 'ROLE_PENDING') {
                             navigateTo(routes.socialinfo);
                           } else if (role === 'ROLE_GUEST') {
