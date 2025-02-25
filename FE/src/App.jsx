@@ -168,7 +168,7 @@ function App() {
   return (
     <ModalProvider>
       <ScrollToTop />
-      {!shouldHideNavbar && <Navbar userInfo={userInfo} isLoggedIn={isAuthenticated()}/>}
+      {!shouldHideNavbar && <Navbar userInfo={userInfo} isLoggedIn={!userInfo ? true : false}/>}
       <div className="h-screen">
         <Routes>
           {/* 메인페이지 */}
