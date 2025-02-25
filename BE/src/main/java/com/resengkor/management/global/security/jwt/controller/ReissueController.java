@@ -112,7 +112,7 @@ public ResponseEntity<CommonResponse> getUserInfo(HttpServletRequest request) {
     userInfo.put("loginType", loginType);
     userInfo.put("name", user.getRepresentativeName());
 
-    return ResponseEntity.ok(new CommonResponse(
+    return ResponseEntity.ok().body(new CommonResponse(
         ResponseStatus.RESPONSE_SUCCESS.getCode(),
         ResponseStatus.RESPONSE_SUCCESS.getMessage(),
         userInfo
