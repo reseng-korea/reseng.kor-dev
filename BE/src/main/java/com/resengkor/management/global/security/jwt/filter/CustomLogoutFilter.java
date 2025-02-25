@@ -74,6 +74,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         
         // 3. accessToken이 여전히 없으면 에러 반환
         if (accessToken == null) {
+            removeAuthCookies(response);
             sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -81,8 +82,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
         if (jwtUtil.isExpired(accessToken)) {
             log.warn("로그아웃 요청: AccessToken 만료됨");
-            response.addCookie(CookieUtil.createCookie("Refresh", null, 0));
-            response.addCookie(CookieUtil.createCookie("accessToken", null, 0));
+            removeAuthCookies(response);
             sendErrorResponse(response, ExceptionStatus.ACCESS_TOKEN_EXPIRED, HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
@@ -92,6 +92,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String sessionId = jwtUtil.getSessionId(accessToken);
 
         if (email == null || sessionId == null) {
+            removeAuthCookies(response);
             sendErrorResponse(response, ExceptionStatus.TOKEN_PARSE_ERROR, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -101,6 +102,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         String refreshToken = redisUtil.getData(redisKey);
 
         if (refreshToken == null) {
+            removeAuthCookies(response);
             sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_DB, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -108,6 +110,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         // Refresh 토큰이 유효한지 확인
         String category = jwtUtil.getCategory(refreshToken);
         if (!"Refresh".equals(category)) {
+            removeAuthCookies(response);
             sendErrorResponse(response, ExceptionStatus.TOKEN_PARSE_ERROR, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
@@ -116,21 +119,17 @@ public class CustomLogoutFilter extends GenericFilterBean {
         boolean isDeleted = redisUtil.deleteData(redisKey);
         if (!isDeleted) {
             log.error("로그아웃 실패: Redis에서 Refresh 토큰 삭제 실패");
+            removeAuthCookies(response);
             sendErrorResponse(response, ExceptionStatus.DB_CONNECTION_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
 
         log.info("로그아웃 성공: Refresh 토큰 삭제 완료");
 
-        // 성공 응답 설정
+        removeAuthCookies(response);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        
-        response.addCookie(CookieUtil.createCookie("Refresh", null, 0));
-        response.addCookie(CookieUtil.createCookie("accessToken", null, 0));
-
-
         CommonResponse commonResponse = new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), "로그아웃에 성공했습니다");
         ObjectMapper objectMapper = new ObjectMapper();
         response.getWriter().write(objectMapper.writeValueAsString(commonResponse));
@@ -147,4 +146,20 @@ public class CustomLogoutFilter extends GenericFilterBean {
         response.getWriter().write(objectMapper.writeValueAsString(commonResponse));
         response.getWriter().flush();
     }
+    private void removeAuthCookies(HttpServletResponse response) {
+        Cookie accessTokenCookie = new Cookie("accessToken", null);
+        accessTokenCookie.setMaxAge(0);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true);
+        response.addCookie(accessTokenCookie);
+
+        Cookie refreshTokenCookie = new Cookie("Refresh", null);
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);
+        response.addCookie(refreshTokenCookie);
+    }
+
 }
