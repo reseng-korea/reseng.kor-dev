@@ -82,6 +82,7 @@ public class CustomLogoutFilter extends GenericFilterBean {
         if (jwtUtil.isExpired(accessToken)) {
             log.warn("로그아웃 요청: AccessToken 만료됨");
             response.addCookie(CookieUtil.createCookie("Refresh", null, 0));
+            response.addCookie(CookieUtil.createCookie("accessToken", null, 0));
             sendErrorResponse(response, ExceptionStatus.ACCESS_TOKEN_EXPIRED, HttpServletResponse.SC_UNAUTHORIZED);
             return;
         }
