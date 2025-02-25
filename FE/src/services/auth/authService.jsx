@@ -25,7 +25,7 @@ export const handleLogin = (data, accessToken) => {
   localStorage.setItem('loginType', data.loginType);
 };
 
-// accessToken 만료 시 access,refresh 재발급
+
 export const refreshAccessToken = async () => {
   // console.log('토큰 만료 확인');
   try {
