@@ -34,7 +34,7 @@ const Manage = () => {
             'Content-Type': 'application/json',
           },
         });
-
+        console.log(loginType)
         setCurrentStock(response.data.data);
       } catch (error) {
 
