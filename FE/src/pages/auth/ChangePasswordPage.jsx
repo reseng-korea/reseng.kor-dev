@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import useModal from '../../hooks/useModal';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
+import { useUserInfo } from '../../hooks/userContext';
 import apiClient from '../../services/apiClient';
 import {
   validatePassword,
@@ -10,6 +11,7 @@ import {
 } from '../../utils/PasswordValidation';
 
 const ChangePasswordPage = () => {
+  const { userInfo } = useUserInfo() ?? { userInfo: null };
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
 
@@ -17,7 +19,7 @@ const ChangePasswordPage = () => {
   usePreventRefresh(openModal, closeModal, setModalOpen);
 
   const accesstoken = localStorage.getItem('accessToken');
-  const userId = localStorage.getItem('userId');
+  const userId = userInfo?.userId ?? null;
 
   const [tempPassword, setTempPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');

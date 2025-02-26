@@ -8,7 +8,7 @@ import SubNavbar from '../../components/SubNavbar';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import { formatDate } from '../../utils/dateUtils';
-
+import { useUserInfo } from '../../hooks/userContext';
 import resengLogo from '../../assets/reseng_logo.png';
 
 const Extra = () => {
@@ -18,11 +18,10 @@ const Extra = () => {
     { label: '보도 자료', route: '/press' },
     { label: '기타 자료', route: '/extra' },
   ];
-
+  const { userInfo } = useUserInfo() ?? { userInfo: null };
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
-  const role = localStorage.getItem('role');
-
+  const role = userInfo?.role ?? null;
   const [extra, setExtra] = useState([]);
 
   const [totalElements, setTotalElements] = useState(0);

@@ -5,7 +5,7 @@ import Layout from '../../components/Layouts';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import useModal from '../../hooks/useModal';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
-
+import { useUserInfo } from '../../hooks/userContext';
 import apiClient from '../../services/apiClient';
 
 import EmailInfoForm from './components/EmailInfoForm';
@@ -16,6 +16,7 @@ import CompanyContactInfoForm from './components/CompanyContactInfoForm';
 import AddressInfoForm from './components/AddressInfoForm';
 
 const AddSignupPage = () => {
+  const { userInfo } = useUserInfo() ?? { userInfo: null };
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const location = useLocation();
   const data = location.state?.data;

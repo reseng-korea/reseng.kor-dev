@@ -17,8 +17,6 @@ const QnaRegister = () => {
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
-  const userId = localStorage.getItem('userId');
-  const refreshtoken = localStorage.getItem('refreshToken');
   const navItems = [
     { label: '자주 묻는 질문', route: '/faq' },
     { label: '1:1 문의', route: '/qna' },

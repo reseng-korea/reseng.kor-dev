@@ -12,14 +12,15 @@ import datePicker from '../../assets/date_picker.png';
 
 import useModal from '../../hooks/useModal';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
-
+import { useUserInfo } from '../../hooks/userContext';
 import { FaSearch } from 'react-icons/fa';
 import { AiFillExclamationCircle } from 'react-icons/ai';
 
 const Qr = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const loginType = localStorage.getItem('loginType');
-
+  const { userInfo } = useUserInfo() ?? { userInfo: null };
+  const loginType = userInfo?.loginType ?? null;
+  
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },
     { label: '현수막 관리', route: '/mypage/manage' },

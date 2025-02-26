@@ -4,9 +4,11 @@ import apiClient from '../../services/apiClient';
 
 import Layout from '../../components/Layouts';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import { useUserInfo } from '../../hooks/userContext';
 import useModal from '../../hooks/useModal';
 
 const UserConfirm = () => {
+  const { userInfo } = useUserInfo() ?? { userInfo: null };
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
@@ -21,7 +23,7 @@ const UserConfirm = () => {
   };
 
   const accesstoken = localStorage.getItem('accessToken');
-  const userId = localStorage.getItem('userId');
+  const userId = userInfo?.userId ?? null;
 
   const handleSubmit = async (e) => {
     e.preventDefault();
