@@ -113,7 +113,7 @@ public class ReissueController {
         Map<String, Object> userInfo = new HashMap<>();
         userInfo.put("userId", userId);
         userInfo.put("role", role);
-        userInfo.put("loginType", loginType);
+        userInfo.put("loginType", user.getLoginType());
         userInfo.put("name", user.getRepresentativeName());
     
         response.put("data", userInfo);
