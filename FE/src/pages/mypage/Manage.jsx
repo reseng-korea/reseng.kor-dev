@@ -20,7 +20,7 @@ const Manage = () => {
     { label: 'QR 발생기', route: '/mypage/qr' },
     {
       label: '회원 정보 수정',
-      route: loginType === 'SOCIAL' ? '/mypage/user/edit' : '/mypage/user',
+      route: loginType === 'local' ? '/mypage/user/edit' : '/mypage/user',
     },
   ];
 
@@ -34,7 +34,7 @@ const Manage = () => {
             'Content-Type': 'application/json',
           },
         });
-        console.log(loginType)
+        console.log(loginType);
         setCurrentStock(response.data.data);
       } catch (error) {
 
