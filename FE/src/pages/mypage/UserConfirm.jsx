@@ -24,7 +24,6 @@ const UserConfirm = () => {
 
   const accesstoken = localStorage.getItem('accessToken');
   const userId = userInfo?.userId ?? null;
-  setTimeout(()=>{console.log(userInfo)},1000)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!password) {
