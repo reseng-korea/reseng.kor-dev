@@ -87,7 +87,7 @@ public class OAuth2JwtHeaderService {
                 .phoneNumber(loginUser.getPhoneNumber())
                 .phoneNumberStatus(loginUser.isPhoneNumberStatus())
                 .role(loginUser.getRole().getRole())
-                .loginType(loginUser.getLoginType().toUpperCase()) // 대문자로 변환
+                .loginType(loginUser.getLoginType().toString())
                 .status(loginUser.isStatus())
                 .build();
 
