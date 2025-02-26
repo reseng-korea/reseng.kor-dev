@@ -9,9 +9,9 @@ import { useNavigateTo } from '../../hooks/useNavigateTo';
 import { useUserInfo } from '../../hooks/userContext';
 
 const Manage = () => {
-  const { userInfo } = useUserInfo(); 
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const { userInfo } = useUserInfo() ?? { userInfo: null };
   const loginType = userInfo?.loginType ?? null;
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },

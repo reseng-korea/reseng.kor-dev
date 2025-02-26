@@ -28,5 +28,10 @@ export const UserProvider = ({ children }) => {
   );
 };
 
-// 🚀 useUserInfo 훅 생성 (다른 컴포넌트에서 쉽게 사용)
-export const useUserInfo = () => useContext(UserContext);
+export const useUserInfo = () => {
+  const context = useContext(UserContext);
+  if (!context) {
+    return { userInfo: null, setUserInfo: () => {} }; // ⚠️ undefined 방지
+  }
+  return context;
+};
