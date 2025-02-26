@@ -86,6 +86,14 @@ public class OAuth2JwtHeaderService {
         accessTokenCookie.setPath("/");
         accessTokenCookie.setMaxAge((int) (ACCESS_TOKEN_EXPIRATION / 1000));
         response.addCookie(accessTokenCookie);
+
+        Cookie refreshTokenCookie = new Cookie("Refresh", null);
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setPath("/");  // ✅ 경로 확인
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);  // 🔥 로컬 테스트 시 false (배포 시 true)
+        refreshTokenCookie.setAttribute("SameSite", "None");  // ✅ 추가
+        response.addCookie(refreshTokenCookie);
         
         // JSON 응답 설정
         LoginResponse loginResponse = LoginResponse.builder()
