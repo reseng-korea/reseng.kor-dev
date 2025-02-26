@@ -99,6 +99,7 @@ const UserEdit = () => {
         });
         setAddress(response.data.data.userProfile.streetAddress);
         setDetailAddress(response.data.data.userProfile.detailAddress);
+        console.log(userInfo);
       } catch (error) {
         console.log(error);
       }
