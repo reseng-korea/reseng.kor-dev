@@ -9,7 +9,7 @@ import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const Manage = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const loginType = userInfo.loginType;
+  const loginType = userInfo?.loginType ?? null;
 
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },
