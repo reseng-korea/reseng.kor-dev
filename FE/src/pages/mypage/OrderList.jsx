@@ -12,7 +12,7 @@ const OrderList = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { userInfo } = useUserInfo() ?? { userInfo: null };
 
-  const loginType = userInfo?.loginType ?? null;
+  const loginType = userInfo?.loginType.toUpperCase() ?? null;
 
 
   const navItems = [

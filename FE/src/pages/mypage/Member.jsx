@@ -89,7 +89,7 @@ const Member = () => {
   const { userInfo } = useUserInfo() ?? { userInfo: null };
   const accesstoken = localStorage.getItem('accessToken');
   const role = userInfo?.role ?? null;
-  const loginType = userInfo?.loginType ?? null;
+  const loginType = userInfo?.loginType.toUpperCase() ?? null;
 
 
   const navItems = [

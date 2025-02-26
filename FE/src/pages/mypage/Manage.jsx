@@ -10,7 +10,7 @@ import { useUserInfo } from '../../hooks/userContext';
 
 const Manage = () => {
   const { userInfo } = useUserInfo() ?? { userInfo: null };
-  const loginType = userInfo?.loginType ?? null;
+  const loginType = userInfo?.loginType.toUpperCase() ?? null;
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   const navItems = [

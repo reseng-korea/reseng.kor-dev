@@ -41,7 +41,7 @@ const UserEdit = () => {
   const accesstoken = localStorage.getItem('accessToken');
   const userId = userInfo?.userId ?? null;
   const role = userInfo?.role ?? null;
-  const loginType = userInfo?.loginType ?? null;
+  const loginType = userInfo?.loginType.toUpperCase() ?? null;
 
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -99,7 +99,6 @@ const UserEdit = () => {
         });
         setAddress(response.data.data.userProfile.streetAddress);
         setDetailAddress(response.data.data.userProfile.detailAddress);
-        console.log(userInfo);
       } catch (error) {
         console.log(error);
       }
