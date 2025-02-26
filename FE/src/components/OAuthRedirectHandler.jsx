@@ -24,7 +24,7 @@ function OAuthRedirectHandler() {
         // JSON 응답 처리
         const data = await response.json(); // 안전하게 호출
         // 응답 헤더에서 토큰 추출
-        const accessToken = response.headers.get('authorization');
+        const accessToken ="fake_token";
 
         console.log(data);
         if (accessToken) {
