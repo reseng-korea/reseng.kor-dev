@@ -3,9 +3,8 @@ import Slider from 'react-slick';
 import 'slick-carousel/slick/slick.css';
 import 'slick-carousel/slick/slick-theme.css';
 
-import tmp from './../../assets/login.jpg';
-import tmp2 from './../../assets/main1_2.png';
-import tmp3 from './../../assets/main1_3.png';
+import ecoever from './../../assets/ecoeverLM.jpg';
+import ecoen from './../../assets/ecoen.jpg';
 
 const SliderMainFourthPage = () => {
   const settings = {
@@ -21,37 +20,29 @@ const SliderMainFourthPage = () => {
   return (
     <div className="slider-wrapper w-1/3 h-auto px-8 py-16 bg-white bg-opacity-20 rounded-lg">
       <Slider {...settings}>
-        <div className="flex flex-col items-center justify-center w-full h-full">
-          <img src={tmp} className="w-full h-56 object-cover rounded-lg" />
-          <div className="flex flex-col">
+        <div className="flex flex-col items-center justify-center text-center">
+          <div className="w-full h-56 flex justify-center items-center">
+            <img src={ecoen} className="w-auto h-24 rounded-lg" />
+          </div>
+          <div className="flex flex-col items-center">
             <span className="text-white text-xl font-bold mt-4 mb-4">
-              제목1
+              ecoen
             </span>
             <span className="text-white text-md">
-              내용내용내용내용내용내용내용내용내용내용내용내용
-              내용내용내용내용내용내용내용내용내용내용내용내
+            2024년 "차세대 일류상품"으로 선정된 소재로 만든 현수막
             </span>
           </div>
         </div>
-        <div>
-          <img src={tmp2} className="w-full h-56 rounded-lg" />
-          <div className="flex flex-col">
-            <span className="text-white text-xl font-bold mt-4 mb-4">
-              제목2
-            </span>
-            <span className="text-white text-md">
-              내용내용내용내용내용내용내용내용내용내용내용내용
-            </span>
+        <div className="flex flex-col items-center justify-center text-center">
+          <div className="w-full h-56 flex justify-center items-center">
+            <img src={ecoever} className="w-auto h-24 rounded-lg" />
           </div>
-        </div>
-        <div>
-          <img src={tmp3} className="w-full h-56 rounded-lg" />
-          <div className="flex flex-col">
+          <div className="flex flex-col items-center">
             <span className="text-white text-xl font-bold mt-4 mb-4">
-              제목3
+              LMF
             </span>
             <span className="text-white text-md">
-              내용내용내용내용내용내용내용내용내용내용내용내용
+              2024년 "세계 일류상품"으로 선정된 소재의 원료로 폐현수막을 사용
             </span>
           </div>
         </div>
