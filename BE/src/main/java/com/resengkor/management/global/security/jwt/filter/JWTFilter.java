@@ -20,7 +20,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
-
+import jakarta.servlet.http.Cookie;
 /**
  * 이미 액세스 토큰이 있는 경우,
  * 내부에서 사용할 authentication 정보를 set
@@ -35,22 +35,20 @@ public class JWTFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         log.info("----Filter Start: JWT 토큰 필터 진행-----");
 
-        // 헤더에서 Authorization 키에 담긴 토큰을 꺼냄
-        String access = request.getHeader("Authorization");
-        log.info("Authorization Header = " + access);
+        // 🔹 쿠키에서 accessToken 가져오기
+        String access = getAccessTokenFromCookies(request);
 
-        // 토큰이 없다면 다음 필터로 넘김
-        if (access == null || access.isEmpty() || !access.startsWith("Bearer ")) {
+        if (access == null || access.isEmpty()) {
             log.info("------------------------------------------------");
-            log.info("Access 토큰 없음 또는 Bearer로 시작하지 않음");
+            log.info("JWTFilter: Access 토큰 없음 (쿠키에서 찾지 못함)");
             log.info("권한이 필요없는 API일 수도 있으니 일단 넘김");
             log.info("------------------------------------------------");
             filterChain.doFilter(request, response);
             return;
         }
-        // "Bearer " 접두사를 제거하여 실제 토큰 값만 추출
-        access = access.substring(7);
+
         log.info("Access Token = " + access);
+
 
         // 토큰이 있다면
         // 토큰 만료 여부 확인, 만료시 다음 필터로 넘기지 않음
@@ -100,5 +98,16 @@ public class JWTFilter extends OncePerRequestFilter {
         log.info("----Filter End: JWT 토큰 필터 끝-----");
 
         filterChain.doFilter(request, response);
+    }
+    private String getAccessTokenFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

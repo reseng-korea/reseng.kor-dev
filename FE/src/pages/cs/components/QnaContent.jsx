@@ -3,7 +3,7 @@ import React, { useState, useEffect } from 'react';
 import apiClient from '../../../services/apiClient';
 import { useNavigateTo } from '../../../hooks/useNavigateTo';
 import useModal from '../../../hooks/useModal';
-
+import { useUserInfo } from '../../../hooks/userContext';
 import { IoPersonSharp } from 'react-icons/io5';
 import { IoTimeOutline } from 'react-icons/io5';
 import { IoEye } from 'react-icons/io5';
@@ -13,9 +13,10 @@ const QnaContent = (
   //   userId, questionId, title, content, representativeName, viewCount, createdAt, secret,
   //   password, answered, answerId, answerContent, answerCreatedAt, answerUpdatedAt,
 ) => {
+  const { userInfo } = useUserInfo() ?? { userInfo: null };
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
-  const localUserId = localStorage.getItem('userId');
+  const localUserId = userInfo?.userId ?? null;
 
   const { navigateTo, routes } = useNavigateTo();
   const { openModal, closeModal, RenderModal } = useModal();

@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 
 import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
-
+import { useUserInfo } from '../../hooks/userContext';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import { formatDate } from '../../utils/dateUtils';
 
@@ -18,11 +18,11 @@ const Coa = () => {
     { label: '보도 자료', route: '/press' },
     { label: '기타 자료', route: '/extra' },
   ];
+  const { userInfo } = useUserInfo() ?? { userInfo: null };
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const { navigateTo, routes } = useNavigateTo();
-  const role = localStorage.getItem('role');
-
+  const role = userInfo?.role ?? null;
   const [coa, setCoa] = useState([]);
 
   const [totalElements, setTotalElements] = useState(0);

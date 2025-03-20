@@ -2,7 +2,7 @@ import { useLocation } from 'react-router-dom';
 
 import Layout from '../../components/Layouts';
 
-import logo from '../../assets/logo.png';
+import logo from '../../assets/logo.jpg';
 
 const QrSuccess = () => {
   const { state } = useLocation();

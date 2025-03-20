@@ -11,21 +11,17 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-
 import org.springframework.web.filter.GenericFilterBean;
 
 import java.io.IOException;
-
-
+import jakarta.servlet.http.Cookie;
 /**
  * 로그아웃 필터
  * refresh 토큰 만료
  */
-//@RequiredArgsConstructor
 @Slf4j
 public class CustomLogoutFilter extends GenericFilterBean {
     private final JWTUtil jwtUtil;
@@ -46,92 +42,121 @@ public class CustomLogoutFilter extends GenericFilterBean {
 
     private void doFilter(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws ServletException, IOException {
         log.info("----Filter Start: 내부 필터 로그아웃 진행-----");
-        //해당요청이 logout요청인지 판단
-        // uri check
+
+        // 로그아웃 요청이 아니면 필터 통과
         if (!request.getRequestURI().equals(defaultFilterUrl)) {
-            //로그아웃이 아니면 다음 필터로 넘어감
             chain.doFilter(request, response);
             return;
         }
-        // method check
-        String requestMethod = request.getMethod();
-        ExceptionStatus exceptionStatus;
-        if (!requestMethod.equals("POST")) {
-            //로그아웃이더라도 post가 아니면 넘어감
-//            chain.doFilter(request, response);
-//            return;
-            // POST가 아닌 요청인 경우 405 에러 반환
-            ErrorHandler.sendErrorResponse(response, ExceptionStatus.METHOD_NOT_ALLOWED, HttpServletResponse.SC_METHOD_NOT_ALLOWED);
+
+        // 로그아웃 요청은 반드시 POST 메서드만 허용
+        if (!"POST".equals(request.getMethod())) {
+            sendErrorResponse(response, ExceptionStatus.METHOD_NOT_ALLOWED, HttpServletResponse.SC_METHOD_NOT_ALLOWED);
             return;
         }
 
-        //쿠키 가져오기
-        Cookie[] cookies = request.getCookies();
-        String refresh = null;
-
-        if(cookies == null){
-            response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-            return;
-        }
-        for (Cookie cookie : cookies) {
-            if(cookie.getName().equals("Refresh")){
-                refresh = cookie.getValue();
-            }
-        }
-        if(refresh == null){
-            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE, HttpServletResponse.SC_BAD_REQUEST);
+        // 프론트에서 보낸 AccessToken 가져오기
+        String accessToken = getAccessTokenFromCookies(request);
+        if (accessToken == null || accessToken.isEmpty()) {
+            removeAuthCookies(response);
+            sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_COOKIE, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        // 토큰이 refresh인지 확인 (발급시 페이로드에 명시)
-        String category = jwtUtil.getCategory(refresh);
 
-        // not refresh token
-        if(!"Refresh".equals(category)){
-            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_PARSE_ERROR, HttpServletResponse.SC_BAD_REQUEST);
+        if (jwtUtil.isExpired(accessToken)) {
+            log.warn("로그아웃 요청: AccessToken 만료됨");
+            removeAuthCookies(response);
+            sendErrorResponse(response, ExceptionStatus.ACCESS_TOKEN_EXPIRED, HttpServletResponse.SC_UNAUTHORIZED);
+            return;
+        }
+    
+        // AccessToken에서 email과 sessionId 추출
+        String email = jwtUtil.getEmail(accessToken);
+        String sessionId = jwtUtil.getSessionId(accessToken);
+
+        if (email == null || sessionId == null) {
+            removeAuthCookies(response);
+            sendErrorResponse(response, ExceptionStatus.TOKEN_PARSE_ERROR, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        // Redis에서 refresh 토큰 존재 여부 확인
-        String email = jwtUtil.getEmail(refresh);
-        String sessionId = jwtUtil.getSessionId(refresh);
-        
-        String redisKey = "refresh_token:" + email + ":" + sessionId; //해당 기기에 해당하는 redis Key 가져옴
-        Boolean isExist = redisUtil.existData(redisKey);
+        // Redis에서 refresh 토큰 가져오기
+        String redisKey = "refresh_token:" + email + ":" + sessionId;
+        String refreshToken = redisUtil.getData(redisKey);
 
-        // not exist in DB
-        if(!isExist){
-            //없다면 이미 로그아웃인 상태
-            ErrorHandler.sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_DB, HttpServletResponse.SC_BAD_REQUEST);
+        if (refreshToken == null) {
+            removeAuthCookies(response);
+            sendErrorResponse(response, ExceptionStatus.TOKEN_NOT_FOUND_IN_DB, HttpServletResponse.SC_BAD_REQUEST);
             return;
         }
 
-        // logout
-        //로그아웃 진행
-        //Refresh 토큰 DB에서 제거
+        // Refresh 토큰이 유효한지 확인
+        String category = jwtUtil.getCategory(refreshToken);
+        if (!"Refresh".equals(category)) {
+            removeAuthCookies(response);
+            sendErrorResponse(response, ExceptionStatus.TOKEN_PARSE_ERROR, HttpServletResponse.SC_BAD_REQUEST);
+            return;
+        }
 
+        // Redis에서 Refresh 토큰 삭제
         boolean isDeleted = redisUtil.deleteData(redisKey);
         if (!isDeleted) {
-            log.error("로그아웃: Refresh 토큰 삭제 실패 (Redis 연결 오류)");
-            // Redis 오류 시 예외 던지기
-            ErrorHandler.sendErrorResponse(response, ExceptionStatus.DB_CONNECTION_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+            log.error("로그아웃 실패: Redis에서 Refresh 토큰 삭제 실패");
+            removeAuthCookies(response);
+            sendErrorResponse(response, ExceptionStatus.DB_CONNECTION_ERROR, HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             return;
         }
 
-        log.info("로그아웃: Refresh 토큰 삭제 성공");
+        log.info("로그아웃 성공: Refresh 토큰 삭제 완료");
 
-        // 성공 응답 설정
+        removeAuthCookies(response);
         response.setContentType("application/json");
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpServletResponse.SC_OK);
-        //refresh 만료 처리
-        response.addCookie(CookieUtil.createCookie("Refresh", null, 0));
-        CommonResponse commonResponse = new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(),
-                "로그아웃에 성공했습니다");
-
-        // 응답 JSON 생성
+        CommonResponse commonResponse = new CommonResponse(ResponseStatus.RESPONSE_SUCCESS.getCode(), "로그아웃에 성공했습니다");
         ObjectMapper objectMapper = new ObjectMapper();
         response.getWriter().write(objectMapper.writeValueAsString(commonResponse));
         response.getWriter().flush();
+    }
+
+    private void sendErrorResponse(HttpServletResponse response, ExceptionStatus status, int httpStatusCode) throws IOException {
+        response.setContentType("application/json");
+        response.setCharacterEncoding("UTF-8");
+        response.setStatus(httpStatusCode);
+
+        CommonResponse commonResponse = new CommonResponse(status.getCode(), status.getMessage());
+        ObjectMapper objectMapper = new ObjectMapper();
+        response.getWriter().write(objectMapper.writeValueAsString(commonResponse));
+        response.getWriter().flush();
+    }
+    private void removeAuthCookies(HttpServletResponse response) {
+        Cookie accessTokenCookie = new Cookie("accessToken", null);
+        accessTokenCookie.setMaxAge(0);
+        accessTokenCookie.setPath("/");  // ✅ 경로 확인
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true);  // 🔥 로컬 테스트 시 false (배포 시 true)
+        accessTokenCookie.setAttribute("SameSite", "None");  // ✅ 추가
+        response.addCookie(accessTokenCookie);
+
+
+        Cookie refreshTokenCookie = new Cookie("Refresh", null);
+        refreshTokenCookie.setMaxAge(0);
+        refreshTokenCookie.setPath("/");  // ✅ 경로 확인
+        refreshTokenCookie.setHttpOnly(true);
+        refreshTokenCookie.setSecure(true);  // 🔥 로컬 테스트 시 false (배포 시 true)
+        refreshTokenCookie.setAttribute("SameSite", "None");  // ✅ 추가
+        response.addCookie(refreshTokenCookie);
+    }
+    private String getAccessTokenFromCookies(HttpServletRequest request) {
+        Cookie[] cookies = request.getCookies();
+        if (cookies != null) {
+            for (Cookie cookie : cookies) {
+                if ("accessToken".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

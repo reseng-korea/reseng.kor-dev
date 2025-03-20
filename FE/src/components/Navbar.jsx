@@ -7,10 +7,11 @@ import { useState, useEffect } from 'react';
 import { useNavigateTo } from '../hooks/useNavigateTo';
 import useModal from '../hooks/useModal';
 import { logoutService } from '../services/auth/logoutService';
-
+import { useUserInfo } from '../hooks/userContext'; // ✅ 추가
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
 import { IoPersonSharp } from 'react-icons/io5';
-import logo from '../assets/logo.png';
+import logo from '../assets/logo2.jpg';
+import axios from 'axios';
 
 const navigation = [
   { name: '회사소개', current: false },
@@ -25,6 +26,8 @@ function classNames(...classes) {
 }
 
 export default function Example() {
+  const { userInfo } = useUserInfo();
+  const isLoggedIn = userInfo !== null; 
   // 페이지 이동
   const { navigateTo, routes } = useNavigateTo();
 
@@ -38,16 +41,6 @@ export default function Example() {
   const handleMouseEnter = (menu) => setIsMenuOpen(menu);
   const handleMouseLeave = () => setIsMenuOpen(null);
 
-  const [isLoggedIn, setIsLoggedIn] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem('accessToken');
-    if (token) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
-    }
-  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,6 +55,7 @@ export default function Example() {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
+  
   // 로그아웃
   const handleLogout = async () => {
     try {
@@ -71,6 +65,8 @@ export default function Example() {
         navigateTo,
         routes,
       });
+      navigateTo(routes.home);
+      window.location.reload();
     } catch (error) {
       console.error('로그아웃 중 오류 발생:', error);
     }
@@ -237,8 +233,8 @@ export default function Example() {
                 >
                   <button
                     onClick={() => {
-                      const role = localStorage.getItem('role');
-                      const loginType = localStorage.getItem('loginType');
+                      const role = userInfo.role;
+                      const loginType = userInfo.loginType;
                       if (role === 'ROLE_PENDING') {
                         navigateTo(routes.socialinfo);
                       } else if (role === 'ROLE_GUEST') {
@@ -258,13 +254,13 @@ export default function Example() {
                   {isMenuOpen === 'mypage' && (
                     <div className="absolute z-20 w-32 py-1 mt-1 origin-top-center bg-white rounded-md shadow-lg left-1/2 transform -translate-x-1/2 ring-1 ring-black ring-opacity-5">
                       <a className="block px-4 py-2 text-sm text-gray4 hover:bg-placeHolder hover:text-primary">
-                        {localStorage.getItem('name')}님
+                        {userInfo.name}님
                       </a>
                       <hr />
                       <a
                         onClick={() => {
-                          const role = localStorage.getItem('role');
-                          const loginType = localStorage.getItem('loginType');
+                          const role = userInfo.role;
+                          const loginType = userInfo.loginType;
                           if (role === 'ROLE_PENDING') {
                             navigateTo(routes.socialinfo);
                           } else if (role === 'ROLE_GUEST') {

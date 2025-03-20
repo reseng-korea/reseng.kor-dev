@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { UserProvider  } from './hooks/userContext';
 import {
   BrowserRouter as Router,
   Routes,
@@ -16,7 +17,7 @@ import useModal from './hooks/useModal';
 import { setOpenModal } from './services/auth/authService';
 
 import './App.css';
-
+import axios from 'axios';
 // components
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -131,10 +132,16 @@ function App() {
       setIsMainSixthVisible(isVisible);
     }
   };
-
-  const isAuthenticated = () => {
-    const token = localStorage.getItem('accessToken');
-    return !!token; // 토큰이 있으면 true 반환
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+   const isAuthenticated = async () => {
+    try {
+      const response = await axios.get(`${apiUrl}/api/v1/check-auth`, {
+        withCredentials: true, // 쿠키 포함 요청
+      });
+      return response.data; // true or false 반환
+    } catch (error) {
+      return false;
+    }
   };
 
   useEffect(() => {
@@ -145,9 +152,10 @@ function App() {
   }, []);
 
   return (
+    <UserProvider>
     <ModalProvider>
       <ScrollToTop />
-      {!shouldHideNavbar && <Navbar />}
+      {!shouldHideNavbar && <Navbar/>}
       <div className="h-screen">
         <Routes>
           {/* 메인페이지 */}
@@ -293,6 +301,7 @@ function App() {
         <RenderModal />
       </div>
     </ModalProvider>
+    </UserProvider>
   );
 }
 

@@ -9,15 +9,18 @@ import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import { useUserInfo } from '../../hooks/userContext';
 import useModal from '../../hooks/useModal';
 import { formatCreatedAt } from '../../utils/dateUtils';
 
 import qnaIsSecret from '../../assets/qna_isSecret.png';
 
 const Qna = () => {
+  
+ const { userInfo } = useUserInfo() ?? { userInfo: null };
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
   const accesstoken = localStorage.getItem('accessToken');
-  const role = localStorage.getItem('role');
+  const role = userInfo?.role ?? null;
   const navItems = [
     { label: '자주 묻는 질문', route: '/faq' },
     { label: '1:1 문의', route: '/qna' },

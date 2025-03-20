@@ -63,7 +63,7 @@ public class SecurityConfig {
             "/api/v1/regions/**", "/api/v1/companies/**",
             "/api/v1/faq/**",
             "api/v1/qr-code",
-            "/api/v1/qna/questions/**"
+            "/api/v1/qna/questions/**","/api/v1/check-auth","/api/v1/user-info"
     );
 
     @Bean
@@ -127,7 +127,8 @@ public class SecurityConfig {
         http
                 .addFilterAt(new CustomLoginFilter("/api/v1/login", authenticationManager(authenticationConfiguration), jwtUtil, redisUtil), UsernamePasswordAuthenticationFilter.class);
         http
-                .addFilterBefore(new CustomLogoutFilter("/api/v1/logout", jwtUtil, redisUtil), LogoutFilter.class);
+                .addFilterAt(new CustomLogoutFilter("/api/v1/logout", jwtUtil, redisUtil), UsernamePasswordAuthenticationFilter.class);
+            
 
 
         //세션 설정

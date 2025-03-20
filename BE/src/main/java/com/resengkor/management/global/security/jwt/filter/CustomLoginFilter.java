@@ -9,6 +9,7 @@ import com.resengkor.management.global.security.jwt.dto.LoginResponse;
 import com.resengkor.management.global.security.jwt.util.JWTUtil;
 import com.resengkor.management.global.util.CookieUtil;
 import com.resengkor.management.global.util.RedisUtil;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletInputStream;
 import jakarta.servlet.http.HttpServletRequest;
@@ -141,10 +142,15 @@ public class CustomLoginFilter extends UsernamePasswordAuthenticationFilter {
         response.setCharacterEncoding("UTF-8");
         response.setStatus(HttpStatus.OK.value());
 
-        response.setHeader("Authorization", "Bearer " + access);
+        Cookie accessTokenCookie = new Cookie("accessToken", access);
+        accessTokenCookie.setHttpOnly(true);
+        accessTokenCookie.setSecure(true);
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge((int) ACCESS_TOKEN_EXPIRATION / 1000);
+        response.addCookie(accessTokenCookie);
 //        response.setHeader("Refresh", refresh);
         //쿠키로 발급
-        response.addCookie(CookieUtil.createCookie("Refresh", refresh, (int)refreshTokenExpiration/1000));
+        //response.addCookie(CookieUtil.createCookie("Refresh", refresh, (int)refreshTokenExpiration/1000));
 
         // 응답 JSON 생성
         LoginResponse loginResponse = LoginResponse.builder()

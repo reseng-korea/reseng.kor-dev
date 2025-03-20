@@ -6,10 +6,12 @@ import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
 import { useNavigateTo } from '../../hooks/useNavigateTo';
+import { useUserInfo } from '../../hooks/userContext';
 
 const Manage = () => {
+  const { userInfo } = useUserInfo() ?? { userInfo: null };
+  const loginType = userInfo?.loginType.toUpperCase() ?? null;
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const loginType = localStorage.getItem('loginType');
 
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },
@@ -32,11 +34,9 @@ const Manage = () => {
             'Content-Type': 'application/json',
           },
         });
-
-        // console.log(response);
         setCurrentStock(response.data.data);
       } catch (error) {
-        // console.log(error);
+
       }
     };
 

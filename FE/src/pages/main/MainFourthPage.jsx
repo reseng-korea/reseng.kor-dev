@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from 'react';
 
 // 이미지 import
 import main4 from './../../assets/main4.png';
-import main44 from './../../assets/main44_1.png';
+import main44 from './../../assets/main44_1.jpg';
 
 import Layout from '../../components/Layouts';
 import SliderMainFourthPage from './SliderMainFourthPage';

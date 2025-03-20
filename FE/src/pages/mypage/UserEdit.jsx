@@ -8,6 +8,7 @@ import SubNavbar from '../../components/SubNavbar';
 import useModal from '../../hooks/useModal';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 import usePreventRefresh from '../../hooks/usePreventRefresh';
+import { useUserInfo } from '../../hooks/userContext';
 
 import EmailInfoForm from '../auth/components/EmailInfoForm';
 import PasswordInfoForm from '../auth/components/PasswordInfoForm';
@@ -35,10 +36,12 @@ const UserEdit = () => {
   // 새로고침 데이터 날라감 방지
   usePreventRefresh(openModal, closeModal, setModalOpen);
 
+  const { userInfo } = useUserInfo() ?? { userInfo: null };
+
   const accesstoken = localStorage.getItem('accessToken');
-  const userId = localStorage.getItem('userId');
-  const role = localStorage.getItem('role');
-  const loginType = localStorage.getItem('loginType');
+  const userId = userInfo?.userId ?? null;
+  const role = userInfo?.role ?? null;
+  const loginType = userInfo?.loginType.toUpperCase() ?? null;
 
   const [email, setEmail] = useState('');
   const [isValidEmail, setIsValidEmail] = useState(true);
@@ -62,7 +65,8 @@ const UserEdit = () => {
   const [detailAddress, setDetailAddress] = useState('');
 
   useEffect(() => {
-    const userId = localStorage.getItem('userId');
+    if (!userInfo?.userId) return;
+    const userId = userInfo.userId;
     const fetchData = async () => {
       try {
         const response = await apiClient.get(
@@ -101,7 +105,7 @@ const UserEdit = () => {
     };
 
     fetchData(); // 비동기 함수 호출
-  }, []);
+  }, [userInfo]);
 
   // 회원 정보 수정 버튼 클릭
   const handleSubmit = async () => {

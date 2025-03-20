@@ -9,11 +9,14 @@ import Layout from '../../components/Layouts';
 import SubNavbar from '../../components/SubNavbar';
 
 import useModal from '../../hooks/useModal';
+import { useUserInfo } from '../../hooks/userContext';
 import { useNavigateTo } from '../../hooks/useNavigateTo';
 
 const OfferList = () => {
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
-  const loginType = localStorage.getItem('loginType');
+  const { userInfo } = useUserInfo() ?? { userInfo: null };
+
+  const loginType = userInfo?.loginType.toUpperCase() ?? null;
 
   const navItems = [
     { label: '업체 관리', route: '/mypage/member' },
